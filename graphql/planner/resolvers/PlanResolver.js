@@ -236,7 +236,7 @@ let PlanResolver = class PlanResolver {
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
             plan.commentsCount = await this.attachCommentsCountWithPlan(plan._id);
-            plan.hasInCollection = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
+            plan.planCollections = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
         return {
@@ -272,7 +272,7 @@ let PlanResolver = class PlanResolver {
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
             plan.commentsCount = await this.attachCommentsCountWithPlan(plan._id);
-            plan.hasInCollection = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
+            plan.planCollections = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
         return planWithCollectionAndComments;
@@ -305,7 +305,7 @@ let PlanResolver = class PlanResolver {
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
             plan.commentsCount = await this.attachCommentsCountWithPlan(plan._id);
-            plan.hasInCollection = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
+            plan.planCollections = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
         return planWithCollectionAndComments;
@@ -338,7 +338,7 @@ let PlanResolver = class PlanResolver {
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
             plan.commentsCount = await this.attachCommentsCountWithPlan(plan._id);
-            plan.hasInCollection = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
+            plan.planCollections = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
         return planWithCollectionAndComments;
@@ -412,18 +412,13 @@ let PlanResolver = class PlanResolver {
         return commentsCount;
     }
     async checkThePlanIsInCollectionOrNot(planId, memberId) {
-        let planCollection = await planCollection_1.default.find({
+        let planCollections = await planCollection_1.default.find({
             memberId: memberId,
             plans: {
                 $in: planId,
             },
         }).select('_id');
-        if (planCollection.length > 0) {
-            return true;
-        }
-        else {
-            false;
-        }
+        return planCollections;
     }
 };
 __decorate([

@@ -6,6 +6,7 @@ const planCollectionSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'name is required'],
     },
+    description: String,
     slug: String,
     image: String,
     memberId: {

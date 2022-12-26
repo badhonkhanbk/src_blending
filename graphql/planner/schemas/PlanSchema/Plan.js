@@ -65,9 +65,9 @@ __decorate([
     __metadata("design:type", Number)
 ], Plan.prototype, "commentsCount", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], Plan.prototype, "hasInCollection", void 0);
+    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
+    __metadata("design:type", Array)
+], Plan.prototype, "planCollections", void 0);
 Plan = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], Plan);

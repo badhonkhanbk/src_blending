@@ -84,6 +84,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], GeneralBlog.prototype, "hasInCollection", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
+    __metadata("design:type", Array)
+], GeneralBlog.prototype, "blogCollections", void 0);
 GeneralBlog = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], GeneralBlog);

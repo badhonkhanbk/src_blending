@@ -10,29 +10,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let CreateNewPlanCollection = class CreateNewPlanCollection {
+let CreateEditPlanCollection = class CreateEditPlanCollection {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "name", void 0);
+], CreateEditPlanCollection.prototype, "name", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "description", void 0);
+], CreateEditPlanCollection.prototype, "description", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "slug", void 0);
+], CreateEditPlanCollection.prototype, "slug", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "image", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
-    __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "memberId", void 0);
-CreateNewPlanCollection = __decorate([
+], CreateEditPlanCollection.prototype, "image", void 0);
+CreateEditPlanCollection = __decorate([
     (0, type_graphql_1.InputType)()
-], CreateNewPlanCollection);
-exports.default = CreateNewPlanCollection;
+], CreateEditPlanCollection);
+exports.default = CreateEditPlanCollection;

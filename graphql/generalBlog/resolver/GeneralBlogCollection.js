@@ -25,6 +25,7 @@ const BlogCollectionsWithDefaultCollection_1 = __importDefault(require("../schem
 const GeneralBlogCollectionWithPagination_1 = __importDefault(require("../schema/GeneralBlogCollectionWithPagination"));
 const blogComment_1 = __importDefault(require("../../../models/blogComment"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const EditBlogCollection_1 = __importDefault(require("./inputType/BlogCollection/EditBlogCollection"));
 let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
     async getAllBlogCollections(memberId) {
         let collections = await generalBlogCollection_1.default.find({
@@ -152,6 +153,15 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
         let newBlogCollection = await generalBlogCollection_1.default.create(data);
         return newBlogCollection;
     }
+    async editABlogCollection(data) {
+        let blogCollection = await generalBlogCollection_1.default.findOneAndUpdate({
+            _id: data.editId,
+            memberId: data.memberId,
+        }, data.editableObject, {
+            new: true,
+        });
+        return blogCollection;
+    }
     async deleteBlogCollection(collectionId, memberId) {
         let blogCollection = await generalBlogCollection_1.default.findOne({
             _id: collectionId,
@@ -267,6 +277,13 @@ __decorate([
     __metadata("design:paramtypes", [AddNewBlogCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogCollectionResolver.prototype, "addNewBlogCollection", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => BlogCollection_1.default),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [EditBlogCollection_1.default]),
+    __metadata("design:returntype", Promise)
+], GeneralBlogCollectionResolver.prototype, "editABlogCollection", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => BlogCollectionsWithDefaultCollection_1.default),
     __param(0, (0, type_graphql_1.Arg)('collectionId')),

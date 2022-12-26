@@ -8,31 +8,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let CreateNewPlanCollection = class CreateNewPlanCollection {
+const CreateEditPlanCollection_1 = __importDefault(require("./CreateEditPlanCollection"));
+let EditPlanCollection = class EditPlanCollection {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "name", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "description", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "slug", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "image", void 0);
+], EditPlanCollection.prototype, "editId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "memberId", void 0);
-CreateNewPlanCollection = __decorate([
+], EditPlanCollection.prototype, "memberId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => CreateEditPlanCollection_1.default),
+    __metadata("design:type", CreateEditPlanCollection_1.default)
+], EditPlanCollection.prototype, "editableObject", void 0);
+EditPlanCollection = __decorate([
     (0, type_graphql_1.InputType)()
-], CreateNewPlanCollection);
-exports.default = CreateNewPlanCollection;
+], EditPlanCollection);
+exports.default = EditPlanCollection;

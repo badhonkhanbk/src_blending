@@ -90,12 +90,7 @@ let GeneralBlogResolver = class GeneralBlogResolver {
                 $in: blog._id,
             },
         }).select('_id');
-        if (blogCollections.length > 0) {
-            blog.hasInCollection = true;
-        }
-        else {
-            blog.hasInCollection = false;
-        }
+        blog.blogCollections = blogCollections;
         return blog;
     }
     async getAllGeneralBlog(currentDate) {
@@ -130,12 +125,7 @@ let GeneralBlogResolver = class GeneralBlogResolver {
                     $in: blog._id,
                 },
             });
-            if (blogCollections.length > 0) {
-                blog.hasInCollection = true;
-            }
-            else {
-                blog.hasInCollection = false;
-            }
+            blog.blogCollections = blogCollections;
             returnBlogs.push(blog);
         }
         return returnBlogs;

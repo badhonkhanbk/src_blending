@@ -19,6 +19,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
+], CreateNewBlogCollection.prototype, "description", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
 ], CreateNewBlogCollection.prototype, "slug", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),

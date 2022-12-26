@@ -19,6 +19,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
+], PlanCollection.prototype, "description", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
 ], PlanCollection.prototype, "name", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),

@@ -22,6 +22,7 @@ const PlanCollection_1 = __importDefault(require("../schemas/PlanCollection/Plan
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const AddNewPlanCollection_1 = __importDefault(require("./input-type/PlanCollection/AddNewPlanCollection"));
 const PlanCollectionWithDefaultCollection_1 = __importDefault(require("../schemas/PlanCollection/PlanCollectionWithDefaultCollection"));
+const EditPlanCollection_1 = __importDefault(require("./input-type/PlanCollection/EditPlanCollection"));
 let PlanCollectionResolver = class PlanCollectionResolver {
     async getAllPlanCollection(memberId) {
         let collections = await planCollection_1.default.find({
@@ -149,6 +150,15 @@ let PlanCollectionResolver = class PlanCollectionResolver {
         let newPlanCollection = await planCollection_1.default.create(data);
         return newPlanCollection;
     }
+    async editAPlanCollection(data) {
+        let planCollection = await planCollection_1.default.findOneAndUpdate({
+            _id: data.editId,
+            memberId: data.memberId,
+        }, data.editableObject, {
+            new: true,
+        });
+        return planCollection;
+    }
     async deletePlanCollection(collectionId, memberId) {
         let planCollection = await planCollection_1.default.findOne({
             _id: collectionId,
@@ -221,6 +231,13 @@ __decorate([
     __metadata("design:paramtypes", [AddNewPlanCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], PlanCollectionResolver.prototype, "addNewPlanCollection", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => PlanCollection_1.default),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [EditPlanCollection_1.default]),
+    __metadata("design:returntype", Promise)
+], PlanCollectionResolver.prototype, "editAPlanCollection", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => PlanCollectionWithDefaultCollection_1.default),
     __param(0, (0, type_graphql_1.Arg)('collectionId')),

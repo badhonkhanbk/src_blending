@@ -8,31 +8,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let CreateNewPlanCollection = class CreateNewPlanCollection {
+const CreateEditBlogCollection_1 = __importDefault(require("./CreateEditBlogCollection"));
+let EditBlogCollection = class EditBlogCollection {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "name", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "description", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "slug", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "image", void 0);
+], EditBlogCollection.prototype, "editId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
-], CreateNewPlanCollection.prototype, "memberId", void 0);
-CreateNewPlanCollection = __decorate([
+], EditBlogCollection.prototype, "memberId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => CreateEditBlogCollection_1.default),
+    __metadata("design:type", CreateEditBlogCollection_1.default)
+], EditBlogCollection.prototype, "editableObject", void 0);
+EditBlogCollection = __decorate([
     (0, type_graphql_1.InputType)()
-], CreateNewPlanCollection);
-exports.default = CreateNewPlanCollection;
+], EditBlogCollection);
+exports.default = EditBlogCollection;
