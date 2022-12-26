@@ -7,7 +7,10 @@ const blogCollectionSchema = new mongoose_1.Schema({
         required: [true, 'name is required'],
     },
     slug: String,
-    description: String,
+    description: {
+        type: String,
+        default: '',
+    },
     image: String,
     memberId: {
         type: mongoose_1.SchemaTypes.ObjectId,

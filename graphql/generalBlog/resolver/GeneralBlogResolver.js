@@ -124,8 +124,9 @@ let GeneralBlogResolver = class GeneralBlogResolver {
                 blogs: {
                     $in: blog._id,
                 },
-            });
-            blog.blogCollections = blogCollections;
+            }).select('_id');
+            let collectionIds = blogCollections.map((bc) => bc._id);
+            blog.blogCollections = collectionIds;
             returnBlogs.push(blog);
         }
         return returnBlogs;

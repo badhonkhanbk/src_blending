@@ -418,7 +418,8 @@ let PlanResolver = class PlanResolver {
                 $in: planId,
             },
         }).select('_id');
-        return planCollections;
+        let collectionIds = planCollections.map((pc) => pc._id);
+        return collectionIds;
     }
 };
 __decorate([

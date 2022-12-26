@@ -81,6 +81,10 @@ __decorate([
     __metadata("design:type", Number)
 ], GeneralBlog.prototype, "commentsCount", void 0);
 __decorate([
+    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
+    __metadata("design:type", Array)
+], GeneralBlog.prototype, "collections", void 0);
+__decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], GeneralBlog.prototype, "hasInCollection", void 0);
