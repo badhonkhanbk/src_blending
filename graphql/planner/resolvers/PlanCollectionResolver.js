@@ -31,8 +31,8 @@ let PlanCollectionResolver = class PlanCollectionResolver {
         if (collections.length === 0) {
             console.log('hello');
             let defaultPlanCollection = await planCollection_1.default.create({
-                name: 'PLAN',
-                slug: 'plan',
+                name: 'My Favorite',
+                slug: 'my-favorite',
                 memberId: memberId,
                 isDefault: true,
                 collectionDataCount: 1,
@@ -64,10 +64,11 @@ let PlanCollectionResolver = class PlanCollectionResolver {
         let member = await memberModel_1.default.findOne({
             _id: memberId,
         }).select('lastModifiedPlanCollection');
+        console.log(member.lastModifiedPlanCollection);
         if (!member.lastModifiedPlanCollection) {
             let defaultPlanCollection = await planCollection_1.default.create({
-                name: 'PLAN',
-                slug: 'plan',
+                name: 'My Favorite',
+                slug: 'my-favorite',
                 memberId: memberId,
                 isDefault: true,
                 plans: [planId],

@@ -184,7 +184,7 @@ __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __param(0, (0, type_graphql_1.Arg)('memberId')),
     __param(1, (0, type_graphql_1.Arg)('challengeId')),
-    __param(2, (0, type_graphql_1.Arg)('previousDefaultChallengeId')),
+    __param(2, (0, type_graphql_1.Arg)('previousDefaultChallengeId', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
         String,
