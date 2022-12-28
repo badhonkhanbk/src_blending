@@ -150,6 +150,13 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
         };
     }
     async addNewBlogCollection(data) {
+        let previousCollection = await generalBlogCollection_1.default.findOne({
+            memberId: data.memberId,
+            slug: data.slug,
+        });
+        if (previousCollection) {
+            return new AppError_1.default('slug must be unique', 403);
+        }
         let newBlogCollection = await generalBlogCollection_1.default.create(data);
         return newBlogCollection;
     }
@@ -200,7 +207,7 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
             defaultCollection: defaultCollection,
         };
     }
-    async getAllBlogsForACollection(memberId, collectionId, limit, page) {
+    async getAllBlogsForACollection(memberId, slug, limit, page) {
         if (!limit) {
             limit = 12;
         }
@@ -208,7 +215,8 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
             page = 1;
         }
         let collection = await generalBlogCollection_1.default.findOne({
-            _id: collectionId,
+            slug: slug,
+            memberId: memberId,
         })
             .populate('blogs')
             .limit(limit)
@@ -235,8 +243,9 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
             returnBlogs.push(blog);
         }
         let coll = await generalBlogCollection_1.default.findOne({
-            _id: collectionId,
-        });
+            slug: slug,
+            memberId: memberId,
+        }).select('_id');
         return {
             blogs: returnBlogs,
             collectionInfo: coll,
@@ -296,7 +305,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => GeneralBlogCollectionWithPagination_1.default),
     __param(0, (0, type_graphql_1.Arg)('memberId')),
-    __param(1, (0, type_graphql_1.Arg)('collectionId')),
+    __param(1, (0, type_graphql_1.Arg)('slug')),
     __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(3, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __metadata("design:type", Function),
