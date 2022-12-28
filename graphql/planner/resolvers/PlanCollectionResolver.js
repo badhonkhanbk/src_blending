@@ -152,6 +152,13 @@ let PlanCollectionResolver = class PlanCollectionResolver {
         };
     }
     async addNewPlanCollection(data) {
+        let previousPlanCollection = await planCollection_1.default.findOne({
+            memberId: data.memberId,
+            slug: data.slug,
+        });
+        if (previousPlanCollection) {
+            return new AppError_1.default('Slug must be unique', 403);
+        }
         let newPlanCollection = await planCollection_1.default.create(data);
         return newPlanCollection;
     }
@@ -202,7 +209,7 @@ let PlanCollectionResolver = class PlanCollectionResolver {
             defaultCollection: defaultCollection,
         };
     }
-    async getAllPlansForACollection(page, limit, memberId, collectionId) {
+    async getAllPlansForACollection(page, limit, memberId, slug) {
         if (!page) {
             page = 1;
         }
@@ -210,7 +217,7 @@ let PlanCollectionResolver = class PlanCollectionResolver {
             limit = 10;
         }
         let planCollection = await planCollection_1.default.findOne({
-            _id: collectionId,
+            _id: slug,
             memberId: memberId,
         }).select('plans');
         let plans = await Plan_1.default.find({
@@ -305,7 +312,7 @@ __decorate([
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('collectionId', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('slug', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Number, String,
         String]),
