@@ -18,11 +18,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const planCollection_1 = __importDefault(require("../../../models/planCollection"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
+const Plan_1 = __importDefault(require("../../../models/Plan"));
 const PlanCollection_1 = __importDefault(require("../schemas/PlanCollection/PlanCollection"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const AddNewPlanCollection_1 = __importDefault(require("./input-type/PlanCollection/AddNewPlanCollection"));
 const PlanCollectionWithDefaultCollection_1 = __importDefault(require("../schemas/PlanCollection/PlanCollectionWithDefaultCollection"));
 const EditPlanCollection_1 = __importDefault(require("./input-type/PlanCollection/EditPlanCollection"));
+const PlanWithTotal_1 = __importDefault(require("../schemas/PlanSchema/PlanWithTotal"));
+const attachCommentsCountWithPlan_1 = __importDefault(require("./utils/attachCommentsCountWithPlan"));
+const checkThePlanIsInCollectionOrNot_1 = __importDefault(require("./utils/checkThePlanIsInCollectionOrNot"));
 let PlanCollectionResolver = class PlanCollectionResolver {
     async getAllPlanCollection(memberId) {
         let collections = await planCollection_1.default.find({
@@ -198,6 +202,54 @@ let PlanCollectionResolver = class PlanCollectionResolver {
             defaultCollection: defaultCollection,
         };
     }
+    async getAllPlansForACollection(page, limit, memberId, collectionId) {
+        if (!page) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
+        }
+        let planCollection = await planCollection_1.default.findOne({
+            _id: collectionId,
+            memberId: memberId,
+        }).select('plans');
+        let plans = await Plan_1.default.find({
+            _id: { $in: planCollection.plans },
+        })
+            .populate({
+            path: 'planData.recipes',
+            populate: [
+                {
+                    path: 'defaultVersion',
+                    populate: {
+                        path: 'ingredients.ingredientId',
+                        model: 'BlendIngredient',
+                        select: 'ingredientName',
+                    },
+                    select: 'postfixTitle ingredients',
+                },
+                {
+                    path: 'brand',
+                },
+                {
+                    path: 'recipeBlendCategory',
+                },
+            ],
+        })
+            .limit(limit)
+            .skip(limit * (page - 1));
+        let planWithCollectionAndComments = [];
+        for (let i = 0; i < plans.length; i++) {
+            let plan = plans[i];
+            plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
+            plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            planWithCollectionAndComments.push(plan);
+        }
+        return {
+            plans: planWithCollectionAndComments,
+            totalPlans: planCollection.plans.length,
+        };
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => PlanCollectionWithDefaultCollection_1.default),
@@ -248,6 +300,17 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], PlanCollectionResolver.prototype, "deletePlanCollection", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('collectionId', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, String,
+        String]),
+    __metadata("design:returntype", Promise)
+], PlanCollectionResolver.prototype, "getAllPlansForACollection", null);
 PlanCollectionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], PlanCollectionResolver);

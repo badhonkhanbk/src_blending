@@ -25,12 +25,12 @@ const PlanIngredientAndCategory_1 = __importDefault(require("../schemas/PlanSche
 const getRecipeCategoryPercentage_1 = __importDefault(require("./utils/getRecipeCategoryPercentage"));
 const getIngredientStats_1 = __importDefault(require("./utils/getIngredientStats"));
 const PlanWithTotal_1 = __importDefault(require("../schemas/PlanSchema/PlanWithTotal"));
-const planComment_1 = __importDefault(require("../../../models/planComment"));
 const planShare_1 = __importDefault(require("../../../models/planShare"));
 const recipe_1 = __importDefault(require("../../../models/recipe"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const PlansAndRecipes_1 = __importDefault(require("../schemas/PlanSchema/PlansAndRecipes"));
-const planCollection_1 = __importDefault(require("../../../models/planCollection"));
+const checkThePlanIsInCollectionOrNot_1 = __importDefault(require("./utils/checkThePlanIsInCollectionOrNot"));
+const attachCommentsCountWithPlan_1 = __importDefault(require("./utils/attachCommentsCountWithPlan"));
 let PlanResolver = class PlanResolver {
     async createAPlan(input) {
         let myPlan = input;
@@ -235,8 +235,8 @@ let PlanResolver = class PlanResolver {
         let planWithCollectionAndComments = [];
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
-            plan.commentsCount = await this.attachCommentsCountWithPlan(plan._id);
-            plan.planCollections = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
+            plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
+            plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
         return {
@@ -271,8 +271,8 @@ let PlanResolver = class PlanResolver {
         let planWithCollectionAndComments = [];
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
-            plan.commentsCount = await this.attachCommentsCountWithPlan(plan._id);
-            plan.planCollections = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
+            plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
+            plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
         return planWithCollectionAndComments;
@@ -304,8 +304,8 @@ let PlanResolver = class PlanResolver {
         let planWithCollectionAndComments = [];
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
-            plan.commentsCount = await this.attachCommentsCountWithPlan(plan._id);
-            plan.planCollections = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
+            plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
+            plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
         return planWithCollectionAndComments;
@@ -337,8 +337,8 @@ let PlanResolver = class PlanResolver {
         let planWithCollectionAndComments = [];
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
-            plan.commentsCount = await this.attachCommentsCountWithPlan(plan._id);
-            plan.planCollections = await this.checkThePlanIsInCollectionOrNot(plan._id, memberId);
+            plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
+            plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
         return planWithCollectionAndComments;
@@ -404,22 +404,6 @@ let PlanResolver = class PlanResolver {
             invitedBy: invitedBy,
             recipes: recipes,
         };
-    }
-    async attachCommentsCountWithPlan(planId) {
-        let commentsCount = await planComment_1.default.countDocuments({
-            planId: planId,
-        });
-        return commentsCount;
-    }
-    async checkThePlanIsInCollectionOrNot(planId, memberId) {
-        let planCollections = await planCollection_1.default.find({
-            memberId: memberId,
-            plans: {
-                $in: planId,
-            },
-        }).select('_id');
-        let collectionIds = planCollections.map((pc) => pc._id);
-        return collectionIds;
     }
 };
 __decorate([
