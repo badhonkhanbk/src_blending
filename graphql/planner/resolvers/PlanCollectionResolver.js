@@ -217,7 +217,7 @@ let PlanCollectionResolver = class PlanCollectionResolver {
             limit = 10;
         }
         let planCollection = await planCollection_1.default.findOne({
-            _id: slug,
+            slug: slug,
             memberId: memberId,
         }).select('plans');
         let plans = await Plan_1.default.find({
