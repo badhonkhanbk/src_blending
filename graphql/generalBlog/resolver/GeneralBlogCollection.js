@@ -245,7 +245,7 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
         let coll = await generalBlogCollection_1.default.findOne({
             slug: slug,
             memberId: memberId,
-        }).select('_id');
+        });
         return {
             blogs: returnBlogs,
             collectionInfo: coll,
