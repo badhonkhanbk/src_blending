@@ -270,7 +270,10 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     path: 'blendNutrients.blendNutrientRefference',
                     model: 'BlendNutrient',
                 })
-                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle');
+                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle')
+                    .sort({
+                    ingredientName: 1,
+                });
             }
             else {
                 ingredients = await blendIngredient_1.default.find({
@@ -290,7 +293,10 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     path: 'blendNutrients.blendNutrientRefference',
                     model: 'BlendNutrient',
                 })
-                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle');
+                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle')
+                    .sort({
+                    ingredientName: 1,
+                });
             }
         }
         else {
@@ -324,7 +330,10 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     path: 'blendNutrients.blendNutrientRefference',
                     model: 'BlendNutrient',
                 })
-                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle');
+                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle')
+                    .sort({
+                    ingredientName: 1,
+                });
             }
         }
         return ingredients;
