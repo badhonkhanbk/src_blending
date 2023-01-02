@@ -8,20 +8,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const NewUserRecipeInput_1 = __importDefault(require("./NewUserRecipeInput"));
 let CollectionInput = class CollectionInput {
 };
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], CollectionInput.prototype, "name", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [NewUserRecipeInput_1.default], { nullable: true }),
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], CollectionInput.prototype, "slug", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
 ], CollectionInput.prototype, "recipes", void 0);
 __decorate([

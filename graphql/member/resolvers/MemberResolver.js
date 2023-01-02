@@ -229,9 +229,9 @@ let MemberResolver = class MemberResolver {
         return user;
     }
     async createNewCollection(data) {
-        let user = await memberModel_1.default.findOne({ email: data.userEmail }).populate('collections');
+        let user = await memberModel_1.default.findOne({ _id: data.userId }).populate('collections');
         if (!user)
-            return new AppError_1.default(`User ${data.userEmail} does not exist`, 402);
+            return new AppError_1.default(`User ${data.userId} does not exist`, 402);
         for (let i = 0; i < user.collections.length; i++) {
             if (user.collections[i].name === data.collection.name) {
                 return new AppError_1.default(`Collection ${data.collection.name} already exists`, 402);
@@ -241,7 +241,31 @@ let MemberResolver = class MemberResolver {
         newCollection.slug = (0, slugify_1.default)(data.collection.name.toString().toLowerCase());
         newCollection.userId = user._id;
         let collection = await userCollection_1.default.create(data.collection);
-        await memberModel_1.default.findOneAndUpdate({ email: data.userEmail }, { $push: { collections: collection._id } });
+        await memberModel_1.default.findOneAndUpdate({ email: data.userId }, { $push: { collections: collection._id } });
+        return collection;
+    }
+    async addNewCollectionWithData(data) {
+        let user = await memberModel_1.default.findOne({ email: data.userId }).populate('collections');
+        if (!user)
+            return new AppError_1.default(`User ${data.userId} does not exist`, 402);
+        for (let i = 0; i < user.collections.length; i++) {
+            if (user.collections[i].name === data.collection.name) {
+                return new AppError_1.default(`Collection ${data.collection.name} already exists`, 402);
+            }
+        }
+        let newCollection = data.collection;
+        if (!data.collection.slug) {
+            newCollection.slug = (0, slugify_1.default)(data.collection.name.toString().toLowerCase());
+        }
+        else {
+            newCollection.slug = data.collection.slug;
+        }
+        newCollection.userId = user._id;
+        let collection = await userCollection_1.default.create(data.collection);
+        await memberModel_1.default.findOneAndUpdate({ email: data.userId }, {
+            $push: { collections: collection._id },
+            lastModifiedCollection: collection._id,
+        });
         return collection;
     }
     async getAllusers() {
@@ -361,6 +385,13 @@ __decorate([
     __metadata("design:paramtypes", [CreateNewCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "createNewCollection", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Collection_1.default),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CreateNewCollection_1.default]),
+    __metadata("design:returntype", Promise)
+], MemberResolver.prototype, "addNewCollectionWithData", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [Member_1.default]),
     __metadata("design:type", Function),

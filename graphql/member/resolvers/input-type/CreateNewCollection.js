@@ -17,9 +17,9 @@ const CollectionInput_1 = __importDefault(require("./CollectionInput"));
 let CreateNewCollection = class CreateNewCollection {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
-], CreateNewCollection.prototype, "userEmail", void 0);
+], CreateNewCollection.prototype, "userId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => CollectionInput_1.default),
     __metadata("design:type", CollectionInput_1.default)
