@@ -39,6 +39,7 @@ const filterRecipe_1 = __importDefault(require("./input-type/filterRecipe"));
 const updateOriginalVersionFact_1 = __importDefault(require("./util/updateOriginalVersionFact"));
 const util_1 = __importDefault(require("../../share/util"));
 const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrappedRecipe"));
+const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
 let RecipeResolver = class RecipeResolver {
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
@@ -1158,7 +1159,7 @@ let RecipeResolver = class RecipeResolver {
         await RecipeFacts_1.default.deleteMany({});
         return 'done';
     }
-    async filterRecipe(data) {
+    async filterRecipe(data, page, limit) {
         if (
         //@ts-ignore
         data.blendTypes.length == 0 &&
@@ -1170,7 +1171,16 @@ let RecipeResolver = class RecipeResolver {
             data.nutrientMatrix.length == 0 &&
             //@ts-ignore
             data.excludeIngredientIds.length == 0) {
-            return [];
+            return {
+                recipes: [],
+                totalRecipes: 0,
+            };
+        }
+        if (!page) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
         }
         let recipeData = [];
         let find = {
@@ -1340,7 +1350,9 @@ let RecipeResolver = class RecipeResolver {
             select: '_id displayName image firstName lastName email',
         })
             .populate('brand')
-            .populate('recipeBlendCategory');
+            .populate('recipeBlendCategory')
+            .limit(limit)
+            .skip(limit * (page - 1));
         let returnRecipe = [];
         let collectionRecipes = [];
         let memberCollection = await memberModel_1.default.findOne({ _id: data.userId })
@@ -1389,7 +1401,10 @@ let RecipeResolver = class RecipeResolver {
                 userCollections: collectionData,
             });
         }
-        return returnRecipe;
+        return {
+            recipes: returnRecipe,
+            totalRecipes: recipeIds.length,
+        };
     }
     async makeSomeGlobalRecipes() {
         let recipes = await recipe_1.default.find({
@@ -1577,11 +1592,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "removeAllVersionFacts", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [Recipe_1.default]) // not sure yet
+    (0, type_graphql_1.Query)((type) => RecipesWithPagination_1.default) // not sure yet
     ,
     __param(0, (0, type_graphql_1.Arg)('data')),
+    __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [filterRecipe_1.default]),
+    __metadata("design:paramtypes", [filterRecipe_1.default, Number, Number]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "filterRecipe", null);
 __decorate([

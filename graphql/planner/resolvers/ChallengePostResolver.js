@@ -106,9 +106,8 @@ let ChallengePostResolver = class ChallengePostResolver {
             memberId: data.memberId,
             assignDate: isoDate,
         });
-        let returnChallenge;
         if (challengePostDoc) {
-            returnChallenge = await ChallengePost_2.default.findOneAndUpdate({
+            await ChallengePost_2.default.findOneAndUpdate({
                 _id: challengePostDoc._id,
             }, {
                 $push: { posts: post, images: { $each: post.images } },
@@ -117,7 +116,7 @@ let ChallengePostResolver = class ChallengePostResolver {
             });
         }
         else {
-            returnChallenge = await ChallengePost_2.default.create({
+            await ChallengePost_2.default.create({
                 memberId: data.memberId,
                 assignDate: isoDate,
                 images: post.images,
@@ -125,29 +124,33 @@ let ChallengePostResolver = class ChallengePostResolver {
                 date: data.assignDate,
             });
         }
+        let challenge = await challenge_1.default.findOne({
+            memberId: data.memberId,
+            isActive: true,
+        });
         let tempDay = new Date(new Date().toISOString().slice(0, 10));
-        if (returnChallenge.days > 30) {
-            if (returnChallenge.startDate <= tempDay &&
-                returnChallenge.endDate >= tempDay) {
+        if (challenge.days > 30) {
+            if (challenge.startDate <= tempDay &&
+                challenge.endDate >= tempDay) {
                 //@ts-ignore
-                let diffTime = Math.abs(tempDay - returnChallenge.startDate);
+                let diffTime = Math.abs(tempDay - challenge.startDate);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (diffDays >= 30) {
                     let StartCount = Math.abs(diffDays - 30) + 1;
-                    let day = returnChallenge.startDate;
+                    let day = challenge.startDate;
                     tempDay = new Date(day.setDate(day.getDate() + StartCount));
                 }
                 else {
-                    tempDay = returnChallenge.startDate;
+                    tempDay = challenge.startDate;
                 }
             }
             else {
-                let day = returnChallenge.endDate;
+                let day = challenge.endDate;
                 tempDay = new Date(day.setDate(day.getDate() - 30));
             }
         }
         else {
-            tempDay = returnChallenge.startDate;
+            tempDay = challenge.startDate;
         }
         let challengeDoc = await ChallengePost_2.default.findOne({
             memberId: data.memberId,
@@ -156,7 +159,7 @@ let ChallengePostResolver = class ChallengePostResolver {
             .populate('posts.recipeBlendCategory')
             .populate('posts.ingredients.ingredientId');
         let doc;
-        if (tempDay > returnChallenge.endDate) {
+        if (tempDay > challenge.endDate) {
             doc = {
                 _id: (0, FormateDate_1.default)(tempDay),
                 assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
@@ -190,7 +193,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                 posts: [],
             };
         }
-        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', returnChallenge._id);
+        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', challenge._id);
         return { challenge: doc, challengeInfo: challengeInfo };
     }
     async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers) {
@@ -440,9 +443,8 @@ let ChallengePostResolver = class ChallengePostResolver {
             memberId: data.memberId,
             assignDate: isoDate,
         });
-        let returnChallenge;
         if (challengePostDoc) {
-            returnChallenge = await ChallengePost_2.default.findOneAndUpdate({
+            await ChallengePost_2.default.findOneAndUpdate({
                 _id: challengePostDoc._id,
             }, {
                 $push: { posts: post, images: { $each: post.images } },
@@ -451,36 +453,40 @@ let ChallengePostResolver = class ChallengePostResolver {
             });
         }
         else {
-            returnChallenge = await ChallengePost_2.default.create({
+            await ChallengePost_2.default.create({
                 memberId: data.memberId,
                 assignDate: isoDate,
                 posts: [post],
                 images: post.images,
             });
         }
+        let userChallenge = await challenge_1.default.findOne({
+            memberId: data.memberId,
+            isActive: true,
+        });
         let tempDay = new Date(new Date().toISOString().slice(0, 10));
-        if (returnChallenge.days > 30) {
-            if (returnChallenge.startDate <= tempDay &&
-                returnChallenge.endDate >= tempDay) {
+        if (userChallenge.days > 30) {
+            if (userChallenge.startDate <= tempDay &&
+                userChallenge.endDate >= tempDay) {
                 //@ts-ignore
-                let diffTime = Math.abs(tempDay - returnChallenge.startDate);
+                let diffTime = Math.abs(tempDay - userChallenge.startDate);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (diffDays >= 30) {
                     let StartCount = Math.abs(diffDays - 30) + 1;
-                    let day = returnChallenge.startDate;
+                    let day = userChallenge.startDate;
                     tempDay = new Date(day.setDate(day.getDate() + StartCount));
                 }
                 else {
-                    tempDay = returnChallenge.startDate;
+                    tempDay = userChallenge.startDate;
                 }
             }
             else {
-                let day = returnChallenge.endDate;
+                let day = userChallenge.endDate;
                 tempDay = new Date(day.setDate(day.getDate() - 30));
             }
         }
         else {
-            tempDay = returnChallenge.startDate;
+            tempDay = userChallenge.startDate;
         }
         let challengeDoc = await ChallengePost_2.default.findOne({
             memberId: data.memberId,
@@ -489,7 +495,7 @@ let ChallengePostResolver = class ChallengePostResolver {
             .populate('posts.recipeBlendCategory')
             .populate('posts.ingredients.ingredientId');
         let doc;
-        if (tempDay > returnChallenge.endDate) {
+        if (tempDay > userChallenge.endDate) {
             doc = {
                 _id: (0, FormateDate_1.default)(tempDay),
                 assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
@@ -523,7 +529,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                 posts: [],
             };
         }
-        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', returnChallenge._id);
+        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', userChallenge._id);
         return { challenge: doc, challengeInfo: challengeInfo };
     }
     async checkIfChallengeIsGlobal(challengeId, token) {
