@@ -238,10 +238,22 @@ let MemberResolver = class MemberResolver {
             }
         }
         let newCollection = data.collection;
-        newCollection.slug = (0, slugify_1.default)(data.collection.name.toString().toLowerCase());
+        if (!data.collection.slug) {
+            newCollection.slug = (0, slugify_1.default)(data.collection.name.toString().toLowerCase());
+        }
+        else {
+            newCollection.slug = data.collection.slug;
+        }
+        let prevData = await userCollection_1.default.findOne({
+            slug: newCollection.slug,
+            userId: data.userId,
+        });
+        if (prevData) {
+            return new AppError_1.default('slug must be unique', 401);
+        }
         newCollection.userId = user._id;
         let collection = await userCollection_1.default.create(data.collection);
-        await memberModel_1.default.findOneAndUpdate({ email: data.userId }, { $push: { collections: collection._id } });
+        await memberModel_1.default.findOneAndUpdate({ _id: data.userId }, { $push: { collections: collection._id } });
         return collection;
     }
     async addNewCollectionWithData(data) {
@@ -260,9 +272,16 @@ let MemberResolver = class MemberResolver {
         else {
             newCollection.slug = data.collection.slug;
         }
+        let prevData = await userCollection_1.default.findOne({
+            slug: newCollection.slug,
+            userId: data.userId,
+        });
+        if (prevData) {
+            return new AppError_1.default('slug must be unique', 401);
+        }
         newCollection.userId = user._id;
         let collection = await userCollection_1.default.create(data.collection);
-        await memberModel_1.default.findOneAndUpdate({ email: data.userId }, {
+        await memberModel_1.default.findOneAndUpdate({ _id: data.userId }, {
             $push: { collections: collection._id },
             lastModifiedCollection: collection._id,
         });
