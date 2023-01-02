@@ -245,7 +245,7 @@ let MemberResolver = class MemberResolver {
         return collection;
     }
     async addNewCollectionWithData(data) {
-        let user = await memberModel_1.default.findOne({ email: data.userId }).populate('collections');
+        let user = await memberModel_1.default.findOne({ _id: data.userId }).populate('collections');
         if (!user)
             return new AppError_1.default(`User ${data.userId} does not exist`, 402);
         for (let i = 0; i < user.collections.length; i++) {
