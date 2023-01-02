@@ -105,15 +105,18 @@ let ChallengePostResolver = class ChallengePostResolver {
             memberId: data.memberId,
             assignDate: isoDate,
         });
+        let returnChallenge;
         if (challengePostDoc) {
-            await ChallengePost_2.default.findOneAndUpdate({
+            returnChallenge = await ChallengePost_2.default.findOneAndUpdate({
                 _id: challengePostDoc._id,
             }, {
                 $push: { posts: post, images: { $each: post.images } },
+            }, {
+                new: true,
             });
         }
         else {
-            await ChallengePost_2.default.create({
+            returnChallenge = await ChallengePost_2.default.create({
                 memberId: data.memberId,
                 assignDate: isoDate,
                 images: post.images,
@@ -121,7 +124,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                 date: data.assignDate,
             });
         }
-        return 'Post added successfully';
+        return returnChallenge.posts[0];
     }
     async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers) {
         let challenge = await challenge_1.default.findOne({ _id: challengeId });
@@ -370,22 +373,25 @@ let ChallengePostResolver = class ChallengePostResolver {
             memberId: data.memberId,
             assignDate: isoDate,
         });
+        let returnChallenge;
         if (challengePostDoc) {
-            await ChallengePost_2.default.findOneAndUpdate({
+            returnChallenge = await ChallengePost_2.default.findOneAndUpdate({
                 _id: challengePostDoc._id,
             }, {
                 $push: { posts: post, images: { $each: post.images } },
+            }, {
+                new: true,
             });
         }
         else {
-            await ChallengePost_2.default.create({
+            returnChallenge = await ChallengePost_2.default.create({
                 memberId: data.memberId,
                 assignDate: isoDate,
                 posts: [post],
                 images: post.images,
             });
         }
-        return 'Post edited successfully';
+        return returnChallenge.posts[0];
     }
     async checkIfChallengeIsGlobal(challengeId, token) {
         let data = await shareChallengeGlobal_1.default.findOne({
@@ -1271,7 +1277,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getIngredientsFromARecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => ChallengePost_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateChallengePost_1.default]),
@@ -1321,7 +1327,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getAllChallengePostByDate", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => ChallengePost_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditChallengePost_1.default]),
