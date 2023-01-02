@@ -494,9 +494,18 @@ let RecipeResolver = class RecipeResolver {
         }
         return returnRecipe;
     }
-    async searchRecipes(searchTerm, userId) {
+    async searchRecipes(searchTerm, userId, page, limit) {
         if (searchTerm.trim() === '') {
-            return [];
+            return {
+                recipes: [],
+                totalRecipes: 0,
+            };
+        }
+        if (!page) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
         }
         let recipes = await recipe_1.default.find({
             global: true,
@@ -528,7 +537,8 @@ let RecipeResolver = class RecipeResolver {
         })
             .populate('brand')
             .populate('recipeBlendCategory')
-            .limit(30);
+            .limit(limit)
+            .skip(limit * (page - 1));
         let returnRecipe = [];
         let collectionRecipes = [];
         let memberCollections = await memberModel_1.default.find({ _id: userId })
@@ -577,7 +587,18 @@ let RecipeResolver = class RecipeResolver {
                 userCollections: collectionData,
             });
         }
-        return returnRecipe;
+        let totalRecipes = await recipe_1.default.countDocuments({
+            global: true,
+            userId: null,
+            addedByAdmin: true,
+            discovery: true,
+            isPublished: true,
+            name: { $regex: searchTerm, $options: 'i' },
+        });
+        return {
+            recipes: returnRecipe,
+            totalRecipes: totalRecipes,
+        };
     }
     async getAllLatestRecipes(userId) {
         const recipes = await recipe_1.default.find({
@@ -1463,12 +1484,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getAllpopularRecipes", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Recipe_1.default]),
+    (0, type_graphql_1.Query)(() => RecipesWithPagination_1.default),
     __param(0, (0, type_graphql_1.Arg)('searchTerm')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
+    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
-        String]),
+        String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "searchRecipes", null);
 __decorate([
