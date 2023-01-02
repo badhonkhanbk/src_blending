@@ -42,6 +42,7 @@ const OrganizeByTypesForNutrition_1 = __importDefault(require("../../../utils/Or
 const GetDailyRecomendedAndUpperLimit_1 = __importDefault(require("../../../utils/GetDailyRecomendedAndUpperLimit"));
 const InviteForChallenge_1 = __importDefault(require("../../../models/InviteForChallenge"));
 const inviteInfo_1 = __importDefault(require("../schemas/inviteInfo"));
+const ChsllengeAndSingleDoc_1 = __importDefault(require("../schemas/ChsllengeAndSingleDoc"));
 let ChallengePostResolver = class ChallengePostResolver {
     async getIngredientsFromARecipe(recipeId) {
         let recipe = await recipe_1.default.findOne({ _id: recipeId }).populate({
@@ -124,7 +125,73 @@ let ChallengePostResolver = class ChallengePostResolver {
                 date: data.assignDate,
             });
         }
-        return returnChallenge.posts[0];
+        let tempDay = new Date(new Date().toISOString().slice(0, 10));
+        if (returnChallenge.days > 30) {
+            if (returnChallenge.startDate <= tempDay &&
+                returnChallenge.endDate >= tempDay) {
+                //@ts-ignore
+                let diffTime = Math.abs(tempDay - returnChallenge.startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays >= 30) {
+                    let StartCount = Math.abs(diffDays - 30) + 1;
+                    let day = returnChallenge.startDate;
+                    tempDay = new Date(day.setDate(day.getDate() + StartCount));
+                }
+                else {
+                    tempDay = returnChallenge.startDate;
+                }
+            }
+            else {
+                let day = returnChallenge.endDate;
+                tempDay = new Date(day.setDate(day.getDate() - 30));
+            }
+        }
+        else {
+            tempDay = returnChallenge.startDate;
+        }
+        let challengeDoc = await ChallengePost_2.default.findOne({
+            memberId: data.memberId,
+            assignDate: tempDay,
+        })
+            .populate('posts.recipeBlendCategory')
+            .populate('posts.ingredients.ingredientId');
+        let doc;
+        if (tempDay > returnChallenge.endDate) {
+            doc = {
+                _id: (0, FormateDate_1.default)(tempDay),
+                assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
+                date: new Date(tempDay.setDate(tempDay.getDate() + 0)).getDate(),
+                dayName: new Date(tempDay.setDate(tempDay.getDate() + 0)).toLocaleString('default', { weekday: 'short' }),
+                disabled: true,
+                posts: [],
+                formattedDate: (0, FormateDate_1.default)(tempDay),
+            };
+        }
+        else if (challengeDoc) {
+            doc = {
+                _id: challengeDoc._id,
+                images: challengeDoc.images,
+                assignDate: challengeDoc.assignDate,
+                date: new Date(challengeDoc.assignDate).getDate(),
+                dayName: new Date(challengeDoc.assignDate).toLocaleString('default', {
+                    weekday: 'short',
+                }),
+                formattedDate: (0, FormateDate_1.default)(challengeDoc.assignDate),
+                posts: challengeDoc.posts,
+            };
+        }
+        else {
+            doc = {
+                _id: (0, FormateDate_1.default)(tempDay),
+                assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
+                date: new Date(tempDay.setDate(tempDay.getDate() + 0)).getDate(),
+                dayName: new Date(tempDay.setDate(tempDay.getDate() + 0)).toLocaleString('default', { weekday: 'short' }),
+                formattedDate: (0, FormateDate_1.default)(tempDay),
+                posts: [],
+            };
+        }
+        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', returnChallenge._id);
+        return { challenge: doc, challengeInfo: challengeInfo };
     }
     async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers) {
         let challenge = await challenge_1.default.findOne({ _id: challengeId });
@@ -391,7 +458,73 @@ let ChallengePostResolver = class ChallengePostResolver {
                 images: post.images,
             });
         }
-        return returnChallenge.posts[0];
+        let tempDay = new Date(new Date().toISOString().slice(0, 10));
+        if (returnChallenge.days > 30) {
+            if (returnChallenge.startDate <= tempDay &&
+                returnChallenge.endDate >= tempDay) {
+                //@ts-ignore
+                let diffTime = Math.abs(tempDay - returnChallenge.startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays >= 30) {
+                    let StartCount = Math.abs(diffDays - 30) + 1;
+                    let day = returnChallenge.startDate;
+                    tempDay = new Date(day.setDate(day.getDate() + StartCount));
+                }
+                else {
+                    tempDay = returnChallenge.startDate;
+                }
+            }
+            else {
+                let day = returnChallenge.endDate;
+                tempDay = new Date(day.setDate(day.getDate() - 30));
+            }
+        }
+        else {
+            tempDay = returnChallenge.startDate;
+        }
+        let challengeDoc = await ChallengePost_2.default.findOne({
+            memberId: data.memberId,
+            assignDate: tempDay,
+        })
+            .populate('posts.recipeBlendCategory')
+            .populate('posts.ingredients.ingredientId');
+        let doc;
+        if (tempDay > returnChallenge.endDate) {
+            doc = {
+                _id: (0, FormateDate_1.default)(tempDay),
+                assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
+                date: new Date(tempDay.setDate(tempDay.getDate() + 0)).getDate(),
+                dayName: new Date(tempDay.setDate(tempDay.getDate() + 0)).toLocaleString('default', { weekday: 'short' }),
+                disabled: true,
+                posts: [],
+                formattedDate: (0, FormateDate_1.default)(tempDay),
+            };
+        }
+        else if (challengeDoc) {
+            doc = {
+                _id: challengeDoc._id,
+                images: challengeDoc.images,
+                assignDate: challengeDoc.assignDate,
+                date: new Date(challengeDoc.assignDate).getDate(),
+                dayName: new Date(challengeDoc.assignDate).toLocaleString('default', {
+                    weekday: 'short',
+                }),
+                formattedDate: (0, FormateDate_1.default)(challengeDoc.assignDate),
+                posts: challengeDoc.posts,
+            };
+        }
+        else {
+            doc = {
+                _id: (0, FormateDate_1.default)(tempDay),
+                assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
+                date: new Date(tempDay.setDate(tempDay.getDate() + 0)).getDate(),
+                dayName: new Date(tempDay.setDate(tempDay.getDate() + 0)).toLocaleString('default', { weekday: 'short' }),
+                formattedDate: (0, FormateDate_1.default)(tempDay),
+                posts: [],
+            };
+        }
+        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', returnChallenge._id);
+        return { challenge: doc, challengeInfo: challengeInfo };
     }
     async checkIfChallengeIsGlobal(challengeId, token) {
         let data = await shareChallengeGlobal_1.default.findOne({
@@ -1277,7 +1410,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getIngredientsFromARecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => ChallengePost_1.default),
+    (0, type_graphql_1.Mutation)(() => ChsllengeAndSingleDoc_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateChallengePost_1.default]),
@@ -1327,7 +1460,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getAllChallengePostByDate", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => ChallengePost_1.default),
+    (0, type_graphql_1.Mutation)(() => ChsllengeAndSingleDoc_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditChallengePost_1.default]),
