@@ -1197,6 +1197,7 @@ let RecipeResolver = class RecipeResolver {
                 totalRecipes: 0,
             };
         }
+        console.log('hello');
         if (!page) {
             page = 1;
         }
