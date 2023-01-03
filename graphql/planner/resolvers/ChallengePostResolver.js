@@ -128,71 +128,48 @@ let ChallengePostResolver = class ChallengePostResolver {
             memberId: data.memberId,
             isActive: true,
         });
-        let tempDay = new Date(new Date().toISOString().slice(0, 10));
-        if (challenge.days > 30) {
-            if (challenge.startDate <= tempDay &&
-                challenge.endDate >= tempDay) {
-                //@ts-ignore
-                let diffTime = Math.abs(tempDay - challenge.startDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays >= 30) {
-                    let StartCount = Math.abs(diffDays - 30) + 1;
-                    let day = challenge.startDate;
-                    tempDay = new Date(day.setDate(day.getDate() + StartCount));
-                }
-                else {
-                    tempDay = challenge.startDate;
-                }
-            }
-            else {
-                let day = challenge.endDate;
-                tempDay = new Date(day.setDate(day.getDate() - 30));
-            }
-        }
-        else {
-            tempDay = challenge.startDate;
-        }
+        // let tempDay = new Date(new Date().toISOString().slice(0, 10));
+        // if (challenge.days > 30) {
+        //   if (challenge.startDate <= tempDay && challenge.endDate >= tempDay) {
+        //     //@ts-ignore
+        //     let diffTime = Math.abs(tempDay - challenge.startDate);
+        //     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        //     if (diffDays >= 30) {
+        //       let StartCount = Math.abs(diffDays - 30) + 1;
+        //       let day = challenge.startDate;
+        //       tempDay = new Date(day.setDate(day.getDate() + StartCount));
+        //     } else {
+        //       tempDay = challenge.startDate;
+        //     }
+        //     console.log('a', tempDay);
+        //   } else {
+        //     let day = challenge.endDate;
+        //     tempDay = new Date(day.setDate(day.getDate() - 30));
+        //     console.log('b', tempDay);
+        //   }
+        // } else {
+        //   tempDay = challenge.startDate;
+        //   console.log('c', tempDay);
+        // }
+        // console.log(data.memberId);
+        // console.log(tempDay);
         let challengeDoc = await ChallengePost_2.default.findOne({
             memberId: data.memberId,
-            assignDate: tempDay,
+            assignDate: isoDate,
         })
             .populate('posts.recipeBlendCategory')
             .populate('posts.ingredients.ingredientId');
-        let doc;
-        if (tempDay > challenge.endDate) {
-            doc = {
-                _id: (0, FormateDate_1.default)(tempDay),
-                assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
-                date: new Date(tempDay.setDate(tempDay.getDate() + 0)).getDate(),
-                dayName: new Date(tempDay.setDate(tempDay.getDate() + 0)).toLocaleString('default', { weekday: 'short' }),
-                disabled: true,
-                posts: [],
-                formattedDate: (0, FormateDate_1.default)(tempDay),
-            };
-        }
-        else if (challengeDoc) {
-            doc = {
-                _id: challengeDoc._id,
-                images: challengeDoc.images,
-                assignDate: challengeDoc.assignDate,
-                date: new Date(challengeDoc.assignDate).getDate(),
-                dayName: new Date(challengeDoc.assignDate).toLocaleString('default', {
-                    weekday: 'short',
-                }),
-                formattedDate: (0, FormateDate_1.default)(challengeDoc.assignDate),
-                posts: challengeDoc.posts,
-            };
-        }
-        else {
-            doc = {
-                _id: (0, FormateDate_1.default)(tempDay),
-                assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
-                date: new Date(tempDay.setDate(tempDay.getDate() + 0)).getDate(),
-                dayName: new Date(tempDay.setDate(tempDay.getDate() + 0)).toLocaleString('default', { weekday: 'short' }),
-                formattedDate: (0, FormateDate_1.default)(tempDay),
-                posts: [],
-            };
-        }
+        let doc = {
+            _id: challengeDoc._id,
+            images: challengeDoc.images,
+            assignDate: challengeDoc.assignDate,
+            date: new Date(challengeDoc.assignDate).getDate(),
+            dayName: new Date(challengeDoc.assignDate).toLocaleString('default', {
+                weekday: 'short',
+            }),
+            formattedDate: (0, FormateDate_1.default)(challengeDoc.assignDate),
+            posts: challengeDoc.posts,
+        };
         let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', challenge._id);
         return { challenge: doc, challengeInfo: challengeInfo };
     }
@@ -464,71 +441,46 @@ let ChallengePostResolver = class ChallengePostResolver {
             memberId: data.memberId,
             isActive: true,
         });
-        let tempDay = new Date(new Date().toISOString().slice(0, 10));
-        if (userChallenge.days > 30) {
-            if (userChallenge.startDate <= tempDay &&
-                userChallenge.endDate >= tempDay) {
-                //@ts-ignore
-                let diffTime = Math.abs(tempDay - userChallenge.startDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays >= 30) {
-                    let StartCount = Math.abs(diffDays - 30) + 1;
-                    let day = userChallenge.startDate;
-                    tempDay = new Date(day.setDate(day.getDate() + StartCount));
-                }
-                else {
-                    tempDay = userChallenge.startDate;
-                }
-            }
-            else {
-                let day = userChallenge.endDate;
-                tempDay = new Date(day.setDate(day.getDate() - 30));
-            }
-        }
-        else {
-            tempDay = userChallenge.startDate;
-        }
+        // let tempDay = new Date(new Date().toISOString().slice(0, 10));
+        // if (userChallenge.days > 30) {
+        //   if (
+        //     userChallenge.startDate <= tempDay &&
+        //     userChallenge.endDate >= tempDay
+        //   ) {
+        //     //@ts-ignore
+        //     let diffTime = Math.abs(tempDay - userChallenge.startDate);
+        //     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        //     if (diffDays >= 30) {
+        //       let StartCount = Math.abs(diffDays - 30) + 1;
+        //       let day = userChallenge.startDate;
+        //       tempDay = new Date(day.setDate(day.getDate() + StartCount));
+        //     } else {
+        //       tempDay = userChallenge.startDate;
+        //     }
+        //   } else {
+        //     let day = userChallenge.endDate;
+        //     tempDay = new Date(day.setDate(day.getDate() - 30));
+        //   }
+        // } else {
+        //   tempDay = userChallenge.startDate;
+        // }
         let challengeDoc = await ChallengePost_2.default.findOne({
             memberId: data.memberId,
-            assignDate: tempDay,
+            assignDate: isoDate,
         })
             .populate('posts.recipeBlendCategory')
             .populate('posts.ingredients.ingredientId');
-        let doc;
-        if (tempDay > userChallenge.endDate) {
-            doc = {
-                _id: (0, FormateDate_1.default)(tempDay),
-                assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
-                date: new Date(tempDay.setDate(tempDay.getDate() + 0)).getDate(),
-                dayName: new Date(tempDay.setDate(tempDay.getDate() + 0)).toLocaleString('default', { weekday: 'short' }),
-                disabled: true,
-                posts: [],
-                formattedDate: (0, FormateDate_1.default)(tempDay),
-            };
-        }
-        else if (challengeDoc) {
-            doc = {
-                _id: challengeDoc._id,
-                images: challengeDoc.images,
-                assignDate: challengeDoc.assignDate,
-                date: new Date(challengeDoc.assignDate).getDate(),
-                dayName: new Date(challengeDoc.assignDate).toLocaleString('default', {
-                    weekday: 'short',
-                }),
-                formattedDate: (0, FormateDate_1.default)(challengeDoc.assignDate),
-                posts: challengeDoc.posts,
-            };
-        }
-        else {
-            doc = {
-                _id: (0, FormateDate_1.default)(tempDay),
-                assignDate: new Date(tempDay.setDate(tempDay.getDate() + 0)),
-                date: new Date(tempDay.setDate(tempDay.getDate() + 0)).getDate(),
-                dayName: new Date(tempDay.setDate(tempDay.getDate() + 0)).toLocaleString('default', { weekday: 'short' }),
-                formattedDate: (0, FormateDate_1.default)(tempDay),
-                posts: [],
-            };
-        }
+        let doc = {
+            _id: challengeDoc._id,
+            images: challengeDoc.images,
+            assignDate: challengeDoc.assignDate,
+            date: new Date(challengeDoc.assignDate).getDate(),
+            dayName: new Date(challengeDoc.assignDate).toLocaleString('default', {
+                weekday: 'short',
+            }),
+            formattedDate: (0, FormateDate_1.default)(challengeDoc.assignDate),
+            posts: challengeDoc.posts,
+        };
         let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', userChallenge._id);
         return { challenge: doc, challengeInfo: challengeInfo };
     }
