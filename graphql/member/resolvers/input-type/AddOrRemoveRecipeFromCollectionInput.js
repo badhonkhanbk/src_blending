@@ -13,17 +13,17 @@ const type_graphql_1 = require("type-graphql");
 let AddOrRemoveRecipeFromCollectionInput = class AddOrRemoveRecipeFromCollectionInput {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)(type => type_graphql_1.ID),
     __metadata("design:type", String)
-], AddOrRemoveRecipeFromCollectionInput.prototype, "userEmail", void 0);
+], AddOrRemoveRecipeFromCollectionInput.prototype, "userId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
 ], AddOrRemoveRecipeFromCollectionInput.prototype, "addToTheseCollections", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
-    __metadata("design:type", String)
-], AddOrRemoveRecipeFromCollectionInput.prototype, "recipe", void 0);
+    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID]),
+    __metadata("design:type", Array)
+], AddOrRemoveRecipeFromCollectionInput.prototype, "recipes", void 0);
 AddOrRemoveRecipeFromCollectionInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], AddOrRemoveRecipeFromCollectionInput);

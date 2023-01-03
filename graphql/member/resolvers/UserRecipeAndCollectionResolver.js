@@ -421,7 +421,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         return 'successfull';
     }
     async addOrRemoveRecipeFromCollection(data) {
-        let user = await memberModel_1.default.findOne({ email: data.userEmail });
+        let user = await memberModel_1.default.findOne({ _id: data.userId });
         let pullFromUserCollections = user.collections;
         console.log(pullFromUserCollections);
         if (!user) {
@@ -438,17 +438,19 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             let index = pullFromUserCollections.indexOf(collection._id);
             pullFromUserCollections.splice(index, 1);
             console.log(pullFromUserCollections);
-            let recipeString = data.recipe.toString();
-            let id = new mongoose_1.default.Types.ObjectId(recipeString).valueOf();
-            if (collection.recipes.indexOf(id) !== -1) {
-                continue;
-            }
-            else {
-                addTotheseCollection.push(collection._id);
+            for (let j = 0; j < data.recipes.length; j++) {
+                let recipeString = data.recipes[j].toString();
+                let id = new mongoose_1.default.Types.ObjectId(recipeString).valueOf();
+                if (collection.recipes.indexOf(id) !== -1) {
+                    continue;
+                }
+                else {
+                    addTotheseCollection.push(collection._id);
+                }
             }
         }
-        await userCollection_1.default.updateMany({ _id: pullFromUserCollections }, { $pull: { recipes: data.recipe } }, { $set: { updatedAt: Date.now() } });
-        await userCollection_1.default.updateMany({ _id: addTotheseCollection }, { $push: { recipes: data.recipe } }, { $set: { updatedAt: Date.now() } });
+        await userCollection_1.default.updateMany({ _id: pullFromUserCollections }, { $pullAll: { recipes: data.recipes } }, { $set: { updatedAt: Date.now() } });
+        await userCollection_1.default.updateMany({ _id: addTotheseCollection }, { $addToSet: { recipes: data.recipes } }, { $set: { updatedAt: Date.now() } });
         let member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { lastModifiedCollection: collections[lastIndex] }, { new: true }).populate({
             path: 'collections',
             populate: {
