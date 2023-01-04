@@ -9,25 +9,29 @@ const shareSchema = new mongoose_1.Schema({
     },
     shareTo: [
         {
-            email: String,
+            userId: {
+                type: mongoose_1.SchemaTypes.ObjectId,
+                ref: 'Member',
+            },
             hasAccepted: Boolean,
         },
     ],
-    shareData: [
-        {
-            data: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'recipe' },
+    shareData: {
+        recipeId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'recipe' },
+        version: {
+            type: mongoose_1.SchemaTypes.ObjectId,
+            ref: 'recipeVersion',
         },
-    ],
-    type: {
-        type: String,
-        enum: ['recipe', 'collection'],
+    },
+    isGlobal: {
+        type: Boolean,
+        default: false,
     },
     createdAt: {
         type: Date,
         default: Date.now,
     },
-    collectionId: { type: String, ref: 'UserCollection' },
-    all: Boolean,
+    notFoundEmails: [String],
 });
 const share = (0, mongoose_1.model)('share', shareSchema);
 exports.default = share;

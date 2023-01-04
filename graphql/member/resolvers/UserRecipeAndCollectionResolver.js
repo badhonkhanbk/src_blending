@@ -421,6 +421,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         return 'successfull';
     }
     async addOrRemoveRecipeFromCollection(data) {
+        if (!data.isCollectionData) {
+            data.isCollectionData = false;
+        }
+        else {
+            data.isCollectionData = true;
+        }
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         let pullFromUserCollections = user.collections;
         console.log(pullFromUserCollections);
@@ -449,7 +455,9 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 }
             }
         }
-        await userCollection_1.default.updateMany({ _id: pullFromUserCollections }, { $pullAll: { recipes: data.recipes } }, { $set: { updatedAt: Date.now() } });
+        if (!data.isCollectionData) {
+            await userCollection_1.default.updateMany({ _id: pullFromUserCollections }, { $pullAll: { recipes: data.recipes } }, { $set: { updatedAt: Date.now() } });
+        }
         await userCollection_1.default.updateMany({ _id: addTotheseCollection }, { $addToSet: { recipes: data.recipes } }, { $set: { updatedAt: Date.now() } });
         let member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { lastModifiedCollection: collections[lastIndex] }, { new: true }).populate({
             path: 'collections',

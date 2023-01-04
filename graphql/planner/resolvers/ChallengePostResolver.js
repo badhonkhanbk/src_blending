@@ -285,6 +285,13 @@ let ChallengePostResolver = class ChallengePostResolver {
         await this.upgradeTopIngredient(String(invite.challengeId));
         return invite.challengeId;
     }
+    async hjkl() {
+        let challenges = await challenge_1.default.find().select('_id');
+        for (let i = 0; i < challenges.length; i++) {
+            await this.upgradeTopIngredient(String(challenges[i]._id));
+        }
+        return 'done';
+    }
     async upgradeTopIngredient(challengeId) {
         let challenge = await challenge_1.default.findOne({
             _id: challengeId,
@@ -866,6 +873,7 @@ let ChallengePostResolver = class ChallengePostResolver {
             sharedWith: shareWithData,
             topIngredients: challenge.topIngredients,
         };
+        console.log(challenge);
         return challengeInfo;
     }
     async getLatestChallengePost(memberId) {
@@ -1401,6 +1409,12 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "acceptChallenge", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChallengePostResolver.prototype, "hjkl", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __param(0, (0, type_graphql_1.Arg)('challengeId')),

@@ -17,10 +17,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const share_1 = __importDefault(require("../../../models/share"));
+const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const CreateNewShareLink_1 = __importDefault(require("./input-type/CreateNewShareLink"));
 let shareResolver = class shareResolver {
     async createShareLink(data) {
-        let share = await share_1.default.create(data);
+        let shareDataToStore = {};
+        let notFound = [];
+        let shareTo = [];
+        //@ts-ignore
+        if (data.shareTo.length === 0) {
+            shareDataToStore.isGlobal = true;
+            shareDataToStore.shareTo = [];
+            shareDataToStore.notFoundEmails = [];
+        }
+        else {
+            for (let i = 0; i < data.shareTo.length; i++) {
+                let member = await memberModel_1.default.findOne({
+                    email: data.shareTo[i],
+                }).select('_id');
+                if (!member) {
+                    notFound.push(data.shareTo[i]);
+                }
+                else {
+                    shareTo.push({
+                        userId: member._id,
+                        hasAccepted: false,
+                    });
+                }
+            }
+            shareDataToStore.shareTo = shareTo;
+            shareDataToStore.notFoundEmails = notFound;
+        }
+        shareDataToStore.sharedBy = data.sharedBy;
+        shareDataToStore.shareData = data.shareData;
+        shareDataToStore.sharedBy = data.sharedBy;
+        let share = await share_1.default.create(shareDataToStore);
         return share._id;
     }
 };

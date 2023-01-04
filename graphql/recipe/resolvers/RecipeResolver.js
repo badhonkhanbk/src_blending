@@ -688,10 +688,17 @@ let RecipeResolver = class RecipeResolver {
                 return new AppError_1.default('User not found', 404);
             }
             else {
-                if (!(await (0, util_1.default)(token.toString(), userId.toString()))) {
-                    return new AppError_1.default('Not Authorized', 404);
+                let data = await (0, util_1.default)(token.toString(), userId.toString());
+                if (!data) {
+                    return new AppError_1.default('Invalid token', 404);
+                }
+                else {
+                    return data;
                 }
             }
+        }
+        if (!recipeId) {
+            return new AppError_1.default('Recipe not found', 404);
         }
         const recipe = await recipe_1.default.findById(recipeId)
             .populate({
@@ -1504,8 +1511,8 @@ __decorate([
 ], RecipeResolver.prototype, "getAllLatestRecipes", null);
 __decorate([
     (0, type_graphql_1.Query)((type) => Recipe_1.default),
-    __param(0, (0, type_graphql_1.Arg)('recipeId')),
-    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
+    __param(0, (0, type_graphql_1.Arg)('recipeId', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('userId')),
     __param(2, (0, type_graphql_1.Arg)('token', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,

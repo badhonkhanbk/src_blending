@@ -10,25 +10,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let AddOrRemoveRecipeFromCollectionInput = class AddOrRemoveRecipeFromCollectionInput {
+let ShareData = class ShareData {
 };
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
-], AddOrRemoveRecipeFromCollectionInput.prototype, "userId", void 0);
+], ShareData.prototype, "recipeId", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
-    __metadata("design:type", Array)
-], AddOrRemoveRecipeFromCollectionInput.prototype, "addToTheseCollections", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID]),
-    __metadata("design:type", Array)
-], AddOrRemoveRecipeFromCollectionInput.prototype, "recipes", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], AddOrRemoveRecipeFromCollectionInput.prototype, "isCollectionData", void 0);
-AddOrRemoveRecipeFromCollectionInput = __decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], ShareData.prototype, "version", void 0);
+ShareData = __decorate([
     (0, type_graphql_1.InputType)()
-], AddOrRemoveRecipeFromCollectionInput);
-exports.default = AddOrRemoveRecipeFromCollectionInput;
+], ShareData);
+exports.default = ShareData;

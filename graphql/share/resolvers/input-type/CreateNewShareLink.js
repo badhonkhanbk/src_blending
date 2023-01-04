@@ -8,8 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const ShareData_1 = __importDefault(require("./ShareData"));
 var shareType;
 (function (shareType) {
     shareType["collection"] = "collection";
@@ -30,21 +34,9 @@ __decorate([
     __metadata("design:type", Array)
 ], CreateNewShareLink.prototype, "shareTo", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
-    __metadata("design:type", Array)
+    (0, type_graphql_1.Field)((type) => ShareData_1.default, { nullable: true }),
+    __metadata("design:type", ShareData_1.default)
 ], CreateNewShareLink.prototype, "shareData", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => shareType),
-    __metadata("design:type", String)
-], CreateNewShareLink.prototype, "type", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateNewShareLink.prototype, "collectionId", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], CreateNewShareLink.prototype, "all", void 0);
 CreateNewShareLink = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateNewShareLink);
