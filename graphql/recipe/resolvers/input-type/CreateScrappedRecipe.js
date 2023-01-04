@@ -102,10 +102,6 @@ __decorate([
     __metadata("design:type", String)
 ], CreateScrappedRecipe.prototype, "favicon", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateScrappedRecipe.prototype, "userId", void 0);
-__decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
 ], CreateScrappedRecipe.prototype, "adminId", void 0);

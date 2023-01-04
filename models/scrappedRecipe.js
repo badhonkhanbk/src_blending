@@ -49,7 +49,7 @@ const scrappedRecipeSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
-    userId: String,
+    // userId: String,
     adminIds: [
         {
             type: mongoose_1.Schema.Types.ObjectId,

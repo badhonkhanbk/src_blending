@@ -1002,18 +1002,22 @@ let RecipeResolver = class RecipeResolver {
         return returnUserRecipe;
     }
     async addScrappedRecipeFromUser(data) {
-        let user = await memberModel_1.default.findOne({ email: data.userId });
-        if (!user) {
-            return new AppError_1.default('User not found', 404);
-        }
+        // let user = await MemberModel.findOne({ email: data.userId });
+        // if (!user) {
+        //   return new AppError('User not found', 404);
+        // }
         await scrappedRecipe_1.default.create(data);
         return 'recipe added successfully';
     }
+    async removeAllBulkRecipe() {
+        await scrappedRecipe_1.default.deleteMany();
+        return 'removed';
+    }
     async addBulkScrappedRecipeFromUser(data) {
-        let user = await memberModel_1.default.findOne({ email: data[0].userId });
-        if (!user) {
-            return new AppError_1.default('User not found', 404);
-        }
+        // let user = await MemberModel.findOne({ email: data[0].userId });
+        // if (!user) {
+        //   return new AppError('User not found', 404);
+        // }
         for (let i = 0; i < data.length; i++) {
             let modified = data[i];
             modified.isBulk = true;
@@ -1564,6 +1568,12 @@ __decorate([
     __metadata("design:paramtypes", [CreateScrappedRecipe_1.default]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "addScrappedRecipeFromUser", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeResolver.prototype, "removeAllBulkRecipe", null);
 __decorate([
     (0, type_graphql_1.Mutation)((type) => String),
     __param(0, (0, type_graphql_1.Arg)('data', (type) => [CreateScrappedRecipe_1.default])),
