@@ -26,7 +26,7 @@ async function default_1(token, userId) {
             return null;
         }
     }
-    let recipe = await recipe_1.default.findById({
+    let recipe = await recipe_1.default.findOne({
         _id: share.shareData.recipeId,
     })
         .populate({
@@ -48,6 +48,14 @@ async function default_1(token, userId) {
             model: 'BlendIngredient',
         },
     });
+    // let originalVersion = await RecipeVersionModel.findOne({
+    //   _id: recipe.originalVersion,
+    // }).populate({
+    //   path: 'ingredients.ingredientId',
+    //   model: 'BlendIngredient',
+    // });
+    delete recipe.recipeVersion;
+    console.log(recipe.recipeVersion);
     let defaultVersion = await RecipeVersionModel_1.default.findOne({
         _id: share.shareData.version,
     }).populate({
@@ -57,10 +65,21 @@ async function default_1(token, userId) {
     let data = recipe;
     data.defaultVersion = defaultVersion;
     if (String(data.defaultVersion._id) === String(data.originalVersion._id)) {
-        data.recipeVersion = [defaultVersion];
+        data.recipeVersion = [
+            defaultVersion,
+        ];
+        data.recipeVersion[0].isDefault = true;
+        data.recipeVersion[0].isOriginal = true;
     }
     else {
-        data.recipeVersion = [defaultVersion, data.originalVersion];
+        data.recipeVersion = [
+            defaultVersion,
+            recipe.originalVersion,
+        ];
+        data.recipeVersion[0].isDefault = true;
+        data.recipeVersion[0].isOriginal = false;
+        data.recipeVersion[1].isDefault = false;
+        data.recipeVersion[1].isOriginal = true;
     }
     let collectionRecipes = [];
     let memberCollections = await memberModel_1.default.find({ _id: userId })
