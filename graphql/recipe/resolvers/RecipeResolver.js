@@ -1434,9 +1434,13 @@ let RecipeResolver = class RecipeResolver {
                 userCollections: collectionData,
             });
         }
+        //making ids to String
+        let recipeIdsString = recipeIds.map((ri) => String(ri));
+        //removing duplicates
+        let finalData = recipeIdsString.filter((data, index) => recipeIdsString.indexOf(data) === index);
         return {
             recipes: returnRecipe,
-            totalRecipes: recipeIds.length,
+            totalRecipes: finalData.length,
         };
     }
     async makeSomeGlobalRecipes() {
