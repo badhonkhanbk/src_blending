@@ -65,17 +65,12 @@ async function default_1(token, userId) {
     let data = recipe;
     data.defaultVersion = defaultVersion;
     if (String(data.defaultVersion._id) === String(data.originalVersion._id)) {
-        data.recipeVersion = [
-            defaultVersion,
-        ];
+        data.recipeVersion = [defaultVersion];
         data.recipeVersion[0].isDefault = true;
         data.recipeVersion[0].isOriginal = true;
     }
     else {
-        data.recipeVersion = [
-            defaultVersion,
-            recipe.originalVersion,
-        ];
+        data.recipeVersion = [defaultVersion, recipe.originalVersion];
         data.recipeVersion[0].isDefault = true;
         data.recipeVersion[0].isOriginal = false;
         data.recipeVersion[1].isDefault = false;

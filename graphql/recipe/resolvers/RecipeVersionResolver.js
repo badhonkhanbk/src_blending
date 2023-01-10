@@ -264,6 +264,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
     }
 };
 __decorate([
+    (0, type_graphql_1.Mutation)(() => String),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditVersion_1.default]),
