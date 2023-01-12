@@ -17,6 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const slugify_1 = __importDefault(require("slugify"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const Member_1 = __importDefault(require("../schemas/Member"));
 const Collection_1 = __importDefault(require("../schemas/Collection"));
@@ -31,12 +32,21 @@ const recipe_1 = __importDefault(require("../../../models/recipe"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
+const collectionShare_1 = __importDefault(require("../../../models/collectionShare"));
 let MemberResolver = class MemberResolver {
     async getUserCollectionsAndThemes(userId) {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
             .select('collections');
+        let otherCollections = await collectionShare_1.default.find({
+            'shareTo.userId': {
+                $in: [new mongoose_1.default.mongo.ObjectId(user._id)],
+            },
+        }).populate('collectionId');
         let collections = user.collections;
+        for (let i = 0; i < otherCollections.length; i++) {
+            collections.push(otherCollections[i].collectionId);
+        }
         for (let i = 0; i < collections.length; i++) {
             if (collections[i].recipes.length - 1 === -1) {
                 // if there are no recipes in the collection
