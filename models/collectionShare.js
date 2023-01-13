@@ -4,14 +4,14 @@ const mongoose_1 = require("mongoose");
 const shareCollectionSchema = new mongoose_1.Schema({
     sharedBy: {
         type: mongoose_1.SchemaTypes.ObjectId,
-        ref: 'Member',
+        ref: 'User',
         required: [true, 'MemberId is required'],
     },
     shareTo: [
         {
             userId: {
                 type: mongoose_1.SchemaTypes.ObjectId,
-                ref: 'Member',
+                ref: 'User',
             },
             hasAccepted: Boolean,
         },

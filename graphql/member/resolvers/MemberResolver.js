@@ -33,6 +33,22 @@ const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const collectionShare_1 = __importDefault(require("../../../models/collectionShare"));
+// type SimpleCollection = {
+//   _id: String;
+//   name: String;
+//   slug: String;
+//   recipes: [String];
+//   image: String;
+//   isShared: Boolean;
+//   sharedBy: Member;
+// };
+// type Member = {
+//   _id: String;
+//   displayName: String;
+//   email: string;
+//   firstName: String;
+//   lastName: String;
+// };
 let MemberResolver = class MemberResolver {
     async getUserCollectionsAndThemes(userId) {
         let user = await memberModel_1.default.findById(userId)
@@ -42,10 +58,29 @@ let MemberResolver = class MemberResolver {
             'shareTo.userId': {
                 $in: [new mongoose_1.default.mongo.ObjectId(user._id)],
             },
-        }).populate('collectionId');
-        let collections = user.collections;
+        })
+            .populate('collectionId')
+            .populate('sharedBy');
+        let collections = [];
+        for (let i = 0; i < user.collections.length; i++) {
+            collections.push({
+                _id: user.collections[i]._id,
+                name: user.collections[i].name,
+                slug: user.collections[i].slug,
+                recipes: user.collections[i].recipes,
+                isShared: false,
+                sharedBy: null,
+            });
+        }
         for (let i = 0; i < otherCollections.length; i++) {
-            collections.push(otherCollections[i].collectionId);
+            collections.push({
+                _id: otherCollections[i].collectionId._id,
+                name: otherCollections[i].collectionId.name,
+                slug: otherCollections[i].collectionId.slug,
+                recipes: otherCollections[i].collectionId.recipes,
+                isShared: true,
+                sharedBy: otherCollections[i].sharedBy,
+            });
         }
         for (let i = 0; i < collections.length; i++) {
             if (collections[i].recipes.length - 1 === -1) {
@@ -69,10 +104,17 @@ let MemberResolver = class MemberResolver {
             collections: collections,
         };
     }
-    async getASingleCollection(slug, userId) {
+    async getASingleCollection(slug, userId, creatorId) {
+        let searchId;
+        if (creatorId) {
+            searchId = creatorId;
+        }
+        else {
+            searchId = userId;
+        }
         let collection = await userCollection_1.default.findOne({
             slug: slug,
-            userId: userId,
+            userId: searchId,
         })
             .populate({
             path: 'recipes',
@@ -381,8 +423,10 @@ __decorate([
     (0, type_graphql_1.Query)(() => Collection_1.default),
     __param(0, (0, type_graphql_1.Arg)('slug')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
+    __param(2, (0, type_graphql_1.Arg)('creatorId', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "getASingleCollection", null);
