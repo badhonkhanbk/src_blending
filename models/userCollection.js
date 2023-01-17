@@ -19,6 +19,7 @@ const userCollectionSchema = new mongoose_1.Schema({
             ref: 'Recipe',
         },
     ],
+    visible: { type: Boolean, default: true },
     updatedAt: { type: Date, default: Date.now },
 });
 const UserCollection = (0, mongoose_1.model)('UserCollection', userCollectionSchema);

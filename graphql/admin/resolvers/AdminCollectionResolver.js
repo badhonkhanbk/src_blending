@@ -29,15 +29,17 @@ const Widget_1 = __importDefault(require("../../../models/Widget"));
 let AdminCollectionResolver = class AdminCollectionResolver {
     async addNewAdminCollection(data) {
         let adminCollection = await adminCollection_1.default.create(data);
-        return adminCollection._id;
+        return adminCollection;
     }
     async editAdminCollectionByID(data) {
         const collection = await adminCollection_1.default.findById(data.editId);
         if (!collection) {
             throw new Error('Collection not found');
         }
-        await adminCollection_1.default.findByIdAndUpdate(data.editId, data.editableObject);
-        return 'Collection updated successfully';
+        let newAdminCollection = await adminCollection_1.default.findByIdAndUpdate(data.editId, data.editableObject, {
+            new: true,
+        });
+        return newAdminCollection;
     }
     async editChildrenInCollection(data) {
         let adminCollection = await adminCollection_1.default.findById(data.adminCollectionId);
@@ -64,7 +66,8 @@ let AdminCollectionResolver = class AdminCollectionResolver {
                 await Model.updateOne({ _id: data.children[i] }, { $pull: { collections: adminCollection._id } });
             }
         }
-        return 'Collection updated successfully';
+        let newAdminCollection = await adminCollection_1.default.findById(data.adminCollectionId);
+        return newAdminCollection;
     }
     // @Query(() => [String])
     // async getChilderenFromAcollection(@Arg('collectionId') collectionId: string) {
@@ -104,7 +107,7 @@ let AdminCollectionResolver = class AdminCollectionResolver {
         });
         await Widget_1.default.updateMany({ 'widgetCollections.collectionData': collection._id }, { $pull: { 'widgetCollections.$.collectionData': collection._id } });
         await adminCollection_1.default.findByIdAndDelete(collectionId);
-        return 'Collection deleted successfully';
+        return collectionId;
     }
     async getAllAdminCollection(collectionType) {
         const collections = await adminCollection_1.default.find({
@@ -131,7 +134,7 @@ let AdminCollectionResolver = class AdminCollectionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) // admin
+    (0, type_graphql_1.Mutation)(() => AdminCollection_1.default) // admin
     ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
@@ -139,7 +142,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminCollectionResolver.prototype, "addNewAdminCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) // admin
+    (0, type_graphql_1.Mutation)(() => AdminCollection_1.default) // admin
     ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
@@ -147,7 +150,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminCollectionResolver.prototype, "editAdminCollectionByID", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) // admin
+    (0, type_graphql_1.Mutation)(() => AdminCollection_1.default) // admin
     ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
