@@ -25,6 +25,7 @@ const NewUserInput_1 = __importDefault(require("./input-type/NewUserInput"));
 const EditUser_1 = __importDefault(require("./input-type/EditUser"));
 const CreateNewCollection_1 = __importDefault(require("./input-type/CreateNewCollection"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
+const collectionShareGlobal_1 = __importDefault(require("../../../models/collectionShareGlobal"));
 const memberConfiguiration_1 = __importDefault(require("../../../models/memberConfiguiration"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const DailyGoal_1 = __importDefault(require("../../../models/DailyGoal"));
@@ -104,18 +105,35 @@ let MemberResolver = class MemberResolver {
             collections: collections,
         };
     }
-    async getASingleCollection(slug, userId, creatorId) {
+    async getASingleCollection(slug, userId, creatorId, token) {
         let searchId;
-        if (creatorId) {
+        let query = {};
+        if (token) {
+            let globalShare = await collectionShareGlobal_1.default.findOne({
+                _id: token,
+            });
+            if (!globalShare) {
+                return new AppError_1.default('Invalid token', 400);
+            }
+            query = {
+                _id: globalShare.collectionId,
+            };
+        }
+        else if (creatorId) {
             searchId = creatorId;
+            query = {
+                slug: slug,
+                userId: searchId,
+            };
         }
         else {
             searchId = userId;
+            query = {
+                slug: slug,
+                userId: searchId,
+            };
         }
-        let collection = await userCollection_1.default.findOne({
-            slug: slug,
-            userId: searchId,
-        })
+        let collection = await userCollection_1.default.findOne(query)
             .populate({
             path: 'recipes',
             model: 'Recipe',
@@ -424,8 +442,10 @@ __decorate([
     __param(0, (0, type_graphql_1.Arg)('slug')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __param(2, (0, type_graphql_1.Arg)('creatorId', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('token', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String,
         String]),
     __metadata("design:returntype", Promise)
