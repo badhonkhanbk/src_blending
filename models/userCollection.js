@@ -8,6 +8,7 @@ const userCollectionSchema = new mongoose_1.Schema({
     },
     slug: String,
     image: String,
+    description: String,
     userId: {
         type: mongoose_1.SchemaTypes.ObjectId,
         ref: 'Member',
