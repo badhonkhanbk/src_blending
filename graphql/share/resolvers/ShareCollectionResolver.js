@@ -36,6 +36,9 @@ let shareCollectionResolver = class shareCollectionResolver {
         return globalShareCollection._id;
     }
     async createShareCollectionLink(data) {
+        if (data.shareToEmails.length <= 0) {
+            return await this.shareGlobalCollection(data.sharedBy, data.collectionId[0]);
+        }
         let token;
         let collectionShareUser;
         collectionShareUser = await collectionShare_1.default.findOne({

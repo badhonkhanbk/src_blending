@@ -474,6 +474,37 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         return JSON.stringify(obj);
     }
+    async getNutrientsListAndGiGlByRecipe(recipeId, versionId) {
+        let ingredientsInfo;
+        if (versionId) {
+            let version = await RecipeVersionModel_1.default.findOne({ _id: versionId }).select('ingredients');
+            ingredientsInfo = version.ingredients.map((x) => {
+                return {
+                    ingredientId: String(x.ingredientId),
+                    value: x.weightInGram,
+                };
+            });
+        }
+        else {
+            let recipe = await recipe_1.default.findOne({ _id: recipeId }).select('defaultVersion');
+            let version = await RecipeVersionModel_1.default.findOne({
+                _id: recipe.defaultVersion,
+            }).select('ingredients');
+            ingredientsInfo = version.ingredients.map((x) => {
+                return {
+                    ingredientId: String(x.ingredientId),
+                    value: x.weightInGram,
+                };
+            });
+        }
+        let nutrientList = await this.getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
+        console.log(nutrientList);
+        let giGl = await this.getGlAndNetCarbs2(ingredientsInfo);
+        return {
+            nutrients: nutrientList,
+            giGl: giGl,
+        };
+    }
     /**
      *
      * @param [ingredientsInfo]
@@ -481,7 +512,6 @@ let BlendIngredientResolver = class BlendIngredientResolver {
      */
     async getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
         let nutrientList = await this.getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
-        console.log(nutrientList);
         let giGl = await this.getGlAndNetCarbs2(ingredientsInfo);
         return {
             nutrients: nutrientList,
@@ -1134,6 +1164,16 @@ __decorate([
         Boolean]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getBlendNutritionBasedOnRecipeData", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => NutrientsWithGiGl_1.default) // BOTH:
+    ,
+    __param(0, (0, type_graphql_1.Arg)('recipeId', (type) => type_graphql_1.ID)),
+    __param(1, (0, type_graphql_1.Arg)('versionId', (type) => type_graphql_1.ID, { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "getNutrientsListAndGiGlByRecipe", null);
 __decorate([
     (0, type_graphql_1.Query)(() => NutrientsWithGiGl_1.default),
     __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
