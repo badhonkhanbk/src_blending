@@ -44,7 +44,7 @@ let FoodResolver = class FoodResolver {
             filter.rowsPerPage = 300;
         }
         // console.log(totalIngredients);
-        if (filter.rowsPerPage > 1000 || filter.rowsPerPage < 0) {
+        if (+filter.rowsPerPage > 1000 || +filter.rowsPerPage < 0) {
             return new AppError_1.default('Rows per page must be between 0 and 300', 400);
         }
         // let temp: string = filter.sortBy.toString();

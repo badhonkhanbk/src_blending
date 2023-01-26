@@ -33,7 +33,6 @@ const recipe_1 = __importDefault(require("../../../models/recipe"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
-const collectionShare_1 = __importDefault(require("../../../models/collectionShare"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -55,13 +54,14 @@ let MemberResolver = class MemberResolver {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
             .select('collections');
-        let otherCollections = await collectionShare_1.default.find({
+        let otherCollections = await userCollection_1.default.find({
             'shareTo.userId': {
                 $in: [new mongoose_1.default.mongo.ObjectId(user._id)],
             },
-        })
-            .populate('collectionId')
-            .populate('sharedBy');
+        }).populate({
+            path: 'userId',
+            select: 'displayName email firstName lastName',
+        });
         let collections = [];
         for (let i = 0; i < user.collections.length; i++) {
             collections.push({
@@ -71,16 +71,23 @@ let MemberResolver = class MemberResolver {
                 recipes: user.collections[i].recipes,
                 isShared: false,
                 sharedBy: null,
+                personalizedName: '',
+                canContribute: true,
+                canShareWithOther: true,
             });
         }
         for (let i = 0; i < otherCollections.length; i++) {
+            let shareTo = otherCollections[i].shareTo.filter((share) => String(share.userId) === userId)[0];
             collections.push({
-                _id: otherCollections[i].collectionId._id,
-                name: otherCollections[i].collectionId.name,
-                slug: otherCollections[i].collectionId.slug,
-                recipes: otherCollections[i].collectionId.recipes,
+                _id: otherCollections[i]._id,
+                name: otherCollections[i].name,
+                slug: otherCollections[i].slug,
+                recipes: otherCollections[i].recipes,
                 isShared: true,
-                sharedBy: otherCollections[i].sharedBy,
+                sharedBy: otherCollections[i].userId,
+                personalizedName: shareTo.personalizedName,
+                canContribute: shareTo.canContribute,
+                canShareWithOther: shareTo.canShareWithOther,
             });
         }
         for (let i = 0; i < collections.length; i++) {
@@ -105,7 +112,7 @@ let MemberResolver = class MemberResolver {
             collections: collections,
         };
     }
-    async getASingleCollection(slug, userId, creatorId, token) {
+    async getASingleCollection(slug, userId, collectionId, token) {
         let searchId;
         let query = {};
         if (token) {
@@ -119,11 +126,21 @@ let MemberResolver = class MemberResolver {
                 _id: globalShare.collectionId,
             };
         }
-        else if (creatorId) {
-            searchId = creatorId;
+        else if (collectionId) {
+            let collection = await userCollection_1.default.findOne({
+                _id: collectionId,
+            }).select('shareTo');
+            if (collection.shareTo.length === 0) {
+                return new AppError_1.default('Invalid collection', 400);
+            }
+            else {
+                let shareTo = collection.shareTo.filter((share) => String(share.userId) === userId)[0];
+                if (!shareTo) {
+                    return new AppError_1.default('Invalid collection', 400);
+                }
+            }
             query = {
-                slug: slug,
-                userId: searchId,
+                _id: collectionId,
             };
         }
         else {
@@ -441,7 +458,7 @@ __decorate([
     (0, type_graphql_1.Query)(() => Collection_1.default),
     __param(0, (0, type_graphql_1.Arg)('slug')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
-    __param(2, (0, type_graphql_1.Arg)('creatorId', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('collectionId', { nullable: true })),
     __param(3, (0, type_graphql_1.Arg)('token', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,

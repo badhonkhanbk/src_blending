@@ -16,10 +16,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const collectionShare_1 = __importDefault(require("../../../models/collectionShare"));
 const collectionShareGlobal_1 = __importDefault(require("../../../models/collectionShareGlobal"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const CreateShareCollectionLink_1 = __importDefault(require("./input-type/CreateShareCollectionLink"));
+const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 let shareCollectionResolver = class shareCollectionResolver {
     async shareGlobalCollection(sharedBy, collectionId) {
         let globalShareCollection;
@@ -36,45 +36,89 @@ let shareCollectionResolver = class shareCollectionResolver {
         return globalShareCollection._id;
     }
     async createShareCollectionLink(data) {
-        if (data.shareToEmails.length <= 0) {
+        if (data.shareTo.length <= 0) {
             return await this.shareGlobalCollection(data.sharedBy, data.collectionId[0]);
         }
-        let token;
-        let collectionShareUser;
-        collectionShareUser = await collectionShare_1.default.findOne({
-            sharedBy: data.sharedBy,
-            collectionId: data.collectionId,
-        });
-        if (!collectionShareUser) {
-            collectionShareUser = await collectionShare_1.default.create({
-                sharedBy: data.sharedBy,
-                collectionId: data.collectionId,
-            });
-        }
-        token = collectionShareUser._id;
-        for (let i = 0; i < data.shareToEmails.length; i++) {
+        for (let i = 0; i < data.shareTo.length; i++) {
             let user = await memberModel_1.default.findOne({
-                email: data.shareToEmails[i],
+                email: data.shareTo[i].shareToEmail,
             }).select('_id');
-            if (!user) {
-                continue;
-            }
-            if (String(user._id) === String(data.sharedBy)) {
-                continue;
-            }
-            let shareTo = collectionShareUser.shareTo;
-            let index = shareTo.findIndex((share) => String(share.userId) === String(user._id));
-            if (index === -1) {
-                shareTo.push({
-                    userId: user._id,
-                    hasAccepted: false,
+            let uc = await userCollection_1.default.findOne({
+                _id: data.collectionId,
+                'shareTo.userId': {
+                    $in: user._id,
+                },
+            }).select('_id');
+            if (uc) {
+                console.log('1');
+                await userCollection_1.default.findOneAndUpdate({
+                    _id: data.collectionId,
+                    'shareTo.userId': user._id,
+                }, {
+                    $set: {
+                        'shareTo.$.canContribute': data.shareTo[i].canContribute,
+                        'shareTo.$.canShareWithOther': data.shareTo[i].canShareWithOthers,
+                    },
                 });
             }
-            await collectionShare_1.default.findByIdAndUpdate(collectionShareUser._id, {
-                shareTo,
-            }, { new: true });
+            else {
+                console.log('2');
+                await userCollection_1.default.findOneAndUpdate({
+                    _id: data.collectionId,
+                }, {
+                    $push: {
+                        shareTo: {
+                            userId: user._id,
+                            canContribute: data.shareTo[i].canContribute,
+                            canShareWithOther: data.shareTo[i].canShareWithOthers,
+                        },
+                    },
+                });
+            }
         }
-        return token;
+        return data.collectionId;
+        // let token;
+        // let collectionShareUser;
+        // collectionShareUser = await ShareCollectionModel.findOne({
+        //   sharedBy: data.sharedBy,
+        //   collectionId: data.collectionId,
+        // });
+        // if (!collectionShareUser) {
+        //   collectionShareUser = await ShareCollectionModel.create({
+        //     sharedBy: data.sharedBy,
+        //     collectionId: data.collectionId,
+        //   });
+        // }
+        // token = collectionShareUser._id;
+        // for (let i = 0; i < data.shareToEmails.length; i++) {
+        //   let user = await MemberModel.findOne({
+        //     email: data.shareToEmails[i],
+        //   }).select('_id');
+        //   if (!user) {
+        //     continue;
+        //   }
+        //   if (String(user._id) === String(data.sharedBy)) {
+        //     continue;
+        //   }
+        //   let shareTo = collectionShareUser.shareTo;
+        //   let index = shareTo.findIndex(
+        //     (share: any) => String(share.userId) === String(user._id)
+        //   );
+        //   if (index === -1) {
+        //     shareTo.push({
+        //       userId: user._id,
+        //       hasAccepted: false,
+        //     });
+        //   }
+        //   await ShareCollectionModel.findByIdAndUpdate(
+        //     collectionShareUser._id,
+        //     {
+        //       shareTo,
+        //     },
+        //     { new: true }
+        //   );
+        // }
+        // return token;
     }
 };
 __decorate([

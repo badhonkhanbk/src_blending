@@ -48,6 +48,18 @@ __decorate([
     (0, type_graphql_1.Field)((type) => Member_1.default, { nullable: true }),
     __metadata("design:type", Member_1.default)
 ], SimpleCollection.prototype, "sharedBy", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], SimpleCollection.prototype, "personalizedName", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], SimpleCollection.prototype, "canContribute", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], SimpleCollection.prototype, "canShareWithOther", void 0);
 SimpleCollection = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], SimpleCollection);
