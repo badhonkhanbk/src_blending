@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const CollectionInput_1 = __importDefault(require("../../../member/resolvers/input-type/CollectionInput"));
+const ShareTo_1 = __importDefault(require("./ShareTo"));
 let CreateNewCollectionAndShare = class CreateNewCollectionAndShare {
 };
 __decorate([
@@ -21,9 +22,9 @@ __decorate([
     __metadata("design:type", String)
 ], CreateNewCollectionAndShare.prototype, "sharedBy", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [String]),
+    (0, type_graphql_1.Field)((type) => [ShareTo_1.default]),
     __metadata("design:type", Array)
-], CreateNewCollectionAndShare.prototype, "shareToEmails", void 0);
+], CreateNewCollectionAndShare.prototype, "shareTo", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => CollectionInput_1.default),
     __metadata("design:type", CollectionInput_1.default)

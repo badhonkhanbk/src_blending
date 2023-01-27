@@ -343,6 +343,8 @@ let MemberResolver = class MemberResolver {
         await memberModel_1.default.findOneAndUpdate({ _id: data.userId }, { $push: { collections: collection._id } });
         return collection;
     }
+    async createCollectionAndShare(data) {
+    }
     async addNewCollectionWithData(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId }).populate('collections');
         if (!user)
@@ -495,6 +497,13 @@ __decorate([
     __metadata("design:paramtypes", [CreateNewCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "createNewCollection", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MemberResolver.prototype, "createCollectionAndShare", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Collection_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),

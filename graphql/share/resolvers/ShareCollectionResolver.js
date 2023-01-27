@@ -16,10 +16,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const slugify_1 = __importDefault(require("slugify"));
 const collectionShareGlobal_1 = __importDefault(require("../../../models/collectionShareGlobal"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const CreateShareCollectionLink_1 = __importDefault(require("./input-type/CreateShareCollectionLink"));
+const CreateCollectionAndShare_1 = __importDefault(require("./input-type/CreateCollectionAndShare"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
+const mongoose_1 = __importDefault(require("mongoose"));
 let shareCollectionResolver = class shareCollectionResolver {
     async shareGlobalCollection(sharedBy, collectionId) {
         let globalShareCollection;
@@ -37,7 +40,7 @@ let shareCollectionResolver = class shareCollectionResolver {
     }
     async createShareCollectionLink(data) {
         if (data.shareTo.length <= 0) {
-            return await this.shareGlobalCollection(data.sharedBy, data.collectionId[0]);
+            return await this.shareGlobalCollection(data.sharedBy, data.collectionId);
         }
         for (let i = 0; i < data.shareTo.length; i++) {
             let user = await memberModel_1.default.findOne({
@@ -120,6 +123,93 @@ let shareCollectionResolver = class shareCollectionResolver {
         // }
         // return token;
     }
+    async createCollectionAndShare(data) {
+        let newCollection = data.newCollectionData;
+        if (!data.newCollectionData.slug) {
+            newCollection.slug = (0, slugify_1.default)(data.newCollectionData.name.toString().toLowerCase());
+        }
+        else {
+            newCollection.slug = data.newCollectionData.slug;
+        }
+        let collection = await userCollection_1.default.create({
+            ...newCollection,
+            userId: data.sharedBy,
+            visible: false,
+        });
+        if (data.shareTo.length <= 0) {
+            return await this.shareGlobalCollection(data.sharedBy, collection._id);
+        }
+        for (let i = 0; i < data.shareTo.length; i++) {
+            let user = await memberModel_1.default.findOne({
+                email: data.shareTo[i].shareToEmail,
+            }).select('_id');
+            let personalizedName = await this.getPersonalizedName(collection.name, user._id, 0);
+            let personalizedName2 = await this.getPersonalizedName2(personalizedName.name, user._id, personalizedName.count, collection._id);
+            await userCollection_1.default.findOneAndUpdate({
+                _id: collection._id,
+            }, {
+                $push: {
+                    shareTo: {
+                        userId: user._id,
+                        personalizedName: personalizedName2,
+                        canContribute: data.shareTo[i].canContribute,
+                        canShareWithOther: data.shareTo[i].canShareWithOthers,
+                    },
+                },
+            });
+        }
+        return collection._id;
+    }
+    async getPersonalizedName2(name, userId, count, collectionId) {
+        let collection;
+        if (count === 0) {
+            collection = await userCollection_1.default.findOne({
+                'shareTo.personalizedName': name,
+                'shareTo.userId': new mongoose_1.default.mongo.ObjectId(userId),
+            });
+        }
+        else {
+            collection = await userCollection_1.default.findOne({
+                'shareTo.personalizedName': name + ' (' + count + ')',
+                'shareTo.userId': new mongoose_1.default.mongo.ObjectId(userId),
+            });
+        }
+        if (collection) {
+            let newCount = count + 1;
+            return await this.getPersonalizedName2(name, userId, newCount, collectionId);
+        }
+        if (count === 0) {
+            return name;
+        }
+        else {
+            return name + ' (' + count + ')';
+        }
+    }
+    async getPersonalizedName(name, userId, count) {
+        let collection;
+        if (count === 0) {
+            collection = await userCollection_1.default.findOne({
+                name,
+                userId,
+            });
+        }
+        else {
+            collection = await userCollection_1.default.findOne({
+                name: name + ' (' + count + ')',
+                userId,
+            });
+        }
+        if (collection) {
+            let newCount = count + 1;
+            return await this.getPersonalizedName(name, userId, newCount);
+        }
+        if (count === 0) {
+            return { name: name, count: 0 };
+        }
+        else {
+            return { name: name + ' (' + count + ')', count: count };
+        }
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
@@ -137,25 +227,14 @@ __decorate([
     __metadata("design:paramtypes", [CreateShareCollectionLink_1.default]),
     __metadata("design:returntype", Promise)
 ], shareCollectionResolver.prototype, "createShareCollectionLink", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CreateCollectionAndShare_1.default]),
+    __metadata("design:returntype", Promise)
+], shareCollectionResolver.prototype, "createCollectionAndShare", null);
 shareCollectionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], shareCollectionResolver);
 exports.default = shareCollectionResolver;
-// sharedBy: {
-//   type: SchemaTypes.ObjectId,
-//   ref: 'Member',
-//   required: [true, 'MemberId is required'],
-// },
-// shareTo: [
-//   {
-//     userId: {
-//       type: SchemaTypes.ObjectId,
-//       ref: 'Member',
-//     },
-//     hasAccepted: Boolean,
-//   },
-// ],
-// collectionId: {
-//   type: SchemaTypes.ObjectId,
-//   ref: 'UserCollection',
-// },

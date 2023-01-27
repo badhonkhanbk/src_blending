@@ -32,10 +32,6 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CollectionInput.prototype, "image", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], CollectionInput.prototype, "isNameDate", void 0);
 CollectionInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], CollectionInput);
