@@ -13,13 +13,17 @@ const type_graphql_1 = require("type-graphql");
 let RemoveACollectionInput = class RemoveACollectionInput {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
-], RemoveACollectionInput.prototype, "userEmail", void 0);
+], RemoveACollectionInput.prototype, "userId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
 ], RemoveACollectionInput.prototype, "collectionId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], RemoveACollectionInput.prototype, "isSharedCollection", void 0);
 RemoveACollectionInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], RemoveACollectionInput);

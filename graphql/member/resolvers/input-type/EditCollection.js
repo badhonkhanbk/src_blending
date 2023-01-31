@@ -13,7 +13,7 @@ const type_graphql_1 = require("type-graphql");
 let EditCollection = class EditCollection {
 };
 __decorate([
-    (0, type_graphql_1.Field)(type => type_graphql_1.ID),
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
 ], EditCollection.prototype, "userId", void 0);
 __decorate([
@@ -24,6 +24,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], EditCollection.prototype, "newName", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], EditCollection.prototype, "isSharedCollection", void 0);
 EditCollection = __decorate([
     (0, type_graphql_1.InputType)()
 ], EditCollection);

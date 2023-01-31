@@ -339,63 +339,83 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     }
     async deleteCollection(data) {
         let user = await memberModel_1.default.findOne({
-            email: data.userEmail,
-        }).populate('collections');
-        if (!user) {
-            return new AppError_1.default('User with that email not found', 404);
-        }
-        // look for collection in user
-        let found = false;
-        let collection;
-        for (let k = 0; k < user.collections.length; k++) {
-            if (String(user.collections[k]._id) === String(data.collectionId)) {
-                found = true;
-                collection = user.collections[k];
-            }
-        }
-        if (!found) {
-            return new AppError_1.default('Collection not found in user', 404);
-        }
-        // look for collection in default collection
-        if (String(user.defaultCollection) === String(collection._id)) {
-            return new AppError_1.default('You can not delete your default collection', 401);
-        }
-        let member;
-        // look for collection in last modified collection
-        if (String(user.lastModifiedCollection) === String(collection._id)) {
-            // look for new last modified collection
-            await userCollection_1.default.findOneAndRemove({ _id: collection._id });
-            member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, {
-                $pull: { collections: collection._id },
-                $set: { updatedAt: Date.now() },
-            }, { new: true }).populate('collections');
-            let lmc = member.collections[0];
-            for (let i = 1; i < member.collections.length; i++) {
-                if (member.collections[i].updatedAt > lmc.updatedAt) {
-                    lmc = member.collections[i];
-                }
-            }
-            member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { $set: { lastModifiedCollection: lmc._id } }, { new: true }).populate({
-                path: 'collections',
-                populate: {
-                    path: 'recipes',
-                    model: 'Recipe',
-                },
-            });
-            return member.collections;
-        }
-        await userCollection_1.default.findOneAndRemove({ _id: collection._id });
-        member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, {
-            $pull: { collections: collection._id },
-            $set: { updatedAt: Date.now() },
-        }, { new: true }).populate({
+            _id: data.userId,
+        }).populate({
             path: 'collections',
             populate: {
                 path: 'recipes',
                 model: 'Recipe',
             },
         });
-        return member.collections;
+        if (!user) {
+            return new AppError_1.default('User with that email not found', 404);
+        }
+        if (data.isSharedCollection) {
+            await userCollection_1.default.findOneAndUpdate({
+                _id: data.collectionId,
+            }, {
+                $pull: {
+                    shareTo: {
+                        userId: user._id,
+                    },
+                },
+            });
+        }
+        else {
+            // look for collection in user
+            let found = false;
+            let collection;
+            for (let k = 0; k < user.collections.length; k++) {
+                if (String(user.collections[k]._id) === String(data.collectionId)) {
+                    found = true;
+                    collection = user.collections[k];
+                }
+            }
+            if (!found) {
+                return new AppError_1.default('Collection not found in user', 404);
+            }
+            // look for collection in default collection
+            if (String(user.defaultCollection) === String(collection._id)) {
+                return new AppError_1.default('You can not delete your default collection', 401);
+            }
+            let member;
+            // look for collection in last modified collection
+            if (String(user.lastModifiedCollection) === String(collection._id)) {
+                // look for new last modified collection
+                await userCollection_1.default.findOneAndRemove({ _id: collection._id });
+                member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, {
+                    $pull: { collections: collection._id },
+                    $set: { updatedAt: Date.now() },
+                }, { new: true }).populate('collections');
+                let lmc = member.collections[0];
+                for (let i = 1; i < member.collections.length; i++) {
+                    if (member.collections[i].updatedAt > lmc.updatedAt) {
+                        lmc = member.collections[i];
+                    }
+                }
+                member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { $set: { lastModifiedCollection: lmc._id } }, { new: true }).populate({
+                    path: 'collections',
+                    populate: {
+                        path: 'recipes',
+                        model: 'Recipe',
+                    },
+                });
+                return member.collections;
+            }
+            await userCollection_1.default.findOneAndRemove({ _id: collection._id });
+            member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, {
+                $pull: { collections: collection._id },
+                $set: { updatedAt: Date.now() },
+            }, { new: true }).populate({
+                path: 'collections',
+                populate: {
+                    path: 'recipes',
+                    model: 'Recipe',
+                },
+            });
+            return user.collections;
+        }
+        return user.collections;
     }
     async editACollection(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
@@ -405,10 +425,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (String(data.collectionId) === String(user.defaultCollection)) {
             return new AppError_1.default('You can not edit your default collection', 401);
         }
-        let collection = await userCollection_1.default.findOne({
-            _id: data.collectionId,
-        });
-        if (!collection) {
+        if (data.isSharedCollection) {
             await userCollection_1.default.findOneAndUpdate({
                 _id: data.collectionId,
                 'shareTo.userId': user._id,
@@ -418,6 +435,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 },
             });
             return 'successfull';
+        }
+        let collection = await userCollection_1.default.findOne({
+            _id: data.collectionId,
+        });
+        if (!collection) {
+            return new AppError_1.default('Collection not found', 404);
         }
         await userCollection_1.default.findOneAndUpdate({ _id: collection._id }, {
             name: data.newName,
