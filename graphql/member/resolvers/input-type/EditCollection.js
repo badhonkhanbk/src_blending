@@ -13,9 +13,9 @@ const type_graphql_1 = require("type-graphql");
 let EditCollection = class EditCollection {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)(type => type_graphql_1.ID),
     __metadata("design:type", String)
-], EditCollection.prototype, "userEmail", void 0);
+], EditCollection.prototype, "userId", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)

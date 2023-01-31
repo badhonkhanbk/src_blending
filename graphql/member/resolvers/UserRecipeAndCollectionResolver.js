@@ -398,9 +398,9 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         return member.collections;
     }
     async editACollection(data) {
-        let user = await memberModel_1.default.findOne({ email: data.userEmail });
+        let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
-            return new AppError_1.default('User with that email not found', 404);
+            return new AppError_1.default('User does not exist', 404);
         }
         if (String(data.collectionId) === String(user.defaultCollection)) {
             return new AppError_1.default('You can not edit your default collection', 401);
@@ -409,7 +409,15 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             _id: data.collectionId,
         });
         if (!collection) {
-            return new AppError_1.default('Collection not found', 404);
+            await userCollection_1.default.findOneAndUpdate({
+                _id: data.collectionId,
+                'shareTo.userId': user._id,
+            }, {
+                $set: {
+                    'shareTo.$.personalizedName': data.newName,
+                },
+            });
+            return 'successfull';
         }
         await userCollection_1.default.findOneAndUpdate({ _id: collection._id }, {
             name: data.newName,
