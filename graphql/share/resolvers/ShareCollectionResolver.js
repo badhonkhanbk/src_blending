@@ -22,6 +22,7 @@ const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const CreateShareCollectionLink_1 = __importDefault(require("./input-type/CreateShareCollectionLink"));
 const CreateCollectionAndShare_1 = __importDefault(require("./input-type/CreateCollectionAndShare"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
+const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const mongoose_1 = __importDefault(require("mongoose"));
 let shareCollectionResolver = class shareCollectionResolver {
     async shareGlobalCollection(sharedBy, collectionId) {
@@ -40,7 +41,28 @@ let shareCollectionResolver = class shareCollectionResolver {
     }
     async createShareCollectionLink(data) {
         if (data.shareTo.length <= 0) {
+            let ownCollection = await userCollection_1.default.findOne({
+                _id: data.collectionId,
+                userId: data.sharedBy,
+            });
+            if (!ownCollection) {
+                throw new AppError_1.default('You can not share it globally', 404);
+            }
             return await this.shareGlobalCollection(data.sharedBy, data.collectionId);
+        }
+        if (data.isSharedCollection) {
+            let collection = await userCollection_1.default.findOne({
+                collectionId: data.collectionId,
+            });
+            let filtered = collection.shareTo.filter((st) => {
+                return String(st.userId) === String(data.sharedBy);
+            });
+            if (filtered.length <= 0) {
+                return new AppError_1.default('You can not share it', 404);
+            }
+            if (!filtered.canShareWithOthers) {
+                return new AppError_1.default('You can not share it', 404);
+            }
         }
         for (let i = 0; i < data.shareTo.length; i++) {
             let user = await memberModel_1.default.findOne({
@@ -80,48 +102,6 @@ let shareCollectionResolver = class shareCollectionResolver {
             }
         }
         return data.collectionId;
-        // let token;
-        // let collectionShareUser;
-        // collectionShareUser = await ShareCollectionModel.findOne({
-        //   sharedBy: data.sharedBy,
-        //   collectionId: data.collectionId,
-        // });
-        // if (!collectionShareUser) {
-        //   collectionShareUser = await ShareCollectionModel.create({
-        //     sharedBy: data.sharedBy,
-        //     collectionId: data.collectionId,
-        //   });
-        // }
-        // token = collectionShareUser._id;
-        // for (let i = 0; i < data.shareToEmails.length; i++) {
-        //   let user = await MemberModel.findOne({
-        //     email: data.shareToEmails[i],
-        //   }).select('_id');
-        //   if (!user) {
-        //     continue;
-        //   }
-        //   if (String(user._id) === String(data.sharedBy)) {
-        //     continue;
-        //   }
-        //   let shareTo = collectionShareUser.shareTo;
-        //   let index = shareTo.findIndex(
-        //     (share: any) => String(share.userId) === String(user._id)
-        //   );
-        //   if (index === -1) {
-        //     shareTo.push({
-        //       userId: user._id,
-        //       hasAccepted: false,
-        //     });
-        //   }
-        //   await ShareCollectionModel.findByIdAndUpdate(
-        //     collectionShareUser._id,
-        //     {
-        //       shareTo,
-        //     },
-        //     { new: true }
-        //   );
-        // }
-        // return token;
     }
     async createCollectionAndShare(data) {
         let newCollection = data.newCollectionData;

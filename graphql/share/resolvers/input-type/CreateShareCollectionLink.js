@@ -28,6 +28,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
 ], CreateNewShareCollectionLink.prototype, "collectionId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], CreateNewShareCollectionLink.prototype, "isSharedCollection", void 0);
 CreateNewShareCollectionLink = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateNewShareCollectionLink);
