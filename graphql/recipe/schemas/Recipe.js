@@ -196,6 +196,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], Recipe.prototype, "isMatch", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
+    __metadata("design:type", String)
+], Recipe.prototype, "token", void 0);
 Recipe = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], Recipe);

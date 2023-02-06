@@ -32,7 +32,10 @@ const userCollection_1 = __importDefault(require("../../../models/userCollection
 const recipe_1 = __importDefault(require("../../../models/recipe"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
+const share_1 = __importDefault(require("../../../models/share"));
+const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
 const Collection_2 = __importDefault(require("../schemas/Collection"));
+const Collection_3 = __importDefault(require("../schemas/Collection"));
 let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     async createNewUserRecipeWithCollection(data) {
         let user = await memberModel_1.default.findOne({ email: data.userEmail });
@@ -452,6 +455,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         return 'successfull';
     }
     async addOrRemoveRecipeFromCollection(data) {
+        console.log('for ref');
         if (!data.isCollectionData) {
             data.isCollectionData = false;
         }
@@ -459,7 +463,16 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             data.isCollectionData = true;
         }
         let user = await memberModel_1.default.findOne({ _id: data.userId });
+        let otherCollections = await userCollection_1.default.find({
+            'shareTo.userId': {
+                $in: [new mongoose_1.default.mongo.ObjectId(user._id)],
+            },
+            'shareTo.canContribute': true,
+        }).select('_id');
         let pullFromUserCollections = user.collections;
+        for (let i = 0; i < otherCollections.length; i++) {
+            pullFromUserCollections.push(otherCollections[i]._id);
+        }
         console.log(pullFromUserCollections);
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
@@ -498,6 +511,137 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             },
         });
         return member.collections;
+    }
+    async getSharedWithMeCollections(userId) {
+        let collectionData = [];
+        let recipes = [];
+        let shares = await share_1.default.find({
+            'shareTo.userId': {
+                $in: [new mongoose_1.default.mongo.ObjectId(userId)],
+            },
+        }).select('_id');
+        if (shares.length > 0) {
+            let mappedForSingleRecipeCollection = shares.map((share) => share._id.toString());
+            let singleSharedRecipes = await (0, checkAllShareToken_1.default)(
+            //@ts-ignore
+            mappedForSingleRecipeCollection, userId);
+            collectionData.push({
+                _id: new mongoose_1.default.Types.ObjectId(),
+                name: 'Single Recipes',
+                slug: 'single-recipes',
+                image: null,
+                recipes: singleSharedRecipes,
+            });
+        }
+        let otherCollections = await userCollection_1.default.find({
+            'shareTo.userId': {
+                $in: [new mongoose_1.default.mongo.ObjectId(userId)],
+            },
+        })
+            .populate({
+            path: 'recipes',
+            model: 'Recipe',
+            limit: 5,
+            populate: [
+                {
+                    path: 'defaultVersion',
+                    model: 'RecipeVersion',
+                    populate: {
+                        path: 'ingredients.ingredientId',
+                        model: 'BlendIngredient',
+                        select: 'ingredientName',
+                    },
+                    select: 'postfixTitle',
+                },
+                {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: '_id displayName image',
+                },
+            ],
+        })
+            .lean();
+        let memberCollections = await memberModel_1.default.findOne({ _id: userId })
+            .populate({
+            path: 'collections',
+            model: 'UserCollection',
+            select: 'recipes',
+        })
+            .select('-_id collections');
+        console.log(otherCollections.length);
+        for (let i = 0; i < otherCollections.length; i++) {
+            let collection = otherCollections[i];
+            console.log(collection.name);
+            let recipes = collection.recipes;
+            let returnRecipe = [];
+            let collectionRecipes = [];
+            for (let i = 0; i < memberCollections.collections.length; i++) {
+                let items = memberCollections.collections[i].recipes.map(
+                //@ts-ignore
+                (recipe) => {
+                    return {
+                        recipeId: String(recipe._id),
+                        recipeCollection: String(memberCollections.collections[i]._id),
+                    };
+                });
+                collectionRecipes.push(...items);
+            }
+            for (let i = 0; i < recipes.length; i++) {
+                let userNotes = await userNote_1.default.find({
+                    recipeId: recipes[i]._id,
+                    userId: userId,
+                });
+                let addedToCompare = false;
+                let compare = await Compare_1.default.findOne({
+                    userId: userId,
+                    recipeId: recipes[i]._id,
+                });
+                if (compare) {
+                    addedToCompare = true;
+                }
+                let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipes[i]._id));
+                if (collectionData.length === 0) {
+                    collectionData = null;
+                }
+                else {
+                    //@ts-ignore
+                    collectionData = collectionData.map((data) => data.recipeCollection);
+                }
+                returnRecipe.push({
+                    ...recipes[i],
+                    notes: userNotes.length,
+                    addedToCompare: addedToCompare,
+                    userCollections: collectionData,
+                });
+            }
+            console.log(collection._id);
+            console.log(collection.name);
+            console.log(collection.slug);
+            console.log(collection.image);
+            console.log(returnRecipe.length);
+            collectionData.push({
+                _id: collection._id,
+                name: collection.name,
+                slug: collection.slug,
+                image: collection.image,
+                recipes: returnRecipe,
+            });
+            // console.log(collectionData);
+        }
+        return collectionData;
     }
 };
 __decorate([
@@ -576,6 +720,13 @@ __decorate([
     __metadata("design:paramtypes", [AddOrRemoveRecipeFromCollectionInput_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "addOrRemoveRecipeFromCollection", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [Collection_3.default]),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserRecipeAndCollectionResolver.prototype, "getSharedWithMeCollections", null);
 UserRecipeAndCollectionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], UserRecipeAndCollectionResolver);

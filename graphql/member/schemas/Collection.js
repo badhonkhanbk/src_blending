@@ -17,7 +17,7 @@ const Recipe_1 = __importDefault(require("../../recipe/schemas/Recipe"));
 let CollectionType = class CollectionType {
 };
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
 ], CollectionType.prototype, "_id", void 0);
 __decorate([

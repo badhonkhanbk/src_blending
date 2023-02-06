@@ -343,8 +343,7 @@ let MemberResolver = class MemberResolver {
         await memberModel_1.default.findOneAndUpdate({ _id: data.userId }, { $push: { collections: collection._id } });
         return collection;
     }
-    async createCollectionAndShare(data) {
-    }
+    async createCollectionAndShare(data) { }
     async addNewCollectionWithData(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId }).populate('collections');
         if (!user)
