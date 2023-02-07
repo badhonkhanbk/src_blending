@@ -514,7 +514,6 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     }
     async getSharedWithMeCollections(userId) {
         let collectionData = [];
-        let recipes = [];
         let shares = await share_1.default.find({
             'shareTo.userId': {
                 $in: [new mongoose_1.default.mongo.ObjectId(userId)],

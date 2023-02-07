@@ -322,9 +322,9 @@ let UserDailyResolver = class UserDailyResolver {
         console.log('gender', gender);
         console.log('weightInKG', weightInKG);
         console.log('heightInCM', heightInCM);
-        if (bmi >= 18.5 && bmi <= 25) {
+        if (+bmi >= 18.5 && +bmi <= 25) {
             console.log('step 1');
-            if (ageInYears >= 9 && ageInYears <= 18) {
+            if (+ageInYears >= 9 && +ageInYears <= 18) {
                 if (gender === 'male') {
                     let pal;
                     if (activity === 'low') {
@@ -368,7 +368,7 @@ let UserDailyResolver = class UserDailyResolver {
                     return totalCaloriesNeeded;
                 }
             }
-            else if (ageInYears >= 19) {
+            else if (+ageInYears >= 19) {
                 if (gender == 'male') {
                     let pal;
                     if (activity === 'low') {
@@ -415,8 +415,8 @@ let UserDailyResolver = class UserDailyResolver {
                 }
             }
         }
-        else if (bmi > 25) {
-            if (ageInYears >= 9 && ageInYears <= 18) {
+        else if (+bmi > 25) {
+            if (+ageInYears >= 9 && +ageInYears <= 18) {
                 if (gender === 'male') {
                     let pal;
                     if (activity === 'low') {
@@ -460,7 +460,7 @@ let UserDailyResolver = class UserDailyResolver {
                     return totalCaloriesNeeded;
                 }
             }
-            else if (ageInYears >= 19) {
+            else if (+ageInYears >= 19) {
                 if (gender === 'male') {
                     let pal;
                     if (activity === 'low') {

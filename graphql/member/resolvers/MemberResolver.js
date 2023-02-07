@@ -33,6 +33,8 @@ const recipe_1 = __importDefault(require("../../../models/recipe"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
+const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
+const share_1 = __importDefault(require("../../../models/share"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -112,9 +114,12 @@ let MemberResolver = class MemberResolver {
             collections: collections,
         };
     }
-    async getASingleCollection(slug, userId, collectionId, token) {
+    async getASingleCollection(slug, userId, collectionId, token, singleRecipeCollectionId) {
         let searchId;
         let query = {};
+        if (singleRecipeCollectionId) {
+            return await this.getSingleRecipeCollection(userId);
+        }
         if (token) {
             let globalShare = await collectionShareGlobal_1.default.findOne({
                 _id: token,
@@ -447,6 +452,28 @@ let MemberResolver = class MemberResolver {
         }
         return 1;
     }
+    async getSingleRecipeCollection(userId) {
+        let shares = await share_1.default.find({
+            'shareTo.userId': {
+                $in: [new mongoose_1.default.mongo.ObjectId(userId.toString())],
+            },
+        }).select('_id');
+        let singleSharedRecipes = [];
+        if (shares.length > 0) {
+            let mappedForSingleRecipeCollection = shares.map((share) => share._id.toString());
+            singleSharedRecipes = await (0, checkAllShareToken_1.default)(
+            //@ts-ignore
+            mappedForSingleRecipeCollection, userId);
+        }
+        return {
+            _id: new mongoose_1.default.Types.ObjectId(),
+            name: 'Single Recipes',
+            slug: 'single-recipes',
+            //@ts-ignore
+            image: null,
+            recipes: singleSharedRecipes,
+        };
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => collectionAndTheme_1.default),
@@ -461,8 +488,10 @@ __decorate([
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __param(2, (0, type_graphql_1.Arg)('collectionId', { nullable: true })),
     __param(3, (0, type_graphql_1.Arg)('token', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('singleRecipeCollectionId', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String,
         String,
         String]),
