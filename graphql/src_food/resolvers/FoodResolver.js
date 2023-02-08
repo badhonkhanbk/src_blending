@@ -558,6 +558,19 @@ let FoodResolver = class FoodResolver {
         }
         return 'done';
     }
+    async getAllUniquePortions() {
+        let allPortions = await ingredient_1.default.find();
+        let portions = [];
+        for (let i = 0; i < allPortions.length; i++) {
+            for (let j = 0; j < allPortions[i].portions.length; j++) {
+                if (!portions.includes(allPortions[i].portions[j].measurement)) {
+                    portions.push(allPortions[i].portions[j].measurement);
+                }
+            }
+        }
+        fs_1.default.writeFileSync('./temp/educationAttainedCategory.json', JSON.stringify(portions));
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => ReturnIngredients_1.default),
@@ -661,6 +674,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "updateNotBlendIngredientData", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "getAllUniquePortions", null);
 FoodResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], FoodResolver);

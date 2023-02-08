@@ -41,6 +41,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [NutrienFilterForRecipe_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], FilterRecipe.prototype, "nutrientFilters", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
+    __metadata("design:type", Array)
+], FilterRecipe.prototype, "collectionsIds", void 0);
 FilterRecipe = __decorate([
     (0, type_graphql_1.InputType)()
 ], FilterRecipe);

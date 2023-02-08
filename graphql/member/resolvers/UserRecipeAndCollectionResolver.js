@@ -34,6 +34,9 @@ const userNote_1 = __importDefault(require("../../../models/userNote"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const share_1 = __importDefault(require("../../../models/share"));
 const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
+const filterRecipe_1 = __importDefault(require("../../recipe/resolvers/input-type/filterRecipe"));
+const RecipesWithPagination_1 = __importDefault(require("../../recipe/schemas/RecipesWithPagination"));
+const recipeOriginalFactModel_1 = __importDefault(require("../../../models/recipeOriginalFactModel"));
 const Collection_2 = __importDefault(require("../schemas/Collection"));
 const Collection_3 = __importDefault(require("../schemas/Collection"));
 let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
@@ -530,6 +533,8 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 slug: 'single-recipes',
                 image: null,
                 recipes: singleSharedRecipes,
+                //@ts-ignore
+                creatorInfo: null,
             });
         }
         let otherCollections = await userCollection_1.default.find({
@@ -572,6 +577,11 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 },
             ],
         })
+            .populate({
+            path: 'userId',
+            model: 'User',
+            select: '_id displayName firstName lastName email image',
+        })
             .lean();
         let memberCollections = await memberModel_1.default.findOne({ _id: userId })
             .populate({
@@ -580,7 +590,6 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             select: 'recipes',
         })
             .select('-_id collections');
-        console.log(otherCollections.length);
         for (let i = 0; i < otherCollections.length; i++) {
             let collection = otherCollections[i];
             console.log(collection.name);
@@ -626,21 +635,288 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                     userCollections: collectionData,
                 });
             }
-            console.log(collection._id);
-            console.log(collection.name);
-            console.log(collection.slug);
-            console.log(collection.image);
-            console.log(returnRecipe.length);
             collectionData.push({
                 _id: collection._id,
                 name: collection.name,
                 slug: collection.slug,
                 image: collection.image,
                 recipes: returnRecipe,
+                creatorInfo: collection.userId,
             });
             // console.log(collectionData);
         }
         return collectionData;
+    }
+    async filterCollectionRecipe(data, page, limit) {
+        if (
+        //@ts-ignore
+        data.blendTypes.length == 0 &&
+            //@ts-ignore
+            data.includeIngredientIds.length == 0 &&
+            //@ts-ignore
+            data.nutrientFilters.length == 0 &&
+            //@ts-ignore
+            data.nutrientMatrix.length == 0 &&
+            //@ts-ignore
+            data.excludeIngredientIds.length == 0 &&
+            //@ts-ignore
+            data.collectionsIds.length == 0) {
+            return {
+                recipes: [],
+                totalRecipes: 0,
+            };
+        }
+        if (!page) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
+        }
+        let findInCollection = {
+            'shareTo.userId': {
+                $in: [new mongoose_1.default.mongo.ObjectId(data.userId.toString())],
+            },
+        };
+        let find = {};
+        let recipeData = [];
+        if (data.collectionsIds.length > 0) {
+            findInCollection = {
+                _id: {
+                    $in: data.collectionsIds,
+                },
+            };
+        }
+        let allCollectionIdsWithRecipes = await userCollection_1.default.find(findInCollection).select('recipes');
+        let collectionRecipeIds = [];
+        for (let l = 0; l < allCollectionIdsWithRecipes.length; l++) {
+            collectionRecipeIds.push(...allCollectionIdsWithRecipes[l].recipes);
+        }
+        let collectionRecipeIdSet = new Set(collectionRecipeIds);
+        collectionRecipeIds = [...collectionRecipeIdSet];
+        if (collectionRecipeIds.length > 0) {
+            find = {
+                _id: { $in: collectionRecipeIds },
+            };
+        }
+        //@ts-ignore
+        if (data.includeIngredientIds.length > 0 && data.blendTypes.length > 0) {
+            find = {
+                recipeBlendCategory: { $in: data.blendTypes },
+                'ingredients.ingredientId': { $in: data.includeIngredientIds },
+            };
+        }
+        else if (data.blendTypes.length > 0) {
+            find = {
+                recipeBlendCategory: { $in: data.blendTypes },
+            };
+        }
+        else if (data.includeIngredientIds.length > 0) {
+            find = {
+                'ingredients.ingredientId': { $in: data.includeIngredientIds },
+            };
+        }
+        let findKeys = Object.keys(find);
+        if (findKeys.length > 0) {
+            recipeData = await recipe_1.default.find(find).select('_id');
+        }
+        else {
+            recipeData = [];
+        }
+        // console.log(recipeData);
+        if (recipeData.length > 0 && data.excludeIngredientIds.length > 0) {
+            let recipeIds = recipeData.map((recipe) => recipe._id);
+            recipeData = await recipe_1.default.find({
+                _id: { $in: recipeIds },
+                'ingredients.ingredientId': { $nin: data.excludeIngredientIds },
+            }).select('_id');
+        }
+        let findfacts = {
+            global: true,
+            userId: null,
+            addedByAdmin: true,
+            discovery: true,
+            isPublished: true,
+        };
+        if (recipeData.length > 0) {
+            let recipeIds = recipeData.map((recipe) => recipe._id);
+            findfacts = {
+                recipeId: { $in: recipeIds },
+            };
+        }
+        for (let i = 0; i < data.nutrientMatrix.length; i++) {
+            let val = '';
+            if (data.nutrientMatrix[i].matrixName === 'netCarbs') {
+                val = 'gigl.netCarbs';
+                findfacts[val] = {};
+            }
+            else if (data.nutrientMatrix[i].matrixName === 'calorie') {
+                val = 'calorie.value';
+                findfacts[val] = {};
+            }
+            else if (data.nutrientMatrix[i].matrixName === 'totalGi') {
+                val = 'gigl.totalGi';
+                findfacts[val] = {};
+            }
+            else if (data.nutrientMatrix[i].matrixName === 'totalGl') {
+                val = 'gigl.totalGl';
+                findfacts[val] = {};
+            }
+            if (data.nutrientMatrix[i].lessThan) {
+                findfacts[val] = { $lt: data.nutrientMatrix[i].value };
+            }
+            else if (data.nutrientMatrix[i].greaterThan) {
+                findfacts[val] = { $gt: data.nutrientMatrix[i].value };
+            }
+            else if (data.nutrientMatrix[i].beetween) {
+                findfacts[val] = {
+                    $gt: data.nutrientMatrix[i].value1,
+                    $lt: data.nutrientMatrix[i].value2,
+                };
+            }
+        }
+        let energy = [];
+        let mineral = [];
+        let vitamin = [];
+        for (let i = 0; i < data.nutrientFilters.length; i++) {
+            let obj = {};
+            obj.blendNutrientRefference = new mongoose_1.default.mongo.ObjectId(data.nutrientFilters[i].nutrientId.toString());
+            if (data.nutrientFilters[i].lessThan) {
+                obj.value = { $lt: data.nutrientFilters[i].value };
+            }
+            else if (data.nutrientFilters[i].greaterThan) {
+                obj.value = { $gt: data.nutrientFilters[i].value };
+            }
+            else if (data.nutrientFilters[i].beetween) {
+                obj.value = {
+                    $gt: data.nutrientFilters[i].value1,
+                    $lt: data.nutrientFilters[i].value2,
+                };
+            }
+            if (data.nutrientFilters[i].category === 'energy') {
+                energy.push(obj);
+            }
+            else if (data.nutrientFilters[i].category === 'mineral') {
+                mineral.push(obj);
+            }
+            else if (data.nutrientFilters[i].category === 'vitamin') {
+                vitamin.push(obj);
+            }
+        }
+        let recipeFacts = [];
+        let recipeIds = [];
+        if (energy.length > 0) {
+            for (let i = 0; i < energy.length; i++) {
+                findfacts['energy'] = { $elemMatch: energy[i] };
+                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
+                findfacts['recipeId'] = { $in: recipeIds };
+                delete findfacts['energy'];
+            }
+        }
+        if (mineral.length > 0) {
+            for (let i = 0; i < mineral.length; i++) {
+                findfacts['mineral'] = { $elemMatch: mineral[i] };
+                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
+                findfacts['recipeId'] = { $in: recipeIds };
+                delete findfacts['mineral'];
+            }
+        }
+        if (vitamin.length > 0) {
+            for (let i = 0; i < vitamin.length; i++) {
+                findfacts['vitamin'] = { $elemMatch: vitamin[i] };
+                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
+                findfacts['recipeId'] = { $in: recipeIds };
+                delete findfacts['vitamin'];
+            }
+        }
+        if (recipeIds.length === 0) {
+            recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+            recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
+        }
+        let recipes = await recipe_1.default.find({
+            _id: { $in: recipeIds },
+        })
+            .populate({
+            path: 'ingredients.ingredientId',
+            model: 'BlendIngredient',
+        })
+            .populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+                select: 'ingredientName',
+            },
+            select: 'postfixTitle',
+        })
+            .populate({
+            path: 'userId',
+            model: 'User',
+            select: '_id displayName image firstName lastName email',
+        })
+            .populate('brand')
+            .populate('recipeBlendCategory')
+            .limit(limit)
+            .skip(limit * (page - 1));
+        let returnRecipe = [];
+        let collectionRecipes = [];
+        let memberCollection = await memberModel_1.default.findOne({ _id: data.userId })
+            .populate({
+            path: 'collections',
+            model: 'UserCollection',
+            select: 'recipes',
+        })
+            .select('-_id collections');
+        for (let i = 0; i < memberCollection.collections.length; i++) {
+            let items = memberCollection.collections[i].recipes.map(
+            //@ts-ignore
+            (recipe) => {
+                return {
+                    recipeId: String(recipe._id),
+                    recipeCollection: String(memberCollection.collections[i]._id),
+                };
+            });
+            collectionRecipes.push(...items);
+        }
+        for (let i = 0; i < recipes.length; i++) {
+            let userNotes = await userNote_1.default.find({
+                recipeId: recipes[i]._id,
+                userId: data.userId,
+            });
+            let addedToCompare = false;
+            let compare = await Compare_1.default.findOne({
+                userId: data.userId,
+                recipeId: recipes[i]._id,
+            });
+            if (compare) {
+                addedToCompare = true;
+            }
+            let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipes[i]._id));
+            if (collectionData.length === 0) {
+                collectionData = null;
+            }
+            else {
+                //@ts-ignore
+                collectionData = collectionData.map((data) => data.recipeCollection);
+            }
+            returnRecipe.push({
+                ...recipes[i]._doc,
+                notes: userNotes.length,
+                addedToCompare: addedToCompare,
+                userCollections: collectionData,
+            });
+        }
+        //making ids to String
+        let recipeIdsString = recipeIds.map((ri) => String(ri));
+        //removing duplicates
+        let finalData = recipeIdsString.filter((data, index) => recipeIdsString.indexOf(data) === index);
+        return {
+            recipes: returnRecipe,
+            totalRecipes: finalData.length,
+        };
     }
 };
 __decorate([
@@ -726,6 +1002,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "getSharedWithMeCollections", null);
+__decorate([
+    (0, type_graphql_1.Query)((type) => RecipesWithPagination_1.default) // not sure yet
+    ,
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [filterRecipe_1.default, Number, Number]),
+    __metadata("design:returntype", Promise)
+], UserRecipeAndCollectionResolver.prototype, "filterCollectionRecipe", null);
 UserRecipeAndCollectionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], UserRecipeAndCollectionResolver);
