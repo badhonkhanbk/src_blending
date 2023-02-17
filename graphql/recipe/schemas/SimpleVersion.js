@@ -30,6 +30,26 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [IngredientData_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], SimpleVersion.prototype, "ingredients", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], SimpleVersion.prototype, "description", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Date)
+], SimpleVersion.prototype, "createdAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Date)
+], SimpleVersion.prototype, "editedAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], SimpleVersion.prototype, "isDefault", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], SimpleVersion.prototype, "isOriginal", void 0);
 SimpleVersion = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], SimpleVersion);
