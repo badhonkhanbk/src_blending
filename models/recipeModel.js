@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const recipeSchema = new mongoose_1.Schema({
+const recipeModelSchema = new mongoose_1.Schema({
     mainEntityOfPage: String,
     name: String,
     image: [{ image: String, default: Boolean }],
@@ -81,13 +81,29 @@ const recipeSchema = new mongoose_1.Schema({
             ref: 'AdminCollection',
         },
     ],
-    recipeVersion: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeVersion' }],
+    originalVersion: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'RecipeVersion',
+    },
+    turnedOnVersions: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'RecipeVersion',
+        },
+    ],
+    turnedOffVersions: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'RecipeVersion',
+        },
+    ],
+    defaultVersion: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'RecipeVersion',
+    },
     createdAt: { type: Date, default: Date.now },
-    originalVersion: { type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeVersion' },
-    defaultVersion: { type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeVersion' },
     editedAt: Date,
     isMatch: { type: Boolean, default: true },
 });
-const Recipe = (0, mongoose_1.model)('Recipe', recipeSchema);
-exports.default = Recipe;
-//working
+const RecipeModel = (0, mongoose_1.model)('RecipeModel', recipeModelSchema);
+exports.default = RecipeModel;

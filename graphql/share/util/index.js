@@ -5,10 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const share_1 = __importDefault(require("../../../models/share"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
-const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
+const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 async function default_1(token, userId) {
     const share = await share_1.default.findOne({ _id: token });
     if (!share) {
@@ -26,19 +25,32 @@ async function default_1(token, userId) {
             return null;
         }
     }
-    let recipe = await recipe_1.default.findOne({
-        _id: share.shareData.recipeId,
+    let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
+        userId: userId,
+        recipeId: share.recipeId,
     })
         .populate({
-        path: 'ingredients.ingredientId',
-        model: 'BlendIngredient',
+        path: 'recipeId',
+        model: 'RecipeModel',
+        populate: [
+            {
+                path: 'recipeBlendCategory',
+                model: 'RecipeCategory',
+            },
+            {
+                path: 'brand',
+                model: 'RecipeBrand',
+            },
+        ],
+        select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating',
     })
-        .populate('brand')
-        .populate('recipeBlendCategory')
         .populate({
-        path: 'userId',
-        model: 'User',
-        select: '_id displayName image firstName lastName email',
+        path: 'defaultVersion',
+        model: 'RecipeVersion',
+        populate: {
+            path: 'ingredients.ingredientId',
+            model: 'BlendIngredient',
+        },
     })
         .populate({
         path: 'originalVersion',
@@ -47,35 +59,17 @@ async function default_1(token, userId) {
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
         },
+    })
+        .populate({
+        path: 'turnedOnVersion',
+        model: 'RecipeVersion',
+        select: '_id postfixTitle description createdAt updatedAt isDefault isOriginal',
+        options: { sort: { isDefault: -1 } },
+    })
+        .populate({
+        path: 'turnedOffVersion',
+        model: 'RecipeVersion',
     });
-    // let originalVersion = await RecipeVersionModel.findOne({
-    //   _id: recipe.originalVersion,
-    // }).populate({
-    //   path: 'ingredients.ingredientId',
-    //   model: 'BlendIngredient',
-    // });
-    delete recipe.recipeVersion;
-    console.log(recipe.recipeVersion);
-    let defaultVersion = await RecipeVersionModel_1.default.findOne({
-        _id: share.shareData.version,
-    }).populate({
-        path: 'ingredients.ingredientId',
-        model: 'BlendIngredient',
-    });
-    let data = recipe;
-    data.defaultVersion = defaultVersion;
-    if (String(data.defaultVersion._id) === String(data.originalVersion._id)) {
-        data.recipeVersion = [defaultVersion];
-        data.recipeVersion[0].isDefault = true;
-        data.recipeVersion[0].isOriginal = true;
-    }
-    else {
-        data.recipeVersion = [defaultVersion, recipe.originalVersion];
-        data.recipeVersion[0].isDefault = true;
-        data.recipeVersion[0].isOriginal = false;
-        data.recipeVersion[1].isDefault = false;
-        data.recipeVersion[1].isOriginal = true;
-    }
     let collectionRecipes = [];
     let memberCollections = await memberModel_1.default.find({ _id: userId })
         .populate({
@@ -96,18 +90,18 @@ async function default_1(token, userId) {
         collectionRecipes.push(...items);
     }
     let userNotes = await userNote_1.default.find({
-        recipeId: recipe._id,
+        recipeId: share.recipeId,
         userId: userId,
     });
     let addedToCompare = false;
     let compare = await Compare_1.default.findOne({
         userId: userId,
-        recipeId: recipe._id,
+        recipeId: share.recipeId,
     });
     if (compare) {
         addedToCompare = true;
     }
-    let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipe._id));
+    let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(share.recipeId));
     if (collectionData.length === 0) {
         collectionData = null;
     }
@@ -115,9 +109,12 @@ async function default_1(token, userId) {
         //@ts-ignore
         collectionData = collectionData.map((data) => data.recipeCollection);
     }
-    data.notes = userNotes.length;
-    data.addedToCompare = addedToCompare;
-    data.userCollections = collectionData;
+    let data = {
+        recipe: userProfileRecipe,
+        notes: userNotes.length,
+        addedToCompare: addedToCompare,
+        userCollections: collectionData,
+    };
     return data;
 }
 exports.default = default_1;

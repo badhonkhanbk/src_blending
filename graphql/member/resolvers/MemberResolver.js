@@ -190,6 +190,11 @@ let MemberResolver = class MemberResolver {
                 },
             ],
         })
+            .populate({
+            path: 'userId',
+            model: 'User',
+            select: '_id displayName firsName lastName email image',
+        })
             .lean();
         let recipes = collection.recipes;
         let returnRecipe = [];
@@ -246,6 +251,7 @@ let MemberResolver = class MemberResolver {
             slug: collection.slug,
             image: collection.image,
             recipes: returnRecipe,
+            creatorInfo: collection.userId,
         };
     }
     async createNewUser(data) {

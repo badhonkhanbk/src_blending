@@ -9,8 +9,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const IngredientData_1 = __importDefault(require("./IngredientData"));
 //_id postfixTitle description
 let SimpleVersion = class SimpleVersion {
 };
@@ -23,25 +27,9 @@ __decorate([
     __metadata("design:type", String)
 ], SimpleVersion.prototype, "postfixTitle", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], SimpleVersion.prototype, "description", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Date)
-], SimpleVersion.prototype, "createdAt", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Date)
-], SimpleVersion.prototype, "editedAt", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], SimpleVersion.prototype, "isDefault", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], SimpleVersion.prototype, "isOriginal", void 0);
+    (0, type_graphql_1.Field)((type) => [IngredientData_1.default], { nullable: true }),
+    __metadata("design:type", Array)
+], SimpleVersion.prototype, "ingredients", void 0);
 SimpleVersion = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], SimpleVersion);

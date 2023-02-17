@@ -24,6 +24,11 @@ const recipeVersionSchema = new mongoose_1.Schema({
     isOriginal: { type: Boolean, default: false },
     editedAt: Date,
     createdAt: { type: Date, default: Date.now },
+    createdBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
+    },
 });
 const RecipeVersion = (0, mongoose_1.model)('RecipeVersion', recipeVersionSchema);
 exports.default = RecipeVersion;
+//working
