@@ -1223,24 +1223,19 @@ let RecipeResolver = class RecipeResolver {
             isPublished: true,
         };
         //@ts-ignore
-        if (data.includeIngredientIds.length > 0 && data.blendTypes.length > 0) {
-            find = {
-                recipeBlendCategory: { $in: data.blendTypes },
-                'ingredients.ingredientId': { $in: data.includeIngredientIds },
-            };
-        }
-        else if (data.blendTypes.length > 0) {
+        if (data.blendTypes.length > 0) {
             find = {
                 recipeBlendCategory: { $in: data.blendTypes },
             };
         }
-        else if (data.includeIngredientIds.length > 0) {
+        if (data.includeIngredientIds.length > 0) {
             find = {
                 'ingredients.ingredientId': { $in: data.includeIngredientIds },
             };
         }
         let findKeys = Object.keys(find);
         if (findKeys.length > 0) {
+            console.log(find);
             recipeData = await recipe_1.default.find(find).select('_id');
         }
         else {
@@ -1265,6 +1260,11 @@ let RecipeResolver = class RecipeResolver {
             let recipeIds = recipeData.map((recipe) => recipe._id);
             findfacts = {
                 recipeId: { $in: recipeIds },
+            };
+        }
+        else {
+            findfacts = {
+                recipeId: { $in: [] },
             };
         }
         for (let i = 0; i < data.nutrientMatrix.length; i++) {
@@ -1358,6 +1358,7 @@ let RecipeResolver = class RecipeResolver {
         if (recipeIds.length === 0) {
             recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
             recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
+            // recipeIds = [];
         }
         let recipes = await recipe_1.default.find({
             _id: { $in: recipeIds },

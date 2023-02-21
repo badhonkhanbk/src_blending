@@ -167,11 +167,19 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             //@ts-ignore
             collectionData = collectionData.map((data) => data.recipeCollection);
         }
+        let versionsCount = 0;
+        versionsCount +=
+            +userProfileRecipe.turnedOnVersions.length +
+                +userProfileRecipe.turnedOffVersions.length;
+        if (!userProfileRecipe.isMatch) {
+            versionsCount++;
+        }
         return {
             ...userProfileRecipe._doc,
             notes: userNotes.length,
             addedToCompare: addedToCompare,
             userCollections: collectionData,
+            versionsCount: versionsCount,
         };
     }
     async getCompareList2(userId) {
@@ -381,11 +389,19 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 //@ts-ignore
                 collectionData = collectionData.map((data) => data.recipeCollection);
             }
+            let versionsCount = 0;
+            versionsCount +=
+                +userProfileRecipes[i].turnedOnVersions.length +
+                    +userProfileRecipes[i].turnedOffVersions.length;
+            if (!userProfileRecipes[i].isMatch) {
+                versionsCount++;
+            }
             returnRecipe.push({
                 ...userProfileRecipes[i]._doc,
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,
                 userCollections: collectionData,
+                versionCount: versionsCount,
             });
         }
         return returnRecipe;
