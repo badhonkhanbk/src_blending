@@ -427,6 +427,35 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             });
         }
     }
+    async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn) {
+        if (turnedOn) {
+            await UserRecipeProfile_1.default.findOneAndUpdate({
+                userId: userId,
+                recipeId: recipeId,
+            }, {
+                $pull: {
+                    turnedOffVersions: versionId,
+                },
+                $push: {
+                    turnedOnVersions: versionId,
+                },
+            });
+        }
+        else {
+            await UserRecipeProfile_1.default.findOneAndUpdate({
+                userId: userId,
+                recipeId: recipeId,
+            }, {
+                $pull: {
+                    turnedOnVersions: versionId,
+                },
+                $push: {
+                    turnedOffVersions: versionId,
+                },
+            });
+        }
+        return 'success';
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)((type) => String),
@@ -476,6 +505,19 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllLatestRecipes2", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('recipeId')),
+    __param(2, (0, type_graphql_1.Arg)('versionId')),
+    __param(3, (0, type_graphql_1.Arg)('turnedOn')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        String,
+        Boolean]),
+    __metadata("design:returntype", Promise)
+], RecipeCorrectionResolver.prototype, "turnedOnOrOffVersion", null);
 RecipeCorrectionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], RecipeCorrectionResolver);
