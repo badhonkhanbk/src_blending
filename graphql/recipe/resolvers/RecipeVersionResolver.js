@@ -195,7 +195,13 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 turnedOnVersions: new mongoose_1.default.Types.ObjectId(userRecipe.defaultVersion),
             },
         });
-        return 'success';
+        let recipeVersion = await RecipeVersionModel_1.default.findOne({
+            _id: versionId,
+        }).populate({
+            path: 'ingredients.ingredientId',
+            model: 'BlendIngredient',
+        });
+        return recipeVersion;
     }
     async removeAllVersion() {
         let recipes = await recipe_1.default.find();
@@ -306,7 +312,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "removeARecipeVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) //changed
+    (0, type_graphql_1.Mutation)(() => RecipeVersion_1.default) //changed
     ,
     __param(0, (0, type_graphql_1.Arg)('versionID')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
