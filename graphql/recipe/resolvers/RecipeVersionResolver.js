@@ -30,6 +30,7 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const RecipeWithVersion_1 = __importDefault(require("../schemas/RecipeWithVersion"));
 const updateVersionFacts_1 = __importDefault(require("./util/updateVersionFacts"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+const mongoose_1 = __importDefault(require("mongoose"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
         let recipeVersion = await RecipeVersionModel_1.default.findOne({ _id: data.editId });
@@ -172,23 +173,26 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 isMatch: isMatch,
             });
         }
+        let userRecipe = await UserRecipeProfile_1.default.findOne({
+            recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
+            userId: new mongoose_1.default.Types.ObjectId(userId),
+        }).select('defaultVersion');
         await UserRecipeProfile_1.default.findOneAndUpdate({
-            recipeId: recipeId,
-            userId: userId,
+            recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
+            userId: new mongoose_1.default.Types.ObjectId(userId),
         }, {
             $pull: {
-                turnedOnVersions: versionId,
-                turnedOfVersions: versionId,
+                turnedOnVersions: new mongoose_1.default.Types.ObjectId(versionId),
             },
-            defaultVersion: versionId,
+            defaultVersion: new mongoose_1.default.Types.ObjectId(versionId),
             isMatch: isMatch,
         });
         await UserRecipeProfile_1.default.findOneAndUpdate({
-            recipeId: recipeId,
-            userId: userId,
+            recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
+            userId: new mongoose_1.default.Types.ObjectId(userId),
         }, {
             $push: {
-                turnedOnVersions: recipe.defaultVersion,
+                turnedOnVersions: new mongoose_1.default.Types.ObjectId(userRecipe.defaultVersion),
             },
         });
         return 'success';
@@ -308,9 +312,7 @@ __decorate([
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __param(2, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String,
-        String,
-        String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "changeDefaultVersion", null);
 __decorate([
