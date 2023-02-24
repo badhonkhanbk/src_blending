@@ -29,6 +29,7 @@ const EditVersion_1 = __importDefault(require("./input-type/EditVersion"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const RecipeWithVersion_1 = __importDefault(require("../schemas/RecipeWithVersion"));
 const updateVersionFacts_1 = __importDefault(require("./util/updateVersionFacts"));
+const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
         let recipeVersion = await RecipeVersionModel_1.default.findOne({ _id: data.editId });
@@ -100,20 +101,22 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             servingSize: recipe.defaultVersion.servingSize,
         });
         await (0, updateVersionFacts_1.default)(newVersion._id);
-        await recipe_1.default.findOneAndUpdate({ _id: recipe._id }, {
+        if (String(recipe.userId) === String(data.userId)) {
+            await recipe_1.default.findOneAndUpdate({ _id: recipe._id }, {
+                $push: {
+                    recipeVersion: newVersion._id,
+                },
+            });
+        }
+        await UserRecipeProfile_1.default.findOneAndUpdate({
+            userId: data.userId,
+            recipeId: recipe._id,
+        }, {
             $push: {
-                recipeVersion: newVersion._id,
+                turnedOnVersions: newVersion._id,
             },
         });
-        let newRecipe = await recipe_1.default.findOne({ _id: recipe._id })
-            .populate({
-            path: 'recipeVersion',
-            model: 'RecipeVersion',
-            select: '_id postfixTitle description createdAt editedAt isDefault isOriginal',
-            options: { sort: { isDefault: -1 } },
-        })
-            .select('recipeVersion');
-        return newRecipe.recipeVersion;
+        return newVersion._id;
     }
     async getARecipeVersion(versionId) {
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
@@ -122,7 +125,6 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
         });
-        console.log(recipeVersion);
         return recipeVersion;
     }
     async removeARecipeVersion(versionId) {
@@ -151,38 +153,45 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         await RecipeVersionModel_1.default.findOneAndDelete({ _id: versionId });
         return modifiedRecipe.recipeVersion;
     }
-    async changeDefaultVersion(versionId, recipeId) {
-        let recipe = await recipe_1.default.findOne({ _id: recipeId });
+    async changeDefaultVersion(versionId, recipeId, userId) {
+        let recipe = await recipe_1.default.findOne({ _id: recipeId }).select('userId isMatch originalVersion defaultVersion');
         let isMatch = true;
         if (String(recipe.originalVersion) !== String(versionId)) {
             isMatch = false;
         }
-        let version = await RecipeVersionModel_1.default.findOne({
-            _id: versionId,
-            recipeId: recipeId,
-        });
-        if (!version || !recipe) {
-            return new AppError_1.default('recipe or version not found', 404);
+        if (String(recipe.userId) === userId) {
+            let version = await RecipeVersionModel_1.default.findOne({
+                _id: versionId,
+                recipeId: recipeId,
+            });
+            if (!version || !recipe) {
+                return new AppError_1.default('recipe or version not found', 404);
+            }
+            await recipe_1.default.findOneAndUpdate({ _id: recipe._id }, {
+                defaultVersion: version._id,
+                isMatch: isMatch,
+            });
         }
-        await RecipeVersionModel_1.default.findOneAndUpdate({ _id: recipe.defaultVersion }, {
-            isDefault: false,
-        });
-        await recipe_1.default.findOneAndUpdate({ _id: recipe._id }, {
-            defaultVersion: version._id,
+        await UserRecipeProfile_1.default.findOneAndUpdate({
+            recipeId: recipeId,
+            userId: userId,
+        }, {
+            $pull: {
+                turnedOnVersions: versionId,
+                turnedOfVersions: versionId,
+            },
+            defaultVersion: versionId,
             isMatch: isMatch,
         });
-        await RecipeVersionModel_1.default.findOneAndUpdate({ _id: version._id }, {
-            isDefault: true,
+        await UserRecipeProfile_1.default.findOneAndUpdate({
+            recipeId: recipeId,
+            userId: userId,
+        }, {
+            $push: {
+                turnedOnVersions: recipe.defaultVersion,
+            },
         });
-        let currentRecipe = await recipe_1.default.findOne({ _id: recipeId })
-            .populate({
-            path: 'recipeVersion',
-            model: 'RecipeVersion',
-            select: '_id postfixTitle description createdAt editedAt isDefault isOriginal',
-            options: { sort: { isDefault: -1 } },
-        })
-            .select('recipeVersion');
-        return currentRecipe.recipeVersion;
+        return 'success';
     }
     async removeAllVersion() {
         let recipes = await recipe_1.default.find();
@@ -271,7 +280,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "editAVersionOfRecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [SimpleVersion_1.default]),
+    (0, type_graphql_1.Mutation)(() => String) //changed
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AddVersion_1.default]),
@@ -292,11 +302,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "removeARecipeVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [SimpleVersion_1.default]),
+    (0, type_graphql_1.Mutation)(() => String) //changed
+    ,
     __param(0, (0, type_graphql_1.Arg)('versionID')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
+    __param(2, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "changeDefaultVersion", null);

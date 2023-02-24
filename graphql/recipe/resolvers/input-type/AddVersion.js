@@ -17,6 +17,10 @@ __decorate([
     __metadata("design:type", String)
 ], AddVersion.prototype, "recipeId", void 0);
 __decorate([
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
+    __metadata("design:type", String)
+], AddVersion.prototype, "userId", void 0);
+__decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], AddVersion.prototype, "postfixTitle", void 0);
