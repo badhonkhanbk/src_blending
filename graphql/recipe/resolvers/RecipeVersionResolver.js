@@ -117,7 +117,13 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 turnedOnVersions: newVersion._id,
             },
         });
-        return newVersion._id;
+        let recipeVersion = await RecipeVersionModel_1.default.findOne({
+            _id: newVersion._id,
+        }).populate({
+            path: 'ingredients.ingredientId',
+            model: 'BlendIngredient',
+        });
+        return recipeVersion;
     }
     async getARecipeVersion(versionId) {
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
@@ -292,7 +298,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "editAVersionOfRecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) //changed
+    (0, type_graphql_1.Mutation)(() => RecipeVersion_1.default) //changed
     ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
