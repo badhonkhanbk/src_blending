@@ -187,14 +187,16 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             defaultVersion: new mongoose_1.default.Types.ObjectId(versionId),
             isMatch: isMatch,
         });
-        await UserRecipeProfile_1.default.findOneAndUpdate({
-            recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
-            userId: new mongoose_1.default.Types.ObjectId(userId),
-        }, {
-            $push: {
-                turnedOnVersions: new mongoose_1.default.Types.ObjectId(userRecipe.defaultVersion),
-            },
-        });
+        if (String(userRecipe.originalVersion) !== String(userRecipe.defaultVersion)) {
+            await UserRecipeProfile_1.default.findOneAndUpdate({
+                recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
+                userId: new mongoose_1.default.Types.ObjectId(userId),
+            }, {
+                $push: {
+                    turnedOnVersions: new mongoose_1.default.Types.ObjectId(userRecipe.defaultVersion),
+                },
+            });
+        }
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
             _id: versionId,
         }).populate({
