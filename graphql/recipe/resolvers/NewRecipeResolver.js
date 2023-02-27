@@ -19,12 +19,14 @@ const type_graphql_1 = require("type-graphql");
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
+const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const util_1 = __importDefault(require("../../share/util"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
 const getAllGlobalRecipes_1 = __importDefault(require("./util/getAllGlobalRecipes"));
+const TurnedOnAndDefaultVersion_1 = __importDefault(require("../schemas/TurnedOnAndDefaultVersion"));
 //**
 //*
 //* @param recipeId
@@ -428,8 +430,9 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
     //   }
     // }
     async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn) {
+        let newUpdatedRecipe = {};
         if (turnedOn) {
-            await UserRecipeProfile_1.default.findOneAndUpdate({
+            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
                 userId: userId,
                 recipeId: recipeId,
             }, {
@@ -439,10 +442,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 $push: {
                     turnedOnVersions: versionId,
                 },
+            }, {
+                new: true,
             });
         }
         else {
-            await UserRecipeProfile_1.default.findOneAndUpdate({
+            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
                 userId: userId,
                 recipeId: recipeId,
             }, {
@@ -452,9 +457,24 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 $push: {
                     turnedOffVersions: versionId,
                 },
+            }, {
+                new: true,
             });
         }
-        return 'success';
+        let turnedOnVersions = await RecipeVersionModel_1.default.find({
+            _id: {
+                $in: newUpdatedRecipe.turnedOnVersions,
+            },
+        }).select('_id postfixTitle description createdAt updatedAt isDefault isOriginal');
+        let turnedOffVersions = await RecipeVersionModel_1.default.find({
+            _id: {
+                $in: newUpdatedRecipe.turnedOffVersions,
+            },
+        });
+        return {
+            turnedOnVersions: turnedOnVersions,
+            turnedOffVersions: turnedOffVersions,
+        };
     }
 };
 __decorate([
@@ -506,7 +526,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllLatestRecipes2", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => TurnedOnAndDefaultVersion_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __param(2, (0, type_graphql_1.Arg)('versionId')),

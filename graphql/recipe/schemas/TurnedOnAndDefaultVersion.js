@@ -13,26 +13,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const CreateEditRecipeVersion_1 = __importDefault(require("./CreateEditRecipeVersion"));
-let EditRecipeVersion = class EditRecipeVersion {
+const SimpleVersion_1 = __importDefault(require("./SimpleVersion"));
+let TurnedOnAndDefaultVersion = class TurnedOnAndDefaultVersion {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], EditRecipeVersion.prototype, "editId", void 0);
+    (0, type_graphql_1.Field)((type) => [SimpleVersion_1.default], { nullable: true }),
+    __metadata("design:type", Array)
+], TurnedOnAndDefaultVersion.prototype, "turnedOnVersions", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], EditRecipeVersion.prototype, "userId", void 0);
+    (0, type_graphql_1.Field)((type) => [SimpleVersion_1.default], { nullable: true }),
+    __metadata("design:type", Array)
+], TurnedOnAndDefaultVersion.prototype, "turnedOffVersions", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], EditRecipeVersion.prototype, "recipeId", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => CreateEditRecipeVersion_1.default),
-    __metadata("design:type", CreateEditRecipeVersion_1.default)
-], EditRecipeVersion.prototype, "editableObject", void 0);
-EditRecipeVersion = __decorate([
-    (0, type_graphql_1.InputType)()
-], EditRecipeVersion);
-exports.default = EditRecipeVersion;
+    (0, type_graphql_1.Field)((type) => SimpleVersion_1.default, { nullable: true }),
+    __metadata("design:type", SimpleVersion_1.default)
+], TurnedOnAndDefaultVersion.prototype, "defaultVersion", void 0);
+TurnedOnAndDefaultVersion = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], TurnedOnAndDefaultVersion);
+exports.default = TurnedOnAndDefaultVersion;

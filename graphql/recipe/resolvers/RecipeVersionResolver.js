@@ -31,6 +31,7 @@ const RecipeWithVersion_1 = __importDefault(require("../schemas/RecipeWithVersio
 const updateVersionFacts_1 = __importDefault(require("./util/updateVersionFacts"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const TurnedOnAndDefaultVersion_1 = __importDefault(require("../schemas/TurnedOnAndDefaultVersion"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
         let recipeVersion = await RecipeVersionModel_1.default.findOne({ _id: data.editId });
@@ -196,14 +197,11 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             defaultVersion: new mongoose_1.default.Types.ObjectId(versionId),
             isMatch: isMatch,
         });
-        // let SecondUserRecipe = await UserRecipeProfileModel.findOne({
-        //   recipeId: new mongoose.Types.ObjectId(recipeId),
-        //   userId: new mongoose.Types.ObjectId(userId),
-        // }).select('defaultVersion');
+        let newUpdatedRecipe = {};
         if (!isMatch) {
             // console.log(userRecipe.originalVersion);
             // console.log(userRecipe.defaultVersion);
-            await UserRecipeProfile_1.default.findOneAndUpdate({
+            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
                 recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
                 userId: new mongoose_1.default.Types.ObjectId(userId),
             }, {
@@ -211,10 +209,12 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                     turnedOnVersions: new mongoose_1.default.Types.ObjectId(versionId),
                 },
                 isMatch: isMatch,
+            }, {
+                new: true,
             });
         }
         else {
-            await UserRecipeProfile_1.default.findOneAndUpdate({
+            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
                 recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
                 userId: new mongoose_1.default.Types.ObjectId(userId),
             }, {
@@ -222,15 +222,22 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                     turnedOnVersions: new mongoose_1.default.Types.ObjectId(userRecipe.defaultVersion),
                 },
                 isMatch: isMatch,
+            }, {
+                new: true,
             });
         }
-        let recipeVersion = await RecipeVersionModel_1.default.findOne({
-            _id: versionId,
-        }).populate({
-            path: 'ingredients.ingredientId',
-            model: 'BlendIngredient',
+        let turnedOnVersions = await RecipeVersionModel_1.default.find({
+            _id: {
+                $in: newUpdatedRecipe.turnedOnVersions,
+            },
+        }).select('_id postfixTitle description createdAt updatedAt isDefault isOriginal');
+        let defaultVersion = await RecipeVersionModel_1.default.findOne({
+            _id: newUpdatedRecipe.defaultVersion,
         });
-        return recipeVersion;
+        return {
+            turnedOnVersions: turnedOnVersions,
+            defaultVersion: defaultVersion,
+        };
     }
     async removeAllVersion() {
         let recipes = await recipe_1.default.find();
@@ -341,7 +348,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "removeARecipeVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => RecipeVersion_1.default) //changed
+    (0, type_graphql_1.Mutation)(() => TurnedOnAndDefaultVersion_1.default) //changed
     ,
     __param(0, (0, type_graphql_1.Arg)('versionID')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
