@@ -109,14 +109,17 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 },
             });
         }
-        await UserRecipeProfile_1.default.findOneAndUpdate({
+        let up = await UserRecipeProfile_1.default.findOneAndUpdate({
             userId: data.userId,
             recipeId: recipe._id,
         }, {
             $push: {
                 turnedOnVersions: newVersion._id,
             },
+        }, {
+            new: true,
         });
+        // console.log('up', up);
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
             _id: newVersion._id,
         }).populate({

@@ -21,10 +21,10 @@ const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const util_1 = __importDefault(require("../../share/util"));
-const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
+const getAllGlobalRecipes_1 = __importDefault(require("./util/getAllGlobalRecipes"));
 //**
 //*
 //* @param recipeId
@@ -36,7 +36,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             userId: userId,
         }).select('_id');
         if (checkIfNew.length === 0) {
-            await this.bringAllGlobalRecipes(userId);
+            await (0, getAllGlobalRecipes_1.default)(userId);
         }
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
@@ -187,7 +187,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             userId: userId,
         }).select('_id');
         if (checkIfNew.length === 0) {
-            await this.bringAllGlobalRecipes(userId);
+            await (0, getAllGlobalRecipes_1.default)(userId);
         }
         const compareList = await Compare_1.default.find({ userId: userId });
         let recipeIds = compareList.map((compareData) => compareData.recipeId);
@@ -230,7 +230,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             userId: userId,
         }).select('_id');
         if (checkIfNew.length === 0) {
-            await this.bringAllGlobalRecipes(userId);
+            await (0, getAllGlobalRecipes_1.default)(userId);
         }
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
@@ -270,7 +270,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             userId: userId,
         }).select('_id');
         if (checkIfNew.length === 0) {
-            await this.bringAllGlobalRecipes(userId);
+            await (0, getAllGlobalRecipes_1.default)(userId);
         }
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
@@ -310,7 +310,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             userId: userId,
         }).select('_id');
         if (checkIfNew.length === 0) {
-            await this.bringAllGlobalRecipes(userId);
+            await (0, getAllGlobalRecipes_1.default)(userId);
         }
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
@@ -406,27 +406,27 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         }
         return returnRecipe;
     }
-    async bringAllGlobalRecipes(userId) {
-        let recipes = await recipeModel_1.default.find({
-            global: true,
-            userId: null,
-            addedByAdmin: true,
-            discovery: true,
-            isPublished: true,
-        });
-        for (let i = 0; i < recipes.length; i++) {
-            await UserRecipeProfile_1.default.create({
-                recipeId: recipes[i]._id,
-                userId: userId,
-                isMatch: recipes[i].isMatch,
-                allRecipes: false,
-                myRecipes: false,
-                turnedOffVersions: recipes[i].turnedOffVersion,
-                turnedOnVersions: recipes[i].turnedOnVersions,
-                defaultVersion: recipes[i].defaultVersion,
-            });
-        }
-    }
+    // async bringAllGlobalRecipes(userId: String) {
+    //   let recipes: any[] = await NewRecipeModel.find({
+    //     global: true,
+    //     userId: null,
+    //     addedByAdmin: true,
+    //     discovery: true,
+    //     isPublished: true,
+    //   });
+    //   for (let i = 0; i < recipes.length; i++) {
+    //     await UserRecipeProfileModel.create({
+    //       recipeId: recipes[i]._id,
+    //       userId: userId,
+    //       isMatch: recipes[i].isMatch,
+    //       allRecipes: false,
+    //       myRecipes: false,
+    //       turnedOffVersions: recipes[i].turnedOffVersion,
+    //       turnedOnVersions: recipes[i].turnedOnVersions,
+    //       defaultVersion: recipes[i].defaultVersion,
+    //     });
+    //   }
+    // }
     async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn) {
         if (turnedOn) {
             await UserRecipeProfile_1.default.findOneAndUpdate({

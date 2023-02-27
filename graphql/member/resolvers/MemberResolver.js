@@ -35,6 +35,8 @@ const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTh
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
 const share_1 = __importDefault(require("../../../models/share"));
+const getAllGlobalRecipes_1 = __importDefault(require("../../recipe/resolvers/util/getAllGlobalRecipes"));
+const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -285,6 +287,12 @@ let MemberResolver = class MemberResolver {
             let DailyGoal = await DailyGoal_1.default.create({ memberId: user2._id });
             await memberModel_1.default.findOneAndUpdate({ _id: user2._id }, { dailyGoal: DailyGoal._id });
             await userCollection_1.default.findOneAndUpdate({ _id: collection._id }, { userId: user2._id });
+            let checkIfNew = await UserRecipeProfile_1.default.find({
+                userId: user2._id,
+            }).select('_id');
+            if (checkIfNew.length === 0) {
+                await (0, getAllGlobalRecipes_1.default)(user2._id);
+            }
             let user3 = await memberModel_1.default.findOne({ _id: user2._id })
                 .populate('configuration')
                 .populate({
@@ -295,6 +303,12 @@ let MemberResolver = class MemberResolver {
                 },
             });
             return user3;
+        }
+        let checkIfNew = await UserRecipeProfile_1.default.find({
+            userId: user._id,
+        }).select('_id');
+        if (checkIfNew.length === 0) {
+            await (0, getAllGlobalRecipes_1.default)(user._id);
         }
         return user;
     }
