@@ -233,6 +233,9 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         }).select('_id postfixTitle description createdAt updatedAt isDefault isOriginal');
         let defaultVersion = await RecipeVersionModel_1.default.findOne({
             _id: newUpdatedRecipe.defaultVersion,
+        }).populate({
+            path: 'ingredients.ingredientId',
+            model: 'BlendIngredient',
         });
         return {
             turnedOnVersions: turnedOnVersions,

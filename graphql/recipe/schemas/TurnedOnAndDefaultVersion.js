@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const SimpleVersion_1 = __importDefault(require("./SimpleVersion"));
+const RecipeVersion_1 = __importDefault(require("./RecipeVersion"));
 let TurnedOnAndDefaultVersion = class TurnedOnAndDefaultVersion {
 };
 __decorate([
@@ -25,8 +26,8 @@ __decorate([
     __metadata("design:type", Array)
 ], TurnedOnAndDefaultVersion.prototype, "turnedOffVersions", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => SimpleVersion_1.default, { nullable: true }),
-    __metadata("design:type", SimpleVersion_1.default)
+    (0, type_graphql_1.Field)((type) => RecipeVersion_1.default, { nullable: true }),
+    __metadata("design:type", RecipeVersion_1.default)
 ], TurnedOnAndDefaultVersion.prototype, "defaultVersion", void 0);
 TurnedOnAndDefaultVersion = __decorate([
     (0, type_graphql_1.ObjectType)()
