@@ -32,6 +32,7 @@ const updateVersionFacts_1 = __importDefault(require("./util/updateVersionFacts"
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const TurnedOnAndDefaultVersion_1 = __importDefault(require("../schemas/TurnedOnAndDefaultVersion"));
+const EditedVersion_1 = __importDefault(require("../schemas/EditedVersion"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
         let recipe = await recipe_1.default.findOne({ _id: data.recipeId }).select('userId');
@@ -385,7 +386,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => EditedVersion_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditVersion_1.default]),
