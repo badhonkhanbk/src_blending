@@ -36,6 +36,16 @@ const EditedVersion_1 = __importDefault(require("../schemas/EditedVersion"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
         let recipe = await recipe_1.default.findOne({ _id: data.recipeId }).select('userId');
+        let recipeVersion = await RecipeVersionModel_1.default.findOne({
+            _id: data.editId,
+        }).select('createdBy');
+        let userRecipe = await UserRecipeProfile_1.default.findOne({
+            recipeId: recipe._id,
+            userId: data.userId,
+        });
+        if (!userRecipe) {
+            return new AppError_1.default('Recipe not found', 404);
+        }
         let willBeModifiedData = data.editableObject;
         if (data.editableObject.ingredients) {
             let ingredients = data.editableObject.ingredients;
@@ -72,13 +82,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             willBeModifiedData.ingredients = modifiedIngredients;
             willBeModifiedData.editedAt = Date.now();
         }
-        if (String(data.userId) === String(recipe.userId)) {
-            if (String(recipe.originalversion) === String(data.editId)) {
-                await recipe_1.default.findOneAndUpdate({ _id: recipe._id }, {
-                    name: data.editableObject.postfixTitle,
-                });
-                delete willBeModifiedData.postfixTitle;
-            }
+        if (String(data.userId) === String(recipeVersion.createdBy)) {
             let newVersion = await RecipeVersionModel_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData, { new: true });
             await (0, updateVersionFacts_1.default)(newVersion._id);
             return {
@@ -87,13 +91,6 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             };
         }
         else {
-            let userRecipe = await UserRecipeProfile_1.default.findOne({
-                recipeId: recipe._id,
-                userId: data.userId,
-            });
-            if (!userRecipe) {
-                return new AppError_1.default('Recipe not found', 404);
-            }
             let newVersion = willBeModifiedData;
             newVersion.recipeId = recipe._id;
             newVersion.createdBy = data.userId;
@@ -145,6 +142,21 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 isNew: true,
             };
         }
+        // if (String(data.userId) === String(recipe.userId)) {
+        //   if (String(recipe.originalversion) === String(data.editId)) {
+        //     await RecipeModel.findOneAndUpdate(
+        //       { _id: recipe._id },
+        //       {
+        //         name: data.editableObject.postfixTitle,
+        //       }
+        //     );
+        //     delete willBeModifiedData.postfixTitle;
+        //   }
+        //   return {
+        //     status: 'recipeVersion updated successfully',
+        //     isNew: false,
+        //   };
+        // }
     }
     async addVersion(data) {
         let recipe = await recipe_1.default.findOne({ _id: data.recipeId }).populate({

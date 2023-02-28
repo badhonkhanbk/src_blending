@@ -40,6 +40,7 @@ const updateOriginalVersionFact_1 = __importDefault(require("./util/updateOrigin
 const util_1 = __importDefault(require("../../share/util"));
 const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrappedRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
+const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 let RecipeResolver = class RecipeResolver {
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
@@ -999,6 +1000,14 @@ let RecipeResolver = class RecipeResolver {
             select: 'postfixTitle',
         })
             .populate('brand');
+        await UserRecipeProfile_1.default.create({
+            userId: data.userId,
+            recipeId: returnUserRecipe._id,
+            defaultVersion: returnUserRecipe.defaultVersion._id,
+            isMatch: true,
+            allRecipe: true,
+            myRecipe: true,
+        });
         return returnUserRecipe;
     }
     async addScrappedRecipeFromUser(data) {
