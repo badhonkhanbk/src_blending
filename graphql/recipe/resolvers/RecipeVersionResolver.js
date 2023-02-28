@@ -34,15 +34,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const TurnedOnAndDefaultVersion_1 = __importDefault(require("../schemas/TurnedOnAndDefaultVersion"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
-        let recipeVersion = await RecipeVersionModel_1.default.findOne({ _id: data.editId });
-        let recipe = await recipe_1.default.findOne({ _id: recipeVersion.recipeId });
+        let recipe = await recipe_1.default.findOne({ _id: data.recipeId }).select('userId');
         let willBeModifiedData = data.editableObject;
-        if (String(recipe.originalversion) === String(data.editId)) {
-            await recipe_1.default.findOneAndUpdate({ _id: recipe._id }, {
-                name: data.editableObject.postfixTitle,
-            });
-            delete willBeModifiedData.postfixTitle;
-        }
         if (data.editableObject.ingredients) {
             let ingredients = data.editableObject.ingredients;
             let modifiedIngredients = [];
@@ -78,9 +71,79 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             willBeModifiedData.ingredients = modifiedIngredients;
             willBeModifiedData.editedAt = Date.now();
         }
-        let newVersion = await RecipeVersionModel_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData, { new: true });
-        await (0, updateVersionFacts_1.default)(newVersion._id);
-        return 'recipeVersion updated successfully';
+        if (String(data.userId) === String(recipe.userId)) {
+            if (String(recipe.originalversion) === String(data.editId)) {
+                await recipe_1.default.findOneAndUpdate({ _id: recipe._id }, {
+                    name: data.editableObject.postfixTitle,
+                });
+                delete willBeModifiedData.postfixTitle;
+            }
+            let newVersion = await RecipeVersionModel_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData, { new: true });
+            await (0, updateVersionFacts_1.default)(newVersion._id);
+            return {
+                status: 'recipeVersion updated successfully',
+                isNew: false,
+            };
+        }
+        else {
+            let userRecipe = await UserRecipeProfile_1.default.findOne({
+                recipeId: recipe._id,
+                userId: data.userId,
+            });
+            if (!userRecipe) {
+                return new AppError_1.default('Recipe not found', 404);
+            }
+            let newVersion = willBeModifiedData;
+            newVersion.recipeId = recipe._id;
+            newVersion.createdBy = data.userId;
+            let createdVersion = await RecipeVersionModel_1.default.create(newVersion);
+            if (String(userRecipe.defaultVersion) === String(data.editId) &&
+                userRecipe.isMatch) {
+                return new AppError_1.default('You can not edit this version', 400);
+            }
+            else if (String(userRecipe.defaultVersion) === String(data.editId) &&
+                !userRecipe.isMatch) {
+                await UserRecipeProfile_1.default.findOneAndUpdate({ _id: userRecipe._id }, { defaultVersion: createdVersion._id });
+            }
+            else if (String(userRecipe.originalVersion) === String(data.editId)) {
+                return new AppError_1.default('You can not edit this version', 400);
+            }
+            else {
+                if (data.turnedOn) {
+                    await UserRecipeProfile_1.default.findOneAndUpdate({ _id: userRecipe._id }, {
+                        $pull: {
+                            turnedOnVersions: data.editId,
+                        },
+                    });
+                    await UserRecipeProfile_1.default.findOneAndUpdate({
+                        _id: userRecipe._id,
+                    }, {
+                        $push: {
+                            turnedOnVersions: createdVersion._id,
+                        },
+                    });
+                }
+                else {
+                    await UserRecipeProfile_1.default.findOneAndUpdate({ _id: userRecipe._id }, {
+                        $pull: {
+                            turnedOnVersions: data.editId,
+                        },
+                    });
+                    await UserRecipeProfile_1.default.findOneAndUpdate({
+                        _id: userRecipe._id,
+                    }, {
+                        $push: {
+                            turnedOnVersions: createdVersion._id,
+                        },
+                    });
+                }
+            }
+            await (0, updateVersionFacts_1.default)(createdVersion._id);
+            return {
+                status: newVersion._id,
+                isNew: true,
+            };
+        }
     }
     async addVersion(data) {
         let recipe = await recipe_1.default.findOne({ _id: data.recipeId }).populate({

@@ -260,7 +260,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
     async filterIngredientByCategoryAndClass(data) {
         let ingredients;
         if (data.ingredientCategory === 'All') {
-            if (data.IngredientClass > 0) {
+            if (+data.IngredientClass > 0) {
                 ingredients = await blendIngredient_1.default.find({
                     classType: 'Class - ' + data.IngredientClass,
                     blendStatus: 'Active',
@@ -300,7 +300,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             }
         }
         else {
-            if (data.IngredientClass > 0) {
+            if (+data.IngredientClass > 0) {
                 ingredients = await blendIngredient_1.default.find({
                     category: data.ingredientCategory,
                     classType: 'Class - ' + data.IngredientClass,

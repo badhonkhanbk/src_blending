@@ -21,13 +21,17 @@ __decorate([
     __metadata("design:type", String)
 ], EditRecipeVersion.prototype, "editId", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], EditRecipeVersion.prototype, "userId", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], EditRecipeVersion.prototype, "recipeId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], EditRecipeVersion.prototype, "turnedOn", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => CreateEditRecipeVersion_1.default),
     __metadata("design:type", CreateEditRecipeVersion_1.default)
