@@ -18,7 +18,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const RecipeFacts_1 = __importDefault(require("../../../models/RecipeFacts"));
 const recipeOriginalFactModel_1 = __importDefault(require("../../../models/recipeOriginalFactModel"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
@@ -41,6 +41,7 @@ const util_1 = __importDefault(require("../../share/util"));
 const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrappedRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+const getAllGlobalRecipes_1 = __importDefault(require("./util/getAllGlobalRecipes"));
 let RecipeResolver = class RecipeResolver {
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
@@ -123,7 +124,7 @@ let RecipeResolver = class RecipeResolver {
         let recipes;
         //@ts-ignore
         if (data.includeIngredientIds.length > 0) {
-            recipes = await recipe_1.default.find({
+            recipes = await recipeModel_1.default.find({
                 global: true,
                 userId: null,
                 addedByAdmin: true,
@@ -155,7 +156,7 @@ let RecipeResolver = class RecipeResolver {
                 .populate('recipeBlendCategory');
         }
         else {
-            recipes = await recipe_1.default.find({
+            recipes = await recipeModel_1.default.find({
                 global: true,
                 userId: null,
                 addedByAdmin: true,
@@ -238,7 +239,7 @@ let RecipeResolver = class RecipeResolver {
     //CHECK:
     async getAllRecipes(userId) {
         if (userId) {
-            const recipes = await recipe_1.default.find({})
+            const recipes = await recipeModel_1.default.find({})
                 .populate({
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
@@ -306,7 +307,7 @@ let RecipeResolver = class RecipeResolver {
             return returnRecipe;
         }
         else {
-            const recipes = await recipe_1.default.find()
+            const recipes = await recipeModel_1.default.find()
                 .populate({
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
@@ -332,7 +333,7 @@ let RecipeResolver = class RecipeResolver {
         }
     }
     async getAllrecomendedRecipes(userId) {
-        const recipes = await recipe_1.default.find({
+        const recipes = await recipeModel_1.default.find({
             global: true,
             userId: null,
             addedByAdmin: true,
@@ -414,7 +415,7 @@ let RecipeResolver = class RecipeResolver {
         return returnRecipe;
     }
     async getAllpopularRecipes(userId) {
-        const recipes = await recipe_1.default.find({
+        const recipes = await recipeModel_1.default.find({
             global: true,
             userId: null,
             addedByAdmin: true,
@@ -508,7 +509,7 @@ let RecipeResolver = class RecipeResolver {
         if (!limit) {
             limit = 10;
         }
-        let recipes = await recipe_1.default.find({
+        let recipes = await recipeModel_1.default.find({
             global: true,
             userId: null,
             addedByAdmin: true,
@@ -588,7 +589,7 @@ let RecipeResolver = class RecipeResolver {
                 userCollections: collectionData,
             });
         }
-        let totalRecipes = await recipe_1.default.countDocuments({
+        let totalRecipes = await recipeModel_1.default.countDocuments({
             global: true,
             userId: null,
             addedByAdmin: true,
@@ -602,7 +603,7 @@ let RecipeResolver = class RecipeResolver {
         };
     }
     async getAllLatestRecipes(userId) {
-        const recipes = await recipe_1.default.find({
+        const recipes = await recipeModel_1.default.find({
             global: true,
             userId: null,
             addedByAdmin: true,
@@ -701,7 +702,7 @@ let RecipeResolver = class RecipeResolver {
         if (!recipeId) {
             return new AppError_1.default('Recipe not found', 404);
         }
-        const recipe = await recipe_1.default.findById(recipeId)
+        const recipe = await recipeModel_1.default.findById(recipeId)
             .populate({
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
@@ -782,7 +783,7 @@ let RecipeResolver = class RecipeResolver {
         };
     }
     async getARecipeForAdmin(recipeId) {
-        const recipe = await recipe_1.default.findById(recipeId)
+        const recipe = await recipeModel_1.default.findById(recipeId)
             .populate({
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
@@ -792,7 +793,7 @@ let RecipeResolver = class RecipeResolver {
         return recipe;
     }
     async editARecipe(data) {
-        let recipe = await recipe_1.default.findOne({ _id: data.editId });
+        let recipe = await recipeModel_1.default.findOne({ _id: data.editId });
         let willBeModifiedData = data.editableObject;
         let modifiedIngredients = [];
         if (data.editableObject.ingredients) {
@@ -835,7 +836,7 @@ let RecipeResolver = class RecipeResolver {
             }, { new: true });
             await (0, updateOriginalVersionFact_1.default)(newVersion._id);
         }
-        await recipe_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData);
+        await recipeModel_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData);
         return 'recipe updated successfully';
     }
     async deleteARecipe(recipeId, userId) {
@@ -843,7 +844,7 @@ let RecipeResolver = class RecipeResolver {
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
-        let recipe = await recipe_1.default.findOne({ _id: recipeId });
+        let recipe = await recipeModel_1.default.findOne({ _id: recipeId });
         if (!recipe) {
             return new AppError_1.default('Recipe not found', 404);
         }
@@ -855,7 +856,7 @@ let RecipeResolver = class RecipeResolver {
             recipeId: recipe._id,
         });
         if (String(recipe.userId) === String(userId)) {
-            await recipe_1.default.findOneAndRemove({ _id: recipeId });
+            await recipeModel_1.default.findOneAndRemove({ _id: recipeId });
             await RecipeVersionModel_1.default.deleteMany({
                 _id: {
                     $in: recipe.recipeVersion,
@@ -911,7 +912,7 @@ let RecipeResolver = class RecipeResolver {
         }
         newData.foodCategories = [...new Set(newData.foodCategories)];
         newData.global = false;
-        let recipe = await recipe_1.default.create(newData);
+        let recipe = await recipeModel_1.default.create(newData);
         return 'recipe added successfully';
     }
     async addRecipeFromUser(data) {
@@ -963,7 +964,7 @@ let RecipeResolver = class RecipeResolver {
         newData.foodCategories = [...new Set(newData.foodCategories)];
         newData.global = false;
         newData.userId = user._id;
-        let userRecipe = await recipe_1.default.create(newData);
+        let userRecipe = await recipeModel_1.default.create(newData);
         await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
         let recipeVersion = await RecipeVersionModel_1.default.create({
             recipeId: userRecipe._id,
@@ -976,14 +977,14 @@ let RecipeResolver = class RecipeResolver {
             isOriginal: true,
         });
         await (0, updateOriginalVersionFact_1.default)(recipeVersion._id);
-        await recipe_1.default.findOneAndUpdate({
+        await recipeModel_1.default.findOneAndUpdate({
             _id: userRecipe._id,
         }, {
             $push: { recipeVersion: recipeVersion._id },
             originalVersion: recipeVersion._id,
             defaultVersion: recipeVersion._id,
         });
-        let returnUserRecipe = await recipe_1.default.findOne({ _id: userRecipe._id })
+        let returnUserRecipe = await recipeModel_1.default.findOne({ _id: userRecipe._id })
             .populate('recipeBlendCategory')
             .populate({
             path: 'ingredients.ingredientId',
@@ -1046,13 +1047,13 @@ let RecipeResolver = class RecipeResolver {
         }
     }
     async getA() {
-        let recipes = await recipe_1.default.find();
+        let recipes = await recipeModel_1.default.find();
         for (let i = 0; i < recipes.length; i++) {
             let recipeVersion = recipes[i].recipeVersion[0];
             await RecipeVersionModel_1.default.findOneAndUpdate({ _id: recipeVersion }, {
                 postfixTitle: recipes[i].name,
             });
-            await recipe_1.default.findOneAndUpdate({ _id: recipes[i]._id }, {
+            await recipeModel_1.default.findOneAndUpdate({ _id: recipes[i]._id }, {
                 originalVersion: recipeVersion,
                 defaultVersion: recipeVersion,
             });
@@ -1060,7 +1061,7 @@ let RecipeResolver = class RecipeResolver {
         return 'done';
     }
     async getAllRecipesBasedOnIngredient(ingredientId) {
-        let recipes = await recipe_1.default.find({
+        let recipes = await recipeModel_1.default.find({
             'ingredients.ingredientId': new mongoose_1.default.mongo.ObjectId(ingredientId),
         })
             .populate({
@@ -1082,7 +1083,7 @@ let RecipeResolver = class RecipeResolver {
         return recipes;
     }
     async getAllMyCreatedRecipes(userId) {
-        const recipes = await recipe_1.default.find({ userId: userId })
+        const recipes = await recipeModel_1.default.find({ userId: userId })
             .populate({
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
@@ -1156,7 +1157,7 @@ let RecipeResolver = class RecipeResolver {
         return returnRecipe;
     }
     async addMacroInfo() {
-        let recipes = await recipe_1.default.find().select('userId');
+        let recipes = await recipeModel_1.default.find().select('userId');
         // for (let i = 0; i < recipes.length; i++) {
         //   console.log(recipes[i])
         // }
@@ -1245,7 +1246,7 @@ let RecipeResolver = class RecipeResolver {
         let findKeys = Object.keys(find);
         if (findKeys.length > 0) {
             console.log(find);
-            recipeData = await recipe_1.default.find(find).select('_id');
+            recipeData = await recipeModel_1.default.find(find).select('_id');
         }
         else {
             recipeData = [];
@@ -1253,7 +1254,7 @@ let RecipeResolver = class RecipeResolver {
         console.log('hello');
         if (recipeData.length > 0 && data.excludeIngredientIds.length > 0) {
             let recipeIds = recipeData.map((recipe) => recipe._id);
-            recipeData = await recipe_1.default.find({
+            recipeData = await recipeModel_1.default.find({
                 _id: { $in: recipeIds },
                 'ingredients.ingredientId': { $nin: data.excludeIngredientIds },
             }).select('_id');
@@ -1369,7 +1370,7 @@ let RecipeResolver = class RecipeResolver {
             recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
             // recipeIds = [];
         }
-        let recipes = await recipe_1.default.find({
+        let recipes = await recipeModel_1.default.find({
             _id: { $in: recipeIds },
         })
             .populate({
@@ -1453,11 +1454,11 @@ let RecipeResolver = class RecipeResolver {
         };
     }
     async makeSomeGlobalRecipes() {
-        let recipes = await recipe_1.default.find({
+        let recipes = await recipeModel_1.default.find({
             addedByAdmin: true,
         });
         for (let i = 0; i < recipes.length; i++) {
-            await recipe_1.default.updateOne({ _id: recipes[i]._id }, {
+            await recipeModel_1.default.updateOne({ _id: recipes[i]._id }, {
                 $set: {
                     global: true,
                     userId: null,
@@ -1466,6 +1467,22 @@ let RecipeResolver = class RecipeResolver {
                     isPublished: true,
                 },
             });
+        }
+        return true;
+    }
+    async juio() {
+        let userIds = [
+            '61e95b07f5ceac74c03c26cb',
+            '62af48eb2b3810511d085de2',
+            '630f715332812ea1593eb485',
+            '63fec8a3a54082e011637a24',
+            '61c1e18ab0b6d08ad8f7484f',
+        ];
+        await UserRecipeProfile_1.default.deleteMany({
+            userId: { $in: userIds },
+        });
+        for (let i = 0; i < userIds.length; i++) {
+            await (0, getAllGlobalRecipes_1.default)(userIds[i]);
         }
         return true;
     }
@@ -1661,6 +1678,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "makeSomeGlobalRecipes", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeResolver.prototype, "juio", null);
 RecipeResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], RecipeResolver);

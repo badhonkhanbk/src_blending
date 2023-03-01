@@ -60,6 +60,10 @@ const recipeModelSchema = new mongoose_1.Schema({
             ref: 'Admin',
         },
     ],
+    adminId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'Admin',
+    },
     discovery: {
         type: Boolean,
         default: false,
