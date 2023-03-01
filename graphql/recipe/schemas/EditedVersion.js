@@ -13,7 +13,7 @@ const type_graphql_1 = require("type-graphql");
 let EditedRecipe = class EditedRecipe {
 };
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], EditedRecipe.prototype, "status", void 0);
 __decorate([
