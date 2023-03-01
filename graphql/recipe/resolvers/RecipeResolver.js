@@ -973,6 +973,7 @@ let RecipeResolver = class RecipeResolver {
             description: '',
             ingredients: newData.ingredients,
             recipeInstructions: newData.recipeInstructions,
+            createdBy: data.userId,
             isDefault: true,
             isOriginal: true,
         });
