@@ -34,7 +34,7 @@ const TurnedOnAndDefaultVersion_1 = __importDefault(require("../schemas/TurnedOn
 const EditedVersion_1 = __importDefault(require("../schemas/EditedVersion"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
-        let recipe = await recipeModel_1.default.findOne({ _id: data.recipeId }).select('userId adminId');
+        let recipe = await recipeModel_1.default.findOne({ _id: data.recipeId }).select('userId adminId originalVersion');
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
             _id: data.editId,
         }).select('createdBy');
@@ -93,6 +93,9 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             let newVersion = willBeModifiedData;
             newVersion.recipeId = recipe._id;
             newVersion.createdBy = data.userId;
+            if (String(recipe.originalVersion) === String(data.editId)) {
+                return new AppError_1.default('You can not edit this version', 400);
+            }
             if (String(userRecipe.defaultVersion) === String(data.editId) &&
                 userRecipe.isMatch) {
                 return new AppError_1.default('You can not edit this version', 400);
