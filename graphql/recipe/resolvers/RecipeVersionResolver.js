@@ -93,12 +93,12 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             let newVersion = willBeModifiedData;
             newVersion.recipeId = recipe._id;
             newVersion.createdBy = data.userId;
-            let createdVersion = await RecipeVersionModel_1.default.create(newVersion);
             if (String(userRecipe.defaultVersion) === String(data.editId) &&
                 userRecipe.isMatch) {
                 return new AppError_1.default('You can not edit this version', 400);
             }
-            else if (String(userRecipe.defaultVersion) === String(data.editId) &&
+            let createdVersion = await RecipeVersionModel_1.default.create(newVersion);
+            if (String(userRecipe.defaultVersion) === String(data.editId) &&
                 !userRecipe.isMatch) {
                 await UserRecipeProfile_1.default.findOneAndUpdate({ _id: userRecipe._id }, { defaultVersion: createdVersion._id });
             }
