@@ -176,7 +176,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             recipeInstructions: recipe.defaultVersion.recipeInstructions,
             ingredients: recipe.defaultVersion.ingredients,
             servingSize: recipe.defaultVersion.servingSize,
-            createdAt: Date.now,
+            createdAt: new Date(),
             createdBy: data.userId,
         });
         await (0, updateVersionFacts_1.default)(newVersion._id);
