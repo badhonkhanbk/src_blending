@@ -226,14 +226,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         return returnRecipe;
     }
     async getAllrecomendedRecipes2(userId) {
-        // await NewRecipeModel.deleteMany();
-        await UserRecipeProfile_1.default.deleteMany();
-        let checkIfNew = await UserRecipeProfile_1.default.find({
-            userId: userId,
-        }).select('_id');
-        if (checkIfNew.length === 0) {
-            await (0, getAllGlobalRecipes_1.default)(userId);
-        }
+        // let checkIfNew = await UserRecipeProfileModel.find({
+        //   userId: userId,
+        // }).select('_id');
+        // if (checkIfNew.length === 0) {
+        //   await bringAllGlobalRecipes(userId);
+        // }
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })
@@ -268,12 +266,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         return returnRecipe;
     }
     async getAllpopularRecipes2(userId) {
-        let checkIfNew = await UserRecipeProfile_1.default.find({
-            userId: userId,
-        }).select('_id');
-        if (checkIfNew.length === 0) {
-            await (0, getAllGlobalRecipes_1.default)(userId);
-        }
+        // let checkIfNew = await UserRecipeProfileModel.find({
+        //   userId: userId,
+        // }).select('_id');
+        // if (checkIfNew.length === 0) {
+        //   await bringAllGlobalRecipes(userId);
+        // }
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })
@@ -308,12 +306,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         return returnRecipe;
     }
     async getAllLatestRecipes2(userId) {
-        let checkIfNew = await UserRecipeProfile_1.default.find({
-            userId: userId,
-        }).select('_id');
-        if (checkIfNew.length === 0) {
-            await (0, getAllGlobalRecipes_1.default)(userId);
-        }
+        // let checkIfNew = await UserRecipeProfileModel.find({
+        //   userId: userId,
+        // }).select('_id');
+        // if (checkIfNew.length === 0) {
+        //   await bringAllGlobalRecipes(userId);
+        // }
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })

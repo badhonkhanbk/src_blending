@@ -41,7 +41,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         let userRecipe = await UserRecipeProfile_1.default.findOne({
             recipeId: recipe._id,
             userId: data.userId,
-        });
+        }).select('originalVersion defaultVersion isMatch');
         if (!userRecipe) {
             return new AppError_1.default('Recipe not found', 404);
         }
