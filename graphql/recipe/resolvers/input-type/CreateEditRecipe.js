@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const ImageInput_1 = __importDefault(require("./ImageInput"));
-const CreateIngredientData_1 = __importDefault(require("./CreateIngredientData"));
 let CreateEditRecipe = class CreateEditRecipe {
 };
 __decorate([
@@ -23,20 +22,8 @@ __decorate([
 ], CreateEditRecipe.prototype, "mainEntityOfPage", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateEditRecipe.prototype, "postfixTitle", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Number)
-], CreateEditRecipe.prototype, "servingSize", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], CreateEditRecipe.prototype, "servings", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateEditRecipe.prototype, "name", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [ImageInput_1.default], { nullable: true }),
     __metadata("design:type", Array)
@@ -45,10 +32,6 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CreateEditRecipe.prototype, "datePublished", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateEditRecipe.prototype, "description", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
@@ -68,14 +51,6 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
-], CreateEditRecipe.prototype, "recipeIngredients", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
-    __metadata("design:type", Array)
-], CreateEditRecipe.prototype, "recipeInstructions", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
-    __metadata("design:type", Array)
 ], CreateEditRecipe.prototype, "recipeCuisines", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
@@ -86,17 +61,9 @@ __decorate([
     __metadata("design:type", String)
 ], CreateEditRecipe.prototype, "recipeBlendCategory", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateEditRecipe.prototype, "brandName", void 0);
-__decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
 ], CreateEditRecipe.prototype, "foodCategories", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => [CreateIngredientData_1.default], { nullable: true }),
-    __metadata("design:type", Array)
-], CreateEditRecipe.prototype, "ingredients", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)

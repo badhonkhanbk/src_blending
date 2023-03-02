@@ -41,7 +41,6 @@ const util_1 = __importDefault(require("../../share/util"));
 const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrappedRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
-const getAllGlobalRecipes_1 = __importDefault(require("./util/getAllGlobalRecipes"));
 let RecipeResolver = class RecipeResolver {
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
@@ -792,52 +791,16 @@ let RecipeResolver = class RecipeResolver {
             .populate('recipeBlendCategory');
         return recipe;
     }
-    async editARecipe(data) {
+    async editARecipe(data, userId) {
         let recipe = await recipeModel_1.default.findOne({ _id: data.editId });
-        let willBeModifiedData = data.editableObject;
-        let modifiedIngredients = [];
-        if (data.editableObject.ingredients) {
-            let ingredients = data.editableObject.ingredients;
-            for (let i = 0; i < ingredients.length; i++) {
-                let ingredient = await blendIngredient_1.default.findOne({
-                    _id: ingredients[i].ingredientId,
-                }).select('portions');
-                let mainPortion = ingredient.portions.filter(
-                //@ts-ignore
-                (portion) => portion.measurement === ingredients[i].selectedPortionName)[0];
-                console.log('mainPortion', mainPortion);
-                let selectedPortion = {
-                    name: ingredients[i].selectedPortionName,
-                    gram: ingredients[i].weightInGram,
-                    quantity: ingredients[i].weightInGram / +mainPortion.meausermentWeight,
-                };
-                console.log('sl portion', selectedPortion);
-                let portions = [];
-                for (let j = 0; j < ingredient.portions.length; j++) {
-                    portions.push({
-                        name: ingredient.portions[j].measurement,
-                        default: ingredient.portions[j].default,
-                        gram: ingredient.portions[j].meausermentWeight,
-                    });
-                }
-                modifiedIngredients.push({
-                    ingredientId: ingredients[i].ingredientId,
-                    portions: portions,
-                    selectedPortion: selectedPortion,
-                    weightInGram: ingredients[i].weightInGram,
-                });
-            }
-            //@ts-ignore
-            willBeModifiedData.ingredients = modifiedIngredients;
-            let newVersion = await RecipeVersionModel_1.default.findOneAndUpdate({ _id: recipe.originalVersion }, {
-                servingSize: willBeModifiedData.servingSize,
-                ingredients: willBeModifiedData.ingredients,
-                recipeInstructions: willBeModifiedData.recipeInstructions,
-            }, { new: true });
-            await (0, updateOriginalVersionFact_1.default)(newVersion._id);
+        if (String(recipe.userId) === userId) {
+            let willBeModifiedData = data.editableObject;
+            await recipeModel_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData);
+            return 'recipe updated successfully';
         }
-        await recipeModel_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData);
-        return 'recipe updated successfully';
+        else {
+            return new AppError_1.default('You are not authorized to edit this recipe', 401);
+        }
     }
     async deleteARecipe(recipeId, userId) {
         let user = await memberModel_1.default.findOne({ _id: userId }).populate('collections');
@@ -968,9 +931,9 @@ let RecipeResolver = class RecipeResolver {
         await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
         let recipeVersion = await RecipeVersionModel_1.default.create({
             recipeId: userRecipe._id,
-            postfixTitle: '',
+            postfixTitle: data.name,
             servingSize: newData.servingSize,
-            description: '',
+            description: newData.description,
             ingredients: newData.ingredients,
             recipeInstructions: newData.recipeInstructions,
             createdBy: data.userId,
@@ -1472,18 +1435,19 @@ let RecipeResolver = class RecipeResolver {
         return true;
     }
     async juio() {
-        let userIds = [
-            '61e95b07f5ceac74c03c26cb',
-            '62af48eb2b3810511d085de2',
-            '630f715332812ea1593eb485',
-            '63fec8a3a54082e011637a24',
-            '61c1e18ab0b6d08ad8f7484f',
-        ];
-        await UserRecipeProfile_1.default.deleteMany({
-            userId: { $in: userIds },
-        });
-        for (let i = 0; i < userIds.length; i++) {
-            await (0, getAllGlobalRecipes_1.default)(userIds[i]);
+        let recipes = await recipeModel_1.default.find({}).select('originalVersion name description');
+        for (let i = 0; i < recipes.length; i++) {
+            if (!recipes[i].originalVersion) {
+                continue;
+            }
+            else {
+                await RecipeVersionModel_1.default.findOneAndUpdate({
+                    _id: recipes[i].originalVersion,
+                }, {
+                    name: recipes[i].name,
+                    description: recipes[i].description,
+                });
+            }
         }
         return true;
     }
@@ -1565,8 +1529,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Mutation)((type) => String),
     __param(0, (0, type_graphql_1.Arg)('data')),
+    __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [EditRecipe_1.default]),
+    __metadata("design:paramtypes", [EditRecipe_1.default,
+        String]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "editARecipe", null);
 __decorate([
