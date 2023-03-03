@@ -30,7 +30,6 @@ const RecipeWithVersion_1 = __importDefault(require("../schemas/RecipeWithVersio
 const updateVersionFacts_1 = __importDefault(require("./util/updateVersionFacts"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const TurnedOnAndDefaultVersion_1 = __importDefault(require("../schemas/TurnedOnAndDefaultVersion"));
 const EditedVersion_1 = __importDefault(require("../schemas/EditedVersion"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
@@ -172,12 +171,47 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         if (!recipe) {
             return new AppError_1.default('Recipe not found', 404);
         }
+        let versionModifiedIngredients = recipe.defaultVersion.ingredients;
+        if (data.ingredients) {
+            let ingredients = data.ingredients;
+            let modifiedIngredients = [];
+            for (let i = 0; i < ingredients.length; i++) {
+                let ingredient = await blendIngredient_1.default.findOne({
+                    _id: ingredients[i].ingredientId,
+                }).select('portions');
+                let mainPortion = ingredient.portions.filter(
+                //@ts-ignore
+                (portion) => portion.measurement === ingredients[i].selectedPortionName)[0];
+                console.log('mainPortion', mainPortion);
+                let selectedPortion = {
+                    name: ingredients[i].selectedPortionName,
+                    gram: ingredients[i].weightInGram,
+                    quantity: ingredients[i].weightInGram / +mainPortion.meausermentWeight,
+                };
+                let portions = [];
+                for (let j = 0; j < ingredient.portions.length; j++) {
+                    portions.push({
+                        name: ingredient.portions[j].measurement,
+                        default: ingredient.portions[j].default,
+                        gram: ingredient.portions[j].meausermentWeight,
+                    });
+                }
+                modifiedIngredients.push({
+                    ingredientId: ingredients[i].ingredientId,
+                    portions: portions,
+                    selectedPortion: selectedPortion,
+                    weightInGram: ingredients[i].weightInGram,
+                });
+            }
+            versionModifiedIngredients = modifiedIngredients;
+            //@ts-ignore
+        }
         let newVersion = await RecipeVersionModel_1.default.create({
             recipeId: recipe._id,
             postfixTitle: data.postfixTitle,
             description: data.description ? data.description : '',
             recipeInstructions: recipe.defaultVersion.recipeInstructions,
-            ingredients: recipe.defaultVersion.ingredients,
+            ingredients: versionModifiedIngredients,
             servingSize: recipe.defaultVersion.servingSize,
             createdAt: new Date(),
             createdBy: data.userId,
@@ -266,27 +300,25 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 new: true,
             });
         }
-        let turnedOnVersions = await RecipeVersionModel_1.default.find({
-            _id: {
-                $in: userRecipe.turnedOnVersions,
-            },
-        }).select('_id postfixTitle description createdAt updatedAt isDefault isOriginal');
-        let turnedOffVersions = await RecipeVersionModel_1.default.find({
-            _id: {
-                $in: userRecipe.turnedOffVersions,
-            },
-        });
-        let defaultVersion = await RecipeVersionModel_1.default.findOne({
-            _id: userRecipe.defaultVersion,
-        }).populate({
-            path: 'ingredients.ingredientId',
-            model: 'BlendIngredient',
-        });
-        return {
-            turnedOnVersions,
-            turnedOffVersions,
-            defaultVersion,
-        };
+        // let turnedOnVersions = await RecipeVersionModel.find({
+        //   _id: {
+        //     $in: userRecipe.turnedOnVersions,
+        //   },
+        // }).select(
+        //   '_id postfixTitle description createdAt updatedAt isDefault isOriginal'
+        // );
+        // let turnedOffVersions = await RecipeVersionModel.find({
+        //   _id: {
+        //     $in: userRecipe.turnedOffVersions,
+        //   },
+        // });
+        // let defaultVersion = await RecipeVersionModel.findOne({
+        //   _id: userRecipe.defaultVersion,
+        // }).populate({
+        //   path: 'ingredients.ingredientId',
+        //   model: 'BlendIngredient',
+        // });
+        return 'Success';
     }
     async changeDefaultVersion(versionId, recipeId, userId) {
         let recipe = await recipeModel_1.default.findOne({ _id: recipeId }).select('userId isMatch originalVersion defaultVersion');
@@ -350,21 +382,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 new: true,
             });
         }
-        let turnedOnVersions = await RecipeVersionModel_1.default.find({
-            _id: {
-                $in: newUpdatedRecipe.turnedOnVersions,
-            },
-        }).select('_id postfixTitle description createdAt updatedAt isDefault isOriginal');
-        let defaultVersion = await RecipeVersionModel_1.default.findOne({
-            _id: newUpdatedRecipe.defaultVersion,
-        }).populate({
-            path: 'ingredients.ingredientId',
-            model: 'BlendIngredient',
-        });
-        return {
-            turnedOnVersions: turnedOnVersions,
-            defaultVersion: defaultVersion,
-        };
+        return 'Success';
     }
     async removeAllVersion() {
         let recipes = await recipeModel_1.default.find();
@@ -468,7 +486,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "getARecipeVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => TurnedOnAndDefaultVersion_1.default),
+    (0, type_graphql_1.Mutation)(() => String),
     __param(0, (0, type_graphql_1.Arg)('versionId')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __param(2, (0, type_graphql_1.Arg)('userId')),
@@ -481,7 +499,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "removeARecipeVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => TurnedOnAndDefaultVersion_1.default) //changed
+    (0, type_graphql_1.Mutation)(() => String) //changed
     ,
     __param(0, (0, type_graphql_1.Arg)('versionID')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),

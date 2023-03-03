@@ -8,8 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const CreateIngredientData_1 = __importDefault(require("./CreateIngredientData"));
 let AddVersion = class AddVersion {
 };
 __decorate([
@@ -28,6 +32,18 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], AddVersion.prototype, "description", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
+    __metadata("design:type", Array)
+], AddVersion.prototype, "recipeInstructions", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], AddVersion.prototype, "servingSize", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [CreateIngredientData_1.default], { nullable: true }),
+    __metadata("design:type", Array)
+], AddVersion.prototype, "ingredients", void 0);
 AddVersion = __decorate([
     (0, type_graphql_1.InputType)()
 ], AddVersion);
