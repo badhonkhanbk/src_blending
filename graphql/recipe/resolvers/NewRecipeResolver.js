@@ -56,7 +56,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     model: 'RecipeBrand',
                 },
             ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating',
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
             path: 'defaultVersion',
@@ -109,7 +109,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     },
                 },
             ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description',
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
         })
             .populate({
             path: 'defaultVersion',
@@ -210,7 +210,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     model: 'RecipeBrand',
                 },
             ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating',
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
             path: 'defaultVersion',
@@ -248,7 +248,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     model: 'RecipeBrand',
                 },
             ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating',
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
             path: 'defaultVersion',
@@ -288,7 +288,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     model: 'RecipeBrand',
                 },
             ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating',
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
             path: 'defaultVersion',
@@ -328,7 +328,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     model: 'RecipeBrand',
                 },
             ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating',
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
             path: 'defaultVersion',

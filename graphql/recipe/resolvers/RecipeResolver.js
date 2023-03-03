@@ -1444,7 +1444,7 @@ let RecipeResolver = class RecipeResolver {
                 await RecipeVersionModel_1.default.findOneAndUpdate({
                     _id: recipes[i].originalVersion,
                 }, {
-                    name: recipes[i].name,
+                    postfixTitle: recipes[i].name,
                     description: recipes[i].description,
                 });
             }
