@@ -19,6 +19,7 @@ const type_graphql_1 = require("type-graphql");
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
+const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const util_1 = __importDefault(require("../../share/util"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
@@ -62,9 +63,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName',
             },
-            select: 'postfixTitle',
         });
         let returnRecipe = await this.getNotesCompareAndUserCollection(userId, userProfileRecipes);
         return returnRecipe;
@@ -190,36 +189,43 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             await (0, getAllGlobalRecipes_1.default)(userId);
         }
         const compareList = await Compare_1.default.find({ userId: userId });
-        let recipeIds = compareList.map((compareData) => compareData.recipeId);
-        let userProfileRecipes = await UserRecipeProfile_1.default.find({
-            userId: userId,
-            recipeId: { $in: recipeIds },
-        })
-            .populate({
-            path: 'recipeId',
-            model: 'RecipeModel',
-            populate: [
-                {
-                    path: 'recipeBlendCategory',
-                    model: 'RecipeCategory',
-                },
-                {
-                    path: 'brand',
-                    model: 'RecipeBrand',
-                },
-            ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
-        })
-            .populate({
-            path: 'defaultVersion',
-            model: 'RecipeVersion',
-            populate: {
+        let userProfileRecipes = [];
+        for (let i = 0; i < compareList.length; i++) {
+            let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
+                userId: userId,
+                recipeId: compareList[i].recipeId,
+            }).populate({
+                path: 'recipeId',
+                model: 'RecipeModel',
+                populate: [
+                    {
+                        path: 'recipeBlendCategory',
+                        model: 'RecipeCategory',
+                    },
+                    {
+                        path: 'brand',
+                        model: 'RecipeBrand',
+                    },
+                ],
+                select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
+            });
+            console.log(compareList[i].versionId);
+            let compareVersion = await RecipeVersionModel_1.default.findOne({
+                _id: compareList[i].versionId,
+            }).populate({
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName',
-            },
-            select: 'postfixTitle',
-        });
+            });
+            let compareRecipe = {
+                recipeId: userProfileRecipe.recipeId,
+                defaultVersion: compareVersion,
+                turnedOnVersions: userProfileRecipe.turnedOnVersions,
+                turnedOffVersions: userProfileRecipe.turnedOffVersions,
+                isMatch: false,
+                compare: true,
+            };
+            userProfileRecipes.push(compareRecipe);
+        }
         let returnRecipe = await this.getNotesCompareAndUserCollection(userId, userProfileRecipes);
         return returnRecipe;
     }
@@ -369,12 +375,13 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             let userNotes = await userNote_1.default.find({
                 recipeId: userProfileRecipes[i].recipeId._id,
                 userId: userId,
-            });
+            }).select('_id');
             let addedToCompare = false;
+            console.log(userProfileRecipes[i].recipeId._id);
             let compare = await Compare_1.default.findOne({
                 userId: userId,
                 recipeId: userProfileRecipes[i].recipeId._id,
-            });
+            }).select('_id');
             if (compare) {
                 addedToCompare = true;
             }
@@ -394,13 +401,24 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             if (!userProfileRecipes[i].isMatch) {
                 versionsCount++;
             }
-            returnRecipe.push({
-                ...userProfileRecipes[i]._doc,
-                notes: userNotes.length,
-                addedToCompare: addedToCompare,
-                userCollections: collectionData,
-                versionCount: versionsCount,
-            });
+            if (userProfileRecipes[i].compare) {
+                returnRecipe.push({
+                    ...userProfileRecipes[i],
+                    notes: userNotes.length,
+                    addedToCompare: addedToCompare,
+                    userCollections: collectionData,
+                    versionCount: versionsCount,
+                });
+            }
+            else {
+                returnRecipe.push({
+                    ...userProfileRecipes[i]._doc,
+                    notes: userNotes.length,
+                    addedToCompare: addedToCompare,
+                    userCollections: collectionData,
+                    versionCount: versionsCount,
+                });
+            }
         }
         return returnRecipe;
     }

@@ -26,6 +26,10 @@ __decorate([
     __metadata("design:type", SimpleVersion_1.default)
 ], ProfileRecipe.prototype, "defaultVersion", void 0);
 __decorate([
+    (0, type_graphql_1.Field)((type) => SimpleVersion_1.default, { nullable: true }),
+    __metadata("design:type", SimpleVersion_1.default)
+], ProfileRecipe.prototype, "compareVersion", void 0);
+__decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], ProfileRecipe.prototype, "isMatch", void 0);

@@ -36,7 +36,7 @@ const memberSchema = new mongoose_1.Schema({
     },
     collections: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'UserCollection' }],
     dailyGoal: { type: mongoose_1.Schema.Types.ObjectId, ref: 'dailyGoal' },
-    compareList: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Recipe' }],
+    compareList: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeVersion' }],
     compareLength: Number,
     macroInfo: [
         {

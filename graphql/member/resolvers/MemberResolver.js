@@ -428,27 +428,35 @@ let MemberResolver = class MemberResolver {
         await memberModel_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'Success';
     }
-    async changeCompare(recipeId, userId) {
-        let recipe = await recipe_1.default.findOne({ _id: recipeId });
+    async changeCompare(recipeId, userId, versionId) {
+        let userRecipe = await UserRecipeProfile_1.default.findOne({
+            userId: userId,
+            recipeId: recipeId,
+        });
+        if (!userRecipe) {
+            return new AppError_1.default('recipe not found', 401);
+        }
         let user = await memberModel_1.default.findOne({ _id: userId });
         let check = false;
         let updatedUser;
         for (let i = 0; i < user.compareList.length; i++) {
-            if (String(user.compareList[i]) === recipeId) {
-                updatedUser = await memberModel_1.default.findOneAndUpdate({ _id: userId }, { $pull: { compareList: recipeId }, $inc: { compareLength: -1 } }, { new: true });
+            if (String(user.compareList[i]) === versionId) {
+                updatedUser = await memberModel_1.default.findOneAndUpdate({ _id: userId }, { $pull: { compareList: versionId }, $inc: { compareLength: -1 } }, { new: true });
                 check = true;
                 await Compare_1.default.findOneAndRemove({
                     userId: userId,
                     recipeId: recipeId,
+                    versionId: versionId,
                 });
                 break;
             }
         }
         if (!check) {
-            updatedUser = await memberModel_1.default.findOneAndUpdate({ _id: userId }, { $push: { compareList: recipeId }, $inc: { compareLength: 1 } }, { new: true });
+            updatedUser = await memberModel_1.default.findOneAndUpdate({ _id: userId }, { $push: { compareList: versionId }, $inc: { compareLength: 1 } }, { new: true });
             await Compare_1.default.create({
                 recipeId: recipeId,
                 userId: userId,
+                versionId: versionId,
             });
         }
         return updatedUser.compareList.length;
@@ -610,8 +618,10 @@ __decorate([
     (0, type_graphql_1.Mutation)(() => Number),
     __param(0, (0, type_graphql_1.Arg)('recipeId')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
+    __param(2, (0, type_graphql_1.Arg)('versionId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "changeCompare", null);
