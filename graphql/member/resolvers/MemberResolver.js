@@ -29,7 +29,7 @@ const collectionShareGlobal_1 = __importDefault(require("../../../models/collect
 const memberConfiguiration_1 = __importDefault(require("../../../models/memberConfiguiration"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const DailyGoal_1 = __importDefault(require("../../../models/DailyGoal"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
 const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
@@ -101,7 +101,7 @@ let MemberResolver = class MemberResolver {
                 continue;
             }
             let recipe;
-            recipe = await recipe_1.default.findOne({
+            recipe = await recipeModel_1.default.findOne({
                 _id: collections[i].recipes[collections[i].recipes.length - 1]._id,
             }).select('image');
             if (recipe.image.length === 0) {

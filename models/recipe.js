@@ -90,4 +90,3 @@ const recipeSchema = new mongoose_1.Schema({
 });
 const Recipe = (0, mongoose_1.model)('Recipe', recipeSchema);
 exports.default = Recipe;
-//working

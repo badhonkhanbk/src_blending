@@ -41,6 +41,7 @@ const util_1 = __importDefault(require("../../share/util"));
 const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrappedRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNotesCompareAndUserCollection"));
 let RecipeResolver = class RecipeResolver {
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
@@ -971,7 +972,7 @@ let RecipeResolver = class RecipeResolver {
             defaultVersion: returnUserRecipe.defaultVersion._id,
             isMatch: true,
             allRecipe: true,
-            myRecipe: true,
+            myRecipes: true,
         });
         return returnUserRecipe;
     }
@@ -1047,11 +1048,24 @@ let RecipeResolver = class RecipeResolver {
         return recipes;
     }
     async getAllMyCreatedRecipes(userId) {
-        const recipes = await recipeModel_1.default.find({ userId: userId })
+        let userProfileRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+            myRecipes: true,
+        })
             .populate({
-            path: 'ingredients.ingredientId',
-            model: 'BlendIngredient',
-            select: 'ingredientName',
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
             path: 'defaultVersion',
@@ -1063,61 +1077,9 @@ let RecipeResolver = class RecipeResolver {
             },
             select: 'postfixTitle',
         })
-            .populate({
-            path: 'userId',
-            model: 'User',
-            select: '_id displayName image firstName lastName email',
-        })
-            .populate('brand')
-            .populate('recipeBlendCategory');
-        let returnRecipe = [];
-        let collectionRecipes = [];
-        let memberCollections = await memberModel_1.default.find({ _id: userId })
-            .populate({
-            path: 'collections',
-            model: 'UserCollection',
-            select: 'recipes',
-        })
-            .select('-_id collections');
-        for (let i = 0; i < memberCollections[0].collections.length; i++) {
-            let items = memberCollections[0].collections[i].recipes.map(
-            //@ts-ignore
-            (recipe) => {
-                return {
-                    recipeId: String(recipe._id),
-                    recipeCollection: String(memberCollections[0].collections[i]._id),
-                };
-            });
-            collectionRecipes.push(...items);
-        }
-        for (let i = 0; i < recipes.length; i++) {
-            let userNotes = await userNote_1.default.find({
-                recipeId: recipes[i]._id,
-                userId: userId,
-            });
-            let addedToCompare = false;
-            let compare = await Compare_1.default.findOne({
-                userId: userId,
-                recipeId: recipes[i]._id,
-            });
-            if (compare) {
-                addedToCompare = true;
-            }
-            let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipes[i]._id));
-            if (collectionData.length === 0) {
-                collectionData = null;
-            }
-            else {
-                //@ts-ignore
-                collectionData = collectionData.map((data) => data.recipeCollection);
-            }
-            returnRecipe.push({
-                ...recipes[i]._doc,
-                notes: userNotes.length,
-                addedToCompare: addedToCompare,
-                userCollections: collectionData,
-            });
-        }
+            .limit(20);
+        let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
+        // console.log(returnRecipe[0].recipeId);
         return returnRecipe;
     }
     async addMacroInfo() {

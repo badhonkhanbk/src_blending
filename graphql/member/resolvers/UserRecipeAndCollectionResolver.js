@@ -29,7 +29,7 @@ const Recipe_1 = __importDefault(require("../../recipe/schemas/Recipe"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const share_1 = __importDefault(require("../../../models/share"));
@@ -64,9 +64,9 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (!collection) {
             return new AppError_1.default('Collection not found', 404);
         }
-        let recipe = await recipe_1.default.findOne({ url: data.recipe.url });
+        let recipe = await recipeModel_1.default.findOne({ url: data.recipe.url });
         if (!recipe) {
-            recipe = await recipe_1.default.create(data.recipe);
+            recipe = await recipeModel_1.default.create(data.recipe);
         }
         let found = false;
         for (let k = 0; k < collection.recipes.length; k++) {
@@ -161,7 +161,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
-        let recipe = await recipe_1.default.findOne({ _id: data.recipe });
+        let recipe = await recipeModel_1.default.findOne({ _id: data.recipe });
         if (!recipe) {
             return new AppError_1.default('Recipe not found', 404);
         }
@@ -234,7 +234,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
-            let Collectionrecipes = await recipe_1.default.find({
+            let Collectionrecipes = await recipeModel_1.default.find({
                 _id: {
                     $in: memberCollections[0].collections[i].recipes,
                 },
@@ -307,7 +307,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
-        let recipe = await recipe_1.default.findOne({ _id: data.recipe });
+        let recipe = await recipeModel_1.default.findOne({ _id: data.recipe });
         if (!recipe) {
             return new AppError_1.default('Recipe not found', 404);
         }
@@ -347,7 +347,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
-        let recipe = await recipe_1.default.findOne({ _id: data.recipe });
+        let recipe = await recipeModel_1.default.findOne({ _id: data.recipe });
         if (!recipe) {
             return new AppError_1.default('Recipe not found', 404);
         }
@@ -746,7 +746,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         }
         let findKeys = Object.keys(find);
         if (findKeys.length > 0) {
-            recipeData = await recipe_1.default.find(find).select('_id');
+            recipeData = await recipeModel_1.default.find(find).select('_id');
         }
         else {
             recipeData = [];
@@ -754,7 +754,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         // console.log(recipeData);
         if (recipeData.length > 0 && data.excludeIngredientIds.length > 0) {
             let recipeIds = recipeData.map((recipe) => recipe._id);
-            recipeData = await recipe_1.default.find({
+            recipeData = await recipeModel_1.default.find({
                 _id: { $in: recipeIds },
                 'ingredients.ingredientId': { $nin: data.excludeIngredientIds },
             }).select('_id');
@@ -864,7 +864,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
             recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
         }
-        let recipes = await recipe_1.default.find({
+        let recipes = await recipeModel_1.default.find({
             _id: { $in: recipeIds },
         })
             .populate({
