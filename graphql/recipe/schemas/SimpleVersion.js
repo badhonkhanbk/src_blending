@@ -44,12 +44,16 @@ __decorate([
 ], SimpleVersion.prototype, "editedAt", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], SimpleVersion.prototype, "isDefault", void 0);
+    __metadata("design:type", Number)
+], SimpleVersion.prototype, "servingSize", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], SimpleVersion.prototype, "isOriginal", void 0);
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
+    __metadata("design:type", String)
+], SimpleVersion.prototype, "recipeId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
+    __metadata("design:type", Array)
+], SimpleVersion.prototype, "recipeInstructions", void 0);
 SimpleVersion = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], SimpleVersion);
