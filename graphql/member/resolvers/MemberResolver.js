@@ -32,11 +32,11 @@ const DailyGoal_1 = __importDefault(require("../../../models/DailyGoal"));
 const recipe_1 = __importDefault(require("../../../models/recipe"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
-const userNote_1 = __importDefault(require("../../../models/userNote"));
 const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
 const share_1 = __importDefault(require("../../../models/share"));
 const getAllGlobalRecipes_1 = __importDefault(require("../../recipe/resolvers/util/getAllGlobalRecipes"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -116,7 +116,7 @@ let MemberResolver = class MemberResolver {
             collections: collections,
         };
     }
-    async getASingleCollection(slug, userId, collectionId, token, singleRecipeCollectionId) {
+    async getASingleCollection(slug, userId, collectionId, token, singleRecipeCollectionId, page, limit) {
         let searchId;
         let query = {};
         if (singleRecipeCollectionId) {
@@ -157,96 +157,47 @@ let MemberResolver = class MemberResolver {
                 userId: searchId,
             };
         }
-        let collection = await userCollection_1.default.findOne(query)
+        let collection = await userCollection_1.default.findOne(query);
+        if (!page) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
+        }
+        let userProfileRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+            recipeId: {
+                $in: collection.recipes,
+            },
+        })
             .populate({
-            path: 'recipes',
-            model: 'Recipe',
+            path: 'recipeId',
+            model: 'RecipeModel',
             populate: [
-                {
-                    path: 'defaultVersion',
-                    model: 'RecipeVersion',
-                    populate: {
-                        path: 'ingredients.ingredientId',
-                        model: 'BlendIngredient',
-                        select: 'ingredientName',
-                    },
-                    select: 'postfixTitle',
-                },
-                {
-                    path: 'ingredients.ingredientId',
-                    model: 'BlendIngredient',
-                    select: 'ingredientName',
-                },
-                {
-                    path: 'brand',
-                    model: 'RecipeBrand',
-                },
                 {
                     path: 'recipeBlendCategory',
                     model: 'RecipeCategory',
                 },
                 {
-                    path: 'userId',
-                    model: 'User',
-                    select: '_id displayName image',
+                    path: 'brand',
+                    model: 'RecipeBrand',
                 },
             ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
-            path: 'userId',
-            model: 'User',
-            select: '_id displayName firsName lastName email image',
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+                select: 'ingredientName',
+            },
+            select: 'postfixTitle',
         })
-            .lean();
-        let recipes = collection.recipes;
-        let returnRecipe = [];
-        let collectionRecipes = [];
-        let memberCollections = await memberModel_1.default.find({ _id: userId })
-            .populate({
-            path: 'collections',
-            model: 'UserCollection',
-            select: 'recipes',
-        })
-            .select('-_id collections');
-        for (let i = 0; i < memberCollections[0].collections.length; i++) {
-            let items = memberCollections[0].collections[i].recipes.map(
-            //@ts-ignore
-            (recipe) => {
-                return {
-                    recipeId: String(recipe._id),
-                    recipeCollection: String(memberCollections[0].collections[i]._id),
-                };
-            });
-            collectionRecipes.push(...items);
-        }
-        for (let i = 0; i < recipes.length; i++) {
-            let userNotes = await userNote_1.default.find({
-                recipeId: recipes[i]._id,
-                userId: userId,
-            });
-            let addedToCompare = false;
-            let compare = await Compare_1.default.findOne({
-                userId: userId,
-                recipeId: recipes[i]._id,
-            });
-            if (compare) {
-                addedToCompare = true;
-            }
-            let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipes[i]._id));
-            if (collectionData.length === 0) {
-                collectionData = null;
-            }
-            else {
-                //@ts-ignore
-                collectionData = collectionData.map((data) => data.recipeCollection);
-            }
-            returnRecipe.push({
-                ...recipes[i],
-                notes: userNotes.length,
-                addedToCompare: addedToCompare,
-                userCollections: collectionData,
-            });
-        }
+            .limit(limit)
+            .skip(limit * (page - 1));
+        let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return {
             _id: collection._id,
             name: collection.name,
@@ -517,12 +468,14 @@ __decorate([
     __param(2, (0, type_graphql_1.Arg)('collectionId', { nullable: true })),
     __param(3, (0, type_graphql_1.Arg)('token', { nullable: true })),
     __param(4, (0, type_graphql_1.Arg)('singleRecipeCollectionId', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(6, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
         String,
         String,
         String,
-        String]),
+        String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "getASingleCollection", null);
 __decorate([

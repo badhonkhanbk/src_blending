@@ -13,9 +13,9 @@ const type_graphql_1 = require("type-graphql");
 let AddToLastModifiedCollectionInput = class AddToLastModifiedCollectionInput {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)(type => type_graphql_1.ID),
     __metadata("design:type", String)
-], AddToLastModifiedCollectionInput.prototype, "userEmail", void 0);
+], AddToLastModifiedCollectionInput.prototype, "userId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)

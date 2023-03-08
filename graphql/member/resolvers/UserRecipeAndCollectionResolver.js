@@ -39,7 +39,20 @@ const RecipesWithPagination_1 = __importDefault(require("../../recipe/schemas/Re
 const recipeOriginalFactModel_1 = __importDefault(require("../../../models/recipeOriginalFactModel"));
 const Collection_2 = __importDefault(require("../schemas/Collection"));
 const Collection_3 = __importDefault(require("../schemas/Collection"));
+const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
+    // @Mutation(() => String)
+    // async bypassOfAccessControlAmongWIthOthers() {
+    //   let members = await MemberModel.find().select('collections');
+    //   for (let i = 0; i < members.length; i++) {
+    //     let collections = await UserCollectoionModel.find({
+    //       userId: members[i]._id,
+    //     }).select('name userId');
+    //     if (collections.length > 1) {
+    //       console.log(collections);
+    //     }
+    //   }
+    // }
     async createNewUserRecipeWithCollection(data) {
         let user = await memberModel_1.default.findOne({ email: data.userEmail });
         if (!user) {
@@ -144,7 +157,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             : user.defaultCollection;
     }
     async addTolastModifiedCollection(data) {
-        let user = await memberModel_1.default.findOne({ email: data.userEmail });
+        let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
@@ -170,7 +183,23 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             $push: { recipes: recipe._id },
             $set: { updatedAt: Date.now(), lastModifiedCollection: collection._id },
         });
-        let member = await memberModel_1.default.findOne({ email: data.userEmail }).populate({
+        let userRecipe = await UserRecipeProfile_1.default.findOne({
+            userId: data.userId,
+            recipeId: data.recipe,
+        });
+        if (!userRecipe) {
+            await UserRecipeProfile_1.default.create({
+                recipeId: data.recipe,
+                userId: data.userId,
+                isMatch: recipe.isMatch,
+                allRecipes: false,
+                myRecipes: false,
+                turnedOffVersions: recipe.turnedOffVersion,
+                turnedOnVersions: recipe.turnedOnVersions,
+                defaultVersion: recipe.defaultVersion,
+            });
+        }
+        let member = await memberModel_1.default.findOne({ _id: data.userId }).populate({
             path: 'collections',
             populate: {
                 path: 'recipes',
