@@ -168,7 +168,9 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         let collectionId = user.lastModifiedCollection
             ? user.lastModifiedCollection
             : user.defaultCollection;
-        let collection = await userCollection_1.default.findOne({ _id: collectionId });
+        let collection = await userCollection_1.default.findOne({
+            _id: collectionId,
+        });
         let found = false;
         for (let k = 0; k < collection.recipes.length; k++) {
             if (String(collection.recipes[k]) === String(data.recipe)) {
@@ -179,9 +181,11 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (found) {
             return new AppError_1.default('Recipe already in collection', 404);
         }
-        await userCollection_1.default.findOneAndUpdate({ _id: collectionId }, {
+        collection = await userCollection_1.default.findOneAndUpdate({ _id: collectionId }, {
             $push: { recipes: recipe._id },
             $set: { updatedAt: Date.now(), lastModifiedCollection: collection._id },
+        }, {
+            new: true,
         });
         let userRecipe = await UserRecipeProfile_1.default.findOne({
             userId: data.userId,
@@ -199,14 +203,14 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 defaultVersion: recipe.defaultVersion,
             });
         }
-        let member = await memberModel_1.default.findOne({ _id: data.userId }).populate({
-            path: 'collections',
-            populate: {
-                path: 'recipes',
-                model: 'Recipe',
-            },
-        });
-        return member.collections;
+        // let member = await MemberModel.findOne({ _id: data.userId }).populate({
+        //   path: 'collections',
+        //   populate: {
+        //     path: 'recipes',
+        //     model: 'Recipe',
+        //   },
+        // });
+        return collection;
     }
     async getAllRecipesFromCollection(
     // @Arg('userEmail', { nullable: true }) userEmail: String,
@@ -970,7 +974,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "getLastModifieldCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [Collection_2.default]),
+    (0, type_graphql_1.Mutation)(() => Collection_2.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AddToLastModifiedCollection_1.default]),

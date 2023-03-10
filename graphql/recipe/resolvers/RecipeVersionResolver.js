@@ -26,11 +26,11 @@ const AddVersion_1 = __importDefault(require("./input-type/AddVersion"));
 const RecipeVersion_1 = __importDefault(require("../schemas/RecipeVersion"));
 const EditVersion_1 = __importDefault(require("./input-type/EditVersion"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
-const RecipeWithVersion_1 = __importDefault(require("../schemas/RecipeWithVersion"));
 const updateVersionFacts_1 = __importDefault(require("./util/updateVersionFacts"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const EditedVersion_1 = __importDefault(require("../schemas/EditedVersion"));
+const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
         let recipe = await recipeModel_1.default.findOne({ _id: data.recipeId }).select('userId adminId originalVersion');
@@ -515,7 +515,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "removeAllVersion", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => RecipeWithVersion_1.default),
+    (0, type_graphql_1.Query)(() => [ProfileRecipeDesc_1.default]),
     __param(0, (0, type_graphql_1.Arg)('recipeId')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),

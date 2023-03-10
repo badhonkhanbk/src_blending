@@ -191,9 +191,7 @@ let MemberResolver = class MemberResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName',
             },
-            select: 'postfixTitle',
         })
             .limit(limit)
             .skip(limit * (page - 1));
@@ -203,6 +201,7 @@ let MemberResolver = class MemberResolver {
             name: collection.name,
             slug: collection.slug,
             image: collection.image,
+            totalRecipes: collection.recipes.length,
             recipes: returnRecipe,
             creatorInfo: collection.userId,
         };
