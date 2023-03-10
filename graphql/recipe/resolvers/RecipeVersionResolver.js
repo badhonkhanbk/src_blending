@@ -396,25 +396,51 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         return 'done';
     }
     async getAllVersions(recipeId, userId) {
-        let recipe = await recipeModel_1.default.findOne({ _id: recipeId })
-            .populate({
-            path: 'ingredients.ingredientId',
-            model: 'BlendIngredient',
-        })
-            .populate('brand')
-            .populate('recipeBlendCategory')
-            .populate({
-            path: 'userId',
-            model: 'User',
-            select: '_id displayName image firstName lastName email',
+        let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
+            userId: userId,
+            recipeId: recipeId,
         })
             .populate({
-            path: 'recipeVersion',
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'originalVersion',
+                    model: 'RecipeVersion',
+                    populate: {
+                        path: 'ingredients.ingredientId',
+                        model: 'BlendIngredient',
+                    },
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
+        })
+            .populate({
+            path: 'defaultVersion',
             model: 'RecipeVersion',
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
             },
+        })
+            .populate({
+            path: 'turnedOnVersions',
+            model: 'RecipeVersion',
+            select: '_id postfixTitle description createdAt updatedAt isDefault isOriginal',
+            options: { sort: { isDefault: -1 } },
+        })
+            .populate({
+            path: 'turnedOffVersions',
+            model: 'RecipeVersion',
+            select: '_id postfixTitle description createdAt updatedAt isDefault isOriginal',
         });
         let collectionRecipes = [];
         let memberCollections = await memberModel_1.default.find({ _id: userId })
@@ -436,18 +462,18 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             collectionRecipes.push(...items);
         }
         let userNotes = await userNote_1.default.find({
-            recipeId: recipe._id,
+            recipeId: recipeId,
             userId: userId,
         });
         let addedToCompare = false;
         let compare = await Compare_1.default.findOne({
             userId: userId,
-            recipeId: recipe._id,
+            recipeId: recipeId,
         });
         if (compare) {
             addedToCompare = true;
         }
-        let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipe._id));
+        let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipeId));
         if (collectionData.length === 0) {
             collectionData = null;
         }
@@ -455,11 +481,19 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             //@ts-ignore
             collectionData = collectionData.map((data) => data.recipeCollection);
         }
+        let versionsCount = 0;
+        versionsCount +=
+            +userProfileRecipe.turnedOnVersions.length +
+                +userProfileRecipe.turnedOffVersions.length;
+        if (!userProfileRecipe.isMatch) {
+            versionsCount++;
+        }
         return {
-            ...recipe._doc,
+            ...userProfileRecipe._doc,
             notes: userNotes.length,
             addedToCompare: addedToCompare,
             userCollections: collectionData,
+            versionsCount: versionsCount,
         };
     }
 };
