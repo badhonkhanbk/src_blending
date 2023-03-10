@@ -434,13 +434,19 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             .populate({
             path: 'turnedOnVersions',
             model: 'RecipeVersion',
-            select: '_id postfixTitle description createdAt updatedAt isDefault isOriginal',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+            },
             options: { sort: { isDefault: -1 } },
         })
             .populate({
             path: 'turnedOffVersions',
             model: 'RecipeVersion',
-            select: '_id postfixTitle description createdAt updatedAt isDefault isOriginal',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+            },
         });
         let collectionRecipes = [];
         let memberCollections = await memberModel_1.default.find({ _id: userId })
@@ -549,7 +555,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "removeAllVersion", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [ProfileRecipeDesc_1.default]),
+    (0, type_graphql_1.Query)(() => ProfileRecipeDesc_1.default),
     __param(0, (0, type_graphql_1.Arg)('recipeId')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
