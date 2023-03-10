@@ -42,6 +42,7 @@ const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrap
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNotesCompareAndUserCollection"));
+const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 let RecipeResolver = class RecipeResolver {
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
@@ -1561,7 +1562,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getAllRecipesBasedOnIngredient", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [Recipe_1.default]),
+    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default]),
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

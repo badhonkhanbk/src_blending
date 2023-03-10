@@ -23,11 +23,11 @@ __decorate([
     __metadata("design:type", BlendIngredientData_1.default)
 ], IngredientData.prototype, "ingredientId", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], IngredientData.prototype, "weightInGram", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", SelectedPortion_1.default)
 ], IngredientData.prototype, "selectedPortion", void 0);
 __decorate([
