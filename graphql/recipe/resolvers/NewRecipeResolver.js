@@ -17,6 +17,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
+//import RecipeModel from '../../../models/recipe';
+// import NewRecipeModel from '../../../models/recipeModel'
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
@@ -350,61 +352,6 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
-    // async bringAllGlobalRecipes(userId: String) {
-    //   let recipes: any[] = await NewRecipeModel.find({
-    //     global: true,
-    //     userId: null,
-    //     addedByAdmin: true,
-    //     discovery: true,
-    //     isPublished: true,
-    //   });
-    //   for (let i = 0; i < recipes.length; i++) {
-    //     await UserRecipeProfileModel.create({
-    //       recipeId: recipes[i]._id,
-    //       userId: userId,
-    //       isMatch: recipes[i].isMatch,
-    //       allRecipes: false,
-    //       myRecipes: false,
-    //       turnedOffVersions: recipes[i].turnedOffVersion,
-    //       turnedOnVersions: recipes[i].turnedOnVersions,
-    //       defaultVersion: recipes[i].defaultVersion,
-    //     });
-    //   }
-    // }
-    async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn) {
-        let newUpdatedRecipe = {};
-        if (turnedOn) {
-            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
-                userId: userId,
-                recipeId: recipeId,
-            }, {
-                $pull: {
-                    turnedOffVersions: versionId,
-                },
-                $push: {
-                    turnedOnVersions: versionId,
-                },
-            }, {
-                new: true,
-            });
-        }
-        else {
-            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
-                userId: userId,
-                recipeId: recipeId,
-            }, {
-                $pull: {
-                    turnedOnVersions: versionId,
-                },
-                $push: {
-                    turnedOffVersions: versionId,
-                },
-            }, {
-                new: true,
-            });
-        }
-        return 'Success';
-    }
 };
 __decorate([
     (0, type_graphql_1.Query)((type) => String),
@@ -454,19 +401,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllLatestRecipes2", null);
-__decorate([
-    (0, type_graphql_1.Mutation)(() => String),
-    __param(0, (0, type_graphql_1.Arg)('userId')),
-    __param(1, (0, type_graphql_1.Arg)('recipeId')),
-    __param(2, (0, type_graphql_1.Arg)('versionId')),
-    __param(3, (0, type_graphql_1.Arg)('turnedOn')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String,
-        String,
-        String,
-        Boolean]),
-    __metadata("design:returntype", Promise)
-], RecipeCorrectionResolver.prototype, "turnedOnOrOffVersion", null);
 RecipeCorrectionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], RecipeCorrectionResolver);

@@ -320,7 +320,10 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         // });
         return 'Success';
     }
-    async changeDefaultVersion(versionId, recipeId, userId) {
+    async changeDefaultVersion(versionId, recipeId, userId, isTurnOff) {
+        if (isTurnOff) {
+            await this.turnedOnOrOffVersion(userId, recipeId, versionId, true);
+        }
         let recipe = await recipeModel_1.default.findOne({ _id: recipeId }).select('userId isMatch originalVersion defaultVersion');
         let isMatch = true;
         if (String(recipe.originalVersion) !== String(versionId)) {
@@ -342,7 +345,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         let userRecipe = await UserRecipeProfile_1.default.findOne({
             recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
             userId: new mongoose_1.default.Types.ObjectId(userId),
-        }).select('defaultVersion');
+        }).select('defaultVersion isMatch');
         await UserRecipeProfile_1.default.findOneAndUpdate({
             recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
             userId: new mongoose_1.default.Types.ObjectId(userId),
@@ -378,6 +381,40 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                     turnedOnVersions: new mongoose_1.default.Types.ObjectId(userRecipe.defaultVersion),
                 },
                 isMatch: isMatch,
+            }, {
+                new: true,
+            });
+        }
+        return 'Success';
+    }
+    async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn) {
+        let newUpdatedRecipe = {};
+        if (turnedOn) {
+            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
+                userId: userId,
+                recipeId: recipeId,
+            }, {
+                $pull: {
+                    turnedOffVersions: versionId,
+                },
+                $push: {
+                    turnedOnVersions: versionId,
+                },
+            }, {
+                new: true,
+            });
+        }
+        else {
+            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
+                userId: userId,
+                recipeId: recipeId,
+            }, {
+                $pull: {
+                    turnedOnVersions: versionId,
+                },
+                $push: {
+                    turnedOffVersions: versionId,
+                },
             }, {
                 new: true,
             });
@@ -438,7 +475,6 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
             },
-            options: { sort: { isDefault: -1 } },
         })
             .populate({
             path: 'turnedOffVersions',
@@ -544,10 +580,24 @@ __decorate([
     __param(0, (0, type_graphql_1.Arg)('versionID')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __param(2, (0, type_graphql_1.Arg)('userId')),
+    __param(3, (0, type_graphql_1.Arg)('isTurnedOff', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, Boolean]),
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "changeDefaultVersion", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('recipeId')),
+    __param(2, (0, type_graphql_1.Arg)('versionId')),
+    __param(3, (0, type_graphql_1.Arg)('turnedOn')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        String,
+        Boolean]),
+    __metadata("design:returntype", Promise)
+], RecipeVersionResolver.prototype, "turnedOnOrOffVersion", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __metadata("design:type", Function),

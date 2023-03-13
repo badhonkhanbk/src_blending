@@ -1068,8 +1068,8 @@ let RecipeResolver = class RecipeResolver {
                 {
                     path: 'userId',
                     model: 'MemberModel',
-                    select: "firstName lastName displayName email"
-                }
+                    select: 'firstName lastName displayName email',
+                },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
