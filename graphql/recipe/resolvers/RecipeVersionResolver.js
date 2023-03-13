@@ -322,7 +322,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
     }
     async changeDefaultVersion(versionId, recipeId, userId, isTurnOff) {
         if (isTurnOff) {
-            await this.turnedOnOrOffVersion(userId, recipeId, versionId, true);
+            await this.turnedOnOrOffVersion(userId, recipeId, versionId, true, false);
         }
         let recipe = await recipeModel_1.default.findOne({ _id: recipeId }).select('userId isMatch originalVersion defaultVersion');
         let isMatch = true;
@@ -387,8 +387,52 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         }
         return 'Success';
     }
-    async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn) {
+    async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn, isDefault) {
         let newUpdatedRecipe = {};
+        if (isDefault) {
+            let userRecipe = await UserRecipeProfile_1.default.findOne({
+                userId: userId,
+                recipeId: recipeId,
+            })
+                .populate({
+                path: 'recipeId',
+                model: 'RecipeModel',
+                select: 'originalVersion',
+            })
+                .select('recipeId isMatch');
+            if (userRecipe.isMatch) {
+                return new AppError_1.default('this version is originalVersion version', 400);
+            }
+            else {
+                if (turnedOn) {
+                    newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
+                        userId: userId,
+                        recipeId: recipeId,
+                    }, {
+                        $push: {
+                            turnedOffVersions: versionId,
+                        },
+                        defaultVersion: userRecipe.recipeId.originalVersion,
+                    }, {
+                        new: true,
+                    });
+                }
+                else {
+                    newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
+                        userId: userId,
+                        recipeId: recipeId,
+                    }, {
+                        $push: {
+                            turnedOffVersions: versionId,
+                        },
+                        defaultVersion: userRecipe.recipeId.originalVersion,
+                    }, {
+                        new: true,
+                    });
+                }
+                return 'Success';
+            }
+        }
         if (turnedOn) {
             newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
                 userId: userId,
@@ -591,10 +635,12 @@ __decorate([
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __param(2, (0, type_graphql_1.Arg)('versionId')),
     __param(3, (0, type_graphql_1.Arg)('turnedOn')),
+    __param(4, (0, type_graphql_1.Arg)('isDefault', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
         String,
         String,
+        Boolean,
         Boolean]),
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "turnedOnOrOffVersion", null);

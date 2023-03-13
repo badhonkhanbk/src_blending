@@ -47,7 +47,7 @@ let RecipeResolver = class RecipeResolver {
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
             path: 'recipeId',
-            model: 'Recipe',
+            model: 'RecipeModel',
             populate: [
                 {
                     path: 'ingredients.ingredientId',

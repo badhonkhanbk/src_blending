@@ -213,7 +213,7 @@ let MemberResolver = class MemberResolver {
             path: 'collections',
             populate: {
                 path: 'recipes',
-                model: 'Recipe',
+                model: 'RecipeModel',
             },
         });
         if (!user) {
@@ -249,7 +249,7 @@ let MemberResolver = class MemberResolver {
                 path: 'collections',
                 populate: {
                     path: 'recipes',
-                    model: 'Recipe',
+                    model: 'RecipeModel',
                 },
             });
             return user3;
@@ -269,7 +269,7 @@ let MemberResolver = class MemberResolver {
             path: 'collections',
             populate: {
                 path: 'recipes',
-                model: 'Recipe',
+                model: 'RecipeModel',
                 // populate: {
                 //   path: 'ingredients.ingredientId',
                 //   model: 'BlendIngredient',
@@ -285,7 +285,7 @@ let MemberResolver = class MemberResolver {
             path: 'collections',
             populate: {
                 path: 'recipes',
-                model: 'Recipe',
+                model: 'RecipeModel',
             },
         });
         return user;

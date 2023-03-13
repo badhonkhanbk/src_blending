@@ -87,7 +87,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             path: 'collections',
             populate: {
                 path: 'recipes',
-                model: 'Recipe',
+                model: 'RecipeModel',
             },
         });
         if (!user) {
@@ -341,7 +341,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             path: 'collections',
             populate: {
                 path: 'recipes',
-                model: 'Recipe',
+                model: 'RecipeModel',
             },
         });
         return member.collections;
@@ -371,7 +371,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             path: 'collections',
             populate: {
                 path: 'recipes',
-                model: 'Recipe',
+                model: 'RecipeModel',
             },
         });
         return member.collections;
@@ -383,7 +383,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             path: 'collections',
             populate: {
                 path: 'recipes',
-                model: 'Recipe',
+                model: 'RecipeModel',
             },
         });
         if (!user) {
@@ -436,7 +436,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                     path: 'collections',
                     populate: {
                         path: 'recipes',
-                        model: 'Recipe',
+                        model: 'RecipeModel',
                     },
                 });
                 return member.collections;
@@ -449,7 +449,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 path: 'collections',
                 populate: {
                     path: 'recipes',
-                    model: 'Recipe',
+                    model: 'RecipeModel',
                 },
             });
             return user.collections;
@@ -543,7 +543,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             path: 'collections',
             populate: {
                 path: 'recipes',
-                model: 'Recipe',
+                model: 'RecipeModel',
             },
         });
         return member.collections;
@@ -577,7 +577,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         })
             .populate({
             path: 'recipes',
-            model: 'Recipe',
+            model: 'RecipeModel',
             limit: 5,
             populate: [
                 {
