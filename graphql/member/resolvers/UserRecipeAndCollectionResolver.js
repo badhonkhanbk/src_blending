@@ -192,6 +192,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
+        console.log('hello');
         return user.lastModifiedCollection
             ? user.lastModifiedCollection
             : user.defaultCollection;
