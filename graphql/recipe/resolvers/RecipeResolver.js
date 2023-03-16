@@ -1109,7 +1109,7 @@ let RecipeResolver = class RecipeResolver {
                 },
                 {
                     path: 'userId',
-                    model: 'MemberModel',
+                    model: 'User',
                     select: 'firstName lastName displayName email',
                 },
             ],
