@@ -40,19 +40,57 @@ const recipeOriginalFactModel_1 = __importDefault(require("../../../models/recip
 const Collection_2 = __importDefault(require("../schemas/Collection"));
 const Collection_3 = __importDefault(require("../schemas/Collection"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+const ProfileRecipe_1 = __importDefault(require("../../recipe/schemas/ProfileRecipe"));
+const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
 let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
-    // @Mutation(() => String)
-    // async bypassOfAccessControlAmongWIthOthers() {
-    //   let members = await MemberModel.find().select('collections');
-    //   for (let i = 0; i < members.length; i++) {
-    //     let collections = await UserCollectoionModel.find({
-    //       userId: members[i]._id,
-    //     }).select('name userId');
-    //     if (collections.length > 1) {
-    //       console.log(collections);
-    //     }
-    //   }
-    // }
+    async getMyRecentRecipes(page, limit, userId) {
+        if (!page) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
+        }
+        let userProfileRecentRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+        })
+            .populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+        })
+            .populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+                select: 'ingredientName selectedImage',
+            },
+            select: 'postfixTitle',
+        })
+            .sort({
+            lastSeen: -1,
+        })
+            .limit(limit)
+            .skip((page - 1) * limit);
+        let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
+        return returnRecentRecipe;
+    }
     async createNewUserRecipeWithCollection(data) {
         let user = await memberModel_1.default.findOne({ email: data.userEmail });
         if (!user) {
@@ -257,7 +295,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 populate: {
                     path: 'ingredients.ingredientId',
                     model: 'BlendIngredient',
-                    select: 'ingredientName',
+                    select: 'ingredientName selectedImage',
                 },
                 select: 'postfixTitle',
             })
@@ -594,7 +632,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                     populate: {
                         path: 'ingredients.ingredientId',
                         model: 'BlendIngredient',
-                        select: 'ingredientName',
+                        select: 'ingredientName selectedImage',
                     },
                     select: 'postfixTitle',
                 },
@@ -890,7 +928,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName',
+                select: 'ingredientName selectedImage',
             },
             select: 'postfixTitle',
         })
@@ -963,6 +1001,15 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         };
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => [ProfileRecipe_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('Limit', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, String]),
+    __metadata("design:returntype", Promise)
+], UserRecipeAndCollectionResolver.prototype, "getMyRecentRecipes", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __param(0, (0, type_graphql_1.Arg)('data')),

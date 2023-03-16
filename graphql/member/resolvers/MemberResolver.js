@@ -29,7 +29,6 @@ const collectionShareGlobal_1 = __importDefault(require("../../../models/collect
 const memberConfiguiration_1 = __importDefault(require("../../../models/memberConfiguiration"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const DailyGoal_1 = __importDefault(require("../../../models/DailyGoal"));
-const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
 const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
@@ -37,6 +36,7 @@ const share_1 = __importDefault(require("../../../models/share"));
 const getAllGlobalRecipes_1 = __importDefault(require("../../recipe/resolvers/util/getAllGlobalRecipes"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
+const ShowAllCollection_1 = __importDefault(require("../schemas/ShowAllCollection"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -54,6 +54,212 @@ const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe
 //   lastName: String;
 // };
 let MemberResolver = class MemberResolver {
+    async getAllCollectionsWithRecipes(userId) {
+        let user = await memberModel_1.default.findById(userId)
+            .populate('collections')
+            .select('collections');
+        let otherCollections = await userCollection_1.default.find({
+            'shareTo.userId': {
+                $in: [new mongoose_1.default.mongo.ObjectId(user._id)],
+            },
+        }).populate({
+            path: 'userId',
+            select: 'displayName email firstName lastName',
+        });
+        let collections = [];
+        for (let i = 0; i < user.collections.length; i++) {
+            let returnRecipe = await this.getProfileRecipes(user.collections[i].recipes, userId);
+            collections.push({
+                _id: user.collections[i]._id,
+                //@ts-ignore
+                name: user.collections[i].name,
+                //@ts-ignore
+                slug: user.collections[i].slug,
+                //@ts-ignore
+                recipes: returnRecipe,
+                isShared: false,
+                sharedBy: null,
+                personalizedName: '',
+                canContribute: true,
+                canShareWithOther: true,
+            });
+        }
+        for (let i = 0; i < otherCollections.length; i++) {
+            let shareTo = otherCollections[i].shareTo.filter((share) => String(share.userId) === userId)[0];
+            let formatRecipes = otherCollections[i].recipes.map((recipe) => String(recipe));
+            //@ts-ignore
+            let returnRecipe = await this.getProfileRecipes(formatRecipes, userId);
+            collections.push({
+                _id: otherCollections[i]._id,
+                name: otherCollections[i].name,
+                slug: otherCollections[i].slug,
+                recipes: returnRecipe,
+                isShared: true,
+                sharedBy: otherCollections[i].userId,
+                personalizedName: shareTo.personalizedName,
+                canContribute: shareTo.canContribute,
+                canShareWithOther: shareTo.canShareWithOther,
+            });
+        }
+        let userProfileMyRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+            myRecipes: true,
+        })
+            .populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+        })
+            .populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+                select: 'ingredientName selectedImage',
+            },
+            select: 'postfixTitle',
+        })
+            .limit(5);
+        let returnMyRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileMyRecipes);
+        collections.push({
+            _id: new mongoose_1.default.mongo.ObjectId(),
+            name: 'My Recipes',
+            slug: 'my-recipes',
+            recipes: returnMyRecipe,
+            isShared: false,
+            sharedBy: null,
+            personalizedName: '',
+            canContribute: true,
+            canShareWithOther: true,
+        });
+        let userProfileRecentRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+        })
+            .populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+        })
+            .populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+                select: 'ingredientName selectedImage',
+            },
+            select: 'postfixTitle',
+        })
+            .limit(5)
+            .sort({
+            lastSeen: -1,
+        });
+        let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
+        collections.push({
+            _id: new mongoose_1.default.mongo.ObjectId(),
+            name: 'Recent Recipes',
+            slug: 'recent-recipes',
+            recipes: returnRecentRecipe,
+            isShared: false,
+            sharedBy: null,
+            personalizedName: '',
+            canContribute: true,
+            canShareWithOther: true,
+        });
+        for (let i = 0; i < collections.length; i++) {
+            if (collections[i].recipes.length - 1 === -1) {
+                // if there are no recipes in the collection
+                collections[i].image = null;
+                continue;
+            }
+            let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
+                userId: userId,
+                recipeId: collections[i].recipes[collections[i].recipes.length - 1].recipeId
+                    ._id,
+            })
+                .populate({
+                path: 'defaultVersion',
+                model: 'RecipeVersion',
+                select: 'selectedImage',
+            })
+                .select('defaultVersion');
+            if (userProfileRecipe.defaultVersion.selectedImage === '') {
+                collections[i].image = null;
+                continue;
+            }
+            //@ts-ignore
+            let image = userProfileRecipe.defaultVersion.selectedImage;
+            collections[i].image = image;
+        }
+        return collections;
+    }
+    async getProfileRecipes(recipeIds, userId) {
+        let userProfileRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+            recipeId: {
+                $in: recipeIds,
+            },
+        })
+            .populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+        })
+            .populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+                select: 'ingredientName selectedImage',
+            },
+            select: 'postfixTitle selectedImage',
+        })
+            .limit(5);
+        let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
+        return returnRecipe;
+    }
     async getUserCollectionsAndThemes(userId) {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
@@ -103,17 +309,23 @@ let MemberResolver = class MemberResolver {
                 collections[i].image = null;
                 continue;
             }
-            let recipe;
-            recipe = await recipeModel_1.default.findOne({
-                _id: collections[i].recipes[collections[i].recipes.length - 1]._id,
-            }).select('image');
-            if (recipe.image.length === 0) {
+            let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
+                userId: userId,
+                recipeId: collections[i].recipes[collections[i].recipes.length - 1]._id,
+            })
+                .populate({
+                path: 'defaultVersion',
+                model: 'RecipeVersion',
+                select: 'selectedImage',
+            })
+                .select('defaultVersion');
+            if (userProfileRecipe.defaultVersion.selectedImage === '') {
                 collections[i].image = null;
                 continue;
             }
             //@ts-ignore
-            let image = recipe.image.filter((image) => image.default === true)[0];
-            collections[i].image = image ? image.image : recipe.image[0].image;
+            let image = userProfileRecipe.defaultVersion.selectedImage;
+            collections[i].image = image;
         }
         return {
             collections: collections,
@@ -460,6 +672,13 @@ let MemberResolver = class MemberResolver {
         };
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => [ShowAllCollection_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MemberResolver.prototype, "getAllCollectionsWithRecipes", null);
 __decorate([
     (0, type_graphql_1.Query)(() => collectionAndTheme_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),

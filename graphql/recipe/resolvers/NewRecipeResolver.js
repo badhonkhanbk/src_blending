@@ -70,7 +70,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             model: 'RecipeVersion',
             populate: {
                 path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
+                model: 'BlendIngredient selectedImage',
             },
         });
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -186,9 +186,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             userId: userId,
             recipeId: recipeId,
         }, {
-            $set: {
-                lastSeen: Date.now(),
-            },
+            lastSeen: Date.now(),
         });
         return {
             //@ts-ignore
@@ -278,9 +276,9 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName',
+                select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -318,9 +316,9 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName',
+                select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .skip(10)
             .limit(20);
@@ -358,9 +356,9 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName',
+                select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .skip(8)
             .limit(10);

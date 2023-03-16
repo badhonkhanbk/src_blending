@@ -84,9 +84,9 @@ let RecipeResolver = class RecipeResolver {
                     populate: {
                         path: 'ingredients.ingredientId',
                         model: 'BlendIngredient',
-                        select: 'ingredientName',
+                        select: 'ingredientName selectedImage',
                     },
-                    select: 'postfixTitle',
+                    select: 'postfixTitle selectedImage',
                 },
                 {
                     path: 'userId',
@@ -170,9 +170,9 @@ let RecipeResolver = class RecipeResolver {
                 populate: {
                     path: 'ingredients.ingredientId',
                     model: 'BlendIngredient',
-                    select: 'ingredientName',
+                    select: 'ingredientName selectedImage',
                 },
-                select: 'postfixTitle',
+                select: 'postfixTitle selectedImage',
             })
                 .populate({
                 path: 'userId',
@@ -201,7 +201,7 @@ let RecipeResolver = class RecipeResolver {
                 populate: {
                     path: 'ingredients.ingredientId',
                     model: 'BlendIngredient',
-                    select: 'ingredientName',
+                    select: 'ingredientName selectedImage',
                 },
                 select: 'postfixTitle',
             })
@@ -278,7 +278,7 @@ let RecipeResolver = class RecipeResolver {
                 populate: {
                     path: 'ingredients.ingredientId',
                     model: 'BlendIngredient',
-                    select: 'ingredientName',
+                    select: 'ingredientName selectedImage',
                 },
                 select: 'postfixTitle',
             })
@@ -348,7 +348,7 @@ let RecipeResolver = class RecipeResolver {
                 populate: {
                     path: 'ingredients.ingredientId',
                     model: 'BlendIngredient',
-                    select: 'ingredientName',
+                    select: 'ingredientName selectedImage',
                 },
                 select: 'postfixTitle',
             })
@@ -384,7 +384,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .populate({
             path: 'userId',
@@ -469,7 +469,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .populate({
             path: 'userId',
@@ -564,7 +564,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .populate({
             path: 'userId',
@@ -660,7 +660,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .populate({
             path: 'userId',
@@ -752,7 +752,7 @@ let RecipeResolver = class RecipeResolver {
             model: 'RecipeVersion',
             populate: {
                 path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
+                model: 'BlendIngredient selectedImage',
             },
         })
             .populate({
@@ -1005,7 +1005,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .populate('brand');
         await UserRecipeProfile_1.default.create({
@@ -1123,7 +1123,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -1359,9 +1359,9 @@ let RecipeResolver = class RecipeResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName',
+                select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .populate({
             path: 'userId',
