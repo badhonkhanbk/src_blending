@@ -517,7 +517,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         let giGl = await this.getGlAndNetCarbs2(ingredientsInfo);
         return {
             nutrients: nutrientList,
-            giGl: giGl,
+            giGl: giGl
         };
     }
     async getBlendNutritionBasedOnRecipexxx(ingredientsInfo) {
@@ -527,7 +527,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         let ingredients;
         ingredients = await blendIngredient_1.default.find({
             _id: { $in: hello },
-            status: 'Active',
+            // status: 'Active',
         })
             .populate({
             path: 'blendNutrients.blendNutrientRefference',
@@ -535,7 +535,8 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             select: '-bodies -wikiCoverImages -wikiFeatureImage -wikiDescription -wikiTitle -isPublished -related_sources',
         })
             .sort({ rank: 1 })
-            .lean();
+            .lean()
+            .select('-bodies -notBlendNutrients');
         for (let i = 0; i < ingredients.length; i++) {
             let value = data.filter(
             // @ts-ignore
@@ -1002,7 +1003,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         let ingredients;
         ingredients = await blendIngredient_1.default.find({
             _id: { $in: hello },
-            status: 'Active',
+            // status: 'Active',
         })
             .populate({
             path: 'blendNutrients.blendNutrientRefference',
