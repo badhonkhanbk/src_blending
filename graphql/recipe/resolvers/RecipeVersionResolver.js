@@ -233,14 +233,15 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             description: data.description ? data.description : '',
             selectedImage: data.selectedImage ? data.selectedImage : selectedImage,
             //@ts-ignore
-            recipeInstructions: recipe.defaultVersion.recipeInstructions,
+            recipeInstructions: userProfileRecipe.defaultVersion.recipeInstructions,
             ingredients: versionModifiedIngredients,
             //@ts-ignore
-            servingSize: recipe.defaultVersion.servingSize,
+            servingSize: userProfileRecipe.defaultVersion.servingSize,
             //@ts-ignore
             createdAt: new Date(),
             createdBy: data.userId,
         });
+        //recipe
         //@ts-ignore
         await (0, updateVersionFacts_1.default)(newVersion._id);
         let up = await UserRecipeProfile_1.default.findOneAndUpdate({
