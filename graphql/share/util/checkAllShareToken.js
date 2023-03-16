@@ -86,6 +86,7 @@ async function default_1(tokens, userId) {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {

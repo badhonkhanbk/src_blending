@@ -30,6 +30,7 @@ let BlogCommentsResolver = class BlogCommentsResolver {
         }
         let newComment = await blogComment_1.default.create(data);
         return {
+            //@ts-ignore
             ...newComment._doc,
             memberId: user,
         };
@@ -51,6 +52,7 @@ let BlogCommentsResolver = class BlogCommentsResolver {
             new: true,
         });
         return {
+            //@ts-ignore
             ...editedComment._doc,
             memberId: user,
         };

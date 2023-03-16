@@ -126,7 +126,9 @@ let WigdetResolver = class WigdetResolver {
         // let ingredients: any[] = [];
         for (let i = 0; i < widget.widgetCollections.length; i++) {
             let values = [];
-            let collectionType = widget.widgetCollections[i].collectionData.collectionType;
+            let collectionType = 
+            //@ts-ignore
+            widget.widgetCollections[i].collectionData.collectionType;
             if (collectionType === 'Recipe') {
                 let recipes;
                 if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
@@ -146,6 +148,7 @@ let WigdetResolver = class WigdetResolver {
                 }
                 recipes = await recipe_1.default.find({
                     _id: {
+                        //@ts-ignore
                         $in: widget.widgetCollections[i].collectionData.children.slice(0, 8),
                     },
                     [key[widget.widgetCollections[i].filter.filterType]]: { $in: values },
@@ -174,6 +177,7 @@ let WigdetResolver = class WigdetResolver {
                     };
                 }
                 returnWidget.widgetCollections.push({
+                    //@ts-ignore
                     _id: widget.widgetCollections[i]._id,
                     displayName: widget.widgetCollections[i].displayName,
                     icon: widget.widgetCollections[i].icon,
@@ -208,6 +212,7 @@ let WigdetResolver = class WigdetResolver {
             return new AppError_1.default('No widget collection found', 404);
         }
         let values = [];
+        //@ts-ignore
         let collectionType = widgetCollection.collectionData.collectionType;
         if (collectionType === 'Recipe') {
             if (widgetCollection.filter.filterType === 'Ingredient') {
@@ -225,6 +230,7 @@ let WigdetResolver = class WigdetResolver {
             let recipes;
             recipes = await recipe_1.default.find({
                 _id: {
+                    //@ts-ignore
                     $in: widgetCollection.collectionData.children.slice(0, 8),
                 },
                 [key[widgetCollection.filter.filterType]]: {
@@ -255,6 +261,7 @@ let WigdetResolver = class WigdetResolver {
                 };
             }
             let returnWidgetCollection = {
+                //@ts-ignore
                 _id: widgetCollection._id,
                 displayName: widgetCollection.displayName,
                 icon: widgetCollection.icon,

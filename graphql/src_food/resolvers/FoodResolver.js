@@ -355,7 +355,7 @@ let FoodResolver = class FoodResolver {
         let defaultPortionNutrients = [];
         for (let i = 0; i < ingredient.nutrients.length; i++) {
             let nutrient = {
-                value: (ingredient.nutrients[i].value / 100) * defaultPortion,
+                value: (+ingredient.nutrients[i].value / 100) * +defaultPortion,
                 uniqueNutrientRefference: ingredient.nutrients[i].uniqueNutrientRefference,
             };
             defaultPortionNutrients.push(nutrient);

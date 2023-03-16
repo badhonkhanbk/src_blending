@@ -28,6 +28,7 @@ const AddNewBlendNutrientFromSrc_1 = __importDefault(require("./input-type/blend
 const BlendNutrientData_1 = __importDefault(require("../schemas/BlendNutrientData"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const util_1 = __importDefault(require("./input-type/util"));
+// import convert from 'recipe-unit-converter';
 let allUnits = {
     Kilojoules: { unit: 'kJ', unitName: 'Kilojoules' },
     Gram: { unit: 'G', unitName: 'Gram' },
@@ -39,6 +40,17 @@ let allUnits = {
     Liter: { unit: 'L', unitName: 'Liter' },
 };
 let BlendNutrientResolver = class BlendNutrientResolver {
+    // @Query(() => Number)
+    // async getConvertedData(
+    //   @Arg('convertThis') convertThis: string,
+    //   @Arg('covertInto') convertInto: string,
+    //   @Arg('convertedValue') convertedValue: number
+    // ) {
+    //   //@ts-ignore
+    //   let convert2 = convert(convertedValue).from(convertThis).to(convertInto);
+    //   console.log(convert2);
+    //   return 22;
+    // }
     async addNewBlendNutrient(data) {
         if (!data.category) {
             return new AppError_1.default('Category can not be null.', 400);
@@ -111,6 +123,7 @@ let BlendNutrientResolver = class BlendNutrientResolver {
         for (let i = 0; i < mapList.length; i++) {
             returnMapList.push({
                 srcUniqueNutrientId: mapList[i].srcUniqueNutrientId._id,
+                //@ts-ignore
                 nutrientName: mapList[i].srcUniqueNutrientId.nutrient,
                 rank: mapList[i].rank,
             });
@@ -194,6 +207,7 @@ let BlendNutrientResolver = class BlendNutrientResolver {
                         value2: '0',
                         blendNutrientRefference: x.blendNutrientRefference,
                         uniqueNutrientReferrence: x.uniqueNutrientReferrence,
+                        //@ts-ignore
                         _id: x._id,
                     };
                     return x;
@@ -204,6 +218,7 @@ let BlendNutrientResolver = class BlendNutrientResolver {
                         value2: x.value2 && x.value2 !== '0' ? x.value2 : x.value,
                         blendNutrientRefference: x.blendNutrientRefference,
                         uniqueNutrientReferrence: x.uniqueNutrientReferrence,
+                        //@ts-ignore
                         _id: x._id,
                     };
                     return x;
@@ -252,7 +267,9 @@ let BlendNutrientResolver = class BlendNutrientResolver {
         await blendNutrient_1.default.findOneAndUpdate({ _id: blendNutrient._id }, {
             uniqueNutrientId: un._id,
         });
-        await this.makeNotBlendNutrientToBlendNutrient(un._id, data.blendNutrientIdForMaping);
+        await this.makeNotBlendNutrientToBlendNutrient(
+        //@ts-ignore
+        un._id, data.blendNutrientIdForMaping);
         return 'BlendNutrient Created Successfull';
     }
     async makeBlendNutrientsToNotBlendNutrients(uniqueNutrientReferrence, blendNutrientId) {
@@ -371,7 +388,9 @@ let BlendNutrientResolver = class BlendNutrientResolver {
                     }).select('_id');
                     nestedChildren = nestedChildren.map((nestedChild) => nestedChild._id);
                     if (nestedChildren.length > 0) {
-                        await this.makeBookmark(nestedChildren, nutrient.parent, marked, nutrientId);
+                        await this.makeBookmark(nestedChildren, 
+                        //@ts-ignore
+                        nutrient.parent, marked, nutrientId);
                     }
                 }
             }
@@ -391,7 +410,9 @@ let BlendNutrientResolver = class BlendNutrientResolver {
                         'blendNutrients.$.disabled': false,
                     },
                 });
-                let mainParent = await this.findParentAndRemoveFromTheNutrientList(nutrient.parent, nutrientId);
+                let mainParent = await this.findParentAndRemoveFromTheNutrientList(
+                //@ts-ignore
+                nutrient.parent, nutrientId);
                 let nestedChildren = await blendNutrient_1.default.find({
                     parent: nutrientId,
                 }).select('_id');
@@ -472,7 +493,9 @@ let BlendNutrientResolver = class BlendNutrientResolver {
             return immediateParent;
         }
         else {
-            await this.findParentAndRemoveFromTheNutrientList(blendNutrient.parent, nutrientId);
+            await this.findParentAndRemoveFromTheNutrientList(
+            //@ts-ignore
+            blendNutrient.parent, nutrientId);
         }
     }
     async getBlendNutrientsBasedOnCategoey(nutrientCategoryId) {

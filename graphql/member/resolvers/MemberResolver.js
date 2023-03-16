@@ -70,8 +70,11 @@ let MemberResolver = class MemberResolver {
         for (let i = 0; i < user.collections.length; i++) {
             collections.push({
                 _id: user.collections[i]._id,
+                //@ts-ignore
                 name: user.collections[i].name,
+                //@ts-ignore
                 slug: user.collections[i].slug,
+                //@ts-ignore
                 recipes: user.collections[i].recipes,
                 isShared: false,
                 sharedBy: null,
@@ -241,6 +244,7 @@ let MemberResolver = class MemberResolver {
                 userId: user2._id,
             }).select('_id');
             if (checkIfNew.length === 0) {
+                //@ts-ignore
                 await (0, getAllGlobalRecipes_1.default)(user2._id);
             }
             let user3 = await memberModel_1.default.findOne({ _id: user2._id })
@@ -258,6 +262,7 @@ let MemberResolver = class MemberResolver {
             userId: user._id,
         }).select('_id');
         if (checkIfNew.length === 0) {
+            //@ts-ignore
             await (0, getAllGlobalRecipes_1.default)(user._id);
         }
         return user;
@@ -295,6 +300,7 @@ let MemberResolver = class MemberResolver {
         if (!user)
             return new AppError_1.default(`User ${data.userId} does not exist`, 402);
         for (let i = 0; i < user.collections.length; i++) {
+            //@ts-ignore
             if (user.collections[i].name === data.collection.name) {
                 return new AppError_1.default(`Collection ${data.collection.name} already exists`, 402);
             }
@@ -324,6 +330,7 @@ let MemberResolver = class MemberResolver {
         if (!user)
             return new AppError_1.default(`User ${data.userId} does not exist`, 402);
         for (let i = 0; i < user.collections.length; i++) {
+            //@ts-ignore
             if (user.collections[i].name === data.collection.name) {
                 return new AppError_1.default(`Collection ${data.collection.name} already exists`, 402);
             }

@@ -30,6 +30,7 @@ let PlanCommentsResolver = class PlanCommentsResolver {
         }
         let newComment = await planComment_1.default.create(data);
         return {
+            //@ts-ignore
             ...newComment._doc,
             memberId: user,
         };
@@ -52,6 +53,7 @@ let PlanCommentsResolver = class PlanCommentsResolver {
             new: true,
         });
         return {
+            //@ts-ignore
             ...editedComment._doc,
             memberId: user,
         };

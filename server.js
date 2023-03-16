@@ -17,6 +17,7 @@ process.on('uncaughtException', (err) => {
 });
 dotenv_1.default.config({ path: './config.env' });
 const database = process.env.DATABASE;
+mongoose_1.default.set('strictQuery', false);
 mongoose_1.default
     .connect(database)
     .then(() => console.log('DB connection successful!'))

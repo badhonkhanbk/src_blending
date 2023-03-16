@@ -35,7 +35,9 @@ let DailyGoalResolver = class DailyGoalResolver {
         let returnDailyGoal = {};
         //@ts-ignore
         let data = dailyGoal.goals.reduce((acc, cur) => {
+            //@ts-ignore
             if (!acc[cur.blendNutrientId]) {
+                //@ts-ignore
                 acc[cur.blendNutrientId] = {
                     blendNutrientId: cur.blendNutrientId,
                     goal: cur.goal,

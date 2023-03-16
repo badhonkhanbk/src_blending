@@ -60,6 +60,7 @@ let shareCollectionResolver = class shareCollectionResolver {
             if (filtered.length <= 0) {
                 return new AppError_1.default('You can not share it', 404);
             }
+            //@ts-ignore
             if (!filtered.canShareWithOthers) {
                 return new AppError_1.default('You can not share it', 404);
             }
@@ -117,14 +118,19 @@ let shareCollectionResolver = class shareCollectionResolver {
             visible: false,
         });
         if (data.shareTo.length <= 0) {
+            //@ts-ignore
             return await this.shareGlobalCollection(data.sharedBy, collection._id);
         }
         for (let i = 0; i < data.shareTo.length; i++) {
             let user = await memberModel_1.default.findOne({
                 email: data.shareTo[i].shareToEmail,
             }).select('_id');
-            let personalizedName = await this.getPersonalizedName(collection.name, user._id, 0);
-            let personalizedName2 = await this.getPersonalizedName2(personalizedName.name, user._id, personalizedName.count, collection._id);
+            let personalizedName = await this.getPersonalizedName(collection.name, 
+            //@ts-ignore
+            user._id, 0);
+            let personalizedName2 = await this.getPersonalizedName2(personalizedName.name, 
+            //@ts-ignore
+            user._id, personalizedName.count, collection._id);
             await userCollection_1.default.findOneAndUpdate({
                 _id: collection._id,
             }, {

@@ -27,6 +27,10 @@ __decorate([
     __metadata("design:type", String)
 ], SimpleVersion.prototype, "postfixTitle", void 0);
 __decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], SimpleVersion.prototype, "selectedImage", void 0);
+__decorate([
     (0, type_graphql_1.Field)((type) => [IngredientData_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], SimpleVersion.prototype, "ingredients", void 0);

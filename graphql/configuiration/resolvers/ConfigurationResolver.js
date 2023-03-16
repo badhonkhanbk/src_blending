@@ -35,7 +35,7 @@ let ConfiguirationResolver = class ConfiguirationResolver {
     }
     async editConfifuirationById(data) {
         let newData = data.editableObject;
-        let hasGender = data.editableObject.gender && newData.gender !== '';
+        let hasGender = data.editableObject.gender !== undefined && newData.gender !== '';
         let hasWeightInKilograms = data.editableObject.weightInKilograms
             ? true
             : false;
@@ -55,31 +55,6 @@ let ConfiguirationResolver = class ConfiguirationResolver {
         }
         await memberConfiguiration_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'Success';
-    }
-    async checkConfiguiration() {
-        let configs = await memberConfiguiration_1.default.find();
-        for (let i = 0; i < configs.length; i++) {
-            let hasGender = configs[i].gender && configs[i].gender !== '';
-            let hasWeightInKilograms = configs[i].weightInKilograms ? true : false;
-            let hasHeightInCentimeters = configs[i].heightInCentimeters
-                ? true
-                : false;
-            let hasAge = configs[i].age.quantity ? true : false;
-            if (hasHeightInCentimeters &&
-                hasAge &&
-                hasWeightInKilograms &&
-                hasGender) {
-                await memberModel_1.default.findOneAndUpdate({ configuration: configs[i]._id }, {
-                    isCreated: true,
-                });
-            }
-            else {
-                await memberModel_1.default.findOneAndUpdate({ configuration: configs[i]._id }, {
-                    isCreated: false,
-                });
-            }
-        }
-        return ['hello', 'world'];
     }
 };
 __decorate([
@@ -113,12 +88,6 @@ __decorate([
     __metadata("design:paramtypes", [EditConfiguiration_1.default]),
     __metadata("design:returntype", Promise)
 ], ConfiguirationResolver.prototype, "editConfifuirationById", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => [String]),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ConfiguirationResolver.prototype, "checkConfiguiration", null);
 ConfiguirationResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], ConfiguirationResolver);

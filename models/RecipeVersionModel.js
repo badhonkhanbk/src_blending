@@ -20,8 +20,9 @@ const recipeVersionSchema = new mongoose_1.Schema({
             ],
         },
     ],
-    isDefault: { type: Boolean, default: false },
-    isOriginal: { type: Boolean, default: false },
+    selectedImage: String,
+    // isDefault: { type: Boolean, default: false },
+    // isOriginal: { type: Boolean, default: false },
     editedAt: Date,
     createdAt: { type: Date, default: Date.now },
     createdBy: {

@@ -208,18 +208,26 @@ let UserDailyResolver = class UserDailyResolver {
             .populate('blendNutrientRef');
         let user = await memberModel_1.default.findOne({ _id: userId }).select('macroInfo');
         for (let i = 0; i < daily.length; i++) {
+            //@ts-ignore
             let isEmptyString = daily[i].blendNutrientRef.altName === '';
+            //@ts-ignore
             let isUndefined = daily[i].blendNutrientRef.altName === undefined;
+            //@ts-ignore
             let isNull = daily[i].blendNutrientRef.altName === null;
             let checkForAltName = isEmptyString || isUndefined || isNull;
+            //@ts-ignore
             let name = checkForAltName
-                ? daily[i].blendNutrientRef.nutrientName
-                : daily[i].blendNutrientRef.altName;
+                ? //@ts-ignore
+                    daily[i].blendNutrientRef.nutrientName
+                : //@ts-ignore
+                    daily[i].blendNutrientRef.altName;
             let myData;
             if (!daily[i].showPercentage) {
                 myData = {
                     nutrientName: name,
-                    data: await this.getDataFromRanges(JSON.stringify(daily[i].ranges), ageInNumber, calories, daily[i].blendNutrientRef.units),
+                    data: await this.getDataFromRanges(JSON.stringify(daily[i].ranges), ageInNumber, calories, 
+                    //@ts-ignore
+                    daily[i].blendNutrientRef.units),
                     blendNutrientRef: daily[i].blendNutrientRef._id,
                     showPercentage: daily[i].showPercentage,
                 };
@@ -233,6 +241,7 @@ let UserDailyResolver = class UserDailyResolver {
                     nutrientName: name,
                     data: {
                         value: Math.floor((+calories * (macro.percentage / 100)) / daily[i].calorieGram),
+                        //@ts-ignore
                         units: daily[i].blendNutrientRef.units,
                     },
                     blendNutrientRef: daily[i].blendNutrientRef._id,

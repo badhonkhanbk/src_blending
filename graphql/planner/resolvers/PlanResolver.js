@@ -101,18 +101,26 @@ let PlanResolver = class PlanResolver {
             if (plan.planData[i].recipes.length > 0) {
                 for (let j = 0; j < plan.planData[i].recipes.length; j++) {
                     recipeCategories.push({
+                        //@ts-ignore
                         _id: plan.planData[i].recipes[j].recipeBlendCategory._id,
+                        //@ts-ignore
                         name: plan.planData[i].recipes[j].recipeBlendCategory.name,
                     });
                     //defaultVersion
                     //ingredients
-                    for (let k = 0; k < plan.planData[i].recipes[j].defaultVersion.ingredients.length; k++) {
+                    for (let k = 0; 
+                    //@ts-ignore
+                    k < plan.planData[i].recipes[j].defaultVersion.ingredients.length; k++) {
                         ingredients.push({
+                            //@ts-ignore
                             _id: plan.planData[i].recipes[j].defaultVersion.ingredients[k]
                                 .ingredientId._id,
+                            //@ts-ignore
                             name: plan.planData[i].recipes[j].defaultVersion.ingredients[k]
                                 .ingredientId.ingredientName,
-                            featuredImage: plan.planData[i].recipes[j].defaultVersion.ingredients[k]
+                            featuredImage: 
+                            //@ts-ignore
+                            plan.planData[i].recipes[j].defaultVersion.ingredients[k]
                                 .ingredientId.featuredImage,
                         });
                     }

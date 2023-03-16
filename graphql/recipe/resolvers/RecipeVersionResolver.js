@@ -45,6 +45,9 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             return new AppError_1.default('Recipe not found', 404);
         }
         let willBeModifiedData = data.editableObject;
+        if (!willBeModifiedData.selectedImage) {
+            willBeModifiedData.selectedImage = recipeVersion.selectedImage;
+        }
         if (data.editableObject.ingredients) {
             let ingredients = data.editableObject.ingredients;
             let modifiedIngredients = [];
@@ -82,6 +85,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         }
         if (String(data.userId) === String(recipeVersion.createdBy)) {
             let newVersion = await RecipeVersionModel_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData, { new: true });
+            //@ts-ignore
             await (0, updateVersionFacts_1.default)(newVersion._id);
             return {
                 status: 'recipeVersion updated successfully',
@@ -103,7 +107,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             if (String(userRecipe.defaultVersion) === String(data.editId) &&
                 !userRecipe.isMatch) {
                 await UserRecipeProfile_1.default.findOneAndUpdate({ _id: userRecipe._id }, { defaultVersion: createdVersion._id });
-            }
+            } //@ts-ignore
             else if (String(userRecipe.originalVersion) === String(data.editId)) {
                 return new AppError_1.default('You can not edit this version', 400);
             }
@@ -137,6 +141,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                     });
                 }
             }
+            //@ts-ignore
             await (0, updateVersionFacts_1.default)(createdVersion._id);
             return {
                 status: newVersion._id,
@@ -160,7 +165,15 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         // }
     }
     async addVersion(data) {
-        let recipe = await recipeModel_1.default.findOne({ _id: data.recipeId }).populate({
+        let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
+            userId: data.userId,
+            recipeId: data.recipeId,
+        })
+            .populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+        })
+            .populate({
             path: 'defaultVersion',
             model: 'RecipeVersion',
             populate: {
@@ -168,10 +181,11 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 model: 'BlendIngredient',
             },
         });
-        if (!recipe) {
+        if (!userProfileRecipe) {
             return new AppError_1.default('Recipe not found', 404);
         }
-        let versionModifiedIngredients = recipe.defaultVersion.ingredients;
+        //@ts-ignore
+        let versionModifiedIngredients = userProfileRecipe.defaultVersion.ingredients;
         if (data.ingredients) {
             let ingredients = data.ingredients;
             let modifiedIngredients = [];
@@ -206,20 +220,32 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             versionModifiedIngredients = modifiedIngredients;
             //@ts-ignore
         }
+        let selectedImage = null;
+        if (!data.selectedImage) {
+            selectedImage = userProfileRecipe.defaultVersion.selectedImage
+                ? userProfileRecipe.defaultVersion.selectedImage
+                : userProfileRecipe.recipeId.image[0].image;
+        }
         let newVersion = await RecipeVersionModel_1.default.create({
-            recipeId: recipe._id,
+            recipeId: data.recipeId,
+            //@ts-ignore
             postfixTitle: data.postfixTitle,
             description: data.description ? data.description : '',
+            selectedImage: data.selectedImage ? data.selectedImage : selectedImage,
+            //@ts-ignore
             recipeInstructions: recipe.defaultVersion.recipeInstructions,
             ingredients: versionModifiedIngredients,
+            //@ts-ignore
             servingSize: recipe.defaultVersion.servingSize,
+            //@ts-ignore
             createdAt: new Date(),
             createdBy: data.userId,
         });
+        //@ts-ignore
         await (0, updateVersionFacts_1.default)(newVersion._id);
         let up = await UserRecipeProfile_1.default.findOneAndUpdate({
             userId: data.userId,
-            recipeId: recipe._id,
+            recipeId: data.recipeId,
         }, {
             $push: {
                 turnedOnVersions: newVersion._id,
@@ -412,6 +438,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                         $push: {
                             turnedOffVersions: versionId,
                         },
+                        //@ts-ignore
                         defaultVersion: userRecipe.recipeId.originalVersion,
                     }, {
                         new: true,
@@ -425,6 +452,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                         $push: {
                             turnedOffVersions: versionId,
                         },
+                        //@ts-ignore
                         defaultVersion: userRecipe.recipeId.originalVersion,
                     }, {
                         new: true,
@@ -537,6 +565,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -575,6 +604,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             versionsCount++;
         }
         return {
+            //@ts-ignore
             ...userProfileRecipe._doc,
             notes: userNotes.length,
             addedToCompare: addedToCompare,

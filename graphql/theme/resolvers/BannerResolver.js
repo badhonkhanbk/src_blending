@@ -28,6 +28,7 @@ let BannerResolver = class BannerResolver {
     }
     async editABanner(data) {
         let theme = await banner_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
+        //@ts-ignore
         theme.updatedAt = Date.now();
         theme.save();
         return 'successfully edited';

@@ -56,6 +56,7 @@ let WikiIngredientsCompareResolver = class WikiIngredientsCompareResolver {
             if (!compare.ingredients.filter(
             //@ts-ignore
             (ingredient) => ingredient.toString() === ingredientId)[0]) {
+                //@ts-ignore
                 compare.ingredients.push(ingredientId);
                 await compare.save();
             }
@@ -131,23 +132,37 @@ let WikiIngredientsCompareResolver = class WikiIngredientsCompareResolver {
         for (let i = 0; i < compareList.ingredients.length; i++) {
             let data = {
                 _id: compareList.ingredients[i]._id,
+                //@ts-ignore
                 wikiTitle: compareList.ingredients[i].wikiTitle
+                    //@ts-ignore
                     ? compareList.ingredients[i].wikiTitle
+                    //@ts-ignore
                     : compareList.ingredients[i].ingredientName,
+                //@ts-ignore
                 wikiDescription: compareList.ingredients[i].wikiDescription
+                    //@ts-ignore
                     ? compareList.ingredients[i].wikiDescription
                     : ' ',
                 type: 'Ingredient',
+                //@ts-ignore
                 category: compareList.ingredients[i].category
+                    //@ts-ignore
                     ? compareList.ingredients[i].category
                     : '',
+                //@ts-ignore
                 status: compareList.ingredients[i].blendStatus,
+                //@ts-ignore
                 publishDate: compareList.ingredients[i].createdAt,
+                //@ts-ignore
                 portions: compareList.ingredients[i].portions,
+                //@ts-ignore
                 image: compareList.ingredients[i].featuredImage,
+                //@ts-ignore
                 description: compareList.ingredients[i].description,
                 publishedBy: 'g. braun',
+                //@ts-ignore
                 isPublished: compareList.ingredients[i].isPublished,
+                //@ts-ignore
                 featuredImage: compareList.ingredients[i].featuredImage,
             };
             let comments = await wikiComment_1.default.find({

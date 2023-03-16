@@ -44,6 +44,31 @@ const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeP
 const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNotesCompareAndUserCollection"));
 const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 let RecipeResolver = class RecipeResolver {
+    // @Query((type) => String)
+    // async tya() {
+    //   let recipeVersions = await RecipeVersionModel.find();
+    //   for (let i = 0; i < recipeVersions.length; i++) {
+    //     console.log(i);
+    //     let recipe: any = await RecipeModel.findById(
+    //       recipeVersions[i].recipeId
+    //     ).select('image');
+    //     if (!recipe) {
+    //       console.log(recipeVersions[i].recipeId);
+    //       console.log(recipeVersions[i]._id);
+    //       continue;
+    //     }
+    //     if (recipe.image.length === 0) {
+    //       await RecipeVersionModel.findByIdAndUpdate(recipeVersions[i]._id, {
+    //         selectedImage: '',
+    //       });
+    //     } else {
+    //       await RecipeVersionModel.findByIdAndUpdate(recipeVersions[i]._id, {
+    //         selectedImage: recipe.image[0].image ? recipe.image[0].image : '',
+    //       });
+    //     }
+    //   }
+    //   return 'done';
+    // }
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
             path: 'recipeId',
@@ -81,6 +106,7 @@ let RecipeResolver = class RecipeResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollection.collections.length; i++) {
+            //@ts-ignore
             let items = memberCollection.collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -197,6 +223,7 @@ let RecipeResolver = class RecipeResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollection.collections.length; i++) {
+            //@ts-ignore
             let items = memberCollection.collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -267,6 +294,7 @@ let RecipeResolver = class RecipeResolver {
             })
                 .select('-_id collections');
             for (let i = 0; i < memberCollections[0].collections.length; i++) {
+                //@ts-ignore
                 let items = memberCollections[0].collections[i].recipes.map(
                 //@ts-ignore
                 (recipe) => {
@@ -299,6 +327,7 @@ let RecipeResolver = class RecipeResolver {
                     collectionData = collectionData.map((data) => data.recipeCollection);
                 }
                 returnRecipe.push({
+                    //@ts-ignore
                     ...recipes[i]._doc,
                     notes: userNotes.length,
                     addedToCompare: addedToCompare,
@@ -375,6 +404,7 @@ let RecipeResolver = class RecipeResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -407,6 +437,7 @@ let RecipeResolver = class RecipeResolver {
                 collectionData = collectionData.map((data) => data.recipeCollection);
             }
             returnRecipe.push({
+                //@ts-ignore
                 ...recipes[i]._doc,
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,
@@ -457,6 +488,7 @@ let RecipeResolver = class RecipeResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -489,6 +521,7 @@ let RecipeResolver = class RecipeResolver {
                 collectionData = collectionData.map((data) => data.recipeCollection);
             }
             returnRecipe.push({
+                //@ts-ignore
                 ...recipes[i]._doc,
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,
@@ -552,6 +585,7 @@ let RecipeResolver = class RecipeResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -584,6 +618,7 @@ let RecipeResolver = class RecipeResolver {
                 collectionData = collectionData.map((data) => data.recipeCollection);
             }
             returnRecipe.push({
+                //@ts-ignore
                 ...recipes[i]._doc,
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,
@@ -645,6 +680,7 @@ let RecipeResolver = class RecipeResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -677,6 +713,7 @@ let RecipeResolver = class RecipeResolver {
                 collectionData = collectionData.map((data) => data.recipeCollection);
             }
             returnRecipe.push({
+                //@ts-ignore
                 ...recipes[i]._doc,
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,
@@ -746,6 +783,7 @@ let RecipeResolver = class RecipeResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -777,6 +815,7 @@ let RecipeResolver = class RecipeResolver {
             collectionData = collectionData.map((data) => data.recipeCollection);
         }
         return {
+            //@ts-ignore
             ...recipe._doc,
             notes: userNotes.length,
             addedToCompare: addedToCompare,
@@ -934,6 +973,7 @@ let RecipeResolver = class RecipeResolver {
         let recipeVersion = await RecipeVersionModel_1.default.create({
             recipeId: userRecipe._id,
             postfixTitle: data.name,
+            selectedImage: data.image[0].image,
             servingSize: newData.servingSize,
             description: newData.description,
             ingredients: newData.ingredients,
@@ -942,6 +982,7 @@ let RecipeResolver = class RecipeResolver {
             isDefault: true,
             isOriginal: true,
         });
+        //@ts-ignore
         await (0, updateOriginalVersionFact_1.default)(recipeVersion._id);
         await recipeModel_1.default.findOneAndUpdate({
             _id: userRecipe._id,
@@ -1015,6 +1056,7 @@ let RecipeResolver = class RecipeResolver {
     async getA() {
         let recipes = await recipeModel_1.default.find();
         for (let i = 0; i < recipes.length; i++) {
+            //@ts-ignore
             let recipeVersion = recipes[i].recipeVersion[0];
             await RecipeVersionModel_1.default.findOneAndUpdate({ _id: recipeVersion }, {
                 postfixTitle: recipes[i].name,
@@ -1118,6 +1160,7 @@ let RecipeResolver = class RecipeResolver {
     async populateAllRecipeFacts() {
         let versions = await RecipeVersionModel_1.default.find().select('_id');
         for (let i = 0; i < versions.length; i++) {
+            //@ts-ignore
             await (0, updateVersionFacts_1.default)(versions[i]._id);
         }
         return 'done';
@@ -1125,6 +1168,7 @@ let RecipeResolver = class RecipeResolver {
     async populateAllOriginalRecipeFacts() {
         let versions = await RecipeVersionModel_1.default.find().select('_id');
         for (let i = 0; i < versions.length; i++) {
+            //@ts-ignore
             await (0, updateOriginalVersionFact_1.default)(versions[i]._id);
         }
         return 'done';
@@ -1338,6 +1382,7 @@ let RecipeResolver = class RecipeResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollection.collections.length; i++) {
+            //@ts-ignore
             let items = memberCollection.collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -1370,6 +1415,7 @@ let RecipeResolver = class RecipeResolver {
                 collectionData = collectionData.map((data) => data.recipeCollection);
             }
             returnRecipe.push({
+                //@ts-ignore
                 ...recipes[i]._doc,
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,

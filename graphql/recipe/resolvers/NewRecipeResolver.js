@@ -35,6 +35,11 @@ const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNo
 //* @returns
 //*
 let RecipeCorrectionResolver = class RecipeCorrectionResolver {
+    async removeNow() {
+        await UserRecipeProfile_1.default.updateMany({}, {
+            lastSeen: Date.now(),
+        });
+    }
     async getDiscoverRecipes(userId) {
         let checkIfNew = await UserRecipeProfile_1.default.find({
             userId: userId,
@@ -139,6 +144,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -176,7 +182,16 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         if (!userProfileRecipe.isMatch) {
             versionsCount++;
         }
+        await UserRecipeProfile_1.default.findOne({
+            userId: userId,
+            recipeId: recipeId,
+        }, {
+            $set: {
+                lastSeen: Date.now(),
+            },
+        });
         return {
+            //@ts-ignore
             ...userProfileRecipe._doc,
             notes: userNotes.length,
             addedToCompare: addedToCompare,
@@ -353,6 +368,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         return returnRecipe;
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeCorrectionResolver.prototype, "removeNow", null);
 __decorate([
     (0, type_graphql_1.Query)((type) => String),
     __param(0, (0, type_graphql_1.Arg)('userId')),

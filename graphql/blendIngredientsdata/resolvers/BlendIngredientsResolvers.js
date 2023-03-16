@@ -373,7 +373,9 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         // checked above
         for (let i = 0; i < ingredient.blendNutrients.length; i++) {
             let nutrient = {
-                value: (+ingredient.blendNutrients[i].value / 100) * defaultPortion,
+                //@ts-ignore
+                value: (Number(ingredient.blendNutrients[i].value) / 100) *
+                    Number(defaultPortion),
                 blendNutrientRefference: ingredient.blendNutrients[i].blendNutrientRefference,
             };
             defaultPortionNutrients.push(nutrient);
@@ -540,7 +542,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             (y) => y.ingredientId === String(ingredients[i]._id))[0].value;
             for (let j = 0; j < ingredients[i].blendNutrients.length; j++) {
                 ingredients[i].blendNutrients[j].value =
-                    (+ingredients[i].blendNutrients[j].value / 100) * value;
+                    (+ingredients[i].blendNutrients[j].value / 100) * +value;
             }
         }
         let nutrients = [];
@@ -751,6 +753,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                         value: blendIngredients[i].blendNutrients[j].value,
                         blendNutrientRefference: blendNutrient._id,
                         uniqueNutrientReferrence: blendNutrient.uniqueNutrientId,
+                        //@ts-ignore
                         _id: blendIngredients[i].blendNutrients[j]._id,
                     });
                 }
@@ -790,7 +793,9 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                         value2: blendIngredients[i].blendNutrients[j].value,
                         value: (+blendIngredients[i].blendNutrients[j].value * 0.035274).toString(),
                         blendNutrientRefference: blendIngredients[i].blendNutrients[j].blendNutrientRefference,
+                        //@ts-ignore
                         uniqueNutrientReferrence: blendIngredients[i].blendNutrients[j].uniqueNutrientReferrence,
+                        //@ts-ignore
                         _id: blendIngredients[i].blendNutrients[j]._id,
                     });
                 }
@@ -884,6 +889,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             let netCarbs = totalCarbs - dietaryFiber;
             let totalGL = netCarbs * (55 / 100);
             res.push({
+                //@ts-ignore
                 _id: recipeVersion.ingredients[i]._id,
                 gl: totalGL,
                 gi: 55,

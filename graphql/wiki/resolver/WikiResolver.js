@@ -66,8 +66,10 @@ let WikiResolver = class WikiResolver {
                 categoryName = null;
             }
             else {
+                //@ts-ignore
                 categoryName = blendNutrients[i].category.categoryName
-                    ? blendNutrients[i].category.categoryName
+                    ? //@ts-ignore
+                        blendNutrients[i].category.categoryName
                     : '';
             }
             let data = {
@@ -972,6 +974,7 @@ let WikiResolver = class WikiResolver {
                 if (found) {
                     await wiki_1.default.findOneAndUpdate({ _id: wikiId }, {
                         $pull: {
+                            //@ts-ignore
                             nutrientBookmarkList: { _id: found._id },
                         },
                     });
@@ -1046,6 +1049,7 @@ let WikiResolver = class WikiResolver {
                 }
                 await wiki_1.default.findOneAndUpdate({ _id: wikiId }, {
                     $pull: {
+                        //@ts-ignore
                         nutrientBookmarkList: { _id: found._id },
                     },
                 });
@@ -1066,6 +1070,7 @@ let WikiResolver = class WikiResolver {
                 if (found) {
                     await wiki_1.default.findOneAndUpdate({ _id: wikiId }, {
                         $pull: {
+                            //@ts-ignore
                             ingredientBookmarkList: { _id: found._id },
                         },
                     });
@@ -1126,6 +1131,7 @@ let WikiResolver = class WikiResolver {
                 }
                 await wiki_1.default.findOneAndUpdate({ _id: wikiId }, {
                     $pull: {
+                        //@ts-ignore
                         ingredientBookmarkList: { _id: found._id },
                     },
                 });

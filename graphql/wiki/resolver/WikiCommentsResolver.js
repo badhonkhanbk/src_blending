@@ -50,6 +50,7 @@ let WikiCommentsResolver = class WikiCommentsResolver {
         let newComment = await wikiComment_1.default.create(data);
         delete newComment.userId;
         return {
+            //@ts-ignore
             ...newComment._doc,
             userId: user,
         };
@@ -68,6 +69,7 @@ let WikiCommentsResolver = class WikiCommentsResolver {
         }, { comment: data.editableObject.comment, updatedAt: Date.now() }, { new: true });
         delete newComment.userId;
         return {
+            //@ts-ignore
             ...newComment._doc,
             userId: user,
         };

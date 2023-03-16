@@ -34,6 +34,7 @@ const userRecipeProfileSchema = new mongoose_1.Schema({
     allRecipes: Boolean,
     myRecipes: Boolean,
     tags: [String],
+    lastSeen: { type: Date, default: Date.now },
 });
 const UserRecipeProfile = (0, mongoose_1.model)('UserRecipeProfile', userRecipeProfileSchema);
 exports.default = UserRecipeProfile;

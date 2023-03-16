@@ -31,6 +31,10 @@ __decorate([
     __metadata("design:type", String)
 ], RecipeVersion.prototype, "recipeId", void 0);
 __decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], RecipeVersion.prototype, "selectedImage", void 0);
+__decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
 ], RecipeVersion.prototype, "recipeInstructions", void 0);

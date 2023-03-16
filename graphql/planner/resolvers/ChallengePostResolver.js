@@ -54,6 +54,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                 select: 'ingredientName',
             },
         });
+        //@ts-ignore
         return recipe.defaultVersion.ingredients;
     }
     async createChallengePost(data) {
@@ -821,6 +822,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         let myCurrentStreak = 1;
         let isBreak = true;
         for (let i = challengeDocs.length - 2; i >= 0; i--) {
+            //@ts-ignore
             let diffTime = Math.abs(tempDay - challengeDocs[i].assignDate);
             let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             if (diffDays === 1) {

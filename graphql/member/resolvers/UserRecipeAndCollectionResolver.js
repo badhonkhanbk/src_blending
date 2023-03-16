@@ -79,7 +79,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             return new AppError_1.default('Recipe already in collection', 304);
         }
         await userCollection_1.default.findOneAndUpdate({ _id: collection._id }, { $push: { recipes: recipe._id }, $set: { updatedAt: Date.now() } });
-        await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { lastModifiedCollection: collection._id, updatedAt: Date.now() });
+        await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { lastModifiedCollection: collection._id });
         return 'successfull';
     }
     async checkForRecipeExistenceInCollection(data) {
@@ -95,7 +95,9 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         }
         let foundRecipeInCollection = false;
         for (let i = 0; i < user.collections.length; i++) {
+            //@ts-ignore
             for (let j = 0; j < user.collections[i].recipes.length; j++) {
+                //@ts-ignore
                 if (user.collections[i].recipes[j].url === data.recipeUrl) {
                     foundRecipeInCollection = true;
                     return foundRecipeInCollection;
@@ -240,6 +242,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         for (let i = 0; i < memberCollections[0].collections.length; i++) {
             let Collectionrecipes = await recipeModel_1.default.find({
                 _id: {
+                    //@ts-ignore
                     $in: memberCollections[0].collections[i].recipes,
                 },
             })
@@ -266,6 +269,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 .populate('brand')
                 .populate('recipeBlendCategory');
             recipes = recipes.concat(Collectionrecipes);
+            //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -327,7 +331,9 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             return new AppError_1.default('Collection not found', 404);
         }
         let found2 = false;
+        //@ts-ignore
         for (let k = 0; k < collection.recipes.length; k++) {
+            //@ts-ignore
             if (String(collection.recipes[k]) === String(data.recipe)) {
                 found2 = true;
                 break;
@@ -527,6 +533,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             for (let j = 0; j < data.recipes.length; j++) {
                 let recipeString = data.recipes[j].toString();
                 let id = new mongoose_1.default.Types.ObjectId(recipeString).valueOf();
+                //@ts-ignore
                 if (collection.recipes.indexOf(id) !== -1) {
                     continue;
                 }
@@ -570,6 +577,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 creatorInfo: null,
             });
         }
+        //@ts-ignore
         let otherCollections = await userCollection_1.default.find({
             'shareTo.userId': {
                 $in: [new mongoose_1.default.mongo.ObjectId(userId)],
@@ -630,6 +638,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             let returnRecipe = [];
             let collectionRecipes = [];
             for (let i = 0; i < memberCollections.collections.length; i++) {
+                //@ts-ignore
                 let items = memberCollections.collections[i].recipes.map(
                 //@ts-ignore
                 (recipe) => {
@@ -904,6 +913,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         })
             .select('-_id collections');
         for (let i = 0; i < memberCollection.collections.length; i++) {
+            //@ts-ignore
             let items = memberCollection.collections[i].recipes.map(
             //@ts-ignore
             (recipe) => {
@@ -936,6 +946,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 collectionData = collectionData.map((data) => data.recipeCollection);
             }
             returnRecipe.push({
+                //@ts-ignore
                 ...recipes[i]._doc,
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,

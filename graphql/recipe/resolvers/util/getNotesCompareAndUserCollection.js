@@ -18,6 +18,7 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
         .select('-_id collections');
     // console.log(member.collections);
     for (let i = 0; i < member.collections.length; i++) {
+        //@ts-ignore
         let items = member.collections[i].recipes.map(
         //@ts-ignore
         (recipe) => {

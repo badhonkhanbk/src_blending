@@ -149,16 +149,24 @@ let PlannerResolver = class PlannerResolver {
                 if (planner.recipes.length > 0) {
                     for (let j = 0; j < planner.recipes.length; j++) {
                         recipeCategories.push({
+                            //@ts-ignore
                             _id: planner.recipes[j].recipeBlendCategory._id,
+                            //@ts-ignore
                             name: planner.recipes[j].recipeBlendCategory.name,
                         });
-                        for (let k = 0; k < planner.recipes[j].defaultVersion.ingredients.length; k++) {
+                        for (let k = 0; 
+                        //@ts-ignore
+                        k < planner.recipes[j].defaultVersion.ingredients.length; k++) {
                             ingredients.push({
+                                //@ts-ignore
                                 _id: planner.recipes[j].defaultVersion.ingredients[k]
                                     .ingredientId._id,
+                                //@ts-ignore
                                 name: planner.recipes[j].defaultVersion.ingredients[k]
                                     .ingredientId.ingredientName,
-                                featuredImage: planner.recipes[j].defaultVersion.ingredients[k].ingredientId
+                                featuredImage: 
+                                //@ts-ignore
+                                planner.recipes[j].defaultVersion.ingredients[k].ingredientId
                                     .featuredImage,
                             });
                         }
