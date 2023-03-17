@@ -37,6 +37,9 @@ const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVers
 const wiki_1 = __importDefault(require("../../../models/wiki"));
 const GIGl_1 = __importDefault(require("../schemas/GIGl"));
 const NutrientsWithGiGl_1 = __importDefault(require("../schemas/NutrientsWithGiGl"));
+const axios_1 = __importDefault(require("axios"));
+const ingredient_unit_converter_1 = require("@jclind/ingredient-unit-converter");
+const CreateScrappedRecipe_1 = __importDefault(require("../../recipe/resolvers/input-type/CreateScrappedRecipe"));
 let BlendIngredientResolver = class BlendIngredientResolver {
     async getAllBlendIngredients() {
         let blendIngredients = await blendIngredient_1.default.find()
@@ -512,12 +515,117 @@ let BlendIngredientResolver = class BlendIngredientResolver {
      * @param [ingredientsInfo]
      * @returns String
      */
+    async addScrappedRecipeFromUser(data) {
+        let ingredientsShape = [
+            {
+                recipeIngredients: data.recipeIngredients,
+            },
+        ];
+        var dataX = JSON.stringify(ingredientsShape);
+        var config = {
+            method: 'get',
+            url: 'http://54.91.110.31/parse-ingredients',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: dataX,
+        };
+        let res = await (0, axios_1.default)(config);
+        let blends = [];
+        let notBlends = [];
+        let portionsProblem = [];
+        for (let i = 0; i < res.data[0].parsed_data.length; i++) {
+            let blendIngredient = null;
+            for (let j = 0; j < res.data[0].parsed_data[i].best_match.length; j++) {
+                blendIngredient = await blendIngredient_1.default.findOne({
+                    srcFoodReference: res.data[0].parsed_data[i].best_match[j].db_ingredient_id,
+                    $or: [
+                        {
+                            blendStatus: 'Active',
+                        },
+                        {
+                            blendStatus: 'Review',
+                        },
+                    ],
+                }).select('-blendNutrients -notBlendNutrients');
+                if (blendIngredient) {
+                    // console.log(blendIngredient);
+                    break;
+                }
+            }
+            if (!blendIngredient) {
+                notBlends.push(res.data[0].parsed_data[i]);
+            }
+            else {
+                // console.log('blend', blendIngredient, res.data[0].parsed_data[i]);
+                blends.push({
+                    ingredientId: blendIngredient._id,
+                    quantity: res.data[0].parsed_data[i].QUANTITY,
+                    unit: res.data[0].parsed_data[i].QUANTITY_UNIT,
+                    name: res.data[0].parsed_data[i].INGREDIENT,
+                    db_name: blendIngredient.ingredientName,
+                    comment: res.data[0].parsed_data[i].COMMENT,
+                    portions: blendIngredient.portions,
+                });
+            }
+        }
+        const parseFraction = (fraction) => {
+            const [numerator, denominator] = fraction.split('/').map(Number);
+            return numerator / denominator;
+        };
+        for (let i = 0; i < blends.length; i++) {
+            for (let j = 0; j < blends[i].portions.length; j++) {
+                if (blends[i].unit === blends[i].portions[j].measurement) {
+                    blends[i].value =
+                        blends[i].quantity * blends[i].portions[j].meausermentWeight;
+                    blends[i].unit = 'g';
+                    if (!blends[i].value) {
+                        blends[i].value =
+                            parseFraction(blends[i].quantity) *
+                                blends[i].portions[j].meausermentWeight;
+                    }
+                }
+            }
+            if (!blends[i].value) {
+                if (!+blends[i].quantity) {
+                    let converted = (0, ingredient_unit_converter_1.converter)(parseFraction(blends[i].quantity), blends[i].unit, blends[i].portions[0].measurement);
+                    if (converted.error) {
+                        blends[i].error = converted.error;
+                        portionsProblem.push(blends[i]);
+                        continue;
+                    }
+                    blends[i].value =
+                        converted.quantity * blends[i].portions[0].meausermentWeight;
+                }
+                else {
+                    let converted = (0, ingredient_unit_converter_1.converter)(blends[i].quantity, blends[i].unit, blends[i].portions[0].measurement);
+                    if (converted.error) {
+                        blends[i].error = converted.error;
+                        portionsProblem.push(blends[i]);
+                        continue;
+                    }
+                    blends[i].value =
+                        converted.quantity * blends[i].portions[0].meausermentWeight;
+                }
+            }
+        }
+        blends = blends
+            .filter((blend) => blend.value)
+            .map((blend) => {
+            return {
+                ingredientId: String(blend.ingredientId),
+                value: blend.value,
+            };
+        });
+        let myData = await this.getNutrientsListAndGiGlByIngredients(blends);
+        return myData;
+    }
     async getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
         let nutrientList = await this.getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
         let giGl = await this.getGlAndNetCarbs2(ingredientsInfo);
         return {
             nutrients: nutrientList,
-            giGl: giGl
+            giGl: giGl,
         };
     }
     async getBlendNutritionBasedOnRecipexxx(ingredientsInfo) {
@@ -538,6 +646,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             .lean()
             .select('-bodies -notBlendNutrients');
         for (let i = 0; i < ingredients.length; i++) {
+            console.log(data);
             let value = data.filter(
             // @ts-ignore
             (y) => y.ingredientId === String(ingredients[i]._id))[0].value;
@@ -1181,6 +1290,13 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getNutrientsListAndGiGlByRecipe", null);
+__decorate([
+    (0, type_graphql_1.Mutation)((type) => NutrientsWithGiGl_1.default),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CreateScrappedRecipe_1.default]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "addScrappedRecipeFromUser", null);
 __decorate([
     (0, type_graphql_1.Query)(() => NutrientsWithGiGl_1.default),
     __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),

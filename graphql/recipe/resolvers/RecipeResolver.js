@@ -1018,14 +1018,120 @@ let RecipeResolver = class RecipeResolver {
         });
         return returnUserRecipe;
     }
-    async addScrappedRecipeFromUser(data) {
-        // let user = await MemberModel.findOne({ email: data.userId });
-        // if (!user) {
-        //   return new AppError('User not found', 404);
-        // }
-        await scrappedRecipe_1.default.create(data);
-        return 'recipe added successfully';
-    }
+    // @Mutation((type) => String)
+    // async addScrappedRecipeFromUser(@Arg('data') data: CreateScrappedRecipe) {
+    //   let ingredientsShape: any = [
+    //     {
+    //       recipeIngredients: data.recipeIngredients,
+    //     },
+    //   ];
+    //   var dataX = JSON.stringify(ingredientsShape);
+    //   var config = {
+    //     method: 'get',
+    //     url: 'http://54.91.110.31/parse-ingredients',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     data: dataX,
+    //   };
+    //   let res = await axios(config);
+    //   let blends: any[] = [];
+    //   let notBlends: any[] = [];
+    //   let portionsProblem: any[] = [];
+    //   console.log(res.data[0].parsed_data[0].best_match);
+    //   for (let i = 0; i < res.data[0].parsed_data.length; i++) {
+    //     let blendIngredient: any = null;
+    //     for (let j = 0; j < res.data[0].parsed_data[i].best_match.length; j++) {
+    //       blendIngredient = await BlendIngredientModel.findOne({
+    //         srcFoodReference:
+    //           res.data[0].parsed_data[i].best_match[j].db_ingredient_id,
+    //         $or: [
+    //           {
+    //             blendStatus: 'Active',
+    //           },
+    //           {
+    //             blendStatus: 'Review',
+    //           },
+    //         ],
+    //       }).select('-blendNutrients -notBlendNutrients');
+    //       if (blendIngredient) {
+    //         // console.log(blendIngredient);
+    //         break;
+    //       }
+    //     }
+    //     if (!blendIngredient) {
+    //       notBlends.push(res.data[0].parsed_data[i]);
+    //     } else {
+    //       // console.log('blend', blendIngredient, res.data[0].parsed_data[i]);
+    //       blends.push({
+    //         ingredientId: blendIngredient._id,
+    //         quantity: res.data[0].parsed_data[i].QUANTITY,
+    //         unit: res.data[0].parsed_data[i].QUANTITY_UNIT,
+    //         name: res.data[0].parsed_data[i].INGREDIENT,
+    //         db_name: blendIngredient.ingredientName,
+    //         comment: res.data[0].parsed_data[i].COMMENT,
+    //         portions: blendIngredient.portions,
+    //       });
+    //     }
+    //   }
+    //   const parseFraction = (fraction) => {
+    //     const [numerator, denominator] = fraction.split('/').map(Number);
+    //     return numerator / denominator;
+    //   };
+    //   for (let i = 0; i < blends.length; i++) {
+    //     for (let j = 0; j < blends[i].portions.length; j++) {
+    //       if (blends[i].unit === blends[i].portions[j].measurement) {
+    //         blends[i].value =
+    //           blends[i].quantity * blends[i].portions[j].meausermentWeight;
+    //         blends[i].unit = 'g';
+    //         if (!blends[i].value) {
+    //           blends[i].value =
+    //             parseFraction(blends[i].quantity) *
+    //             blends[i].portions[j].meausermentWeight;
+    //         }
+    //       }
+    //     }
+    //     if (!blends[i].value) {
+    //       if (!+blends[i].quantity) {
+    //         let converted: any = converter(
+    //           parseFraction(blends[i].quantity),
+    //           blends[i].unit,
+    //           blends[i].portions[0].measurement
+    //         );
+    //         if (converted.error) {
+    //           blends[i].error = converted.error;
+    //           portionsProblem.push(blends[i]);
+    //           continue;
+    //         }
+    //         blends[i].value =
+    //           converted.quantity * blends[i].portions[0].meausermentWeight;
+    //       } else {
+    //         let converted: any = converter(
+    //           blends[i].quantity,
+    //           blends[i].unit,
+    //           blends[i].portions[0].measurement
+    //         );
+    //         if (converted.error) {
+    //           blends[i].error = converted.error;
+    //           portionsProblem.push(blends[i]);
+    //           continue;
+    //         }
+    //         blends[i].value =
+    //           converted.quantity * blends[i].portions[0].meausermentWeight;
+    //       }
+    //     }
+    //   }
+    //   blends = blends
+    //     .filter((blend: any) => blend.value)
+    //     .map((blend: any) => {
+    //       return {
+    //         ingredientId: blend.ingredientId,
+    //         value: blend.value,
+    //       };
+    //     });
+    //   // let mydata = await this.
+    //   return 'recipe added successfully';
+    // }
     async removeAllBulkRecipe() {
         await scrappedRecipe_1.default.deleteMany();
         return 'removed';
@@ -1572,13 +1678,6 @@ __decorate([
     __metadata("design:paramtypes", [CreateRecipe_1.default]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "addRecipeFromUser", null);
-__decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
-    __param(0, (0, type_graphql_1.Arg)('data')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CreateScrappedRecipe_1.default]),
-    __metadata("design:returntype", Promise)
-], RecipeResolver.prototype, "addScrappedRecipeFromUser", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __metadata("design:type", Function),
