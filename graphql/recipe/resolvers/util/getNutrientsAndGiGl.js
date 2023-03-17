@@ -247,7 +247,7 @@ async function getBlendNutritionBasedOnRecipexxx(ingredientsInfo) {
     let ingredients;
     ingredients = await blendIngredient_1.default.find({
         _id: { $in: hello },
-        status: 'Active',
+        // status: 'Active',
     })
         .populate({
         path: 'blendNutrients.blendNutrientRefference',
