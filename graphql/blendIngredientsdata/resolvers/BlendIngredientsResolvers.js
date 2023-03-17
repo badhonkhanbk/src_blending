@@ -531,12 +531,14 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             data: dataX,
         };
         let res = await (0, axios_1.default)(config);
+        // console.log(res.data[0].parsed_data);
         let blends = [];
         let notBlends = [];
         let portionsProblem = [];
         for (let i = 0; i < res.data[0].parsed_data.length; i++) {
             let blendIngredient = null;
-            for (let j = 0; j < res.data[0].parsed_data[i].best_match.length; j++) {
+            //res.data[0].parsed_data[i].best_match.length
+            for (let j = 0; j < 4; j++) {
                 blendIngredient = await blendIngredient_1.default.findOne({
                     srcFoodReference: res.data[0].parsed_data[i].best_match[j].db_ingredient_id,
                     $or: [
@@ -574,6 +576,9 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             return numerator / denominator;
         };
         for (let i = 0; i < blends.length; i++) {
+            if (!blends[i].unit) {
+                continue;
+            }
             for (let j = 0; j < blends[i].portions.length; j++) {
                 if (blends[i].unit === blends[i].portions[j].measurement) {
                     blends[i].value =
