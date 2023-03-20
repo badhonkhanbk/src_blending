@@ -67,6 +67,55 @@ let MemberResolver = class MemberResolver {
             select: 'displayName email firstName lastName',
         });
         let collections = [];
+        let userProfileRecentRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+        })
+            .populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+        })
+            .populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+                select: 'ingredientName selectedImage',
+            },
+            select: 'postfixTitle',
+        })
+            .limit(5)
+            .sort({
+            lastSeen: -1,
+        });
+        let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
+        collections.push({
+            _id: new mongoose_1.default.mongo.ObjectId(),
+            name: 'Recent Recipes',
+            slug: 'recent-recipes',
+            recipes: returnRecentRecipe,
+            isShared: false,
+            sharedBy: null,
+            personalizedName: '',
+            canContribute: true,
+            canShareWithOther: true,
+        });
         for (let i = 0; i < user.collections.length; i++) {
             let returnRecipe = await this.getProfileRecipes(user.collections[i].recipes, userId);
             collections.push({
@@ -142,55 +191,6 @@ let MemberResolver = class MemberResolver {
             name: 'My Recipes',
             slug: 'my-recipes',
             recipes: returnMyRecipe,
-            isShared: false,
-            sharedBy: null,
-            personalizedName: '',
-            canContribute: true,
-            canShareWithOther: true,
-        });
-        let userProfileRecentRecipes = await UserRecipeProfile_1.default.find({
-            userId: userId,
-        })
-            .populate({
-            path: 'recipeId',
-            model: 'RecipeModel',
-            populate: [
-                {
-                    path: 'recipeBlendCategory',
-                    model: 'RecipeCategory',
-                },
-                {
-                    path: 'brand',
-                    model: 'RecipeBrand',
-                },
-                {
-                    path: 'userId',
-                    model: 'User',
-                    select: 'firstName lastName displayName email',
-                },
-            ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
-        })
-            .populate({
-            path: 'defaultVersion',
-            model: 'RecipeVersion',
-            populate: {
-                path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
-                select: 'ingredientName selectedImage',
-            },
-            select: 'postfixTitle',
-        })
-            .limit(5)
-            .sort({
-            lastSeen: -1,
-        });
-        let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
-        collections.push({
-            _id: new mongoose_1.default.mongo.ObjectId(),
-            name: 'Recent Recipes',
-            slug: 'recent-recipes',
-            recipes: returnRecentRecipe,
             isShared: false,
             sharedBy: null,
             personalizedName: '',
