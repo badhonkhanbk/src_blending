@@ -555,7 +555,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                             blendStatus: 'Review',
                         },
                     ],
-                }).select('-blendNutrients -notBlendNutrients');
+                }).select('-blendNutrients -notBlendNutrients -bodies');
                 if (blendIngredient) {
                     // console.log(blendIngredient);
                     break;

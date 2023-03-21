@@ -102,7 +102,7 @@ let MemberResolver = class MemberResolver {
         })
             .limit(5)
             .sort({
-            lastSeen: -1,
+            lastSeen: 1,
         });
         let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
         collections.push({
@@ -597,7 +597,9 @@ let MemberResolver = class MemberResolver {
         await memberModel_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'Success';
     }
-    async changeCompare(recipeId, userId) {
+    async changeCompare(recipeId, userId
+    // @Arg('versionId') versionId: String
+    ) {
         let userRecipe = await UserRecipeProfile_1.default.findOne({
             userId: userId,
             recipeId: recipeId,
@@ -798,7 +800,9 @@ __decorate([
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
-        String]),
+        String
+        // @Arg('versionId') versionId: String
+    ]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "changeCompare", null);
 __decorate([
