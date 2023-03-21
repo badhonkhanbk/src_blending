@@ -615,7 +615,7 @@ let MemberResolver = class MemberResolver {
                 await Compare_1.default.findOneAndRemove({
                     userId: userId,
                     recipeId: recipeId,
-                    versionId: recipeId,
+                    // versionId: recipeId,
                 });
                 break;
             }
@@ -625,7 +625,7 @@ let MemberResolver = class MemberResolver {
             await Compare_1.default.create({
                 recipeId: recipeId,
                 userId: userId,
-                versionId: recipeId,
+                // versionId: recipeId,
             });
         }
         return updatedUser.compareList.length;
