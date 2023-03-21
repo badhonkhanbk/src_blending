@@ -182,7 +182,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         if (!userProfileRecipe.isMatch) {
             versionsCount++;
         }
-        await UserRecipeProfile_1.default.findOne({
+        await UserRecipeProfile_1.default.findOneAndUpdate({
             userId: userId,
             recipeId: recipeId,
         }, {
