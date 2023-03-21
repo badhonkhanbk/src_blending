@@ -102,7 +102,7 @@ let MemberResolver = class MemberResolver {
         })
             .limit(5)
             .sort({
-            lastSeen: 1,
+            lastSeen: -1,
         });
         let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
         collections.push({
