@@ -145,6 +145,7 @@ let PlannerResolver = class PlannerResolver {
                 .sort({ assignDate: 1 })
                 .lean();
             if (planner) {
+                console.log(planner._id);
                 planners.push(planner);
                 if (planner.recipes.length > 0) {
                     for (let j = 0; j < planner.recipes.length; j++) {
