@@ -20,7 +20,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const CreateChallengePost_1 = __importDefault(require("./input-type/CreateChallengePost"));
 const IngredientData_1 = __importDefault(require("../../recipe/schemas/IngredientData"));
 const ChallengePost_1 = __importDefault(require("../schemas/ChallengePost"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const ChallengePost_2 = __importDefault(require("../../../models/ChallengePost"));
 const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
 const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient"));
@@ -49,7 +49,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         return 'done';
     }
     async getIngredientsFromARecipe(recipeId) {
-        let recipe = await recipe_1.default.findOne({ _id: recipeId }).populate({
+        let recipe = await recipeModel_1.default.findOne({ _id: recipeId }).populate({
             path: 'defaultVersion',
             model: 'RecipeVersion',
             populate: {
@@ -141,10 +141,14 @@ let ChallengePostResolver = class ChallengePostResolver {
             });
         }
         else {
+            let images = [];
+            for (let i = 0; i < data.post.images.length; i++) {
+                images = await this.addUniqueObj(challengePostDoc.images, data.post.images[i]);
+            }
             await ChallengePost_2.default.create({
                 memberId: data.memberId,
                 assignDate: isoDate,
-                images: post.images,
+                images: images,
                 posts: [post],
                 date: data.assignDate,
             });
@@ -477,11 +481,15 @@ let ChallengePostResolver = class ChallengePostResolver {
             });
         }
         else {
+            let images = [];
+            for (let i = 0; i < data.post.images.length; i++) {
+                images = await this.addUniqueObj(challengePostDoc.images, data.post.images[i]);
+            }
             await ChallengePost_2.default.create({
                 memberId: data.memberId,
                 assignDate: isoDate,
                 posts: [post],
-                images: post.images,
+                images: images,
             });
         }
         let userChallenge = await challenge_1.default.findOne({

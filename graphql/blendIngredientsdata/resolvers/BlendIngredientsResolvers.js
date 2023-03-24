@@ -22,7 +22,7 @@ const blendIngredient_1 = __importDefault(require("../../../models/blendIngredie
 const mapToBlend_1 = __importDefault(require("../../../models/mapToBlend"));
 const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient"));
 const blendNutrientCategory_1 = __importDefault(require("../../../models/blendNutrientCategory"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const AddBlendIngredient_1 = __importDefault(require("./input-type/AddBlendIngredient"));
 const IngredientFilter_1 = __importDefault(require("./input-type/IngredientFilter"));
 const BlendIngredientInfo_1 = __importDefault(require("./input-type/BlendIngredientInfo"));
@@ -404,7 +404,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             model = RecipeVersionModel_1.default;
         }
         else {
-            model = recipe_1.default;
+            model = recipeModel_1.default;
         }
         recipe = await model.findOne({ _id: recipeId }).select('-_id ingredients');
         //@ts-ignore
@@ -491,7 +491,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             });
         }
         else {
-            let recipe = await recipe_1.default.findOne({ _id: recipeId }).select('defaultVersion');
+            let recipe = await recipeModel_1.default.findOne({ _id: recipeId }).select('defaultVersion');
             let version = await RecipeVersionModel_1.default.findOne({
                 _id: recipe.defaultVersion,
             }).select('ingredients');

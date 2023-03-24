@@ -22,7 +22,7 @@ const Plan_1 = __importDefault(require("../../../models/Plan"));
 const Planner_1 = __importDefault(require("../../../models/Planner"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const GroceryList_1 = __importDefault(require("../../../models/GroceryList"));
 const Planner_2 = __importDefault(require("../schemas/Planner"));
 const PlannerRecipe_1 = __importDefault(require("../../planner/schemas/PlannerRecipe"));
@@ -247,7 +247,7 @@ let PlannerResolver = class PlannerResolver {
             recipesId.push(...recipes);
         }
         recipesId = [...new Set(recipesId)];
-        let latestRecipes = await recipe_1.default.find({
+        let latestRecipes = await recipeModel_1.default.find({
             _id: { $nin: recipesId },
         }).sort({ createdAt: -1 });
         for (let i = 0; i < latestRecipes.length; i++) {
@@ -270,10 +270,10 @@ let PlannerResolver = class PlannerResolver {
                 recipeBlendCategory: new mongoose_1.default.mongo.ObjectId(recipeBlendCategory),
                 _id: { $in: recipesId },
             };
-            let recipes = await recipe_1.default.find(find).select('_id');
+            let recipes = await recipeModel_1.default.find(find).select('_id');
             recipesSize = recipes.length;
         }
-        let recipes = await recipe_1.default.find(find)
+        let recipes = await recipeModel_1.default.find(find)
             .populate({
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
@@ -337,10 +337,10 @@ let PlannerResolver = class PlannerResolver {
                 recipeBlendCategory: new mongoose_1.default.mongo.ObjectId(recipeBlendCategory),
                 _id: { $in: recipeIds },
             };
-            let recipes = await recipe_1.default.find(find).select('_id');
+            let recipes = await recipeModel_1.default.find(find).select('_id');
             recipesSize = recipes.length;
         }
-        let recipes = await recipe_1.default.find(find)
+        let recipes = await recipeModel_1.default.find(find)
             .populate({
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
@@ -364,7 +364,7 @@ let PlannerResolver = class PlannerResolver {
         };
     }
     async addToGroceryFromPlanner(memberId, recipeId) {
-        let recipe = await recipe_1.default.findOne({ _id: recipeId }).select('ingredients');
+        let recipe = await recipeModel_1.default.findOne({ _id: recipeId }).select('ingredients');
         let member = await memberModel_1.default.findOne({ _id: memberId });
         if (!recipe || !member) {
             return new AppError_1.default('Recipe or member not found', 404);
