@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const ChallengePost_1 = __importDefault(require("./ChallengePost"));
+const ImageWithHash_1 = __importDefault(require("./ImageWithHash"));
 let Challenge = class Challenge {
 };
 __decorate([
@@ -33,7 +34,7 @@ __decorate([
     __metadata("design:type", String)
 ], Challenge.prototype, "dayName", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
+    (0, type_graphql_1.Field)((type) => [ImageWithHash_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], Challenge.prototype, "images", void 0);
 __decorate([

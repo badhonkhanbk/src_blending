@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const IngredientData_1 = __importDefault(require("../../recipe/schemas/IngredientData"));
 const RecipeCategory_1 = __importDefault(require("../../recipe/schemas/RecipeCategory"));
+const ImageWithHash_1 = __importDefault(require("./ImageWithHash"));
 let ChallengePost = class ChallengePost {
 };
 __decorate([
@@ -30,7 +31,7 @@ __decorate([
     __metadata("design:type", RecipeCategory_1.default)
 ], ChallengePost.prototype, "recipeBlendCategory", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [String]),
+    (0, type_graphql_1.Field)((type) => [ImageWithHash_1.default]),
     __metadata("design:type", Array)
 ], ChallengePost.prototype, "images", void 0);
 __decorate([

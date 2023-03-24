@@ -8,7 +8,18 @@ const ChallengePostSchema = new mongoose_1.Schema({
         required: [true, 'Member ID is required'],
     },
     assignDate: { type: Date, required: true },
-    images: [String],
+    images: [
+        {
+            url: String,
+            hash: String,
+        },
+    ],
+    myImages: [
+        {
+            url: String,
+            hash: String,
+        },
+    ],
     date: String,
     posts: [
         {
@@ -21,7 +32,18 @@ const ChallengePostSchema = new mongoose_1.Schema({
                 type: Number,
                 default: 0,
             },
-            images: [String],
+            images: [
+                {
+                    url: String,
+                    hash: String,
+                },
+            ],
+            myImages: [
+                {
+                    url: String,
+                    hash: String,
+                },
+            ],
             recipeImage: String,
             recipeBlendCategory: {
                 type: mongoose_1.Schema.Types.ObjectId,

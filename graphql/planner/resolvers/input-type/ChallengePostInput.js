@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const CreateIngredientData_1 = __importDefault(require("../../../recipe/resolvers/input-type/CreateIngredientData"));
+const ImageWithHashInput_1 = __importDefault(require("./ImageWithHashInput"));
 let CreateChallengePostInput = class CreateChallengePostInput {
 };
 __decorate([
@@ -21,7 +22,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateChallengePostInput.prototype, "recipeImage", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [String]),
+    (0, type_graphql_1.Field)((type) => [ImageWithHashInput_1.default]),
     __metadata("design:type", Array)
 ], CreateChallengePostInput.prototype, "images", void 0);
 __decorate([

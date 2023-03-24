@@ -44,6 +44,10 @@ const InviteForChallenge_1 = __importDefault(require("../../../models/InviteForC
 const inviteInfo_1 = __importDefault(require("../schemas/inviteInfo"));
 const ChsllengeAndSingleDoc_1 = __importDefault(require("../schemas/ChsllengeAndSingleDoc"));
 let ChallengePostResolver = class ChallengePostResolver {
+    async updateChallenge889() {
+        await ChallengePost_2.default.deleteMany({});
+        return 'done';
+    }
     async getIngredientsFromARecipe(recipeId) {
         let recipe = await recipe_1.default.findOne({ _id: recipeId }).populate({
             path: 'defaultVersion',
@@ -56,6 +60,21 @@ let ChallengePostResolver = class ChallengePostResolver {
         });
         //@ts-ignore
         return recipe.defaultVersion.ingredients;
+    }
+    async addUniqueObj(array, data) {
+        let index = -1;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].url === data.url) {
+                index = i;
+            }
+        }
+        if (index > -1) {
+            array[index] = data;
+        }
+        else {
+            array.push(data);
+        }
+        return array;
     }
     async createChallengePost(data) {
         if (!data.memberId || !data.assignDate) {
@@ -108,10 +127,15 @@ let ChallengePostResolver = class ChallengePostResolver {
             assignDate: isoDate,
         });
         if (challengePostDoc) {
+            let images = [];
+            for (let i = 0; i < data.post.images.length; i++) {
+                images = await this.addUniqueObj(challengePostDoc.images, data.post.images[i]);
+            }
             await ChallengePost_2.default.findOneAndUpdate({
                 _id: challengePostDoc._id,
             }, {
-                $push: { posts: post, images: { $each: post.images } },
+                $push: { posts: post },
+                images: images,
             }, {
                 new: true,
             });
@@ -421,18 +445,33 @@ let ChallengePostResolver = class ChallengePostResolver {
         }, {
             $pull: {
                 posts: { _id: post._id },
-                images: { $in: previousPost.images },
             },
         });
+        for (let i = 0; i < previousPost.images.length; i++) {
+            await ChallengePost_2.default.findOneAndUpdate({
+                _id: post.docId,
+            }, {
+                $pull: {
+                    images: {
+                        url: previousPost.images[i].url,
+                    },
+                },
+            });
+        }
         let challengePostDoc = await ChallengePost_2.default.findOne({
             memberId: data.memberId,
             assignDate: isoDate,
         });
         if (challengePostDoc) {
+            let images = [];
+            for (let i = 0; i < data.post.images.length; i++) {
+                images = await this.addUniqueObj(challengePostDoc.images, data.post.images[i]);
+            }
             await ChallengePost_2.default.findOneAndUpdate({
                 _id: challengePostDoc._id,
             }, {
-                $push: { posts: post, images: { $each: post.images } },
+                $push: { posts: post },
+                images: images,
             }, {
                 new: true,
             });
@@ -875,7 +914,6 @@ let ChallengePostResolver = class ChallengePostResolver {
             sharedWith: shareWithData,
             topIngredients: challenge.topIngredients,
         };
-        console.log(challenge);
         return challengeInfo;
     }
     async getLatestChallengePost(memberId) {
@@ -1370,6 +1408,12 @@ let ChallengePostResolver = class ChallengePostResolver {
         };
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChallengePostResolver.prototype, "updateChallenge889", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [IngredientData_1.default]),
     __param(0, (0, type_graphql_1.Arg)('recipeId')),
