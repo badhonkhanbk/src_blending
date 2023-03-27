@@ -57,7 +57,7 @@ let ChallengeResolver = class ChallengeResolver {
         data.startDate = isoStartDate;
         data.endDate = isoEndDate;
         let userChallenge = await challenge_1.default.create(data);
-        return userChallenge._id;
+        return userChallenge;
     }
     async activateChallenge(memberId, challengeId, previousDefaultChallengeId) {
         if (previousDefaultChallengeId) {
@@ -134,7 +134,7 @@ let ChallengeResolver = class ChallengeResolver {
             modifiedData.endDateString = (0, FormateDate_1.default)(new Date(modifiedData.endDate));
         }
         let userChallenge = await challenge_1.default.findOneAndUpdate({ _id: data.challengeId }, modifiedData, { new: true });
-        return userChallenge._id;
+        return userChallenge;
     }
     async getMyChallengeList(memberId) {
         let list = [];
@@ -207,7 +207,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengeResolver.prototype, "fixedDays", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => UserChallenge_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateUserChallenge_1.default]),
@@ -225,7 +225,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengeResolver.prototype, "activateChallenge", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => UserChallenge_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateEditUserChallenge_1.default]),
