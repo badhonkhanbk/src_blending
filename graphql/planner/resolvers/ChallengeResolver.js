@@ -27,6 +27,8 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const challengeInfoForId_1 = __importDefault(require("../schemas/challengeInfoForId"));
 let ChallengeResolver = class ChallengeResolver {
     async createUserChallenge(data) {
+        let isoStartDate = new Date(data.startDate).toISOString();
+        let isoEndDate = new Date(data.endDate).toISOString();
         let userChallenges = await challenge_1.default.find({
             memberId: data.memberId,
         });
@@ -36,6 +38,8 @@ let ChallengeResolver = class ChallengeResolver {
             let userChallenge = await challenge_1.default.create(modifiedData);
             return userChallenge._id;
         }
+        data.startDate = isoStartDate;
+        data.endDate = isoEndDate;
         let userChallenge = await challenge_1.default.create(data);
         return userChallenge._id;
     }
@@ -93,18 +97,25 @@ let ChallengeResolver = class ChallengeResolver {
         }
         let modifiedData = data;
         if (data.startDate) {
+            modifiedData.startDate = new Date(data.startDate).toISOString();
+        }
+        if (data.endDate) {
+            modifiedData.endDate = new Date(data.endDate).toISOString();
+        }
+        if (data.startDate) {
+            console.log(typeof modifiedData.startDate);
             modifiedData.startingDate =
-                data.startDate.toLocaleString('default', {
+                new Date(modifiedData.startDate).toLocaleString('default', {
                     month: 'short',
                 }) +
                     ' ' +
-                    data.startDate.getDate() +
+                    new Date(modifiedData.startDate).getDate() +
                     ', ' +
-                    data.startDate.getFullYear();
-            modifiedData.startDateString = (0, FormateDate_1.default)(data.startDate);
+                    new Date(modifiedData.startDate).getFullYear();
+            modifiedData.startDateString = (0, FormateDate_1.default)(new Date(modifiedData.startDate));
         }
         if (data.endDate) {
-            modifiedData.endDateString = (0, FormateDate_1.default)(data.endDate);
+            modifiedData.endDateString = (0, FormateDate_1.default)(new Date(modifiedData.endDate));
         }
         let userChallenge = await challenge_1.default.findOneAndUpdate({ _id: data.challengeId }, modifiedData, { new: true });
         return userChallenge._id;

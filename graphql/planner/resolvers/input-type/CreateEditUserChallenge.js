@@ -34,11 +34,11 @@ __decorate([
 ], CreateEditUserChallenge.prototype, "notification", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Date)
+    __metadata("design:type", String)
 ], CreateEditUserChallenge.prototype, "startDate", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Date)
+    __metadata("design:type", String)
 ], CreateEditUserChallenge.prototype, "endDate", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),

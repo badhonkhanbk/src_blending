@@ -30,11 +30,11 @@ __decorate([
 ], CreateUserChallenge.prototype, "notification", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
-    __metadata("design:type", Date)
+    __metadata("design:type", String)
 ], CreateUserChallenge.prototype, "startDate", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
-    __metadata("design:type", Date)
+    __metadata("design:type", String)
 ], CreateUserChallenge.prototype, "endDate", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
