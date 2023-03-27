@@ -26,6 +26,22 @@ const FormateDate_1 = __importDefault(require("../../../utils/FormateDate"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const challengeInfoForId_1 = __importDefault(require("../schemas/challengeInfoForId"));
 let ChallengeResolver = class ChallengeResolver {
+    async fixedDays() {
+        let ucs = await challenge_1.default.find();
+        for (let i = 0; i < ucs.length; i++) {
+            let days = await this.getDifferenceInDays(ucs[i].startDate, ucs[i].endDate);
+            await challenge_1.default.findOneAndUpdate({
+                _id: ucs[i]._id,
+            }, {
+                days: days,
+            });
+        }
+        return 'done';
+    }
+    async getDifferenceInDays(date1, date2) {
+        const diffInMs = Math.abs(date2 - date1);
+        return diffInMs / (1000 * 60 * 60 * 24);
+    }
     async createUserChallenge(data) {
         let isoStartDate = new Date(data.startDate).toISOString();
         let isoEndDate = new Date(data.endDate).toISOString();
@@ -184,6 +200,12 @@ let ChallengeResolver = class ChallengeResolver {
         return shareChallengeGlobal._id;
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChallengeResolver.prototype, "fixedDays", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __param(0, (0, type_graphql_1.Arg)('data')),

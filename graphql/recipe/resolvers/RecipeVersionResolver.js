@@ -409,6 +409,16 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 defaultVersion: new mongoose_1.default.Types.ObjectId(versionId),
                 isMatch: isMatch,
             });
+            if (String(userRecipe.defaultVersion) !== String(recipe.originalVersion)) {
+                await UserRecipeProfile_1.default.findOneAndUpdate({
+                    recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
+                    userId: new mongoose_1.default.Types.ObjectId(userId),
+                }, {
+                    $push: {
+                        turnedOnVersions: userRecipe.defaultVersion,
+                    },
+                });
+            }
         }
         //  else {
         //   newUpdatedRecipe = await UserRecipeProfileModel.findOneAndUpdate(
