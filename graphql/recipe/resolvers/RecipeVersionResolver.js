@@ -383,35 +383,52 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             defaultVersion: new mongoose_1.default.Types.ObjectId(versionId),
             isMatch: isMatch,
         });
-        let newUpdatedRecipe = {};
-        if (!isMatch) {
+        // let newUpdatedRecipe: any = {};
+        if (isMatch) {
             // console.log(userRecipe.originalVersion);
             // console.log(userRecipe.defaultVersion);
-            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
+            await UserRecipeProfile_1.default.findOneAndUpdate({
+                recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
+                userId: new mongoose_1.default.Types.ObjectId(userId),
+            }, {
+                $push: {
+                    turnedOnVersions: userRecipe.defaultVersion,
+                },
+                defaultVersion: new mongoose_1.default.Types.ObjectId(versionId),
+                isMatch: isMatch,
+            });
+        }
+        else {
+            await UserRecipeProfile_1.default.findOneAndUpdate({
                 recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
                 userId: new mongoose_1.default.Types.ObjectId(userId),
             }, {
                 $pull: {
                     turnedOnVersions: new mongoose_1.default.Types.ObjectId(versionId),
                 },
+                defaultVersion: new mongoose_1.default.Types.ObjectId(versionId),
                 isMatch: isMatch,
-            }, {
-                new: true,
             });
         }
-        else {
-            newUpdatedRecipe = await UserRecipeProfile_1.default.findOneAndUpdate({
-                recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
-                userId: new mongoose_1.default.Types.ObjectId(userId),
-            }, {
-                $push: {
-                    turnedOnVersions: new mongoose_1.default.Types.ObjectId(userRecipe.defaultVersion),
-                },
-                isMatch: isMatch,
-            }, {
-                new: true,
-            });
-        }
+        //  else {
+        //   newUpdatedRecipe = await UserRecipeProfileModel.findOneAndUpdate(
+        //     {
+        //       recipeId: new mongoose.Types.ObjectId(recipeId),
+        //       userId: new mongoose.Types.ObjectId(userId),
+        //     },
+        //     {
+        //       $push: {
+        //         turnedOnVersions: new mongoose.Types.ObjectId(
+        //           userRecipe.defaultVersion
+        //         ),
+        //       },
+        //       isMatch: isMatch,
+        //     },
+        //     {
+        //       new: true,
+        //     }
+        //   );
+        // }
         return 'Success';
     }
     async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn, isDefault) {
