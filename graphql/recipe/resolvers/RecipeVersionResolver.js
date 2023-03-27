@@ -439,7 +439,112 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         //     }
         //   );
         // }
-        return 'Success';
+        let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
+            userId: userId,
+            recipeId: recipeId,
+        })
+            .populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'originalVersion',
+                    model: 'RecipeVersion',
+                    populate: {
+                        path: 'ingredients.ingredientId',
+                        model: 'BlendIngredient',
+                    },
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
+        })
+            .populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+            },
+        })
+            .populate({
+            path: 'turnedOnVersions',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+            },
+        })
+            .populate({
+            path: 'turnedOffVersions',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+            },
+        });
+        let collectionRecipes = [];
+        let memberCollections = await memberModel_1.default.find({ _id: userId })
+            .populate({
+            path: 'collections',
+            model: 'UserCollection',
+            select: 'recipes',
+        })
+            .select('-_id collections');
+        for (let i = 0; i < memberCollections[0].collections.length; i++) {
+            //@ts-ignore
+            let items = memberCollections[0].collections[i].recipes.map(
+            //@ts-ignore
+            (recipe) => {
+                return {
+                    recipeId: String(recipe._id),
+                    recipeCollection: String(memberCollections[0].collections[i]._id),
+                };
+            });
+            collectionRecipes.push(...items);
+        }
+        let userNotes = await userNote_1.default.find({
+            recipeId: recipeId,
+            userId: userId,
+        });
+        let addedToCompare = false;
+        let compare = await Compare_1.default.findOne({
+            userId: userId,
+            recipeId: recipeId,
+        });
+        if (compare) {
+            addedToCompare = true;
+        }
+        let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipeId));
+        if (collectionData.length === 0) {
+            collectionData = null;
+        }
+        else {
+            //@ts-ignore
+            collectionData = collectionData.map((data) => data.recipeCollection);
+        }
+        let versionsCount = 0;
+        versionsCount +=
+            +userProfileRecipe.turnedOnVersions.length +
+                +userProfileRecipe.turnedOffVersions.length;
+        if (!userProfileRecipe.isMatch) {
+            versionsCount++;
+        }
+        return {
+            //@ts-ignore
+            ...userProfileRecipe._doc,
+            notes: userNotes.length,
+            addedToCompare: addedToCompare,
+            userCollections: collectionData,
+            versionsCount: versionsCount,
+        };
     }
     async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn, isDefault) {
         let newUpdatedRecipe = {};
@@ -677,7 +782,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "removeARecipeVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) //changed
+    (0, type_graphql_1.Mutation)(() => ProfileRecipeDesc_1.default) //changed
     ,
     __param(0, (0, type_graphql_1.Arg)('versionID')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
