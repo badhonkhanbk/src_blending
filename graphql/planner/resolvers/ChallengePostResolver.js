@@ -478,15 +478,18 @@ let ChallengePostResolver = class ChallengePostResolver {
             });
         }
         else {
-            let images = [];
-            for (let i = 0; i < data.post.images.length; i++) {
-                images = await this.addUniqueObj(challengePostDoc.images, data.post.images[i]);
-            }
+            // let images = [];
+            // for (let i = 0; i < data.post.images.length; i++) {
+            //   images = await this.addUniqueObj(
+            //     challengePostDoc.images,
+            //     data.post.images[i]
+            //   );
+            // }
             await ChallengePost_2.default.create({
                 memberId: data.memberId,
                 assignDate: isoDate,
                 posts: [post],
-                images: images,
+                images: data.post.images,
             });
         }
         let userChallenge = await challenge_1.default.findOne({
