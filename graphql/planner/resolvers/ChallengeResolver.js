@@ -95,7 +95,7 @@ let ChallengeResolver = class ChallengeResolver {
             });
             await memberModel_1.default.findOneAndUpdate({ _id: memberId }, { defaultChallengeId: challengeId });
         }
-        return 'done';
+        return challengeId;
     }
     async editUserChallenge(data) {
         let userChallengeValid = await challenge_1.default.findOne({
@@ -187,7 +187,7 @@ let ChallengeResolver = class ChallengeResolver {
         await challenge_1.default.findOneAndDelete({
             _id: challengeId,
         });
-        return 'successfully deleted';
+        return challengeId;
     }
     async shareGlobalChallenge(challengeId, memberId) {
         let challenge = await challenge_1.default.findOne({ _id: challengeId });

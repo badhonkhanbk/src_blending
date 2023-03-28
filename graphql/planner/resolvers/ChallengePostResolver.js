@@ -43,6 +43,7 @@ const GetDailyRecomendedAndUpperLimit_1 = __importDefault(require("../../../util
 const InviteForChallenge_1 = __importDefault(require("../../../models/InviteForChallenge"));
 const inviteInfo_1 = __importDefault(require("../schemas/inviteInfo"));
 const ChsllengeAndSingleDoc_1 = __importDefault(require("../schemas/ChsllengeAndSingleDoc"));
+const DateDocPostId_1 = __importDefault(require("../schemas/DateDocPostId"));
 let ChallengePostResolver = class ChallengePostResolver {
     async updateChallenge889() {
         await ChallengePost_2.default.deleteMany({});
@@ -1016,10 +1017,15 @@ let ChallengePostResolver = class ChallengePostResolver {
     //   return 'done';
     // }
     async deleteAChallengePost(docId, postId) {
-        await await ChallengePost_2.default.findOneAndUpdate({ _id: docId }, {
+        let doc = await ChallengePost_2.default.findOne({ _id: docId }).select('date');
+        await ChallengePost_2.default.findOneAndUpdate({ _id: docId }, {
             $pull: { posts: { _id: postId } },
         });
-        return 'post remove successfully';
+        return {
+            date: doc.date,
+            postId: postId,
+            docId: docId,
+        };
     }
     async copyAChallengePost(docId, postId, assignDate, memberId) {
         let doc = await ChallengePost_2.default.findOne({ _id: docId });
@@ -1538,7 +1544,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getChallengePosts", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => DateDocPostId_1.default),
     __param(0, (0, type_graphql_1.Arg)('docId')),
     __param(1, (0, type_graphql_1.Arg)('postId')),
     __metadata("design:type", Function),
