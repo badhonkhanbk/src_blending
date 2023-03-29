@@ -902,6 +902,7 @@ let ChallengePostResolver = class ChallengePostResolver {
             let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             blendScore = (100 / diffDays) * challengeDocsForRecent.length;
         }
+        this.upgradeTopIngredient(challengeId);
         let challengeInfo = {
             longestStreak: longestStreak,
             currentStreak: myCurrentStreak,
