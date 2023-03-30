@@ -23,6 +23,7 @@ const scrappedRecipeSchema = new mongoose_1.Schema({
     foodCategories: [String],
     //NOTE:
     recipeInstructions: [String],
+    recipeIngredients: [String],
     servingSize: {
         type: Number,
         default: 0,

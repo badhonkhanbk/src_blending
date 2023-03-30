@@ -40,6 +40,7 @@ const NutrientsWithGiGl_1 = __importDefault(require("../schemas/NutrientsWithGiG
 const axios_1 = __importDefault(require("axios"));
 const ingredient_unit_converter_1 = require("@jclind/ingredient-unit-converter");
 const CreateScrappedRecipe_1 = __importDefault(require("../../recipe/resolvers/input-type/CreateScrappedRecipe"));
+const scrappedRecipe_1 = __importDefault(require("../../../models/scrappedRecipe"));
 let BlendIngredientResolver = class BlendIngredientResolver {
     async getAllBlendIngredients() {
         let blendIngredients = await blendIngredient_1.default.find()
@@ -515,6 +516,21 @@ let BlendIngredientResolver = class BlendIngredientResolver {
      * @param [ingredientsInfo]
      * @returns String
      */
+    async addScrappedRecipeIngredients() {
+        let sr = await scrappedRecipe_1.default.find();
+        for (let i = 0; i < sr.length; i++) {
+            await scrappedRecipe_1.default.findOneAndUpdate({
+                _id: sr[i]._id,
+            }, {
+                recipeIngredients: sr[i].recipeCuisines,
+            });
+        }
+        return 'done';
+    }
+    async saveScrappedRecipe(data) {
+        await scrappedRecipe_1.default.create();
+        return 'done';
+    }
     async addScrappedRecipeFromUser(data) {
         let ingredientsShape = [
             {
@@ -1301,6 +1317,19 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getNutrientsListAndGiGlByRecipe", null);
+__decorate([
+    (0, type_graphql_1.Mutation)((type) => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "addScrappedRecipeIngredients", null);
+__decorate([
+    (0, type_graphql_1.Mutation)((type) => String),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CreateScrappedRecipe_1.default]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "saveScrappedRecipe", null);
 __decorate([
     (0, type_graphql_1.Mutation)((type) => NutrientsWithGiGl_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
