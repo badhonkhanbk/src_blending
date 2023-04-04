@@ -44,6 +44,7 @@ const InviteForChallenge_1 = __importDefault(require("../../../models/InviteForC
 const inviteInfo_1 = __importDefault(require("../schemas/inviteInfo"));
 const ChsllengeAndSingleDoc_1 = __importDefault(require("../schemas/ChsllengeAndSingleDoc"));
 const DateDocPostId_1 = __importDefault(require("../schemas/DateDocPostId"));
+const ChallngeInfo_1 = __importDefault(require("../schemas/ChallngeInfo"));
 let ChallengePostResolver = class ChallengePostResolver {
     async updateChallenge889() {
         await ChallengePost_2.default.deleteMany({});
@@ -196,7 +197,7 @@ let ChallengePostResolver = class ChallengePostResolver {
             formattedDate: (0, FormateDate_1.default)(challengeDoc.assignDate),
             posts: challengeDoc.posts,
         };
-        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', challenge._id);
+        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', String(challenge._id));
         return { challenge: doc, challengeInfo: challengeInfo };
     }
     async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers) {
@@ -536,7 +537,7 @@ let ChallengePostResolver = class ChallengePostResolver {
             formattedDate: (0, FormateDate_1.default)(challengeDoc.assignDate),
             posts: challengeDoc.posts,
         };
-        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', userChallenge._id);
+        let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', String(userChallenge._id));
         return { challenge: doc, challengeInfo: challengeInfo };
     }
     async checkIfChallengeIsGlobal(challengeId, token) {
@@ -846,7 +847,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                 longestStreak: 0,
                 currentStreak: 0,
                 blendScore: 0,
-                viewOnly: viewOnly,
+                viewOnly: viewOnly ? viewOnly : false,
                 days: challenge.days,
                 daysRemaining: daysRemaining,
                 challengeName: challenge.challengeName,
@@ -1531,6 +1532,17 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getAChallengeGallery", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => ChallngeInfo_1.default),
+    __param(0, (0, type_graphql_1.Arg)('memberId')),
+    __param(1, (0, type_graphql_1.Arg)('viewOnly', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('startDate', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('challengeId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        Boolean, String, String]),
+    __metadata("design:returntype", Promise)
+], ChallengePostResolver.prototype, "getChallengeInfo", null);
 __decorate([
     (0, type_graphql_1.Query)(() => Challenge_1.default),
     __param(0, (0, type_graphql_1.Arg)('memberId')),
