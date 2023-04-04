@@ -13,11 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const Recipe_1 = __importDefault(require("../../recipe/schemas/Recipe"));
+const ProfileRecipe_1 = __importDefault(require("../../recipe/schemas/ProfileRecipe"));
 let PlannerRecipe = class PlannerRecipe {
 };
 __decorate([
-    (0, type_graphql_1.Field)((type) => [Recipe_1.default], { nullable: true }),
+    (0, type_graphql_1.Field)((type) => [ProfileRecipe_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], PlannerRecipe.prototype, "recipes", void 0);
 __decorate([

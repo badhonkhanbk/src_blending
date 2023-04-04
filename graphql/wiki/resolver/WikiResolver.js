@@ -874,6 +874,7 @@ let WikiResolver = class WikiResolver {
             blendIngredients = await blendIngredient_1.default.find()
                 .select('wikiTitle _id ingredientName portions')
                 .lean();
+            // if()
         }
         let bookmarks = [];
         if (type === 'Nutrient') {
@@ -966,7 +967,6 @@ let WikiResolver = class WikiResolver {
         //   return new AppError('Invalid type for bookmarks', 401);
         // }
         if (type === 'Nutrient') {
-            console.log('hello world');
             if (!bookmarkId) {
                 let found = wiki.nutrientBookmarkList.filter(
                 //@ts-ignore

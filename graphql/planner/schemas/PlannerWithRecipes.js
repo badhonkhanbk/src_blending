@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const Recipe_1 = __importDefault(require("../../recipe/schemas/Recipe"));
+const ProfileRecipe_1 = __importDefault(require("../../recipe/schemas/ProfileRecipe"));
 let PlannerWithRecipes = class PlannerWithRecipes {
 };
 __decorate([
@@ -25,9 +25,9 @@ __decorate([
     __metadata("design:type", String)
 ], PlannerWithRecipes.prototype, "memberId", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [Recipe_1.default]),
+    (0, type_graphql_1.Field)((type) => [ProfileRecipe_1.default]),
     __metadata("design:type", Array)
-], PlannerWithRecipes.prototype, "recipes", void 0);
+], PlannerWithRecipes.prototype, "ProfileRecipes", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)

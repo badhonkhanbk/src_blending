@@ -23,6 +23,7 @@ const Planner_1 = __importDefault(require("../../../models/Planner"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
+const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const GroceryList_1 = __importDefault(require("../../../models/GroceryList"));
 const Planner_2 = __importDefault(require("../schemas/Planner"));
 const PlannerRecipe_1 = __importDefault(require("../../planner/schemas/PlannerRecipe"));
@@ -33,6 +34,7 @@ const FormateDate_1 = __importDefault(require("../../../utils/FormateDate"));
 const getRecipeCategoryPercentage_1 = __importDefault(require("./utils/getRecipeCategoryPercentage"));
 const getIngredientStats_1 = __importDefault(require("./utils/getIngredientStats"));
 const PlannersIngredientAndCategoryPercentage_1 = __importDefault(require("../schemas/PlannersIngredientAndCategoryPercentage"));
+const getNotesCompareAndUserCollectionsForPlanner_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollectionsForPlanner"));
 var MergeOrReplace;
 (function (MergeOrReplace) {
     MergeOrReplace["MERGE"] = "MERGE";
@@ -126,48 +128,88 @@ let PlannerResolver = class PlannerResolver {
                 recipes: { $ne: [] },
                 assignDate: tempDay,
             })
-                .populate({
-                path: 'recipes',
-                populate: [
-                    { path: 'recipeBlendCategory' },
-                    { path: 'brand' },
-                    {
-                        path: 'defaultVersion',
-                        populate: {
-                            path: 'ingredients.ingredientId',
-                            model: 'BlendIngredient',
-                            select: 'ingredientName featuredImage',
-                        },
-                        select: 'postfixTitle ingredients',
-                    },
-                ],
+                .sort({
+                assignDate: 1,
             })
-                .sort({ assignDate: 1 })
                 .lean();
+            // .populate({
+            //   path: 'recipes',
+            //   populate: [
+            //     { path: 'recipeBlendCategory' },
+            //     { path: 'brand' },
+            //     {
+            //       path: 'defaultVersion',
+            //       populate: {
+            //         path: 'ingredients.ingredientId',
+            //         model: 'BlendIngredient',
+            //         select: 'ingredientName featuredImage',
+            //       },
+            //       select: 'postfixTitle ingredients',
+            //     },
+            //   ],
+            // })
+            // .sort({ assignDate: 1 })
+            // .lean();
             if (planner) {
-                console.log(planner._id);
+                let userProfileRecipes = await UserRecipeProfile_1.default.find({
+                    userId: userId,
+                    recipeId: {
+                        $in: planner.recipes,
+                    },
+                })
+                    .populate({
+                    path: 'recipeId',
+                    model: 'RecipeModel',
+                    populate: [
+                        {
+                            path: 'recipeBlendCategory',
+                            model: 'RecipeCategory',
+                        },
+                        {
+                            path: 'brand',
+                            model: 'RecipeBrand',
+                        },
+                    ],
+                    select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+                })
+                    .populate({
+                    path: 'defaultVersion',
+                    model: 'RecipeVersion',
+                    populate: {
+                        path: 'ingredients.ingredientId',
+                        model: 'BlendIngredient',
+                        select: 'ingredientName selectedImage featuredImage',
+                    },
+                    select: 'postfixTitle selectedImage',
+                })
+                    .lean();
+                // console.log(userProfileRecipes[0]);
+                let returnRecipe = await (0, getNotesCompareAndUserCollectionsForPlanner_1.default)(userId, userProfileRecipes);
+                planner.ProfileRecipes = returnRecipe;
                 planners.push(planner);
-                if (planner.recipes.length > 0) {
-                    for (let j = 0; j < planner.recipes.length; j++) {
+                if (userProfileRecipes.length > 0) {
+                    console.log('hello');
+                    for (let j = 0; j < userProfileRecipes.length; j++) {
+                        // console.log(planner.profileRecipes[j]);
                         recipeCategories.push({
                             //@ts-ignore
-                            _id: planner.recipes[j].recipeBlendCategory._id,
+                            _id: userProfileRecipes[j].recipeId.recipeBlendCategory._id,
                             //@ts-ignore
-                            name: planner.recipes[j].recipeBlendCategory.name,
+                            name: userProfileRecipes[j].recipeId.recipeBlendCategory.name,
                         });
                         for (let k = 0; 
                         //@ts-ignore
-                        k < planner.recipes[j].defaultVersion.ingredients.length; k++) {
+                        k < userProfileRecipes[j].defaultVersion.ingredients.length; k++) {
                             ingredients.push({
                                 //@ts-ignore
-                                _id: planner.recipes[j].defaultVersion.ingredients[k]
+                                _id: userProfileRecipes[j].defaultVersion.ingredients[k]
                                     .ingredientId._id,
                                 //@ts-ignore
-                                name: planner.recipes[j].defaultVersion.ingredients[k]
+                                name: userProfileRecipes[j].defaultVersion.ingredients[k]
                                     .ingredientId.ingredientName,
                                 featuredImage: 
                                 //@ts-ignore
-                                planner.recipes[j].defaultVersion.ingredients[k].ingredientId
+                                userProfileRecipes[j].defaultVersion.ingredients[k].ingredientId
                                     .featuredImage,
                             });
                         }
@@ -178,14 +220,16 @@ let PlannerResolver = class PlannerResolver {
                 planners.push({
                     _id: new mongoose_1.default.mongo.ObjectId(),
                     memberId: userId,
-                    recipes: [],
+                    ProfileRecipes: [],
                     formatedDate: (0, FormateDate_1.default)(tempDay),
                 });
             }
             tempDay = new Date(tempDay.setDate(tempDay.getDate() + 1));
+            // console.log(planners);
         }
         let categoryPercentages = await (0, getRecipeCategoryPercentage_1.default)(recipeCategories);
         let ingredientsStats = await (0, getIngredientStats_1.default)(ingredients);
+        // console.log(planners);
         return {
             planners,
             topIngredients: ingredientsStats,
@@ -235,7 +279,7 @@ let PlannerResolver = class PlannerResolver {
             .lean();
     }
     async getAllRecipesForPlanner(userId, limit, page, searchTerm, recipeBlendCategory) {
-        console.log(searchTerm);
+        // console.log(searchTerm);
         let user = await memberModel_1.default.findOne({ _id: userId }).select('collections');
         let recipesId = [];
         for (let i = 0; i < user.collections.length; i++) {
@@ -254,6 +298,7 @@ let PlannerResolver = class PlannerResolver {
             recipesId.push(String(latestRecipes[i]._id));
         }
         let recipesSize = 0;
+        let recipes = [];
         let find = {};
         if (recipeBlendCategory === '' ||
             recipeBlendCategory === null ||
@@ -262,7 +307,7 @@ let PlannerResolver = class PlannerResolver {
                 name: { $regex: searchTerm, $options: 'i' },
                 _id: { $in: recipesId },
             };
-            recipesSize = recipesId.length;
+            recipes = await recipeModel_1.default.find(find).select('_id');
         }
         else {
             find = {
@@ -270,13 +315,48 @@ let PlannerResolver = class PlannerResolver {
                 recipeBlendCategory: new mongoose_1.default.mongo.ObjectId(recipeBlendCategory),
                 _id: { $in: recipesId },
             };
-            let recipes = await recipeModel_1.default.find(find).select('_id');
-            recipesSize = recipes.length;
+            recipes = await recipeModel_1.default.find(find).select('_id');
         }
-        let recipes = await recipeModel_1.default.find(find)
+        recipesId = recipes.map((recipe) => String(recipe._id));
+        // let recipes = await RecipeModel.find(find)
+        //   .populate({
+        //     path: 'ingredients.ingredientId',
+        //     model: 'BlendIngredient',
+        //   })
+        //   .populate({
+        //     path: 'defaultVersion',
+        //     model: 'RecipeVersion',
+        //     populate: {
+        //       path: 'ingredients.ingredientId',
+        //       model: 'BlendIngredient',
+        //     },
+        //   })
+        //   .populate('brand')
+        //   .populate('recipeBlendCategory')
+        //   .limit(limit)
+        //   .sort({ _id: -1 })
+        //   .skip(limit * (page - 1))
+        //   .lean();
+        let userProfileRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+            recipeId: {
+                $in: recipesId,
+            },
+        })
             .populate({
-            path: 'ingredients.ingredientId',
-            model: 'BlendIngredient',
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
             path: 'defaultVersion',
@@ -284,17 +364,23 @@ let PlannerResolver = class PlannerResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
+                select: 'ingredientName selectedImage',
             },
+            select: 'postfixTitle selectedImage',
         })
-            .populate('brand')
-            .populate('recipeBlendCategory')
+            .lean()
             .limit(limit)
-            .sort({ _id: -1 })
-            .skip(limit * (page - 1))
-            .lean();
+            .skip(limit * (page - 1));
+        // console.log(userProfileRecipes[0]);
+        let returnRecipe = await (0, getNotesCompareAndUserCollectionsForPlanner_1.default)(userId, userProfileRecipes);
         return {
-            recipes: recipes,
-            totalRecipe: recipesSize,
+            recipes: returnRecipe,
+            totalRecipe: await UserRecipeProfile_1.default.countDocuments({
+                userId: userId,
+                recipeId: {
+                    $in: recipesId,
+                },
+            }),
         };
     }
     async getQuedPlanner(userId, limit, page, searchTerm, recipeBlendCategory, currentDate) {
@@ -314,13 +400,13 @@ let PlannerResolver = class PlannerResolver {
             .select('recipes')
             .lean();
         let recipeIds = [];
+        let recipes = [];
         for (let i = 0; i < planners.length; i++) {
             //@ts-ignore
             let recipes = planners[i].recipes.map((recipe) => String(recipe));
             recipeIds.push(...recipes);
         }
         recipeIds = [...new Set(recipeIds)];
-        let recipesSize = 0;
         let find = {};
         if (recipeBlendCategory === '' ||
             recipeBlendCategory === null ||
@@ -329,7 +415,7 @@ let PlannerResolver = class PlannerResolver {
                 name: { $regex: searchTerm, $options: 'i' },
                 _id: { $in: recipeIds },
             };
-            recipesSize = recipeIds.length;
+            recipes = await recipeModel_1.default.find(find).select('_id');
         }
         else {
             find = {
@@ -337,13 +423,30 @@ let PlannerResolver = class PlannerResolver {
                 recipeBlendCategory: new mongoose_1.default.mongo.ObjectId(recipeBlendCategory),
                 _id: { $in: recipeIds },
             };
-            let recipes = await recipeModel_1.default.find(find).select('_id');
-            recipesSize = recipes.length;
+            recipes = await recipeModel_1.default.find(find).select('_id');
         }
-        let recipes = await recipeModel_1.default.find(find)
+        let recipesId = recipes.map((recipe) => String(recipe._id));
+        // console.log(recipesId);
+        let userProfileRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+            recipeId: {
+                $in: recipesId,
+            },
+        })
             .populate({
-            path: 'ingredients.ingredientId',
-            model: 'BlendIngredient',
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
             .populate({
             path: 'defaultVersion',
@@ -351,16 +454,23 @@ let PlannerResolver = class PlannerResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
+                select: 'ingredientName selectedImage',
             },
+            select: 'postfixTitle selectedImage',
         })
-            .populate('brand')
-            .populate('recipeBlendCategory')
+            .lean()
             .limit(limit)
-            .skip(limit * (page - 1))
-            .lean();
+            .skip(limit * (page - 1));
+        // console.log(userProfileRecipes[0]);
+        let returnRecipe = await (0, getNotesCompareAndUserCollectionsForPlanner_1.default)(userId, userProfileRecipes);
         return {
-            recipes: recipes,
-            totalRecipe: recipesSize,
+            recipes: returnRecipe,
+            totalRecipe: await UserRecipeProfile_1.default.countDocuments({
+                userId: userId,
+                recipeId: {
+                    $in: recipesId,
+                },
+            }),
         };
     }
     async addToGroceryFromPlanner(memberId, recipeId) {

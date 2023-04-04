@@ -61,7 +61,7 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
         }
         if (userProfileRecipes[i].compare) {
             returnRecipe.push({
-                ...userProfileRecipes[i]._doc,
+                ...userProfileRecipes[i],
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,
                 userCollections: collectionData,
@@ -70,7 +70,7 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
         }
         else {
             returnRecipe.push({
-                ...userProfileRecipes[i]._doc,
+                ...userProfileRecipes[i],
                 notes: userNotes.length,
                 addedToCompare: addedToCompare,
                 userCollections: collectionData,
