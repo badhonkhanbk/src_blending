@@ -161,7 +161,7 @@ let ChallengeResolver = class ChallengeResolver {
         }
         return list;
     }
-    async getChallengeInfoById(challengeId, token) {
+    async getChallengeInfoById(challengeId, memberId, token) {
         let userChallenge = await challenge_1.default.findOne({
             _id: challengeId,
         });
@@ -171,9 +171,45 @@ let ChallengeResolver = class ChallengeResolver {
         let memberInfo = await memberModel_1.default.findOne({
             _id: userChallenge.memberId,
         }).select('image displayName');
+        let challenge = {};
+        if (challengeId) {
+            challenge = await challenge_1.default.findOne({
+                _id: challengeId,
+            }, { topIngredients: { $slice: 5 } })
+                .populate({
+                path: 'sharedWith.memberId',
+                select: 'image displayName fistName lastName email',
+            })
+                .sort({ blendScore: -1 })
+                .populate({
+                path: 'topIngredients.ingredientId',
+                select: 'ingredientName featuredImage',
+            });
+        }
+        else {
+            challenge = await challenge_1.default.findOne({
+                memberId: memberId,
+                isActive: true,
+            }, { topIngredients: { $slice: 5 }, sharedWith: { $slice: 5 } })
+                .populate({
+                path: 'sharedWith.memberId',
+                select: 'image displayName fistName lastName email',
+            })
+                .populate({
+                path: 'topIngredients.ingredientId',
+                select: 'ingredientName featuredImage',
+            });
+        }
+        let shareWithData = [];
+        if (challenge.sharedWith.length > 1) {
+            shareWithData = challenge.sharedWith.sort((m1, m2) => m2.blendScore - m1.blendScore);
+        }
+        // this.upgradeTopIngredient(challengeId);
         let data = {
             challengeName: userChallenge.challengeName,
             memberInfo,
+            sharedWith: shareWithData,
+            topIngredients: challenge.topIngredients,
         };
         return data;
     }
@@ -240,10 +276,12 @@ __decorate([
 ], ChallengeResolver.prototype, "getMyChallengeList", null);
 __decorate([
     (0, type_graphql_1.Query)(() => challengeInfoForId_1.default),
-    __param(0, (0, type_graphql_1.Arg)('challengeId')),
-    __param(1, (0, type_graphql_1.Arg)('token')),
+    __param(0, (0, type_graphql_1.Arg)('challengeId', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('memberId')),
+    __param(2, (0, type_graphql_1.Arg)('token')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], ChallengeResolver.prototype, "getChallengeInfoById", null);
