@@ -955,7 +955,9 @@ let WikiResolver = class WikiResolver {
         }
         return 'hello';
     }
-    async manipulateBookMarks(wikiId, bookmarkId, link, type, customBookmarkName, removeCustomBookmark) {
+    async manipulateBookMarks(wikiId, bookmarkId, // no need
+    link, type, // no need
+    customBookmarkName, removeCustomBookmark) {
         // if (link === '') {
         //   return new AppError('link cant be empty', 401);
         // }

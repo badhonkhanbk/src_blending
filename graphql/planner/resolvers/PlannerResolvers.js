@@ -209,8 +209,8 @@ let PlannerResolver = class PlannerResolver {
                                     .ingredientId.ingredientName,
                                 featuredImage: 
                                 //@ts-ignore
-                                userProfileRecipes[j].defaultVersion.ingredients[k].ingredientId
-                                    .featuredImage,
+                                userProfileRecipes[j].defaultVersion.ingredients[k]
+                                    .ingredientId.featuredImage,
                             });
                         }
                     }

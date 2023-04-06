@@ -13,29 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const Bookmark_1 = __importDefault(require("./Bookmark"));
-const ExternalBookmark_1 = __importDefault(require("./ExternalBookmark"));
-const IngredientWikiLink_1 = __importDefault(require("./IngredientWikiLink"));
-const NutrientWikiLink_1 = __importDefault(require("./NutrientWikiLink"));
-let WikiLinks = class WikiLinks {
+const BlogBookMark_1 = __importDefault(require("./BlogBookMark"));
+const ExternalBookmark_1 = __importDefault(require("../../wiki/schemas/ExternalBookmark"));
+let BlogBookmarkAndExternalGlobalLInk = class BlogBookmarkAndExternalGlobalLInk {
 };
 __decorate([
-    (0, type_graphql_1.Field)((type) => [IngredientWikiLink_1.default], { nullable: true }),
+    (0, type_graphql_1.Field)((type) => [BlogBookMark_1.default]),
     __metadata("design:type", Array)
-], WikiLinks.prototype, "ingredientLinks", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => [NutrientWikiLink_1.default], { nullable: true }),
-    __metadata("design:type", Array)
-], WikiLinks.prototype, "nutrientLinks", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => [Bookmark_1.default]),
-    __metadata("design:type", Array)
-], WikiLinks.prototype, "bookmarks", void 0);
+], BlogBookmarkAndExternalGlobalLInk.prototype, "blogBookmarks", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [ExternalBookmark_1.default]),
     __metadata("design:type", Array)
-], WikiLinks.prototype, "globalBookmarks", void 0);
-WikiLinks = __decorate([
+], BlogBookmarkAndExternalGlobalLInk.prototype, "globalBookmarks", void 0);
+BlogBookmarkAndExternalGlobalLInk = __decorate([
     (0, type_graphql_1.ObjectType)()
-], WikiLinks);
-exports.default = WikiLinks;
+], BlogBookmarkAndExternalGlobalLInk);
+exports.default = BlogBookmarkAndExternalGlobalLInk;

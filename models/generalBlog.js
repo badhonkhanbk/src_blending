@@ -34,6 +34,13 @@ const GeneraBlogSchema = new mongoose_1.Schema({
             ref: 'AdminCollection',
         },
     ],
+    bookmarkList: [
+        {
+            customBookmarkName: String,
+            link: { type: String, default: '' },
+            active: { type: mongoose_1.Schema.Types.Boolean, default: false },
+        },
+    ],
 });
 const GeneralBlog = (0, mongoose_1.model)('GeneraBlog', GeneraBlogSchema);
 exports.default = GeneralBlog;

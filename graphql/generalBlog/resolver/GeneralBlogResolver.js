@@ -24,7 +24,18 @@ const blogComment_1 = __importDefault(require("../../../models/blogComment"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const generalBlogCollection_1 = __importDefault(require("../../../models/generalBlogCollection"));
+const GlobalBookmarkLink_1 = __importDefault(require("../../../models/GlobalBookmarkLink"));
+const BlogBookMarkAndExternalGlobalLink_1 = __importDefault(require("../schema/BlogBookMarkAndExternalGlobalLink"));
+const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient"));
+const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
+const WikiLinks_1 = __importDefault(require("../../wiki/schemas/WikiLinks"));
 let GeneralBlogResolver = class GeneralBlogResolver {
+    async temo() {
+        await generalBlog_1.default.updateMany({}, {
+            bookmarkList: [],
+        });
+        return 'Done';
+    }
     async addGeneralBlog(data) {
         let blog = await generalBlog_1.default.findOne({ slug: data.slug });
         if (blog) {
@@ -135,7 +146,95 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         await generalBlog_1.default.findOneAndDelete({ _id: blogId });
         return 'Successfully deleted general blog';
     }
+    async getWikiLinksForBlog(blogId, links) {
+        let blendNutrients = [];
+        let blendIngredients = [];
+        if (links) {
+            blendNutrients = await blendNutrient_1.default.find({ isBookmarked: false })
+                .lean()
+                .select('_id nutrientName');
+            blendIngredients = await blendIngredient_1.default.find()
+                .select('wikiTitle _id ingredientName portions')
+                .lean();
+            // if()
+        }
+        let bookmarks = [];
+        // let blogd = await GeneralBlogModel.find();
+        // console.log(blogd);
+        let blog = await generalBlog_1.default.findOne({
+            _id: blogId,
+        }).select('_id bookmarkList');
+        // console.log(blog)
+        bookmarks = blog.bookmarkList;
+        let globalBookmarks = await GlobalBookmarkLink_1.default.find().populate({
+            path: 'entityId',
+            select: 'ingredientName nutrientName',
+        });
+        return {
+            ingredientLinks: blendIngredients,
+            nutrientLinks: blendNutrients,
+            bookmarks: bookmarks,
+            globalBookmarks: globalBookmarks,
+        };
+    }
+    async manipulateBookMarksForBlog(blogId, link, customBookmarkName, removeCustomBookmark) {
+        let blog = await generalBlog_1.default.findOne({ _id: blogId }).select('bookmarkList');
+        // if (!(type === 'Nutrient') || !(type === 'Ingredient')) {801930
+        //   return new AppError('Invalid type for bookmarks', 401);
+        // }
+        let found = blog.bookmarkList.filter(
+        //@ts-ignore
+        (bookmark) => bookmark.link === link)[0];
+        if (found) {
+            await generalBlog_1.default.findOneAndUpdate({ _id: blogId }, {
+                $pull: {
+                    //@ts-ignore
+                    bookmarkList: { _id: found._id },
+                },
+            });
+            if (!removeCustomBookmark) {
+                await generalBlog_1.default.findOneAndUpdate({ _id: blogId }, {
+                    $push: {
+                        bookmarkList: {
+                            customBookmarkName: found.customBookmarkName,
+                            link: found.link,
+                            active: false,
+                        },
+                    },
+                });
+            }
+        }
+        else {
+            await generalBlog_1.default.findOneAndUpdate({ _id: blogId }, {
+                $push: {
+                    bookmarkList: {
+                        customBookmarkName: customBookmarkName,
+                        link: link,
+                        active: true,
+                    },
+                },
+            });
+        }
+        let externalBookmarks = await GlobalBookmarkLink_1.default.find().populate({
+            path: 'entityId',
+            select: 'ingredientName nutrientName',
+        });
+        // return 'done';
+        let myBlog = await generalBlog_1.default.findOne({
+            _id: blogId,
+        }).select('_id bookmarkList');
+        return {
+            blogBookmarks: myBlog.bookmarkList,
+            globalBookmarks: externalBookmarks,
+        };
+    }
 };
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GeneralBlogResolver.prototype, "temo", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __param(0, (0, type_graphql_1.Arg)('data')),
@@ -188,6 +287,28 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "deleteAGeneralBlog", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => WikiLinks_1.default),
+    __param(0, (0, type_graphql_1.Arg)('blogId')),
+    __param(1, (0, type_graphql_1.Arg)('links', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        Boolean]),
+    __metadata("design:returntype", Promise)
+], GeneralBlogResolver.prototype, "getWikiLinksForBlog", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => BlogBookMarkAndExternalGlobalLink_1.default),
+    __param(0, (0, type_graphql_1.Arg)('blogId')),
+    __param(1, (0, type_graphql_1.Arg)('link')),
+    __param(2, (0, type_graphql_1.Arg)('customBookmarkName')),
+    __param(3, (0, type_graphql_1.Arg)('removeCustomBookmark', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        String,
+        Boolean]),
+    __metadata("design:returntype", Promise)
+], GeneralBlogResolver.prototype, "manipulateBookMarksForBlog", null);
 GeneralBlogResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], GeneralBlogResolver);
