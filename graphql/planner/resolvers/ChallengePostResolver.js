@@ -41,10 +41,10 @@ const OrganizeByTypes_1 = __importDefault(require("../../../utils/OrganizeByType
 const OrganizeByTypesForNutrition_1 = __importDefault(require("../../../utils/OrganizeByTypesForNutrition"));
 const GetDailyRecomendedAndUpperLimit_1 = __importDefault(require("../../../utils/GetDailyRecomendedAndUpperLimit"));
 const InviteForChallenge_1 = __importDefault(require("../../../models/InviteForChallenge"));
-const inviteInfo_1 = __importDefault(require("../schemas/inviteInfo"));
 const ChsllengeAndSingleDoc_1 = __importDefault(require("../schemas/ChsllengeAndSingleDoc"));
 const DateDocPostId_1 = __importDefault(require("../schemas/DateDocPostId"));
 const ChallngeInfo_1 = __importDefault(require("../schemas/ChallngeInfo"));
+const InviteInfoSharedWithAndTopIngredients_1 = __importDefault(require("../schemas/InviteInfoSharedWithAndTopIngredients"));
 let ChallengePostResolver = class ChallengePostResolver {
     async updateChallenge889() {
         await ChallengePost_2.default.deleteMany({});
@@ -271,7 +271,34 @@ let ChallengePostResolver = class ChallengePostResolver {
             path: 'invitedBy',
             select: 'firstName lastName displayName email',
         });
-        return invite;
+        // console.log(invite);
+        if (!invite.challengeId) {
+            return new AppError_1.default('challenge not found', 402);
+        }
+        let challenge = await challenge_1.default.findOne({
+            _id: invite.challengeId._id,
+        }, { topIngredients: { $slice: 5 } })
+            .populate({
+            path: 'sharedWith.memberId',
+            select: 'image displayName fistName lastName email',
+        })
+            .sort({ blendScore: -1 })
+            .populate({
+            path: 'topIngredients.ingredientId',
+            select: 'ingredientName featuredImage',
+        });
+        let shareWithData = [];
+        if (challenge.sharedWith.length > 1) {
+            shareWithData = challenge.sharedWith.sort((m1, m2) => m2.blendScore - m1.blendScore);
+        }
+        // if (challenge.topIngredients.length === 0) {
+        //   this.upgradeTopIngredient(challenge._id);
+        // }
+        return {
+            invite,
+            sharedWith: shareWithData,
+            topIngredients: challenge.topIngredients,
+        };
     }
     async acceptChallenge(inviteId, memberId) {
         let invite = await InviteForChallenge_1.default.findOne({ _id: inviteId });
@@ -1455,7 +1482,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "inviteToChallenge", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => inviteInfo_1.default),
+    (0, type_graphql_1.Query)(() => InviteInfoSharedWithAndTopIngredients_1.default),
     __param(0, (0, type_graphql_1.Arg)('inviteId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

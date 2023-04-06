@@ -1,12 +1,4 @@
 "use strict";
-// title
-// slug
-// body
-// keywords
-// type
-// createdAt
-// updatedAt
-// createdBy
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const GeneraBlogSchema = new mongoose_1.Schema({
