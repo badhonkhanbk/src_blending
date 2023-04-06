@@ -132,24 +132,6 @@ let PlannerResolver = class PlannerResolver {
                 assignDate: 1,
             })
                 .lean();
-            // .populate({
-            //   path: 'recipes',
-            //   populate: [
-            //     { path: 'recipeBlendCategory' },
-            //     { path: 'brand' },
-            //     {
-            //       path: 'defaultVersion',
-            //       populate: {
-            //         path: 'ingredients.ingredientId',
-            //         model: 'BlendIngredient',
-            //         select: 'ingredientName featuredImage',
-            //       },
-            //       select: 'postfixTitle ingredients',
-            //     },
-            //   ],
-            // })
-            // .sort({ assignDate: 1 })
-            // .lean();
             if (planner) {
                 let userProfileRecipes = await UserRecipeProfile_1.default.find({
                     userId: userId,
@@ -180,7 +162,6 @@ let PlannerResolver = class PlannerResolver {
                         model: 'BlendIngredient',
                         select: 'ingredientName selectedImage featuredImage',
                     },
-                    select: 'postfixTitle selectedImage',
                 })
                     .lean();
                 // console.log(userProfileRecipes[0]);
@@ -188,9 +169,7 @@ let PlannerResolver = class PlannerResolver {
                 planner.ProfileRecipes = returnRecipe;
                 planners.push(planner);
                 if (userProfileRecipes.length > 0) {
-                    console.log('hello');
                     for (let j = 0; j < userProfileRecipes.length; j++) {
-                        // console.log(planner.profileRecipes[j]);
                         recipeCategories.push({
                             //@ts-ignore
                             _id: userProfileRecipes[j].recipeId.recipeBlendCategory._id,

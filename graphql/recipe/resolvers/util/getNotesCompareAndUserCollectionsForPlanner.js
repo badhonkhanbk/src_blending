@@ -78,6 +78,7 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
             });
         }
     }
+    // console.log(returnRecipe[0]);
     return returnRecipe;
 }
 exports.default = getNotesCompareAndUserCollection;
