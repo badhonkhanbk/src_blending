@@ -474,7 +474,17 @@ let PlannerResolver = class PlannerResolver {
         };
     }
     async addToGroceryFromPlanner(memberId, recipeId) {
-        let recipe = await recipeModel_1.default.findOne({ _id: recipeId }).select('ingredients');
+        let recipe = await UserRecipeProfile_1.default.findOne({
+            recipeId: recipeId,
+            userId: memberId,
+        }).populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: {
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+            },
+        });
         let member = await memberModel_1.default.findOne({ _id: memberId });
         if (!recipe || !member) {
             return new AppError_1.default('Recipe or member not found', 404);
@@ -484,15 +494,15 @@ let PlannerResolver = class PlannerResolver {
         });
         let groceryIngredients = [];
         if (groceryList) {
-            for (let i = 0; i < recipe.ingredients.length; i++) {
+            for (let i = 0; i < recipe.defaultVersion.ingredients.length; i++) {
                 if (!groceryList.list.filter(
                 //@ts-ignore
                 (item) => String(item.ingredientId) ===
-                    String(recipe.ingredients[i].ingredientId))[0]) {
+                    String(recipe.defaultVersion.ingredients[i].ingredientId))[0]) {
                     groceryIngredients.push({
-                        ingredientId: recipe.ingredients[i].ingredientId,
-                        selectedPortion: recipe.ingredients[i].selectedPortion.name,
-                        quantity: recipe.ingredients[i].selectedPortion.quantity,
+                        ingredientId: recipe.defaultVersion.ingredients[i].ingredientId,
+                        selectedPortion: recipe.defaultVersion.ingredients[i].selectedPortion.name,
+                        quantity: recipe.defaultVersion.ingredients[i].selectedPortion.quantity,
                     });
                 }
             }

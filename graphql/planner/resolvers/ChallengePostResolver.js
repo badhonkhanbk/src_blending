@@ -46,6 +46,10 @@ const DateDocPostId_1 = __importDefault(require("../schemas/DateDocPostId"));
 const ChallngeInfo_1 = __importDefault(require("../schemas/ChallngeInfo"));
 const InviteInfoSharedWithAndTopIngredients_1 = __importDefault(require("../schemas/InviteInfoSharedWithAndTopIngredients"));
 let ChallengePostResolver = class ChallengePostResolver {
+    async ins() {
+        await InviteForChallenge_1.default.deleteMany();
+        return 'done';
+    }
     async updateChallenge889() {
         await ChallengePost_2.default.deleteMany({});
         return 'done';
@@ -1450,6 +1454,12 @@ let ChallengePostResolver = class ChallengePostResolver {
         };
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChallengePostResolver.prototype, "ins", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),
