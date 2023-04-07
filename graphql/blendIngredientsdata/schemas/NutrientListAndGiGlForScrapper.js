@@ -14,21 +14,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const GIGl_1 = __importDefault(require("./GIGl"));
-let NutrientsWithGiGl = class NutrientsWithGiGl {
+const nutrientsForScrapper_1 = __importDefault(require("./nutrientsForScrapper"));
+let NutrientsWithGiGlForScrapper = class NutrientsWithGiGlForScrapper {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], NutrientsWithGiGl.prototype, "nutrients", void 0);
+    (0, type_graphql_1.Field)((type) => [nutrientsForScrapper_1.default]),
+    __metadata("design:type", Array)
+], NutrientsWithGiGlForScrapper.prototype, "nutrients", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => GIGl_1.default, { nullable: true }),
     __metadata("design:type", GIGl_1.default)
-], NutrientsWithGiGl.prototype, "giGl", void 0);
+], NutrientsWithGiGlForScrapper.prototype, "giGl", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => [Number], { nullable: true }),
     __metadata("design:type", Array)
-], NutrientsWithGiGl.prototype, "notFoundIndexes", void 0);
-NutrientsWithGiGl = __decorate([
+], NutrientsWithGiGlForScrapper.prototype, "notFoundIndexes", void 0);
+NutrientsWithGiGlForScrapper = __decorate([
     (0, type_graphql_1.ObjectType)()
-], NutrientsWithGiGl);
-exports.default = NutrientsWithGiGl;
+], NutrientsWithGiGlForScrapper);
+exports.default = NutrientsWithGiGlForScrapper;

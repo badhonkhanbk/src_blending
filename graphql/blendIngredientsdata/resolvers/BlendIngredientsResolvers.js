@@ -41,6 +41,7 @@ const axios_1 = __importDefault(require("axios"));
 const ingredient_unit_converter_1 = require("@jclind/ingredient-unit-converter");
 const CreateScrappedRecipe_1 = __importDefault(require("../../recipe/resolvers/input-type/CreateScrappedRecipe"));
 const scrappedRecipe_1 = __importDefault(require("../../../models/scrappedRecipe"));
+const NutrientListAndGiGlForScrapper_1 = __importDefault(require("../schemas/NutrientListAndGiGlForScrapper"));
 let BlendIngredientResolver = class BlendIngredientResolver {
     async getAllBlendIngredients() {
         let blendIngredients = await blendIngredient_1.default.find()
@@ -531,12 +532,10 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         await scrappedRecipe_1.default.create();
         return 'done';
     }
-    async addScrappedRecipeFromUser(data) {
-        let ingredientsShape = [
-            {
-                recipeIngredients: data.recipeIngredients,
-            },
-        ];
+    async searchInScrappedRecipeFromUser(recipeIngredients) {
+        let ingredientsShape = {
+            recipeIngredients: recipeIngredients,
+        };
         var dataX = JSON.stringify(ingredientsShape);
         var config = {
             method: 'get',
@@ -550,19 +549,13 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         let blends = [];
         let notBlends = [];
         let portionsProblem = [];
-        let bestMatchCount = 0;
-        for (let i = 0; i < res.data[0].parsed_data.length; i++) {
+        let notFountIndexes = [];
+        for (let i = 0; i < res.data.parsed_data.length; i++) {
             let blendIngredient = null;
-            if (res.data[0].parsed_data[i].best_match.length > 4) {
-                bestMatchCount = 4;
-            }
-            else {
-                bestMatchCount = res.data[0].parsed_data[i].best_match.length;
-            }
             //res.data[0].parsed_data[i].best_match.length
-            for (let j = 0; j < bestMatchCount; j++) {
+            for (let j = 0; j < res.data.parsed_data[i].best_match.length; j++) {
                 blendIngredient = await blendIngredient_1.default.findOne({
-                    srcFoodReference: res.data[0].parsed_data[i].best_match[j].db_ingredient_id,
+                    srcFoodReference: res.data.parsed_data[i].best_match[j].db_ingredient_id,
                     $or: [
                         {
                             blendStatus: 'Active',
@@ -573,23 +566,23 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     ],
                 }).select('-blendNutrients -notBlendNutrients -bodies');
                 if (blendIngredient) {
-                    // console.log(blendIngredient);
                     break;
                 }
             }
             if (!blendIngredient) {
-                notBlends.push(res.data[0].parsed_data[i]);
+                notFountIndexes.push(i);
             }
             else {
                 // console.log('blend', blendIngredient, res.data[0].parsed_data[i]);
                 blends.push({
                     ingredientId: blendIngredient._id,
-                    quantity: res.data[0].parsed_data[i].QUANTITY,
-                    unit: res.data[0].parsed_data[i].QUANTITY_UNIT,
-                    name: res.data[0].parsed_data[i].INGREDIENT,
+                    quantity: res.data.parsed_data[i].QUANTITY,
+                    unit: res.data.parsed_data[i].QUANTITY_UNIT,
+                    name: res.data.parsed_data[i].INGREDIENT,
                     db_name: blendIngredient.ingredientName,
-                    comment: res.data[0].parsed_data[i].COMMENT,
+                    comment: res.data.parsed_data[i].COMMENT,
                     portions: blendIngredient.portions,
+                    index: i,
                 });
             }
         }
@@ -627,8 +620,12 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 else {
                     let converted = (0, ingredient_unit_converter_1.converter)(blends[i].quantity, blends[i].unit, blends[i].portions[0].measurement);
                     if (converted.error) {
-                        blends[i].error = converted.error;
-                        portionsProblem.push(blends[i]);
+                        // let obj: any = {
+                        //   data: blends[i],
+                        //   error: converted.error,
+                        // };
+                        // obj.error = converted.error;
+                        notFountIndexes.push(blends[i].index);
                         continue;
                     }
                     blends[i].value =
@@ -644,8 +641,12 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 value: blend.value,
             };
         });
-        let myData = await this.getNutrientsListAndGiGlByIngredients(blends);
-        return myData;
+        console.log(notFountIndexes);
+        let myData = await this.getNutrientsListAndGiGlByIngredientsForScrappingPanel(blends);
+        return {
+            ...myData,
+            notFoundIndexes: notFountIndexes.sort((a, b) => a - b),
+        };
     }
     async getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
         let nutrientList = await this.getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
@@ -654,6 +655,89 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             nutrients: nutrientList,
             giGl: giGl,
         };
+    }
+    async getNutrientsListAndGiGlByIngredientsForScrappingPanel(ingredientsInfo) {
+        let nutrientList = await this.getBlendNutritionForScrappingPanel(ingredientsInfo);
+        let giGl = await this.getGlAndNetCarbs2(ingredientsInfo);
+        return {
+            nutrients: nutrientList,
+            giGl: giGl,
+        };
+    }
+    async getBlendNutritionForScrappingPanel(ingredientsInfo) {
+        let data = ingredientsInfo;
+        // @ts-ignore
+        let hello = data.map((x) => new mongoose_1.default.mongo.ObjectId(x.ingredientId));
+        let ingredients;
+        ingredients = await blendIngredient_1.default.find({
+            _id: { $in: hello },
+        })
+            .sort({ rank: 1 })
+            .lean()
+            .select('-bodies -notBlendNutrients');
+        let mySearch = [
+            '620b4606b82695d67f28e193',
+            '620b4607b82695d67f28e196',
+            '620b4607b82695d67f28e199',
+            '620b4608b82695d67f28e19c',
+        ];
+        for (let i = 0; i < ingredients.length; i++) {
+            // console.log(data);
+            let value = data.filter(
+            // @ts-ignore
+            (y) => y.ingredientId === String(ingredients[i]._id))[0].value;
+            for (let j = 0; j < ingredients[i].blendNutrients.length; j++) {
+                if (!mySearch.includes(String(ingredients[i].blendNutrients[j].blendNutrientRefference))) {
+                    ingredients[i].blendNutrients.splice(j, 1);
+                    j--;
+                    continue;
+                }
+                ingredients[i].blendNutrients[j].value =
+                    (+ingredients[i].blendNutrients[j].value / 100) * +value;
+            }
+        }
+        let nutrients = [];
+        for (let i = 0; i < ingredients.length; i++) {
+            let temp = ingredients[i];
+            nutrients.push(...temp.blendNutrients);
+        }
+        //@ts-ignore
+        let returnNutrients = nutrients.reduce((acc, nutrient) => {
+            //@ts-ignore
+            let obj = acc.find(
+            //@ts-ignore
+            (o) => String(o.blendNutrientRefference) ===
+                String(nutrient.blendNutrientRefference));
+            if (!obj) {
+                nutrient.count = 1;
+                acc.push(nutrient);
+            }
+            else {
+                //@ts-ignore
+                const index = acc.findIndex((element, index) => {
+                    if (String(element.blendNutrientRefference) ===
+                        String(obj.blendNutrientRefference)) {
+                        return true;
+                    }
+                });
+                acc[index].count++;
+                acc[index].value = +acc[index].value + +nutrient.value;
+            }
+            return acc;
+        }, []);
+        let returnData = [];
+        for (let i = 0; i < returnNutrients.length; i++) {
+            let blendNutrient = await blendNutrient_1.default.findOne({
+                _id: returnNutrients[i].blendNutrientRefference,
+            }).select('nutrientName units');
+            let data = {
+                value: returnNutrients[i].value,
+                name: blendNutrient.nutrientName,
+                units: blendNutrient.units,
+            };
+            returnData.push(data);
+        }
+        return returnData;
     }
     async getBlendNutritionBasedOnRecipexxx(ingredientsInfo) {
         let data = ingredientsInfo;
@@ -720,6 +804,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             .lean()
             .select('_id categoryName');
         let obj = {};
+        // console.log(returnNutrients);
         for (let i = 0; i < blendNutrientCategories.length; i++) {
             obj[blendNutrientCategories[i].categoryName] =
                 await this.getTopLevelChilds(blendNutrientCategories[i]._id, returnNutrients);
@@ -1331,12 +1416,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "saveScrappedRecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => NutrientsWithGiGl_1.default),
-    __param(0, (0, type_graphql_1.Arg)('data')),
+    (0, type_graphql_1.Mutation)((type) => NutrientListAndGiGlForScrapper_1.default),
+    __param(0, (0, type_graphql_1.Arg)('recipeIngredients', (type) => [String], { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CreateScrappedRecipe_1.default]),
+    __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
-], BlendIngredientResolver.prototype, "addScrappedRecipeFromUser", null);
+], BlendIngredientResolver.prototype, "searchInScrappedRecipeFromUser", null);
 __decorate([
     (0, type_graphql_1.Query)(() => NutrientsWithGiGl_1.default),
     __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
@@ -1344,6 +1429,21 @@ __decorate([
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getNutrientsListAndGiGlByIngredients", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => NutrientsWithGiGl_1.default),
+    __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "getNutrientsListAndGiGlByIngredientsForScrappingPanel", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String) //BOTH:
+    ,
+    __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "getBlendNutritionForScrappingPanel", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String) //BOTH:
     ,
