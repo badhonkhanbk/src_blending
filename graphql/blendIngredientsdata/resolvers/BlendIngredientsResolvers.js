@@ -533,6 +533,14 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         return 'done';
     }
     async searchInScrappedRecipeFromUser(recipeIngredients) {
+        // let recipeIngredientsWithIndex = recipeIngredients.map(
+        //   (recipeIngredient, index) => {
+        //     return {
+        //       recipeIngredient: recipeIngredient,
+        //       index: index,
+        //     };
+        //   }
+        // );
         let ingredientsShape = {
             recipeIngredients: recipeIngredients,
         };
@@ -550,6 +558,8 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         let notBlends = [];
         let portionsProblem = [];
         let notFountIndexes = [];
+        console.log(res.data.error_parsed);
+        console.log(res.data.parsed_data);
         for (let i = 0; i < res.data.parsed_data.length; i++) {
             let blendIngredient = null;
             //res.data[0].parsed_data[i].best_match.length
@@ -573,7 +583,6 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 notFountIndexes.push(i);
             }
             else {
-                // console.log('blend', blendIngredient, res.data[0].parsed_data[i]);
                 blends.push({
                     ingredientId: blendIngredient._id,
                     quantity: res.data.parsed_data[i].QUANTITY,

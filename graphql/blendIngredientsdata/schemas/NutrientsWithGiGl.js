@@ -14,11 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const GIGl_1 = __importDefault(require("./GIGl"));
+const nutrientsForScrapper_1 = __importDefault(require("./nutrientsForScrapper"));
 let NutrientsWithGiGl = class NutrientsWithGiGl {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
+    (0, type_graphql_1.Field)((type) => [nutrientsForScrapper_1.default]),
+    __metadata("design:type", Array)
 ], NutrientsWithGiGl.prototype, "nutrients", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => GIGl_1.default, { nullable: true }),

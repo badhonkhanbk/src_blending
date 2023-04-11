@@ -36,6 +36,7 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const GlobalBookmarkLink_1 = __importDefault(require("../../../models/GlobalBookmarkLink"));
 const BookmarkAndExternalGlobalLInk_1 = __importDefault(require("../schemas/BookmarkAndExternalGlobalLInk"));
 const usedBookmark_1 = __importDefault(require("../../../models/usedBookmark"));
+const generalBlog_1 = __importDefault(require("../../../models/generalBlog"));
 let WikiResolver = class WikiResolver {
     async getNutrientWikiList(userId, limit, page, ids) {
         if (!limit) {
@@ -1237,7 +1238,26 @@ let WikiResolver = class WikiResolver {
         return 'done';
     }
     async getData() {
-        return 'data';
+        // await WikiModel.updateMany(
+        //   {
+        //     onModel: 'BlendNutrient',
+        //   },
+        //   {
+        //     nutrientBookmarkList: [],
+        //   }
+        // );
+        // await WikiModel.updateMany(
+        //   {
+        //     onModel: 'BlendIngredient',
+        //   },
+        //   {
+        //     ingredientBookmarkList: [],
+        //   }
+        // );
+        await generalBlog_1.default.updateMany({}, {
+            bookmarkList: [],
+        });
+        return 'done';
     }
 };
 __decorate([
