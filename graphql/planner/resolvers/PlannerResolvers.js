@@ -361,7 +361,12 @@ let PlannerResolver = class PlannerResolver {
             }),
         };
     }
-    async getQuedPlanner(userId, limit, page, searchTerm, recipeBlendCategory, currentDate) {
+    async getQuedPlanner(userId, 
+    // @Arg('limit') limit: number,
+    // @Arg('page') page: number,
+    // @Arg('searchTerm') searchTerm: String,
+    // @Arg('recipeBlendCategory', { nullable: true }) recipeBlendCategory: string,
+    currentDate) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         console.log(today);
         let firstday = new Date(today.setDate(today.getDate() - today.getDay() + 1));
@@ -385,24 +390,26 @@ let PlannerResolver = class PlannerResolver {
             recipeIds.push(...recipes);
         }
         recipeIds = [...new Set(recipeIds)];
-        let find = {};
-        if (recipeBlendCategory === '' ||
-            recipeBlendCategory === null ||
-            recipeBlendCategory === undefined) {
-            find = {
-                name: { $regex: searchTerm, $options: 'i' },
-                _id: { $in: recipeIds },
-            };
-            recipes = await recipeModel_1.default.find(find).select('_id');
-        }
-        else {
-            find = {
-                name: { $regex: searchTerm, $options: 'i' },
-                recipeBlendCategory: new mongoose_1.default.mongo.ObjectId(recipeBlendCategory),
-                _id: { $in: recipeIds },
-            };
-            recipes = await recipeModel_1.default.find(find).select('_id');
-        }
+        let find = { _id: { $in: recipeIds } };
+        // if (
+        //   recipeBlendCategory === '' ||
+        //   recipeBlendCategory === null ||
+        //   recipeBlendCategory === undefined
+        // ) {
+        //   find = {
+        //     name: { $regex: searchTerm, $options: 'i' },
+        //     _id: { $in: recipeIds },
+        //   };
+        //   recipes = await RecipeModel.find(find).select('_id');
+        // } else {
+        //   find = {
+        //     name: { $regex: searchTerm, $options: 'i' },
+        //     recipeBlendCategory: new mongoose.mongo.ObjectId(recipeBlendCategory),
+        //     _id: { $in: recipeIds },
+        //   };
+        //   recipes = await RecipeModel.find(find).select('_id');
+        // }
+        recipes = await recipeModel_1.default.find(find).select('_id');
         let recipesId = recipes.map((recipe) => String(recipe._id));
         // console.log(recipesId);
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
@@ -436,9 +443,9 @@ let PlannerResolver = class PlannerResolver {
             },
             select: 'postfixTitle selectedImage',
         })
-            .lean()
-            .limit(limit)
-            .skip(limit * (page - 1));
+            .lean();
+        // .limit(limit)
+        // .skip(limit * (page - 1));
         // console.log(userProfileRecipes[0]);
         let returnRecipe = await (0, getNotesCompareAndUserCollectionsForPlanner_1.default)(userId, userProfileRecipes);
         return {
@@ -642,13 +649,9 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => PlannerRecipe_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
-    __param(1, (0, type_graphql_1.Arg)('limit')),
-    __param(2, (0, type_graphql_1.Arg)('page')),
-    __param(3, (0, type_graphql_1.Arg)('searchTerm')),
-    __param(4, (0, type_graphql_1.Arg)('recipeBlendCategory', { nullable: true })),
-    __param(5, (0, type_graphql_1.Arg)('currentDate')),
+    __param(1, (0, type_graphql_1.Arg)('currentDate')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number, Number, String, String, String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "getQuedPlanner", null);
 __decorate([

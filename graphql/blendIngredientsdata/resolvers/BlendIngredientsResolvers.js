@@ -1439,7 +1439,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getNutrientsListAndGiGlByIngredients", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => NutrientsWithGiGl_1.default),
+    (0, type_graphql_1.Query)(() => NutrientListAndGiGlForScrapper_1.default),
     __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
