@@ -42,6 +42,8 @@ const ingredient_unit_converter_1 = require("@jclind/ingredient-unit-converter")
 const CreateScrappedRecipe_1 = __importDefault(require("../../recipe/resolvers/input-type/CreateScrappedRecipe"));
 const scrappedRecipe_1 = __importDefault(require("../../../models/scrappedRecipe"));
 const NutrientListAndGiGlForScrapper_1 = __importDefault(require("../schemas/NutrientListAndGiGlForScrapper"));
+const QANotFound_1 = __importDefault(require("../../../models/QANotFound"));
+const BlendPortion_1 = __importDefault(require("../schemas/BlendPortion"));
 let BlendIngredientResolver = class BlendIngredientResolver {
     async getAllBlendIngredients() {
         let blendIngredients = await blendIngredient_1.default.find()
@@ -153,6 +155,10 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             model: 'UniqueNutrient',
         });
         return blendIngredient;
+    }
+    async getBlendIngredientPortionById(id) {
+        let blendIngredient = await blendIngredient_1.default.findById(id).select('portions');
+        return blendIngredient.portions;
     }
     async removeBlendIngredientFromSrc(id) {
         let blendIngredient = await blendIngredient_1.default.findOne({
@@ -533,14 +539,6 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         return 'done';
     }
     async searchInScrappedRecipeFromUser(recipeIngredients) {
-        // let recipeIngredientsWithIndex = recipeIngredients.map(
-        //   (recipeIngredient, index) => {
-        //     return {
-        //       recipeIngredient: recipeIngredient,
-        //       index: index,
-        //     };
-        //   }
-        // );
         let ingredientsShape = {
             recipeIngredients: recipeIngredients,
         };
@@ -559,7 +557,30 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         let portionsProblem = [];
         let notFountIndexes = [];
         console.log(res.data.error_parsed);
-        console.log(res.data.parsed_data);
+        // for (let i = 0; i < res.data.error_parsed.length; i++) {
+        //   let qaId: any = '';
+        //   let found = await QANotFoundIngredientModel.findOne({
+        //     name: res.data.error_parsed[i],
+        //   }).select('_id');
+        //   if (found) {
+        //     qaId = found._id;
+        //   } else {
+        //     let errorParsedQA = await QANotFoundIngredientModel.create({
+        //       name: res.data.error_parsed[i],
+        //       quantity: 0,
+        //       unit: '',
+        //       comment: '',
+        //       userIngredient: res.data.error_parsed[i],
+        //       status: 'Archived',
+        //       issues: ['PE'],
+        //       errorParsed: true,
+        //     });
+        //     qaId = errorParsedQA._id;
+        //   }
+        //   notBlends.push({
+        //     qaId: qaId,
+        //   });
+        // }
         for (let i = 0; i < res.data.parsed_data.length; i++) {
             let blendIngredient = null;
             //res.data[0].parsed_data[i].best_match.length
@@ -580,6 +601,42 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 }
             }
             if (!blendIngredient) {
+                let notFound = {
+                    name: res.data.parsed_data[i].INGREDIENT,
+                    quantity: res.data.parsed_data[i].QUANTITY,
+                    unit: res.data.parsed_data[i].QUANTITY_UNIT,
+                    comment: res.data.parsed_data[i].COMMENT,
+                    userIngredient: res.data.parsed_data[i].original_ingredient,
+                    issues: ['NF'],
+                    status: 'Review',
+                    sourceIngredients: res.data.parsed_data[i].best_match.map((bestM, index) => {
+                        return {
+                            ingredientId: bestM.db_ingredient_id,
+                            percentage: 100 - index,
+                        };
+                    }),
+                };
+                let qaId = '';
+                let found = await QANotFound_1.default.findOne({
+                    name: res.data.parsed_data[i].INGREDIENT,
+                }).select('_id');
+                if (found) {
+                    qaId = found._id;
+                }
+                else {
+                    let newQA = await QANotFound_1.default.create(notFound);
+                    qaId = newQA._id;
+                }
+                notBlends.push({
+                    name: res.data.parsed_data[i].INGREDIENT,
+                    quantity: res.data.parsed_data[i].QUANTITY,
+                    unit: res.data.parsed_data[i].QUANTITY_UNIT,
+                    comment: res.data.parsed_data[i].COMMENT,
+                    userIngredient: res.data.parsed_data[i].original_ingredient,
+                    issues: ['NF'],
+                    status: 'Review',
+                    qaId: qaId,
+                });
                 notFountIndexes.push(i);
             }
             else {
@@ -591,34 +648,45 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     db_name: blendIngredient.ingredientName,
                     comment: res.data.parsed_data[i].COMMENT,
                     portions: blendIngredient.portions,
+                    userIngredient: res.data.parsed_data[i].original_ingredient,
                     index: i,
+                    percentage: 100,
                 });
             }
         }
+        // console.log('blends', blends);
         const parseFraction = (fraction) => {
             const [numerator, denominator] = fraction.split('/').map(Number);
             return numerator / denominator;
         };
         for (let i = 0; i < blends.length; i++) {
             if (!blends[i].unit) {
+                blends[i].qa = true;
                 continue;
             }
             for (let j = 0; j < blends[i].portions.length; j++) {
                 if (blends[i].unit === blends[i].portions[j].measurement) {
                     blends[i].value =
                         blends[i].quantity * blends[i].portions[j].meausermentWeight;
-                    blends[i].unit = 'g';
+                    // blends[i].unit = 'g';
                     if (!blends[i].value) {
                         blends[i].value =
                             parseFraction(blends[i].quantity) *
                                 blends[i].portions[j].meausermentWeight;
                     }
+                    blends[i].weightInGram = blends[i].value;
+                    blends[i].selectedPortionName = blends[i].unit;
+                    // console.log("ccc", blends);
                 }
             }
+            // console.log('x', blends[i].value);
             if (!blends[i].value) {
+                // console.log('helloooo');
                 if (!+blends[i].quantity) {
                     let converted = (0, ingredient_unit_converter_1.converter)(parseFraction(blends[i].quantity), blends[i].unit, blends[i].portions[0].measurement);
+                    console.log('', converted);
                     if (converted.error) {
+                        console.log('here');
                         blends[i].error = converted.error;
                         portionsProblem.push(blends[i]);
                         continue;
@@ -629,20 +697,52 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 else {
                     let converted = (0, ingredient_unit_converter_1.converter)(blends[i].quantity, blends[i].unit, blends[i].portions[0].measurement);
                     if (converted.error) {
-                        // let obj: any = {
-                        //   data: blends[i],
-                        //   error: converted.error,
-                        // };
-                        // obj.error = converted.error;
+                        let qaId = '';
+                        let found = await QANotFound_1.default.findOne({
+                            name: blends[i].name,
+                            unit: blends[i].unit,
+                        }).select('_id');
+                        if (found) {
+                            qaId = found._id;
+                        }
+                        else {
+                            let obj = {
+                                name: blends[i].name,
+                                unit: blends[i].unit,
+                                quantity: blends[i].quantity,
+                                comment: blends[i].comment,
+                                userIngredient: blends[i].userIngredient,
+                                issues: ['Unit'],
+                                status: 'Review',
+                                bestMatch: blends[i].ingredientId,
+                            };
+                            let newQA = await QANotFound_1.default.create(obj);
+                            qaId = newQA._id;
+                        }
+                        blends[i].qaId = qaId;
+                        blends[i].issues = ['Unit'];
+                        blends[i].status = 'Review';
                         notFountIndexes.push(blends[i].index);
                         continue;
                     }
                     blends[i].value =
                         converted.quantity * blends[i].portions[0].meausermentWeight;
+                    blends[i].weightInGram = blends[i].value;
+                    await blendIngredient_1.default.findOneAndUpdate({
+                        _id: blends[i].ingredientId,
+                    }, {
+                        $push: {
+                            portions: {
+                                measurement: blends[i].unit,
+                                measurement2: 'undeterminded',
+                                meausermentWeight: blends[i].value / blends[i].quantity,
+                            },
+                        },
+                    });
                 }
             }
         }
-        blends = blends
+        let formateBlends = blends
             .filter((blend) => blend.value)
             .map((blend) => {
             return {
@@ -650,11 +750,19 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 value: blend.value,
             };
         });
-        console.log(notFountIndexes);
-        let myData = await this.getNutrientsListAndGiGlByIngredientsForScrappingPanel(blends);
+        let processed = blends.filter((blend) => !blend.qaId);
+        let notProcessed = blends.filter((blend) => blend.qaId);
+        for (let i = 0; i < notProcessed.length; i++) {
+            notBlends.push(notProcessed[i]);
+        }
+        // console.log(processed);
+        // console.log(notBlends);
+        let myData = await this.getNutrientsListAndGiGlByIngredientsForScrappingPanel(formateBlends);
         return {
             ...myData,
             notFoundIndexes: notFountIndexes.sort((a, b) => a - b),
+            blendIngredients: processed,
+            errorIngredients: notBlends,
         };
     }
     async getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
@@ -1336,6 +1444,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getBlendIngredientById", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [BlendPortion_1.default]) //admin
+    ,
+    __param(0, (0, type_graphql_1.Arg)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "getBlendIngredientPortionById", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String) //admin
     ,
