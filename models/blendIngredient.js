@@ -44,7 +44,7 @@ const blendIngredientSchema = new mongoose_1.Schema({
             measurement: String,
             measurement2: String,
             meausermentWeight: String,
-            default: Boolean,
+            default: { type: Boolean, default: false },
             sourceId: String,
         },
     ],

@@ -20,6 +20,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
 ], ErrorIngredient.prototype, "qaId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], ErrorIngredient.prototype, "errorString", void 0);
 ErrorIngredient = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ErrorIngredient);

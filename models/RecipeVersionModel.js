@@ -23,6 +23,13 @@ const recipeVersionSchema = new mongoose_1.Schema({
     selectedImage: String,
     // isDefault: { type: Boolean, default: false },
     // isOriginal: { type: Boolean, default: false },
+    errorIngredients: [
+        {
+            ingredientId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+            qaId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'QANotFoundIngredient' },
+            errorString: String,
+        },
+    ],
     editedAt: Date,
     createdAt: { type: Date, default: Date.now },
     createdBy: {
