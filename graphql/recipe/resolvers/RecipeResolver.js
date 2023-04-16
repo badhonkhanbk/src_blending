@@ -938,6 +938,7 @@ let RecipeResolver = class RecipeResolver {
             ingredients: newData.ingredients,
             recipeInstructions: newData.recipeInstructions,
             createdBy: data.userId,
+            errorIngredients: data.errorIngredients,
             isDefault: true,
             isOriginal: true,
         });
