@@ -5,7 +5,7 @@ const mongoose_1 = require("mongoose");
 const blendIngredientSchema = new mongoose_1.Schema({
     ingredientName: String,
     category: String,
-    blendStatus: String,
+    blendStatus: { type: String, default: 'New' },
     classType: String,
     description: String,
     srcFoodReference: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Ingredient' },
@@ -72,7 +72,7 @@ const blendIngredientSchema = new mongoose_1.Schema({
     seoSiteMapPriority: Number,
     seoKeywords: [String],
     seoMetaDescription: String,
-    sourceName: String,
+    sourceName: { type: String, default: 'Blending101' },
     isPublished: Boolean,
     isBookmarked: { type: Boolean, default: false },
 });

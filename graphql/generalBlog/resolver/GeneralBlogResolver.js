@@ -41,16 +41,17 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         if (blog) {
             return new AppError_1.default('Blog Slug already exist', 400);
         }
+        let newBlog = {};
         if (data.publishDateString) {
             let isoDate = new Date(data.publishDateString).toISOString();
-            await generalBlog_1.default.create({
+            newBlog = await generalBlog_1.default.create({
                 ...data,
                 publishDate: isoDate,
             });
-            return 'Successfully added to general blog';
+            return newBlog;
         }
-        await generalBlog_1.default.create(data);
-        return 'Successfully added to general blog';
+        newBlog = await generalBlog_1.default.create(data);
+        return newBlog;
     }
     async editAGeneralBlog(data) {
         if (data.editableObject.slug) {
@@ -161,11 +162,13 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         let bookmarks = [];
         // let blogd = await GeneralBlogModel.find();
         // console.log(blogd);
-        let blog = await generalBlog_1.default.findOne({
-            _id: blogId,
-        }).select('_id bookmarkList');
+        if (blogId) {
+            let blog = await generalBlog_1.default.findOne({
+                _id: blogId,
+            }).select('_id bookmarkList');
+            bookmarks = blog.bookmarkList;
+        }
         // console.log(blog)
-        bookmarks = blog.bookmarkList;
         let globalBookmarks = await GlobalBookmarkLink_1.default.find().populate({
             path: 'entityId',
             select: 'ingredientName nutrientName',
@@ -236,7 +239,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "temo", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => GeneralBlog_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewGeneralBlog_1.default]),
@@ -289,7 +292,7 @@ __decorate([
 ], GeneralBlogResolver.prototype, "deleteAGeneralBlog", null);
 __decorate([
     (0, type_graphql_1.Query)(() => WikiLinks_1.default),
-    __param(0, (0, type_graphql_1.Arg)('blogId')),
+    __param(0, (0, type_graphql_1.Arg)('blogId', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('links', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,

@@ -533,7 +533,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     }
     async changeCollection() {
         await userCollection_1.default.findOneAndUpdate({ _id: '61d7e644bb6b9a32a588fcf5' }, { $set: { recipes: [] } });
-        return 'successfull';
+        return 'successful';
     }
     async addOrRemoveRecipeFromCollection(data) {
         console.log('for ref');
