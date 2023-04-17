@@ -22,6 +22,9 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
 const ingredient_1 = __importDefault(require("../../../models/ingredient"));
 const AddBlendIngredient_1 = __importDefault(require("./input-type/AddBlendIngredient"));
+const QAIngredientAndPercentage_1 = __importDefault(require("../schemas/QAIngredientAndPercentage"));
+const addIngredientFromSrc_1 = __importDefault(require("./util/addIngredientFromSrc"));
+const mongoose_1 = __importDefault(require("mongoose"));
 let QAResolver = class QAResolver {
     async getAllQAData(page, limit) {
         if (!page || page < 1) {
@@ -80,6 +83,14 @@ let QAResolver = class QAResolver {
                 },
                 $inc: { bestMatchCounts: 1 },
             });
+            return {
+                ingredientId: {
+                    _id: ingredientId,
+                    ingredientName: ingredient.ingredientName,
+                },
+                percentage: percentage,
+                onModel: 'BlendIngredient',
+            };
         }
         else {
             await QANotFound_1.default.findOneAndUpdate({
@@ -98,8 +109,15 @@ let QAResolver = class QAResolver {
                 },
                 $inc: { bestMatchCounts: 1 },
             });
+            return {
+                ingredientId: {
+                    _id: ingredientId,
+                    ingredientName: ingredient.ingredientName,
+                },
+                percentage: percentage,
+                onModel: 'Ingredient',
+            };
         }
-        return 'Added to best Matches';
     }
     async removeFromQABestMatches(ingredientId, qaId, isBlend) {
         let qa = await QANotFound_1.default.findOne({ _id: qaId }).select('name');
@@ -167,7 +185,84 @@ let QAResolver = class QAResolver {
             },
             $inc: { bestMatchCounts: 1 },
         });
-        return 'BlendIngredient added to QA';
+        return {
+            ingredientId: {
+                _id: newBlendIngredient._id,
+                ingredientName: newBlendIngredient.ingredientName,
+            },
+            percentage: percentage,
+            onModel: 'BlendIngredient',
+        };
+    }
+    async selectIngredientForAnQa(ingredientId, qaId, isBlend) {
+        let qa = await QANotFound_1.default.findOne({ _id: qaId }).select('name');
+        if (!qa) {
+            return new AppError_1.default('qa not found', 403);
+        }
+        let ingredient = {};
+        let status = '';
+        if (isBlend) {
+            ingredient = await blendIngredient_1.default.findOne({
+                _id: ingredientId,
+            }).select('ingredientName blendStatus');
+            if (ingredient.blendStatus == 'New') {
+                status = 'New';
+            }
+            else {
+                status = 'Boarded';
+            }
+        }
+        else {
+            ingredient = await (0, addIngredientFromSrc_1.default)(ingredientId);
+            await QANotFound_1.default.findOneAndUpdate({
+                _id: qaId,
+            }, {
+                $push: {
+                    blendIngredients: {
+                        ingredientId: ingredient._id,
+                        percentage: 100,
+                    },
+                    matchedIngredients: {
+                        ingredientId: ingredient._id,
+                        onModel: 'BlendIngredient',
+                    },
+                },
+            });
+            await QANotFound_1.default.findOneAndUpdate({
+                _id: qaId,
+            }, {
+                $pull: {
+                    sourceIngredients: {
+                        ingredientId: new mongoose_1.default.Types.ObjectId(ingredientId.toString()),
+                    },
+                    matchedIngredients: {
+                        ingredientId: new mongoose_1.default.Types.ObjectId(ingredientId.toString()),
+                    },
+                },
+            });
+            status = 'OnBoarded';
+        }
+        if (!ingredient) {
+            return new AppError_1.default('ingredient not fount', 403);
+        }
+        await QANotFound_1.default.findOneAndUpdate({
+            _id: qaId,
+        }, {
+            status: status,
+            bestMatch: ingredient._id,
+        });
+        let QAData = await QANotFound_1.default.findOne({
+            _id: qaId,
+        })
+            .populate({
+            path: 'matchedIngredients.ingredientId',
+            select: 'ingredientName',
+        })
+            .populate({
+            path: 'bestMatch',
+            select: 'ingredientName',
+        });
+        return QAData;
     }
     async similar(a, b) {
         var equivalency = 0;
@@ -195,7 +290,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAResolver.prototype, "getAllQAData", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => QAIngredientAndPercentage_1.default),
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __param(1, (0, type_graphql_1.Arg)('qaId')),
     __param(2, (0, type_graphql_1.Arg)('isBlend')),
@@ -217,7 +312,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAResolver.prototype, "removeFromQABestMatches", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) //admin
+    (0, type_graphql_1.Mutation)(() => QAIngredientAndPercentage_1.default) //admin
     ,
     __param(0, (0, type_graphql_1.Arg)('blendIngredient')),
     __param(1, (0, type_graphql_1.Arg)('qaId')),
@@ -226,6 +321,17 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], QAResolver.prototype, "addNewBlendIngredientWithQAId", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => QAForAdmin_1.default),
+    __param(0, (0, type_graphql_1.Arg)('ingredientId')),
+    __param(1, (0, type_graphql_1.Arg)('qaId')),
+    __param(2, (0, type_graphql_1.Arg)('isBlend')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        Boolean]),
+    __metadata("design:returntype", Promise)
+], QAResolver.prototype, "selectIngredientForAnQa", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __metadata("design:type", Function),
