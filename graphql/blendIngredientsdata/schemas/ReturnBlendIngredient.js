@@ -85,6 +85,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], ReturnBlendIngredientData.prototype, "gi", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [String]),
+    __metadata("design:type", Array)
+], ReturnBlendIngredientData.prototype, "aliases", void 0);
 ReturnBlendIngredientData = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ReturnBlendIngredientData);

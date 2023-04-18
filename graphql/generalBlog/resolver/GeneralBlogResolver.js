@@ -85,7 +85,9 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             },
             isPublished: false,
         }, { isPublished: true });
-        let blog = await generalBlog_1.default.findOne({ _id: blogId }).populate('brand');
+        let blog = await generalBlog_1.default.findOne({ _id: blogId })
+            .populate('brand')
+            .populate('createdBy');
         return blog;
     }
     async getAgeneralBlogBySlug(slug, memberId) {
@@ -120,7 +122,9 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         if (category) {
             find.category = category;
         }
-        let blogs = await generalBlog_1.default.find(find).populate('brand');
+        let blogs = await generalBlog_1.default.find(find)
+            .populate('brand')
+            .populate('createdBy');
         return blogs;
     }
     async getAllGeneralBlogForClient(currentDate, memberId) {
