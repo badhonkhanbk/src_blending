@@ -10,17 +10,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let SocialAccounts = class SocialAccounts {
+let SimpleCollection = class SimpleCollection {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], SocialAccounts.prototype, "name", void 0);
+], SimpleCollection.prototype, "_id", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], SocialAccounts.prototype, "link", void 0);
-SocialAccounts = __decorate([
+], SimpleCollection.prototype, "name", void 0);
+SimpleCollection = __decorate([
     (0, type_graphql_1.ObjectType)()
-], SocialAccounts);
-exports.default = SocialAccounts;
+], SimpleCollection);
+exports.default = SimpleCollection;

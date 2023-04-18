@@ -37,6 +37,7 @@ const getAllGlobalRecipes_1 = __importDefault(require("../../recipe/resolvers/ut
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
 const ShowAllCollection_1 = __importDefault(require("../schemas/ShowAllCollection"));
+const SimpleCollection_1 = __importDefault(require("../schemas/SimpleCollection"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -54,6 +55,20 @@ const ShowAllCollection_1 = __importDefault(require("../schemas/ShowAllCollectio
 //   lastName: String;
 // };
 let MemberResolver = class MemberResolver {
+    async getAllSimpleCollections(userId) {
+        let user = await memberModel_1.default.findById(userId)
+            .populate('collections')
+            .select('collections');
+        let collections = [];
+        for (let i = 0; i < user.collections.length; i++) {
+            let collectionData = {
+                _id: user.collections[i]._id,
+                name: user.collections[i].name,
+            };
+            collections.push(collectionData);
+        }
+        return collections;
+    }
     async getAllCollectionsWithRecipes(userId) {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
@@ -674,6 +689,13 @@ let MemberResolver = class MemberResolver {
         };
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => [SimpleCollection_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MemberResolver.prototype, "getAllSimpleCollections", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [ShowAllCollection_1.default]),
     __param(0, (0, type_graphql_1.Arg)('userId')),
