@@ -26,6 +26,7 @@ const GeneraBlogSchema = new mongoose_1.Schema({
             ref: 'AdminCollection',
         },
     ],
+    brand: { type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeBrand' },
     bookmarkList: [
         {
             customBookmarkName: String,

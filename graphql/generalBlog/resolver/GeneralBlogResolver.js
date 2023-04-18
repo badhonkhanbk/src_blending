@@ -85,7 +85,7 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             },
             isPublished: false,
         }, { isPublished: true });
-        let blog = await generalBlog_1.default.findOne({ _id: blogId });
+        let blog = await generalBlog_1.default.findOne({ _id: blogId }).populate('brand');
         return blog;
     }
     async getAgeneralBlogBySlug(slug, memberId) {
@@ -105,7 +105,7 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         blog.blogCollections = blogCollections;
         return blog;
     }
-    async getAllGeneralBlog(currentDate) {
+    async getAllGeneralBlog(currentDate, brand, category) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         await generalBlog_1.default.updateMany({
             publishDate: {
@@ -113,7 +113,14 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             },
             isPublished: false,
         }, { isPublished: true });
-        let blogs = await generalBlog_1.default.find();
+        let find = {};
+        if (brand) {
+            find.brand = brand;
+        }
+        if (category) {
+            find.category = category;
+        }
+        let blogs = await generalBlog_1.default.find(find).populate('brand');
         return blogs;
     }
     async getAllGeneralBlogForClient(currentDate, memberId) {
@@ -271,8 +278,11 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => [GeneralBlog_1.default]),
     __param(0, (0, type_graphql_1.Arg)('currentDate')),
+    __param(1, (0, type_graphql_1.Arg)('brand', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('category', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String,
+        String]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAllGeneralBlog", null);
 __decorate([

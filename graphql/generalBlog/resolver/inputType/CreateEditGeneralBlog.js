@@ -25,6 +25,10 @@ __decorate([
     __metadata("design:type", String)
 ], CreateEditGeneralBlog.prototype, "body", void 0);
 __decorate([
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
+    __metadata("design:type", String)
+], CreateEditGeneralBlog.prototype, "brand", void 0);
+__decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
 ], CreateEditGeneralBlog.prototype, "keywords", void 0);

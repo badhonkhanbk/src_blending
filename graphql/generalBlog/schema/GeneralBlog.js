@@ -8,8 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const Brand_1 = __importDefault(require("../../recipe/schemas/Brand"));
 let GeneralBlog = class GeneralBlog {
 };
 __decorate([
@@ -44,6 +48,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", Date)
 ], GeneralBlog.prototype, "createdAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => Brand_1.default, { nullable: true }),
+    __metadata("design:type", Brand_1.default)
+], GeneralBlog.prototype, "brand", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Date)
@@ -92,6 +100,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
 ], GeneralBlog.prototype, "blogCollections", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], GeneralBlog.prototype, "isPublished", void 0);
 GeneralBlog = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], GeneralBlog);
