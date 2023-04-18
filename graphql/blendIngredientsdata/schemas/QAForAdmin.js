@@ -55,7 +55,7 @@ __decorate([
 ], QAForAdmin.prototype, "issues", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], QAForAdmin.prototype, "bestMatchCounts", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [QAIngredientAndPercentage_1.default]),

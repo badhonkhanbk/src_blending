@@ -44,7 +44,7 @@ async function addIngredientFromSrc(srcId) {
         ingredientName: srcFood.description
             ? srcFood.description
             : srcFood.ingredientName,
-        blendStatus: 'Review',
+        blendStatus: 'X',
         classType: '',
         description: srcFood.description,
         srcFoodReference: srcFood._id,

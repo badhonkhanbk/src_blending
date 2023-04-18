@@ -4,6 +4,7 @@ const mongoose_1 = require("mongoose");
 // srcFoodReference blendNutrients notBlendNutrients collections varrient bodies
 const blendIngredientSchema = new mongoose_1.Schema({
     ingredientName: String,
+    aliases: [String],
     category: String,
     blendStatus: { type: String, default: 'New' },
     classType: String,

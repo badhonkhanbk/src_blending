@@ -43,6 +43,7 @@ const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithP
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNotesCompareAndUserCollection"));
 const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
+const QANotFound_1 = __importDefault(require("../../../models/QANotFound"));
 let RecipeResolver = class RecipeResolver {
     // @Query((type) => String)
     // async tya() {
@@ -944,6 +945,17 @@ let RecipeResolver = class RecipeResolver {
         });
         //@ts-ignore
         await (0, updateOriginalVersionFact_1.default)(recipeVersion._id);
+        if (data.errorIngredients) {
+            if (data.errorIngredients.length > 0) {
+                for (let i = 0; i < data.errorIngredients.length; i++) {
+                    await QANotFound_1.default.findOneAndUpdate({
+                        _id: data.errorIngredients[i].qaId,
+                    }, {
+                        $push: { versions: recipeVersion._id },
+                    });
+                }
+            }
+        }
         await recipeModel_1.default.findOneAndUpdate({
             _id: userRecipe._id,
         }, {

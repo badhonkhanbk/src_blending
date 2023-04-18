@@ -214,6 +214,7 @@ let QAResolver = class QAResolver {
         }
         else {
             ingredient = await (0, addIngredientFromSrc_1.default)(ingredientId);
+            console.log(ingredient._id);
             await QANotFound_1.default.findOneAndUpdate({
                 _id: qaId,
             }, {
@@ -225,6 +226,7 @@ let QAResolver = class QAResolver {
                     matchedIngredients: {
                         ingredientId: ingredient._id,
                         onModel: 'BlendIngredient',
+                        percentage: 100,
                     },
                 },
             });

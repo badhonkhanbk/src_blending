@@ -180,7 +180,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         if (!food) {
             return new AppError_1.default('Ingredient not found', 404);
         }
-        if (food.blendStatus !== 'Archive') {
+        if (food.blendStatus === 'Active' || food.blendStatus === 'Review') {
             return new AppError_1.default('you can not remove Review or Active Ingredient', 404);
         }
         await ingredient_1.default.findByIdAndUpdate(food.srcFoodReference, {
@@ -1353,7 +1353,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         return JSON.stringify(obj);
     }
     async addGiToTheIngredients() {
-        await blendIngredient_1.default.updateMany({}, { $set: { gi: 55 } });
+        await blendIngredient_1.default.updateMany({}, { aliases: [] });
         return 'done';
     }
 };
