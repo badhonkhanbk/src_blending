@@ -218,8 +218,15 @@ let QAResolver = class QAResolver {
             }
         }
         else {
-            ingredient = await (0, addIngredientFromSrc_1.default)(ingredientId);
-            console.log(ingredient._id);
+            let blendIngredient = await blendIngredient_1.default.findOne({
+                srcFoodReference: ingredientId,
+            });
+            if (blendIngredient) {
+                ingredient = blendIngredient;
+            }
+            else {
+                ingredient = await (0, addIngredientFromSrc_1.default)(ingredientId);
+            }
             await QANotFound_1.default.findOneAndUpdate({
                 _id: qaId,
             }, {
