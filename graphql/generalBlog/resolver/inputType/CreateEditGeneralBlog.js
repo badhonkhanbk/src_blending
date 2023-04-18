@@ -64,6 +64,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CreateEditGeneralBlog.prototype, "publishDateString", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], CreateEditGeneralBlog.prototype, "type", void 0);
 CreateEditGeneralBlog = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateEditGeneralBlog);
