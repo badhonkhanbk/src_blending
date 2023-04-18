@@ -24,6 +24,7 @@ const ingredient_1 = __importDefault(require("../../../models/ingredient"));
 const AddBlendIngredient_1 = __importDefault(require("./input-type/AddBlendIngredient"));
 const QAIngredientAndPercentage_1 = __importDefault(require("../schemas/QAIngredientAndPercentage"));
 const addIngredientFromSrc_1 = __importDefault(require("./util/addIngredientFromSrc"));
+const QAAdminWithPagination_1 = __importDefault(require("../schemas/QAAdminWithPagination"));
 const mongoose_1 = __importDefault(require("mongoose"));
 let QAResolver = class QAResolver {
     async getAllQAData(page, limit) {
@@ -44,7 +45,11 @@ let QAResolver = class QAResolver {
         })
             .limit(limit)
             .skip(limit * (page - 1));
-        return QAData;
+        let totalData = await QANotFound_1.default.countDocuments();
+        return {
+            QAData: QAData,
+            totalData: totalData,
+        };
     }
     async addToQABestMatches(ingredientId, qaId, isBlend) {
         let qa = await QANotFound_1.default.findOne({ _id: qaId }).select('name');
@@ -284,7 +289,7 @@ let QAResolver = class QAResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => [QAForAdmin_1.default]),
+    (0, type_graphql_1.Query)(() => QAAdminWithPagination_1.default),
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
