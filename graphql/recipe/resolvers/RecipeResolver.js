@@ -884,9 +884,15 @@ let RecipeResolver = class RecipeResolver {
         if (!user) {
             return new AppError_1.default('User not found', 404);
         }
-        let userDefaultCollection = user.lastModifiedCollection
-            ? user.defaultCollection
-            : user.lastModifiedCollection;
+        let userDefaultCollection;
+        if (data.collection) {
+            userDefaultCollection = data.collection;
+        }
+        else {
+            userDefaultCollection = user.lastModifiedCollection
+                ? user.defaultCollection
+                : user.lastModifiedCollection;
+        }
         let newData = data;
         newData.foodCategories = [];
         for (let i = 0; i < newData.ingredients.length; i++) {

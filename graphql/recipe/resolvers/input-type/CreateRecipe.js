@@ -138,6 +138,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [ErrorIngredientInput_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], xCreateRecipe.prototype, "errorIngredients", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
+    __metadata("design:type", String)
+], xCreateRecipe.prototype, "collection", void 0);
 xCreateRecipe = __decorate([
     (0, type_graphql_1.InputType)()
 ], xCreateRecipe);
