@@ -26,11 +26,11 @@ __decorate([
     __metadata("design:type", String)
 ], QAForAdmin.prototype, "name", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], QAForAdmin.prototype, "quantity", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], QAForAdmin.prototype, "unit", void 0);
 __decorate([

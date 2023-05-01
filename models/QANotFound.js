@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const QANotFoundIngredient = new mongoose_1.Schema({
     name: String,
-    quantity: Number,
+    quantity: { type: Number, default: 1 },
     unit: String,
     comment: String,
     userIngredient: String,
