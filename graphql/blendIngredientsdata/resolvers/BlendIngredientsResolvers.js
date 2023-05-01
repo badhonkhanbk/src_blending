@@ -471,6 +471,24 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         });
         return 'success';
     }
+    async checkParsing(recipeIngredients) {
+        let ingredientsShape = {
+            recipeIngredients: recipeIngredients,
+        };
+        var dataX = JSON.stringify(ingredientsShape);
+        var config = {
+            method: 'get',
+            url: 'http://54.91.110.31/parse-ingredients',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: dataX,
+        };
+        let res = await (0, axios_1.default)(config);
+        console.log('data', res.data);
+        console.log('best', res.data.parsed_data[0].best_match);
+        return 'done';
+    }
     async searchInScrappedRecipeFromUser(recipeIngredients) {
         let ingredientsShape = {
             recipeIngredients: recipeIngredients,
@@ -1500,6 +1518,13 @@ __decorate([
     __metadata("design:paramtypes", [Array, String]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "manipulatePortionsToBlendIngredient", null);
+__decorate([
+    (0, type_graphql_1.Mutation)((type) => String),
+    __param(0, (0, type_graphql_1.Arg)('recipeIngredients', (type) => [String], { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "checkParsing", null);
 __decorate([
     (0, type_graphql_1.Mutation)((type) => NutrientListAndGiGlForScrapper_1.default),
     __param(0, (0, type_graphql_1.Arg)('recipeIngredients', (type) => [String], { nullable: true })),

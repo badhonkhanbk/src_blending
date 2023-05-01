@@ -895,41 +895,46 @@ let RecipeResolver = class RecipeResolver {
         }
         let newData = data;
         newData.foodCategories = [];
-        for (let i = 0; i < newData.ingredients.length; i++) {
-            newData.ingredients[i].portions = [];
-            let ingredient = await blendIngredient_1.default.findOne({
-                _id: newData.ingredients[i].ingredientId,
-            });
-            let index = 0;
-            let selectedPortionIndex = 0;
-            for (let j = 0; j < ingredient.portions.length; j++) {
-                if (ingredient.portions[j].default === true) {
-                    index = j;
-                    console.log(index);
-                    break;
+        if (newData.ingredients) {
+            for (let i = 0; i < newData.ingredients.length; i++) {
+                newData.ingredients[i].portions = [];
+                let ingredient = await blendIngredient_1.default.findOne({
+                    _id: newData.ingredients[i].ingredientId,
+                });
+                let index = 0;
+                let selectedPortionIndex = 0;
+                for (let j = 0; j < ingredient.portions.length; j++) {
+                    if (ingredient.portions[j].default === true) {
+                        index = j;
+                        console.log(index);
+                        break;
+                    }
                 }
-            }
-            for (let k = 0; k < ingredient.portions.length; k++) {
-                if (ingredient.portions[k].measurement ===
-                    newData.ingredients[i].selectedPortionName) {
-                    selectedPortionIndex = k;
+                for (let k = 0; k < ingredient.portions.length; k++) {
+                    if (ingredient.portions[k].measurement ===
+                        newData.ingredients[i].selectedPortionName) {
+                        selectedPortionIndex = k;
+                    }
+                    let portion = {
+                        name: ingredient.portions[k].measurement,
+                        quantity: newData.ingredients[i].weightInGram /
+                            +ingredient.portions[k].meausermentWeight,
+                        default: ingredient.portions[k].default,
+                        gram: ingredient.portions[k].meausermentWeight,
+                    };
+                    newData.ingredients[i].portions.push(portion);
                 }
-                let portion = {
-                    name: ingredient.portions[k].measurement,
+                newData.ingredients[i].selectedPortion = {
+                    name: ingredient.portions[selectedPortionIndex].measurement,
                     quantity: newData.ingredients[i].weightInGram /
-                        +ingredient.portions[k].meausermentWeight,
-                    default: ingredient.portions[k].default,
-                    gram: ingredient.portions[k].meausermentWeight,
+                        +ingredient.portions[selectedPortionIndex].meausermentWeight,
+                    gram: ingredient.portions[selectedPortionIndex].meausermentWeight,
                 };
-                newData.ingredients[i].portions.push(portion);
+                newData.foodCategories.push(ingredient.category);
             }
-            newData.ingredients[i].selectedPortion = {
-                name: ingredient.portions[selectedPortionIndex].measurement,
-                quantity: newData.ingredients[i].weightInGram /
-                    +ingredient.portions[selectedPortionIndex].meausermentWeight,
-                gram: ingredient.portions[selectedPortionIndex].meausermentWeight,
-            };
-            newData.foodCategories.push(ingredient.category);
+        }
+        else {
+            newData.ingredients = [];
         }
         newData.foodCategories = [...new Set(newData.foodCategories)];
         newData.global = false;

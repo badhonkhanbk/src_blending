@@ -102,6 +102,15 @@ let FoodResolver = class FoodResolver {
             totalIngredientsCount: totalIngredients,
         };
     }
+    async ingredientDesToName() {
+        let foods = await ingredient_1.default.find().select('_id description');
+        for (let i = 0; i < foods.length; i++) {
+            await ingredient_1.default.findOneAndUpdate({ _id: foods[i]._id }, {
+                ingredientName: foods[i].description,
+            });
+        }
+        return 'Done';
+    }
     async getALlUniqueNutrientList() {
         let nutrients = await uniqueNutrient_1.default.find({}).sort({
             nutrient: 1,
@@ -579,6 +588,12 @@ __decorate([
     __metadata("design:paramtypes", [StructureIngredientsData_1.default]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getAllTheIngredients", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "ingredientDesToName", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [UniqueNutrient_1.default]),
     __metadata("design:type", Function),
