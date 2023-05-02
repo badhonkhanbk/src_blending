@@ -135,7 +135,9 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             },
             isPublished: false,
         }, { isPublished: true });
-        let blogs = await generalBlog_1.default.find({ isPublished: true });
+        let blogs = await generalBlog_1.default.find({ isPublished: true })
+            .populate('brand')
+            .populate('createdBy');
         let returnBlogs = [];
         for (let i = 0; i < blogs.length; i++) {
             let blog = blogs[i];
