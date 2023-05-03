@@ -252,7 +252,13 @@ let PlanResolver = class PlanResolver {
             totalPlans: await Plan_1.default.countDocuments({ isGlobal: true }),
         };
     }
-    async getAllRecentPlans(limit, memberId) {
+    async getAllRecentPlans(page, limit, memberId) {
+        if (!page || page < 1) {
+            page = 1;
+        }
+        if (!limit || limit < 1) {
+            limit = 10;
+        }
         let plans = await Plan_1.default.find({ isGlobal: true })
             .populate({
             path: 'planData.recipes',
@@ -275,7 +281,8 @@ let PlanResolver = class PlanResolver {
             ],
         })
             .sort({ createdAt: -1 })
-            .limit(limit);
+            .limit(limit)
+            .skip(limit * (page - 1));
         let planWithCollectionAndComments = [];
         for (let i = 0; i < plans.length; i++) {
             let plan = plans[i];
@@ -283,7 +290,10 @@ let PlanResolver = class PlanResolver {
             plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
             planWithCollectionAndComments.push(plan);
         }
-        return planWithCollectionAndComments;
+        return {
+            plans: planWithCollectionAndComments,
+            totalPlans: await Plan_1.default.countDocuments({ isGlobal: true }),
+        };
     }
     async getAllRecommendedPlans(limit, memberId) {
         let plans = await Plan_1.default.find({ isGlobal: true })
@@ -463,11 +473,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllGlobalPlans", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Plan_2.default]),
-    __param(0, (0, type_graphql_1.Arg)('limit')),
-    __param(1, (0, type_graphql_1.Arg)('memberId')),
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    __param(0, (0, type_graphql_1.Arg)('page')),
+    __param(1, (0, type_graphql_1.Arg)('limit')),
+    __param(2, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:paramtypes", [Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllRecentPlans", null);
 __decorate([
