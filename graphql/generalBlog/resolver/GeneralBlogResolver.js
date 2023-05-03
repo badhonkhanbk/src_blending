@@ -91,20 +91,24 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         return blog;
     }
     async getAgeneralBlogBySlug(slug, memberId) {
-        let blog = await generalBlog_1.default.findOne({ slug: slug });
+        let blog = await generalBlog_1.default.findOne({ slug: slug })
+            .populate('brand')
+            .populate('createdBy');
         blog.commentsCount = await blogComment_1.default.countDocuments({
             blogId: new mongoose_1.default.mongo.ObjectId(blog._id),
         });
         blog.commentsCount = await blogComment_1.default.countDocuments({
             blogId: new mongoose_1.default.mongo.ObjectId(blog._id),
         });
-        let blogCollections = await generalBlogCollection_1.default.find({
-            memberId: memberId,
-            blogs: {
-                $in: blog._id,
-            },
-        }).select('_id');
-        blog.blogCollections = blogCollections;
+        if (memberId) {
+            let blogCollections = await generalBlogCollection_1.default.find({
+                memberId: memberId,
+                blogs: {
+                    $in: blog._id,
+                },
+            }).select('_id');
+            blog.blogCollections = blogCollections;
+        }
         return blog;
     }
     async getAllGeneralBlog(currentDate, brand, category) {
@@ -276,7 +280,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => GeneralBlog_1.default),
     __param(0, (0, type_graphql_1.Arg)('slug')),
-    __param(1, (0, type_graphql_1.Arg)('memberId', (type) => type_graphql_1.ID)),
+    __param(1, (0, type_graphql_1.Arg)('memberId', (type) => type_graphql_1.ID, { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
