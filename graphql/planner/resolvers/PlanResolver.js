@@ -188,10 +188,13 @@ let PlanResolver = class PlanResolver {
         });
         return 'Plan deleted';
     }
-    async getAllGlobalPlans(page, limit, memberId) {
+    async getAllGlobalPlans(page, limit, searchTerm, memberId) {
         let plans = [];
         if (page && limit) {
-            plans = await Plan_1.default.find({ isGlobal: true })
+            plans = await Plan_1.default.find({
+                planName: { $regex: searchTerm, $options: 'i' },
+                isGlobal: true,
+            })
                 .populate({
                 path: 'planData.recipes',
                 populate: [
@@ -217,7 +220,10 @@ let PlanResolver = class PlanResolver {
                 .skip(limit * (page - 1));
         }
         else {
-            plans = await Plan_1.default.find({ isGlobal: true })
+            plans = await Plan_1.default.find({
+                planName: { $regex: searchTerm, $options: 'i' },
+                isGlobal: true,
+            })
                 .populate({
                 path: 'planData.recipes',
                 populate: [
@@ -523,9 +529,11 @@ __decorate([
     (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('searchTerm')),
+    __param(3, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number, String]),
+    __metadata("design:paramtypes", [Number, Number, String,
+        String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllGlobalPlans", null);
 __decorate([
