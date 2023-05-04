@@ -108,10 +108,17 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 {
                     path: 'originalVersion',
                     model: 'RecipeVersion',
-                    populate: {
-                        path: 'ingredients.ingredientId',
-                        model: 'BlendIngredient',
-                    },
+                    populate: [
+                        {
+                            path: 'ingredients.ingredientId',
+                            model: 'BlendIngredient',
+                            select: 'ingredientName selectedImage',
+                        },
+                        {
+                            path: 'createdBy',
+                            select: '_id displayName firstName lastName image email',
+                        },
+                    ],
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
@@ -119,10 +126,17 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             .populate({
             path: 'defaultVersion',
             model: 'RecipeVersion',
-            populate: {
-                path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
-            },
+            populate: [
+                {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName selectedImage',
+                },
+                {
+                    path: 'createdBy',
+                    select: '_id displayName firstName lastName image email',
+                },
+            ],
         })
             .populate({
             path: 'turnedOnVersions',
@@ -228,9 +242,14 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             console.log(compareList[i].versionId);
             let compareVersion = await RecipeVersionModel_1.default.findOne({
                 _id: compareList[i].versionId,
-            }).populate({
+            })
+                .populate({
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
+            })
+                .populate({
+                path: 'createdBy',
+                select: '_id image firstName lastName email',
             });
             let compareRecipe = {
                 recipeId: userProfileRecipe.recipeId,
@@ -273,11 +292,17 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             .populate({
             path: 'defaultVersion',
             model: 'RecipeVersion',
-            populate: {
-                path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
-                select: 'ingredientName selectedImage',
-            },
+            populate: [
+                {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName selectedImage',
+                },
+                {
+                    path: 'createdBy',
+                    select: '_id displayName firstName lastName image email',
+                },
+            ],
             select: 'postfixTitle selectedImage',
         })
             .limit(20);
@@ -313,11 +338,17 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             .populate({
             path: 'defaultVersion',
             model: 'RecipeVersion',
-            populate: {
-                path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
-                select: 'ingredientName selectedImage',
-            },
+            populate: [
+                {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName selectedImage',
+                },
+                {
+                    path: 'createdBy',
+                    select: '_id displayName firstName lastName image email',
+                },
+            ],
             select: 'postfixTitle selectedImage',
         })
             .skip(10)
@@ -353,11 +384,17 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             .populate({
             path: 'defaultVersion',
             model: 'RecipeVersion',
-            populate: {
-                path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
-                select: 'ingredientName selectedImage',
-            },
+            populate: [
+                {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName selectedImage',
+                },
+                {
+                    path: 'createdBy',
+                    select: '_id displayName firstName lastName image email',
+                },
+            ],
             select: 'postfixTitle selectedImage',
         })
             .skip(8)

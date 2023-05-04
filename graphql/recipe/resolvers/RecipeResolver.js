@@ -1600,20 +1600,29 @@ let RecipeResolver = class RecipeResolver {
         return true;
     }
     async juio() {
-        let recipes = await recipeModel_1.default.find({}).select('originalVersion name description');
-        for (let i = 0; i < recipes.length; i++) {
-            if (!recipes[i].originalVersion) {
-                continue;
-            }
-            else {
-                await RecipeVersionModel_1.default.findOneAndUpdate({
-                    _id: recipes[i].originalVersion,
-                }, {
-                    postfixTitle: recipes[i].name,
-                    description: recipes[i].description,
-                });
-            }
-        }
+        await recipeModel_1.default.updateMany({
+            addedByAdmin: true,
+        }, {
+            brand: '643e29e87ce212e372cbfb66',
+        });
+        // let recipes = await RecipeModel.find({}).select(
+        //   'originalVersion name description'
+        // );
+        // for (let i = 0; i < recipes.length; i++) {
+        //   if (!recipes[i].originalVersion) {
+        //     continue;
+        //   } else {
+        //     await RecipeVersionModel.findOneAndUpdate(
+        //       {
+        //         _id: recipes[i].originalVersion,
+        //       },
+        //       {
+        //         postfixTitle: recipes[i].name,
+        //         description: recipes[i].description,
+        //       }
+        //     );
+        //   }
+        // }
         return true;
     }
 };

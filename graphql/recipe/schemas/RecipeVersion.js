@@ -15,6 +15,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const IngredientData_1 = __importDefault(require("./IngredientData"));
+const MemberProfileForRecipe_1 = __importDefault(require("./MemberProfileForRecipe"));
 //_id postfixTitle description
 let RecipeVersion = class RecipeVersion {
 };
@@ -50,6 +51,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [IngredientData_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], RecipeVersion.prototype, "ingredients", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", MemberProfileForRecipe_1.default)
+], RecipeVersion.prototype, "createdBy", void 0);
 RecipeVersion = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], RecipeVersion);
