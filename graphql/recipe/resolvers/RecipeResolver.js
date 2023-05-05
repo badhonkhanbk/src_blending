@@ -1007,16 +1007,23 @@ let RecipeResolver = class RecipeResolver {
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
         })
-            .populate({
-            path: 'defaultVersion',
-            model: 'RecipeVersion',
-            populate: {
-                path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
-                select: 'ingredientName',
+            .populate([
+            {
+                path: 'defaultVersion',
+                model: 'RecipeVersion',
+                populate: {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName',
+                },
+                select: 'postfixTitle selectedImage',
             },
-            select: 'postfixTitle selectedImage',
-        })
+            {
+                path: 'userId',
+                model: 'User',
+                select: '_id displayName image firstName lastName email',
+            },
+        ])
             .populate('brand');
         await UserRecipeProfile_1.default.create({
             userId: data.userId,
