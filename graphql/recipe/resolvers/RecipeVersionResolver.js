@@ -458,7 +458,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 {
                     path: 'userId',
                     model: 'User',
-                    select: 'firstName lastName displayName email',
+                    select: 'firstName lastName image displayName email',
                 },
                 {
                     path: 'originalVersion',
@@ -662,7 +662,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 {
                     path: 'userId',
                     model: 'User',
-                    select: 'firstName lastName displayName email',
+                    select: 'firstName lastName image displayName email',
                 },
                 {
                     path: 'originalVersion',

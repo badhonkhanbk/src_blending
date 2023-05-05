@@ -100,7 +100,7 @@ let MemberResolver = class MemberResolver {
                 {
                     path: 'userId',
                     model: 'User',
-                    select: 'firstName lastName displayName email',
+                    select: 'firstName lastName image displayName email',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
@@ -184,7 +184,7 @@ let MemberResolver = class MemberResolver {
                 {
                     path: 'userId',
                     model: 'User',
-                    select: 'firstName lastName displayName email',
+                    select: 'firstName lastName image displayName email',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
@@ -261,7 +261,7 @@ let MemberResolver = class MemberResolver {
                 {
                     path: 'userId',
                     model: 'User',
-                    select: 'firstName lastName displayName email',
+                    select: 'firstName lastName image displayName email',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
@@ -420,7 +420,7 @@ let MemberResolver = class MemberResolver {
                 {
                     path: 'userId',
                     model: 'User',
-                    select: 'firstName lastName displayName email',
+                    select: 'firstName lastName image displayName email',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
@@ -599,7 +599,7 @@ let MemberResolver = class MemberResolver {
         return users;
     }
     async getAllusersForClient() {
-        let users = await memberModel_1.default.find().select('firstName lastName displayName email');
+        let users = await memberModel_1.default.find().select('firstName lastName image displayName email');
         return users;
     }
     async removeAUserById(userId) {

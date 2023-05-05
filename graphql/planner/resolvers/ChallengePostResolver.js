@@ -273,7 +273,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         })
             .populate({
             path: 'invitedBy',
-            select: 'firstName lastName displayName email',
+            select: 'firstName lastName image displayName email',
         });
         // console.log(invite);
         if (!invite.challengeId) {

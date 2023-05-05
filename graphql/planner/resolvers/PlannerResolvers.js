@@ -154,7 +154,7 @@ let PlannerResolver = class PlannerResolver {
                         {
                             path: 'userId',
                             model: 'User',
-                            select: 'firstName lastName displayName email',
+                            select: 'firstName lastName image displayName email',
                         },
                     ],
                     select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
@@ -342,7 +342,7 @@ let PlannerResolver = class PlannerResolver {
                 {
                     path: 'userId',
                     model: 'User',
-                    select: 'firstName lastName displayName email',
+                    select: 'firstName lastName image displayName email',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
@@ -443,7 +443,7 @@ let PlannerResolver = class PlannerResolver {
                 {
                     path: 'userId',
                     model: 'User',
-                    select: 'firstName lastName displayName email',
+                    select: 'firstName lastName image displayName email',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
