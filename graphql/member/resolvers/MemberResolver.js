@@ -258,6 +258,11 @@ let MemberResolver = class MemberResolver {
                     path: 'brand',
                     model: 'RecipeBrand',
                 },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
+                },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
@@ -411,6 +416,11 @@ let MemberResolver = class MemberResolver {
                 {
                     path: 'brand',
                     model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',

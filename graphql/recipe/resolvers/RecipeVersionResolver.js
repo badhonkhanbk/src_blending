@@ -456,6 +456,11 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                     model: 'RecipeBrand',
                 },
                 {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
+                },
+                {
                     path: 'originalVersion',
                     model: 'RecipeVersion',
                     populate: {
@@ -653,6 +658,11 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 {
                     path: 'brand',
                     model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
                 },
                 {
                     path: 'originalVersion',

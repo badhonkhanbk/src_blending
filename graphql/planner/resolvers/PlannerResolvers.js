@@ -151,6 +151,11 @@ let PlannerResolver = class PlannerResolver {
                             path: 'brand',
                             model: 'RecipeBrand',
                         },
+                        {
+                            path: 'userId',
+                            model: 'User',
+                            select: 'firstName lastName displayName email',
+                        },
                     ],
                     select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
                 })
@@ -334,6 +339,11 @@ let PlannerResolver = class PlannerResolver {
                     path: 'brand',
                     model: 'RecipeBrand',
                 },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
+                },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
         })
@@ -369,7 +379,7 @@ let PlannerResolver = class PlannerResolver {
     currentDate) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         console.log(today);
-        let firstday = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+        let firstday = new Date(today.setDate(today.getDate() - today.getDay() + 0));
         let lastday = new Date(today.setDate(today.getDate() + 6));
         console.log(firstday);
         console.log(lastday);
@@ -429,6 +439,11 @@ let PlannerResolver = class PlannerResolver {
                 {
                     path: 'brand',
                     model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName displayName email',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
