@@ -1618,9 +1618,10 @@ let RecipeResolver = class RecipeResolver {
     }
     async juio() {
         await recipeModel_1.default.updateMany({
-            addedByAdmin: true,
+            brand: null,
+            userId: null,
         }, {
-            brand: '643e29e87ce212e372cbfb66',
+            brand: '61cd5083debd9237c577df17',
         });
         // let recipes = await RecipeModel.find({}).select(
         //   'originalVersion name description'

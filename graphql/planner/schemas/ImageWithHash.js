@@ -13,11 +13,11 @@ const type_graphql_1 = require("type-graphql");
 let ImageWithHash = class ImageWithHash {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], ImageWithHash.prototype, "url", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], ImageWithHash.prototype, "hash", void 0);
 ImageWithHash = __decorate([

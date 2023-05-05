@@ -485,6 +485,15 @@ let PlanResolver = class PlanResolver {
             recipes: recipes,
         };
     }
+    async fixPlans() {
+        await Plan_1.default.updateMany({}, {
+            image: {
+                url: '',
+                hash: '',
+            },
+        });
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
@@ -588,6 +597,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getPlanShareInfo", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PlanResolver.prototype, "fixPlans", null);
 PlanResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], PlanResolver);

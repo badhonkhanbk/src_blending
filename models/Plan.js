@@ -20,8 +20,8 @@ const PlanSchema = new mongoose_1.Schema({
         },
     ],
     image: {
-        url: String,
-        hash: String,
+        url: { type: String, default: '' },
+        hash: { type: String, default: '' },
     },
     createdAt: { type: Date, default: Date.now() },
     updatedAt: Date,
