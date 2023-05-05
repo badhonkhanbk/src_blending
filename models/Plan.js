@@ -19,6 +19,10 @@ const PlanSchema = new mongoose_1.Schema({
             day: Number,
         },
     ],
+    image: {
+        url: String,
+        hash: String,
+    },
     createdAt: { type: Date, default: Date.now() },
     updatedAt: Date,
     isGlobal: Boolean,

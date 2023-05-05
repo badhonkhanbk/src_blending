@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const CreatePlanData_1 = __importDefault(require("./CreatePlanData"));
+const ImageWithHashInput_1 = __importDefault(require("../ImageWithHashInput"));
 let CreateEditPlan = class CreateEditPlan {
 };
 __decorate([
@@ -36,6 +37,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [CreatePlanData_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], CreateEditPlan.prototype, "planData", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => ImageWithHashInput_1.default, { nullable: true }),
+    __metadata("design:type", ImageWithHashInput_1.default)
+], CreateEditPlan.prototype, "image", void 0);
 CreateEditPlan = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateEditPlan);

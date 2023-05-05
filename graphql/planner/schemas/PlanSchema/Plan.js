@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const PlanData_1 = __importDefault(require("./PlanData"));
+const ImageWithHash_1 = __importDefault(require("../ImageWithHash"));
 let Plan = class Plan {
 };
 __decorate([
@@ -64,6 +65,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], Plan.prototype, "commentsCount", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => ImageWithHash_1.default, { nullable: true }),
+    __metadata("design:type", ImageWithHash_1.default)
+], Plan.prototype, "image", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
