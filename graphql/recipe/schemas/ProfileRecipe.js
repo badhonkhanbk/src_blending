@@ -57,6 +57,18 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], ProfileRecipe.prototype, "versionCount", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], ProfileRecipe.prototype, "calorie", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], ProfileRecipe.prototype, "netCarbs", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], ProfileRecipe.prototype, "rxScore", void 0);
 ProfileRecipe = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ProfileRecipe);

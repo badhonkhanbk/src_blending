@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const memberModel_1 = __importDefault(require("../../../../models/memberModel"));
 const Compare_1 = __importDefault(require("../../../../models/Compare"));
 const userNote_1 = __importDefault(require("../../../../models/userNote"));
+const RecipeFacts_1 = __importDefault(require("../../../../models/RecipeFacts"));
 async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
     let returnRecipe = [];
     let collectionRecipes = [];
@@ -76,6 +77,19 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
                 userCollections: collectionData,
                 versionCount: versionsCount,
             });
+        }
+        let facts = await RecipeFacts_1.default.findOne({
+            versionId: userProfileRecipes[i].defaultVersion._id,
+        }).select('calorie gigl');
+        if (facts) {
+            returnRecipe[i].calorie = facts.calorie.value;
+            returnRecipe[i].netCarbs = facts.gigl.netCarbs;
+            returnRecipe[i].rxScore = 100;
+        }
+        else {
+            returnRecipe[i].calorie = 0;
+            returnRecipe[i].netCarbs = 0;
+            returnRecipe[i].rxScore = 0;
         }
     }
     return returnRecipe;

@@ -21,7 +21,6 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateComment.prototype, "rating", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
 ], CreateComment.prototype, "recipeId", void 0);
