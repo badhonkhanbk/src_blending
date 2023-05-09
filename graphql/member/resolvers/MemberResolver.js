@@ -352,6 +352,7 @@ let MemberResolver = class MemberResolver {
         };
     }
     async getASingleCollection(slug, userId, collectionId, token, singleRecipeCollectionId, page, limit) {
+        console.log();
         let searchId;
         let query = {};
         if (singleRecipeCollectionId) {
