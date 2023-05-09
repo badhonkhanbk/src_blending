@@ -26,10 +26,6 @@ __decorate([
 ], Comment.prototype, "comment", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
-    __metadata("design:type", Number)
-], Comment.prototype, "rating", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
     __metadata("design:type", Date)
 ], Comment.prototype, "createdAt", void 0);
 __decorate([
