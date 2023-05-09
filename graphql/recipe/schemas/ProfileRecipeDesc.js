@@ -65,6 +65,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], ProfileRecipeDesc.prototype, "versionsCount", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], ProfileRecipeDesc.prototype, "personalRating", void 0);
 ProfileRecipeDesc = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ProfileRecipeDesc);

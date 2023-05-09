@@ -36,6 +36,49 @@ const recipeVersionSchema = new mongoose_1.Schema({
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'User',
     },
+    calorie: {
+        value: Number,
+        blendNutrientRefference: {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'BlendNutrient',
+        },
+        parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+    },
+    energy: [
+        {
+            value: Number,
+            blendNutrientRefference: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'BlendIngredient',
+            },
+            parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+        },
+    ],
+    mineral: [
+        {
+            value: Number,
+            blendNutrientRefference: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'BlendIngredient',
+            },
+            parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+        },
+    ],
+    vitamin: [
+        {
+            value: Number,
+            blendNutrientRefference: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'BlendIngredient',
+            },
+            parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+        },
+    ],
+    gigl: {
+        totalGi: Number,
+        netCarbs: Number,
+        totalGL: Number,
+    },
 });
 const RecipeVersion = (0, mongoose_1.model)('RecipeVersion', recipeVersionSchema);
 exports.default = RecipeVersion;

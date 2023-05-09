@@ -19,8 +19,8 @@ const type_graphql_1 = require("type-graphql");
 const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
-const RecipeFacts_1 = __importDefault(require("../../../models/RecipeFacts"));
-const recipeOriginalFactModel_1 = __importDefault(require("../../../models/recipeOriginalFactModel"));
+// import RecipeFactModel from '../../../models/RecipeFacts';
+// import RecipeOriginalFactModel from '../../../models/recipeOriginalFactModel';
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
@@ -36,7 +36,7 @@ const Compare_1 = __importDefault(require("../../../models/Compare"));
 const Hello_1 = __importDefault(require("../schemas/Hello"));
 const updateVersionFacts_1 = __importDefault(require("./util/updateVersionFacts"));
 const filterRecipe_1 = __importDefault(require("./input-type/filterRecipe"));
-const updateOriginalVersionFact_1 = __importDefault(require("./util/updateOriginalVersionFact"));
+// import updateOriginalVersionFacts from './util/updateOriginalVersionFact';
 const util_1 = __importDefault(require("../../share/util"));
 const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrappedRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
@@ -89,7 +89,7 @@ let RecipeResolver = class RecipeResolver {
                         model: 'BlendIngredient',
                         select: 'ingredientName selectedImage',
                     },
-                    select: 'postfixTitle selectedImage',
+                    select: 'postfixTitle selectedImage calorie gigl',
                 },
                 {
                     path: 'userId',
@@ -175,7 +175,7 @@ let RecipeResolver = class RecipeResolver {
                     model: 'BlendIngredient',
                     select: 'ingredientName selectedImage',
                 },
-                select: 'postfixTitle selectedImage',
+                select: 'postfixTitle selectedImage calorie gigl',
             })
                 .populate({
                 path: 'userId',
@@ -206,7 +206,7 @@ let RecipeResolver = class RecipeResolver {
                     model: 'BlendIngredient',
                     select: 'ingredientName selectedImage',
                 },
-                select: 'postfixTitle',
+                select: 'postfixTitle selectedImage calorie gigl',
             })
                 .populate({
                 path: 'userId',
@@ -387,7 +387,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .populate({
             path: 'userId',
@@ -472,7 +472,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .populate({
             path: 'userId',
@@ -589,7 +589,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .limit(limit)
             .skip(limit * (page - 1));
@@ -627,7 +627,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .populate({
             path: 'userId',
@@ -833,11 +833,11 @@ let RecipeResolver = class RecipeResolver {
                     $in: recipe.recipeVersion,
                 },
             });
-            await RecipeFacts_1.default.deleteMany({
-                versionId: {
-                    $in: recipe.recipeVersion,
-                },
-            });
+            // await RecipeFactModel.deleteMany({
+            //   versionId: {
+            //     $in: recipe.recipeVersion,
+            //   },
+            // });
             return 'recipe deleted successfully and releted versions';
         }
         return 'recipe has been removed From your collection';
@@ -982,7 +982,7 @@ let RecipeResolver = class RecipeResolver {
             isOriginal: true,
         });
         //@ts-ignore
-        await (0, updateOriginalVersionFact_1.default)(recipeVersion._id);
+        await updateOriginalVersionFacts(recipeVersion._id);
         if (data.errorIngredients) {
             if (data.errorIngredients.length > 0) {
                 for (let i = 0; i < data.errorIngredients.length; i++) {
@@ -1016,7 +1016,7 @@ let RecipeResolver = class RecipeResolver {
                     model: 'BlendIngredient',
                     select: 'ingredientName',
                 },
-                select: 'postfixTitle selectedImage',
+                select: 'postfixTitle selectedImage calorie gigl',
             },
             {
                 path: 'userId',
@@ -1246,7 +1246,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -1288,18 +1288,20 @@ let RecipeResolver = class RecipeResolver {
         }
         return 'done';
     }
-    async populateAllOriginalRecipeFacts() {
-        let versions = await RecipeVersionModel_1.default.find().select('_id');
-        for (let i = 0; i < versions.length; i++) {
-            //@ts-ignore
-            await (0, updateOriginalVersionFact_1.default)(versions[i]._id);
-        }
-        return 'done';
-    }
-    async removeAllVersionFacts() {
-        await RecipeFacts_1.default.deleteMany({});
-        return 'done';
-    }
+    // @Query((type) => String)
+    // async populateAllOriginalRecipeFacts() {
+    //   let versions = await RecipeVersionModel.find().select('_id');
+    //   for (let i = 0; i < versions.length; i++) {
+    //     //@ts-ignore
+    //     await updateOriginalVersionFacts(versions[i]._id);
+    //   }
+    //   return 'done';
+    // }
+    // @Mutation((type) => String)
+    // async removeAllVersionFacts() {
+    //   await RecipeFactModel.deleteMany({});
+    //   return 'done';
+    // }
     async filterRecipe(data, userId, page, limit) {
         if (
         //@ts-ignore
@@ -1440,7 +1442,7 @@ let RecipeResolver = class RecipeResolver {
         if (energy.length > 0) {
             for (let i = 0; i < energy.length; i++) {
                 findfacts['energy'] = { $elemMatch: energy[i] };
-                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
                 recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
                 findfacts['recipeId'] = { $in: recipeIds };
                 delete findfacts['energy'];
@@ -1449,7 +1451,7 @@ let RecipeResolver = class RecipeResolver {
         if (mineral.length > 0) {
             for (let i = 0; i < mineral.length; i++) {
                 findfacts['mineral'] = { $elemMatch: mineral[i] };
-                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
                 recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
                 findfacts['recipeId'] = { $in: recipeIds };
                 delete findfacts['mineral'];
@@ -1458,14 +1460,14 @@ let RecipeResolver = class RecipeResolver {
         if (vitamin.length > 0) {
             for (let i = 0; i < vitamin.length; i++) {
                 findfacts['vitamin'] = { $elemMatch: vitamin[i] };
-                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
                 recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
                 findfacts['recipeId'] = { $in: recipeIds };
                 delete findfacts['vitamin'];
             }
         }
         if (recipeIds.length === 0) {
-            recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+            recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
             recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
             // recipeIds = [];
         }
@@ -1501,7 +1503,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .limit(limit)
             .skip(limit * (page - 1));
@@ -1802,18 +1804,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "populateAllRecipeFacts", null);
-__decorate([
-    (0, type_graphql_1.Query)((type) => String),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], RecipeResolver.prototype, "populateAllOriginalRecipeFacts", null);
-__decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], RecipeResolver.prototype, "removeAllVersionFacts", null);
 __decorate([
     (0, type_graphql_1.Query)((type) => RecipesWithPagination_1.default) // not sure yet
     ,

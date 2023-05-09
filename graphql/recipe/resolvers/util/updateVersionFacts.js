@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const RecipeFacts_1 = __importDefault(require("../../../../models/RecipeFacts"));
+// import RecipeFactModel from '../../../../models/RecipeFacts';
 const RecipeVersionModel_1 = __importDefault(require("../../../../models/RecipeVersionModel"));
 const getNutrientsAndGiGl_1 = __importDefault(require("./getNutrientsAndGiGl"));
 async function updateVersionFacts(recipeVersionId) {
@@ -20,8 +20,8 @@ async function updateVersionFacts(recipeVersionId) {
             value: ingredient.weightInGram,
         };
     });
-    let versionFact = await RecipeFacts_1.default.findOne({
-        versionId: version._id,
+    let versionFact = await RecipeVersionModel_1.default.findOne({
+        _id: version._id,
     });
     let data = await (0, getNutrientsAndGiGl_1.default)(ingredientInfos);
     let nutrients = JSON.parse(data.nutrients);
@@ -33,7 +33,7 @@ async function updateVersionFacts(recipeVersionId) {
     let calorieTrees = Object.keys(calories);
     let formatedCalorie = await getFormatedNutrient(calories[calorieTrees[0]]);
     if (versionFact) {
-        await RecipeFacts_1.default.findOneAndUpdate({ versionId: version._id }, {
+        await RecipeVersionModel_1.default.findOneAndUpdate({ _id: version._id }, {
             calorie: formatedCalorie,
             gigl: giGl,
             energy: [],
@@ -41,21 +41,13 @@ async function updateVersionFacts(recipeVersionId) {
             vitamin: [],
         });
     }
-    else {
-        await RecipeFacts_1.default.create({
-            versionId: version._id,
-            recipeId: version.recipeId,
-            gigl: giGl,
-            calorie: formatedCalorie,
-        });
-    }
     let energyTrees = Object.keys(energy);
     let mineralsTress = Object.keys(minerals);
     let vitaminsTrees = Object.keys(vitamins);
     for (let i = 0; i < energyTrees.length; i++) {
         let formatedEnergy = await getFormatedNutrient(energy[energyTrees[i]]);
-        await RecipeFacts_1.default.findOneAndUpdate({
-            versionId: version._id,
+        await RecipeVersionModel_1.default.findOneAndUpdate({
+            _id: version._id,
         }, {
             $push: {
                 energy: formatedEnergy,
@@ -67,8 +59,8 @@ async function updateVersionFacts(recipeVersionId) {
     }
     for (let i = 0; i < mineralsTress.length; i++) {
         let formatedMineral = await getFormatedNutrient(minerals[mineralsTress[i]]);
-        await RecipeFacts_1.default.findOneAndUpdate({
-            versionId: version._id,
+        await RecipeVersionModel_1.default.findOneAndUpdate({
+            _id: version._id,
         }, {
             $push: {
                 mineral: formatedMineral,
@@ -80,8 +72,8 @@ async function updateVersionFacts(recipeVersionId) {
     }
     for (let i = 0; i < vitaminsTrees.length; i++) {
         let formatedVitamin = await getFormatedNutrient(vitamins[vitaminsTrees[i]]);
-        await RecipeFacts_1.default.findOneAndUpdate({
-            versionId: version._id,
+        await RecipeVersionModel_1.default.findOneAndUpdate({
+            _id: version._id,
         }, {
             $push: {
                 vitamin: formatedVitamin,
@@ -107,21 +99,21 @@ async function getChildsNutrient(childs, versionId, type) {
         //@ts-ignore
         let formatedData = await getFormatedNutrient(childs[childsKey[i]]);
         if (type === 'energy') {
-            await RecipeFacts_1.default.findOneAndUpdate({ versionId: versionId }, {
+            await RecipeVersionModel_1.default.findOneAndUpdate({ _id: versionId }, {
                 $push: {
                     energy: formatedData,
                 },
             });
         }
         else if (type === 'mineral') {
-            await RecipeFacts_1.default.findOneAndUpdate({ versionId: versionId }, {
+            await RecipeVersionModel_1.default.findOneAndUpdate({ _id: versionId }, {
                 $push: {
                     mineral: formatedData,
                 },
             });
         }
         else {
-            await RecipeFacts_1.default.findOneAndUpdate({ versionId: versionId }, {
+            await RecipeVersionModel_1.default.findOneAndUpdate({ _id: versionId }, {
                 $push: {
                     vitamin: formatedData,
                 },

@@ -6,12 +6,12 @@ const commentSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'comment name is required'],
     },
-    rating: {
-        type: Number,
-        min: 1,
-        max: 5,
-        default: 0,
-    },
+    // rating: {
+    //   type: Number,
+    //   min: 1,
+    //   max: 5,
+    //   default: 0,
+    // },
     recipeId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'Recipe' },
     userId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },

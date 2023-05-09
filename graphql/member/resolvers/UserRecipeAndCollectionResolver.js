@@ -36,7 +36,8 @@ const share_1 = __importDefault(require("../../../models/share"));
 const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
 const filterRecipe_1 = __importDefault(require("../../recipe/resolvers/input-type/filterRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../../recipe/schemas/RecipesWithPagination"));
-const recipeOriginalFactModel_1 = __importDefault(require("../../../models/recipeOriginalFactModel"));
+// import RecipeOriginalFactModel from '../../../models/recipeOriginalFactModel';
+const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const Collection_2 = __importDefault(require("../schemas/Collection"));
 const Collection_3 = __importDefault(require("../schemas/Collection"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
@@ -888,7 +889,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (energy.length > 0) {
             for (let i = 0; i < energy.length; i++) {
                 findfacts['energy'] = { $elemMatch: energy[i] };
-                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
                 recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
                 findfacts['recipeId'] = { $in: recipeIds };
                 delete findfacts['energy'];
@@ -897,7 +898,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (mineral.length > 0) {
             for (let i = 0; i < mineral.length; i++) {
                 findfacts['mineral'] = { $elemMatch: mineral[i] };
-                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
                 recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
                 findfacts['recipeId'] = { $in: recipeIds };
                 delete findfacts['mineral'];
@@ -906,14 +907,14 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         if (vitamin.length > 0) {
             for (let i = 0; i < vitamin.length; i++) {
                 findfacts['vitamin'] = { $elemMatch: vitamin[i] };
-                recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+                recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
                 recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
                 findfacts['recipeId'] = { $in: recipeIds };
                 delete findfacts['vitamin'];
             }
         }
         if (recipeIds.length === 0) {
-            recipeFacts = await recipeOriginalFactModel_1.default.find(findfacts).select('recipeId');
+            recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
             recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
         }
         let recipes = await recipeModel_1.default.find({

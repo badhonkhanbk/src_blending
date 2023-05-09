@@ -10,13 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let CreateEditComment = class CreateEditComment {
+let CalorieInfo = class CalorieInfo {
 };
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateEditComment.prototype, "comment", void 0);
-CreateEditComment = __decorate([
-    (0, type_graphql_1.InputType)()
-], CreateEditComment);
-exports.default = CreateEditComment;
+    __metadata("design:type", Number)
+], CalorieInfo.prototype, "value", void 0);
+CalorieInfo = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], CalorieInfo);
+exports.default = CalorieInfo;

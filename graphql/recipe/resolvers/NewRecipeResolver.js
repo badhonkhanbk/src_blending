@@ -29,6 +29,7 @@ const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
 const getAllGlobalRecipes_1 = __importDefault(require("./util/getAllGlobalRecipes"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNotesCompareAndUserCollection"));
+// import RecipeFact from '../../../models/RecipeFacts';
 //**
 //*
 //* @param recipeId
@@ -229,6 +230,11 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             await (0, getAllGlobalRecipes_1.default)(userId);
         }
         const compareList = await Compare_1.default.find({ userId: userId });
+        console.log(compareList);
+        if (compareList.length === 0) {
+            console.log('dishdisjh');
+            return [];
+        }
         let userProfileRecipes = [];
         for (let i = 0; i < compareList.length; i++) {
             let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
@@ -254,7 +260,6 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 ],
                 select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
             });
-            console.log(compareList[i].versionId);
             let compareVersion = await RecipeVersionModel_1.default.findOne({
                 _id: compareList[i].versionId,
             })
@@ -323,7 +328,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     select: '_id displayName firstName lastName image email',
                 },
             ],
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -374,7 +379,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     select: '_id displayName firstName lastName image email',
                 },
             ],
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .skip(10)
             .limit(20);
@@ -425,7 +430,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     select: '_id displayName firstName lastName image email',
                 },
             ],
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .skip(8)
             .limit(10);

@@ -671,6 +671,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                         path: 'ingredients.ingredientId',
                         model: 'BlendIngredient',
                     },
+                    select: '-mineral -energy -vitamin',
                 },
             ],
             select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
@@ -682,6 +683,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
             },
+            select: '-mineral -energy -vitamin',
         })
             .populate({
             path: 'turnedOnVersions',
@@ -690,6 +692,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
             },
+            select: '-mineral -energy -vitamin',
         })
             .populate({
             path: 'turnedOffVersions',
@@ -698,6 +701,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
             },
+            select: '-mineral -energy -vitamin',
         });
         let collectionRecipes = [];
         let memberCollections = await memberModel_1.default.find({ _id: userId })

@@ -456,7 +456,7 @@ let PlannerResolver = class PlannerResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .lean();
         // .limit(limit)

@@ -16,6 +16,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const IngredientData_1 = __importDefault(require("./IngredientData"));
 const MemberProfileForRecipe_1 = __importDefault(require("./MemberProfileForRecipe"));
+const GIGl_1 = __importDefault(require("../../blendIngredientsdata/schemas/GIGl"));
+const CalorieInfo_1 = __importDefault(require("./CalorieInfo"));
 //_id postfixTitle description
 let RecipeVersion = class RecipeVersion {
 };
@@ -55,6 +57,14 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", MemberProfileForRecipe_1.default)
 ], RecipeVersion.prototype, "createdBy", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => CalorieInfo_1.default, { nullable: true }),
+    __metadata("design:type", CalorieInfo_1.default)
+], RecipeVersion.prototype, "calorie", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", GIGl_1.default)
+], RecipeVersion.prototype, "gigl", void 0);
 RecipeVersion = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], RecipeVersion);

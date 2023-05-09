@@ -274,7 +274,7 @@ let MemberResolver = class MemberResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle selectedImage',
+            select: 'postfixTitle selectedImage calorie gigl',
         })
             .limit(5);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -642,7 +642,7 @@ let MemberResolver = class MemberResolver {
                 await Compare_1.default.findOneAndRemove({
                     userId: userId,
                     recipeId: recipeId,
-                    // versionId: recipeId,
+                    versionId: userRecipe.defaultVersion,
                 });
                 break;
             }
@@ -652,7 +652,7 @@ let MemberResolver = class MemberResolver {
             await Compare_1.default.create({
                 recipeId: recipeId,
                 userId: userId,
-                // versionId: recipeId,
+                versionId: userRecipe.defaultVersion,
             });
         }
         return updatedUser.compareList.length;

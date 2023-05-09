@@ -10,13 +10,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let CreateEditComment = class CreateEditComment {
+let ReturnRatingInfo = class ReturnRatingInfo {
 };
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateEditComment.prototype, "comment", void 0);
-CreateEditComment = __decorate([
-    (0, type_graphql_1.InputType)()
-], CreateEditComment);
-exports.default = CreateEditComment;
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], ReturnRatingInfo.prototype, "numberOfRating", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], ReturnRatingInfo.prototype, "averageRating", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], ReturnRatingInfo.prototype, "myRating", void 0);
+ReturnRatingInfo = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], ReturnRatingInfo);
+exports.default = ReturnRatingInfo;
