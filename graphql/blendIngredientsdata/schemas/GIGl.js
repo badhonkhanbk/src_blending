@@ -13,15 +13,15 @@ const type_graphql_1 = require("type-graphql");
 let GiGl = class GiGl {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], GiGl.prototype, "totalGi", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], GiGl.prototype, "netCarbs", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], GiGl.prototype, "totalGL", void 0);
 GiGl = __decorate([

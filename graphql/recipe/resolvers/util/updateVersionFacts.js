@@ -11,6 +11,21 @@ async function updateVersionFacts(recipeVersionId) {
         _id: recipeVersionId,
     });
     if (version.ingredients.length === 0) {
+        await RecipeVersionModel_1.default.findOneAndUpdate({ _id: version._id }, {
+            calorie: {
+                value: 0,
+                blendNutrientRefference: '620b4606b82695d67f28e193',
+                parent: null,
+            },
+            gigl: {
+                totalGi: 0,
+                netCarbs: 0,
+                totalGL: 0,
+            },
+            energy: [],
+            mineral: [],
+            vitamin: [],
+        });
         return;
     }
     //@ts-ignore
@@ -24,6 +39,7 @@ async function updateVersionFacts(recipeVersionId) {
         _id: version._id,
     });
     let data = await (0, getNutrientsAndGiGl_1.default)(ingredientInfos);
+    console.log('xxxx', data);
     let nutrients = JSON.parse(data.nutrients);
     let giGl = data.giGl;
     let calories = nutrients.Calories;

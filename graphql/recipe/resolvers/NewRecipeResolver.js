@@ -230,11 +230,11 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             await (0, getAllGlobalRecipes_1.default)(userId);
         }
         const compareList = await Compare_1.default.find({ userId: userId });
-        console.log(compareList);
         if (compareList.length === 0) {
             console.log('dishdisjh');
             return [];
         }
+        let recipeIds = compareList.map((compareItem) => compareItem.recipeId);
         let userProfileRecipes = [];
         for (let i = 0; i < compareList.length; i++) {
             let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
@@ -258,7 +258,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                         select: 'firstName lastName image displayName email',
                     },
                 ],
-                select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
+                select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId',
             });
             let compareVersion = await RecipeVersionModel_1.default.findOne({
                 _id: compareList[i].versionId,
@@ -271,6 +271,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 path: 'createdBy',
                 select: '_id image firstName lastName email',
             });
+            // console.log(compareVersion);
             let compareRecipe = {
                 recipeId: userProfileRecipe.recipeId,
                 defaultVersion: compareVersion,

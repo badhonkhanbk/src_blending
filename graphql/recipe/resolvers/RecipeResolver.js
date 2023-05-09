@@ -47,31 +47,16 @@ const QANotFound_1 = __importDefault(require("../../../models/QANotFound"));
 const brand_1 = __importDefault(require("../../../models/brand"));
 const slugify_1 = __importDefault(require("slugify"));
 let RecipeResolver = class RecipeResolver {
-    // @Query((type) => String)
-    // async tya() {
-    //   let recipeVersions = await RecipeVersionModel.find();
-    //   for (let i = 0; i < recipeVersions.length; i++) {
-    //     console.log(i);
-    //     let recipe: any = await RecipeModel.findById(
-    //       recipeVersions[i].recipeId
-    //     ).select('image');
-    //     if (!recipe) {
-    //       console.log(recipeVersions[i].recipeId);
-    //       console.log(recipeVersions[i]._id);
-    //       continue;
-    //     }
-    //     if (recipe.image.length === 0) {
-    //       await RecipeVersionModel.findByIdAndUpdate(recipeVersions[i]._id, {
-    //         selectedImage: '',
-    //       });
-    //     } else {
-    //       await RecipeVersionModel.findByIdAndUpdate(recipeVersions[i]._id, {
-    //         selectedImage: recipe.image[0].image ? recipe.image[0].image : '',
-    //       });
-    //     }
-    //   }
-    //   return 'done';
-    // }
+    async tya() {
+        let recipeVersions = await RecipeVersionModel_1.default.find({
+            gigl: null,
+        }).select('_id');
+        for (let i = 0; i < recipeVersions.length; i++) {
+            console.log(i);
+            await (0, updateVersionFacts_1.default)(recipeVersions[i]._id);
+        }
+        return 'done';
+    }
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
             path: 'recipeId',
@@ -1646,6 +1631,12 @@ let RecipeResolver = class RecipeResolver {
         return true;
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)((type) => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeResolver.prototype, "tya", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [Recipe_1.default]),
     __param(0, (0, type_graphql_1.Arg)('userId')),
