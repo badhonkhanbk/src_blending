@@ -967,7 +967,7 @@ let RecipeResolver = class RecipeResolver {
             isOriginal: true,
         });
         //@ts-ignore
-        await updateOriginalVersionFacts(recipeVersion._id);
+        await (0, updateVersionFacts_1.default)(recipeVersion._id);
         if (data.errorIngredients) {
             if (data.errorIngredients.length > 0) {
                 for (let i = 0; i < data.errorIngredients.length; i++) {
