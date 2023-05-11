@@ -79,6 +79,7 @@ const recipeModelSchema = new mongoose_1.Schema({
     seoSiteMapPriority: Number,
     seoKeywords: [String],
     seoMetaDescription: String,
+    commentsCount: { type: Number, default: 0 },
     collections: [
         {
             type: mongoose_1.Schema.Types.ObjectId,

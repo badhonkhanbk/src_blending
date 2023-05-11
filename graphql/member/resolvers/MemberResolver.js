@@ -339,6 +339,7 @@ let MemberResolver = class MemberResolver {
                 select: 'selectedImage',
             })
                 .select('defaultVersion');
+            console.log(userProfileRecipe);
             if (userProfileRecipe.defaultVersion.selectedImage === '') {
                 collections[i].image = null;
                 continue;

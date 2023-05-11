@@ -438,6 +438,34 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
+    async shanto() {
+        let urps = await UserRecipeProfile_1.default.find().populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName image displayName email',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+        });
+        for (let i = 0; i < urps.length; i++) {
+            if (!urps[i].recipeId) {
+                await UserRecipeProfile_1.default.findOneAndRemove({ _id: urps[i]._id });
+            }
+        }
+        return '';
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => String),
@@ -493,6 +521,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllLatestRecipes2", null);
+__decorate([
+    (0, type_graphql_1.Query)((type) => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeCorrectionResolver.prototype, "shanto", null);
 RecipeCorrectionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], RecipeCorrectionResolver);

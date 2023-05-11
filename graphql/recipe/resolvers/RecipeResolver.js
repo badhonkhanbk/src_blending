@@ -1020,6 +1020,19 @@ let RecipeResolver = class RecipeResolver {
         });
         return returnUserRecipe;
     }
+    async janoyar() {
+        let userRecipes = await UserRecipeProfile_1.default.find();
+        for (let i = 0; i < userRecipes.length; i++) {
+            if (!userRecipes[i].personalRating) {
+                await UserRecipeProfile_1.default.findOneAndUpdate({
+                    _id: userRecipes[i]._id,
+                }, {
+                    personalRating: 0,
+                });
+            }
+        }
+        return 'done';
+    }
     // @Mutation((type) => String)
     // async addScrappedRecipeFromUser(@Arg('data') data: CreateScrappedRecipe) {
     //   let ingredientsShape: any = [
@@ -1604,30 +1617,39 @@ let RecipeResolver = class RecipeResolver {
         return true;
     }
     async juio() {
-        await recipeModel_1.default.updateMany({
-            brand: null,
-            userId: null,
-        }, {
-            brand: '61cd5083debd9237c577df17',
-        });
-        // let recipes = await RecipeModel.find({}).select(
-        //   'originalVersion name description'
-        // );
-        // for (let i = 0; i < recipes.length; i++) {
-        //   if (!recipes[i].originalVersion) {
-        //     continue;
-        //   } else {
-        //     await RecipeVersionModel.findOneAndUpdate(
-        //       {
-        //         _id: recipes[i].originalVersion,
-        //       },
-        //       {
-        //         postfixTitle: recipes[i].name,
-        //         description: recipes[i].description,
-        //       }
-        //     );
-        //   }
-        // }
+        let collections = await userCollection_1.default.find();
+        for (let i = 0; i < collections.length; i++) {
+            console.log('a');
+            for (let j = 0; j < collections[i].recipes.length; j++) {
+                console.log('b');
+                let recipe = await recipeModel_1.default.findOne({
+                    _id: collections[i].recipes[j],
+                });
+                if (!recipe) {
+                    await userCollection_1.default.findOneAndUpdate({
+                        _id: collections[i]._id,
+                    }, {
+                        $pull: {
+                            recipes: collections[i].recipes[j],
+                        },
+                    });
+                    continue;
+                }
+                if (!recipe.defaultVersion && !recipe.originalVersion) {
+                    await userCollection_1.default.findOneAndUpdate({
+                        _id: collections[i]._id,
+                    }, {
+                        $pull: {
+                            recipes: collections[i].recipes[j],
+                        },
+                    });
+                    console.log(recipe);
+                    await recipeModel_1.default.findOneAndDelete({
+                        _id: collections[i].recipes[j],
+                    });
+                }
+            }
+        }
         return true;
     }
 };
@@ -1743,6 +1765,12 @@ __decorate([
     __metadata("design:paramtypes", [CreateRecipe_1.default]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "addRecipeFromUser", null);
+__decorate([
+    (0, type_graphql_1.Mutation)((type) => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeResolver.prototype, "janoyar", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __metadata("design:type", Function),
