@@ -32,6 +32,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Processed.prototype, "featuredImage", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], Processed.prototype, "db_name", void 0);
 Processed = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], Processed);
