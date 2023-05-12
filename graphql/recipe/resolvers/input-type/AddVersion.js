@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const CreateIngredientData_1 = __importDefault(require("./CreateIngredientData"));
+const ErrorIngredientInput_1 = __importDefault(require("./ErrorIngredientInput"));
 let AddVersion = class AddVersion {
 };
 __decorate([
@@ -48,6 +49,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [CreateIngredientData_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], AddVersion.prototype, "ingredients", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [ErrorIngredientInput_1.default], { nullable: true }),
+    __metadata("design:type", Array)
+], AddVersion.prototype, "errorIngredients", void 0);
 AddVersion = __decorate([
     (0, type_graphql_1.InputType)()
 ], AddVersion);
