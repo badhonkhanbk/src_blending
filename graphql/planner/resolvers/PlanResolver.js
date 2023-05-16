@@ -31,6 +31,7 @@ const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const PlansAndRecipes_1 = __importDefault(require("../schemas/PlanSchema/PlansAndRecipes"));
 const checkThePlanIsInCollectionOrNot_1 = __importDefault(require("./utils/checkThePlanIsInCollectionOrNot"));
 const attachCommentsCountWithPlan_1 = __importDefault(require("./utils/attachCommentsCountWithPlan"));
+const planCollection_1 = __importDefault(require("../../../models/planCollection"));
 let PlanResolver = class PlanResolver {
     async createAPlan(input) {
         let myPlan = input;
@@ -72,7 +73,7 @@ let PlanResolver = class PlanResolver {
         let plans = await Plan_1.default.find({ memberId: memberId }).populate('planData.recipes');
         return plans;
     }
-    async getAPlan(planId, token) {
+    async getAPlan(planId, token, memberId) {
         let plan = await Plan_1.default.findOne({
             _id: planId,
         }).populate({
@@ -129,6 +130,17 @@ let PlanResolver = class PlanResolver {
         }
         let categoryPercentages = await (0, getRecipeCategoryPercentage_1.default)(recipeCategories);
         let ingredientsStats = await (0, getIngredientStats_1.default)(ingredients);
+        if (memberId) {
+            plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
+            plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            plan.planCollectionsDescription = await planCollection_1.default.find({
+                memberId: memberId,
+                plans: {
+                    $in: planId,
+                },
+            });
+            // console.log(plan.planCollectionDescription);
+        }
         return {
             plan: plan,
             topIngredients: ingredientsStats,
@@ -520,8 +532,10 @@ __decorate([
     (0, type_graphql_1.Query)(() => PlanIngredientAndCategory_1.default),
     __param(0, (0, type_graphql_1.Arg)('planId')),
     __param(1, (0, type_graphql_1.Arg)('token', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAPlan", null);

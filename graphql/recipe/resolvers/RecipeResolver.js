@@ -74,7 +74,7 @@ let RecipeResolver = class RecipeResolver {
                         model: 'BlendIngredient',
                         select: 'ingredientName selectedImage',
                     },
-                    select: 'postfixTitle selectedImage calorie gigl',
+                    select: 'postfixTitle selectedImage calorie gigl errorIngredients',
                 },
                 {
                     path: 'userId',
@@ -160,7 +160,7 @@ let RecipeResolver = class RecipeResolver {
                     model: 'BlendIngredient',
                     select: 'ingredientName selectedImage',
                 },
-                select: 'postfixTitle selectedImage calorie gigl',
+                select: 'postfixTitle selectedImage calorie gigl errorIngredients',
             })
                 .populate({
                 path: 'userId',
@@ -191,7 +191,7 @@ let RecipeResolver = class RecipeResolver {
                     model: 'BlendIngredient',
                     select: 'ingredientName selectedImage',
                 },
-                select: 'postfixTitle selectedImage calorie gigl',
+                select: 'postfixTitle selectedImage calorie gigl errorIngredients',
             })
                 .populate({
                 path: 'userId',
@@ -372,7 +372,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .populate({
             path: 'userId',
@@ -457,7 +457,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .populate({
             path: 'userId',
@@ -574,7 +574,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .limit(limit)
             .skip(limit * (page - 1));
@@ -612,7 +612,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .populate({
             path: 'userId',
@@ -1001,7 +1001,7 @@ let RecipeResolver = class RecipeResolver {
                     model: 'BlendIngredient',
                     select: 'ingredientName',
                 },
-                select: 'postfixTitle selectedImage calorie gigl',
+                select: 'postfixTitle selectedImage calorie gigl errorIngredients',
             },
             {
                 path: 'userId',
@@ -1244,7 +1244,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName',
             },
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -1501,7 +1501,7 @@ let RecipeResolver = class RecipeResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .limit(limit)
             .skip(limit * (page - 1));

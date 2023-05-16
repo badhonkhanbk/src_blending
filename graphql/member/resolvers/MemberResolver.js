@@ -274,7 +274,7 @@ let MemberResolver = class MemberResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .limit(5);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);

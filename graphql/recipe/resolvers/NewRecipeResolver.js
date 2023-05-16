@@ -329,7 +329,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     select: '_id displayName firstName lastName image email',
                 },
             ],
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -380,7 +380,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     select: '_id displayName firstName lastName image email',
                 },
             ],
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .skip(10)
             .limit(20);
@@ -431,7 +431,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     select: '_id displayName firstName lastName image email',
                 },
             ],
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .skip(8)
             .limit(10);

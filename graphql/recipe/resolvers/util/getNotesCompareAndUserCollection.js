@@ -32,7 +32,7 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
     }
     // console.log(userProfileRecipes);
     for (let i = 0; i < userProfileRecipes.length; i++) {
-        console.log(userProfileRecipes[i].recipeId);
+        // console.log(userProfileRecipes[i].recipeId);
         let userNotes = await userNote_1.default.find({
             recipeId: userProfileRecipes[i].recipeId._id,
             userId: userId,
@@ -93,7 +93,6 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
         //   returnRecipe[i].rxScore = 0;
         // }
     }
-    console.log;
     return returnRecipe;
 }
 exports.default = getNotesCompareAndUserCollection;

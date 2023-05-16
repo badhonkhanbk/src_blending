@@ -35,6 +35,7 @@ const getRecipeCategoryPercentage_1 = __importDefault(require("./utils/getRecipe
 const getIngredientStats_1 = __importDefault(require("./utils/getIngredientStats"));
 const PlannersIngredientAndCategoryPercentage_1 = __importDefault(require("../schemas/PlannersIngredientAndCategoryPercentage"));
 const getNotesCompareAndUserCollectionsForPlanner_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollectionsForPlanner"));
+const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 var MergeOrReplace;
 (function (MergeOrReplace) {
     MergeOrReplace["MERGE"] = "MERGE";
@@ -456,7 +457,7 @@ let PlannerResolver = class PlannerResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle selectedImage calorie gigl',
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
             .lean();
         // .limit(limit)
@@ -626,6 +627,14 @@ let PlannerResolver = class PlannerResolver {
         }
         return 'done';
     }
+    async fixV() {
+        await RecipeVersionModel_1.default.updateMany({
+            errorIngredients: null,
+        }, {
+            errorIngredients: [],
+        });
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => Planner_2.default),
@@ -717,6 +726,12 @@ __decorate([
         String, String]),
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "mergeOrReplacePlanner", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PlannerResolver.prototype, "fixV", null);
 PlannerResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], PlannerResolver);

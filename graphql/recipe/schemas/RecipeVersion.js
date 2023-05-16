@@ -18,6 +18,7 @@ const IngredientData_1 = __importDefault(require("./IngredientData"));
 const MemberProfileForRecipe_1 = __importDefault(require("./MemberProfileForRecipe"));
 const GIGl_1 = __importDefault(require("../../blendIngredientsdata/schemas/GIGl"));
 const CalorieInfo_1 = __importDefault(require("./CalorieInfo"));
+const ErrorIngredient_1 = __importDefault(require("../../blendIngredientsdata/schemas/ErrorIngredient"));
 //_id postfixTitle description
 let RecipeVersion = class RecipeVersion {
 };
@@ -65,6 +66,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", GIGl_1.default)
 ], RecipeVersion.prototype, "gigl", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [ErrorIngredient_1.default], { nullable: true }),
+    __metadata("design:type", Array)
+], RecipeVersion.prototype, "errorIngredients", void 0);
 RecipeVersion = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], RecipeVersion);
