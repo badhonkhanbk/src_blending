@@ -377,18 +377,24 @@ let PlannerResolver = class PlannerResolver {
     // @Arg('page') page: number,
     // @Arg('searchTerm') searchTerm: String,
     // @Arg('recipeBlendCategory', { nullable: true }) recipeBlendCategory: string,
-    currentDate) {
-        let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
-        console.log(today);
-        let firstday = new Date(today.setDate(today.getDate() - today.getDay() + 0));
-        let lastday = new Date(today.setDate(today.getDate() + 6));
-        console.log(firstday);
-        console.log(lastday);
+    startDate, endDate
+    // @Arg('currentDate', { nullable: true }) currentDate: string
+    ) {
+        let startDateISO = new Date(startDate).toISOString();
+        let endDateISO = new Date(endDate).toISOString();
+        // if (currentDate) {
+        //   let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+        //   console.log(today);
+        //   startDateISO = new Date(
+        //     today.setDate(today.getDate() - today.getDay() + 0)
+        //   );
+        //   endDateISO = new Date(today.setDate(today.getDate() + 6));
+        // }
         let planners = await Planner_1.default.find({
             memberId: userId,
             assignDate: {
-                $gte: firstday,
-                $lte: lastday,
+                $gte: startDateISO,
+                $lte: endDateISO,
             },
         })
             .select('recipes')
@@ -699,9 +705,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => PlannerRecipe_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
-    __param(1, (0, type_graphql_1.Arg)('currentDate')),
+    __param(1, (0, type_graphql_1.Arg)('startDate')),
+    __param(2, (0, type_graphql_1.Arg)('endDate')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "getQuedPlanner", null);
 __decorate([
