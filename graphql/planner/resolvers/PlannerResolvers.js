@@ -552,6 +552,7 @@ let PlannerResolver = class PlannerResolver {
                 assignDate: tempDate,
             });
             let recipes = planData[i].recipes.map((recipe) => String(recipe));
+            await this.checkForExistenceInTheUserProfileRecipes(recipes, memberId);
             if (planner) {
                 await Planner_1.default.findOneAndUpdate({
                     _id: planner._id,
@@ -581,6 +582,7 @@ let PlannerResolver = class PlannerResolver {
                 assignDate: tempDate,
             });
             let recipes = planData[i].recipes.map((recipe) => String(recipe));
+            await this.checkForExistenceInTheUserProfileRecipes(recipes, memberId);
             if (planner) {
                 await Planner_1.default.findOneAndUpdate({
                     _id: planner._id,
@@ -597,6 +599,30 @@ let PlannerResolver = class PlannerResolver {
                 });
             }
             tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
+        }
+        return 'done';
+    }
+    async checkForExistenceInTheUserProfileRecipes(recipes, memberId) {
+        for (let i = 0; i < recipes.length; i++) {
+            let userRecipe = await UserRecipeProfile_1.default.findOne({
+                recipeId: recipes[i],
+                userId: memberId,
+            }).select('_id');
+            if (!userRecipe) {
+                let recipe = await recipeModel_1.default.findOne({
+                    _id: recipes[i],
+                });
+                await UserRecipeProfile_1.default.create({
+                    recipeId: recipes[i],
+                    userId: memberId,
+                    isMatch: recipes[i].isMatch,
+                    allRecipes: false,
+                    myRecipes: false,
+                    turnedOffVersions: recipes[i].turnedOffVersion,
+                    turnedOnVersions: recipes[i].turnedOnVersions,
+                    defaultVersion: recipes[i].defaultVersion,
+                });
+            }
         }
         return 'done';
     }
