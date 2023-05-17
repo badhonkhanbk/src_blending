@@ -715,6 +715,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         });
         let processed = blends.filter((blend) => !blend.qaId);
         let notProcessed = blends.filter((blend) => blend.qaId);
+        console.log('processed', processed);
         if (isClient) {
             for (let i = 0; i < processed.length; i++) {
                 let ingredient = await blendIngredient_1.default.findOne({

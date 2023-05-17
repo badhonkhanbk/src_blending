@@ -46,6 +46,9 @@ const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 const QANotFound_1 = __importDefault(require("../../../models/QANotFound"));
 const brand_1 = __importDefault(require("../../../models/brand"));
 const slugify_1 = __importDefault(require("slugify"));
+const Plan_1 = __importDefault(require("../../../models/Plan"));
+const Planner_1 = __importDefault(require("../../../models/Planner"));
+const planCollection_1 = __importDefault(require("../../../models/planCollection"));
 let RecipeResolver = class RecipeResolver {
     async tya() {
         let recipeVersions = await RecipeVersionModel_1.default.find({
@@ -876,6 +879,7 @@ let RecipeResolver = class RecipeResolver {
         if (!user) {
             return new AppError_1.default('User not found', 404);
         }
+        //ingredientId
         let userDefaultCollection;
         if (data.collection) {
             userDefaultCollection = data.collection;
@@ -931,25 +935,27 @@ let RecipeResolver = class RecipeResolver {
         newData.foodCategories = [...new Set(newData.foodCategories)];
         newData.global = false;
         newData.userId = user._id;
-        let domain = new URL(newData.url).toString();
-        let brandName = domain.replace('www.', '');
-        brandName = domain.replace('.com', '');
-        let brand = await brand_1.default.findOne({
-            brandName: brandName,
-        });
-        if (brand) {
-            newData.brand = brand._id;
-        }
-        else {
-            let brandInfo = {
-                brandUrl: domain,
-                slug: (0, slugify_1.default)(brandName),
+        if (newData.url) {
+            let domain = new URL(newData.url).toString();
+            let brandName = domain.replace('www.', '');
+            brandName = domain.replace('.com', '');
+            let brand = await brand_1.default.findOne({
                 brandName: brandName,
-                brandIcon: data.favicon,
-                canonicalURL: data.seoCanonicalURL,
-            };
-            let newBrand = await brand_1.default.create(brandInfo);
-            newData.brand = newBrand._id;
+            });
+            if (brand) {
+                newData.brand = brand._id;
+            }
+            else {
+                let brandInfo = {
+                    brandUrl: domain,
+                    slug: (0, slugify_1.default)(brandName),
+                    brandName: brandName,
+                    brandIcon: data.favicon,
+                    canonicalURL: data.seoCanonicalURL,
+                };
+                let newBrand = await brand_1.default.create(brandInfo);
+                newData.brand = newBrand._id;
+            }
         }
         let userRecipe = await recipeModel_1.default.create(newData);
         await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
@@ -1617,37 +1623,18 @@ let RecipeResolver = class RecipeResolver {
         return true;
     }
     async juio() {
-        let collections = await userCollection_1.default.find();
-        for (let i = 0; i < collections.length; i++) {
-            console.log('a');
-            for (let j = 0; j < collections[i].recipes.length; j++) {
-                console.log('b');
-                let recipe = await recipeModel_1.default.findOne({
-                    _id: collections[i].recipes[j],
+        await Plan_1.default.deleteMany({});
+        await Planner_1.default.deleteMany({});
+        let userPR = await UserRecipeProfile_1.default.find();
+        await planCollection_1.default.updateMany({}, {
+            plans: [],
+        });
+        for (let i = 0; i < userPR.length; i++) {
+            let r = await recipeModel_1.default.findOne({ _id: userPR[i].recipeId });
+            if (!r) {
+                await UserRecipeProfile_1.default.deleteMany({
+                    recipeId: userPR[i].recipeId,
                 });
-                if (!recipe) {
-                    await userCollection_1.default.findOneAndUpdate({
-                        _id: collections[i]._id,
-                    }, {
-                        $pull: {
-                            recipes: collections[i].recipes[j],
-                        },
-                    });
-                    continue;
-                }
-                if (!recipe.defaultVersion && !recipe.originalVersion) {
-                    await userCollection_1.default.findOneAndUpdate({
-                        _id: collections[i]._id,
-                    }, {
-                        $pull: {
-                            recipes: collections[i].recipes[j],
-                        },
-                    });
-                    console.log(recipe);
-                    await recipeModel_1.default.findOneAndDelete({
-                        _id: collections[i].recipes[j],
-                    });
-                }
             }
         }
         return true;

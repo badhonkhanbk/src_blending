@@ -77,6 +77,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                     portions: portions,
                     selectedPortion: selectedPortion,
                     weightInGram: ingredients[i].weightInGram,
+                    comment: ingredients[i].comment ? ingredients[i].comment : '',
                 });
             }
             //@ts-ignore
@@ -215,6 +216,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                     portions: portions,
                     selectedPortion: selectedPortion,
                     weightInGram: ingredients[i].weightInGram,
+                    comment: ingredients[i].comment ? ingredients[i].comment : '',
                 });
             }
             versionModifiedIngredients = modifiedIngredients;
@@ -759,6 +761,21 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             versionsCount: versionsCount,
         };
     }
+    async tintintin() {
+        let rvs = await RecipeVersionModel_1.default.find();
+        for (let i = 0; i < rvs.length; i++) {
+            let ingredients = rvs[i].ingredients;
+            for (let j = 0; j < ingredients.length; j++) {
+                ingredients[j].comment = '';
+            }
+            await RecipeVersionModel_1.default.findOneAndUpdate({
+                _id: rvs[i]._id,
+            }, {
+                ingredients: ingredients,
+            });
+        }
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => EditedVersion_1.default),
@@ -835,6 +852,12 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "getAllVersions", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeVersionResolver.prototype, "tintintin", null);
 RecipeVersionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], RecipeVersionResolver);

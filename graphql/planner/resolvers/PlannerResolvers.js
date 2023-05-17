@@ -174,6 +174,7 @@ let PlannerResolver = class PlannerResolver {
                 let returnRecipe = await (0, getNotesCompareAndUserCollectionsForPlanner_1.default)(userId, userProfileRecipes);
                 planner.ProfileRecipes = returnRecipe;
                 planners.push(planner);
+                // console.log(planner);
                 if (userProfileRecipes.length > 0) {
                     for (let j = 0; j < userProfileRecipes.length; j++) {
                         recipeCategories.push({

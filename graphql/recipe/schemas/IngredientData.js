@@ -34,6 +34,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [ReturnPortion_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], IngredientData.prototype, "portions", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], IngredientData.prototype, "comment", void 0);
 IngredientData = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], IngredientData);

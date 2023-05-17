@@ -24,6 +24,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], CreateIngredientData.prototype, "weightInGram", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], CreateIngredientData.prototype, "comment", void 0);
 CreateIngredientData = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateIngredientData);
