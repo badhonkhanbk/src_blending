@@ -936,9 +936,10 @@ let RecipeResolver = class RecipeResolver {
         newData.global = false;
         newData.userId = user._id;
         if (newData.url) {
-            let domain = new URL(newData.url).toString();
-            let brandName = domain.replace('www.', '');
-            brandName = domain.replace('.com', '');
+            const { hostname } = new URL(newData.url);
+            let brandName = "";
+            brandName = hostname.replace('www.', '');
+            brandName = brandName.replace('.com', '');
             let brand = await brand_1.default.findOne({
                 brandName: brandName,
             });
@@ -947,10 +948,11 @@ let RecipeResolver = class RecipeResolver {
             }
             else {
                 let brandInfo = {
-                    brandUrl: domain,
+                    brandUrl: hostname,
                     slug: (0, slugify_1.default)(brandName),
                     brandName: brandName,
                     brandIcon: data.favicon,
+                    brandImage: data.favicon,
                     canonicalURL: data.seoCanonicalURL,
                 };
                 let newBrand = await brand_1.default.create(brandInfo);
