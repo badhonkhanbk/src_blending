@@ -879,6 +879,53 @@ let RecipeResolver = class RecipeResolver {
         if (!user) {
             return new AppError_1.default('User not found', 404);
         }
+        if (data.url) {
+            let recipe = await recipeModel_1.default.findOne({ url: data.url }).select('_id defaultVersion');
+            if (recipe) {
+                let userRecipe = await UserRecipeProfile_1.default.findOne({
+                    userId: data.userId,
+                    recipeId: recipe._id,
+                });
+                if (!userRecipe) {
+                    await UserRecipeProfile_1.default.create({
+                        userId: data.userId,
+                        recipeId: recipe._id,
+                        defaultVersion: recipe.defaultVersion,
+                        isMatch: true,
+                        allRecipe: true,
+                        myRecipes: true,
+                    });
+                }
+                let returnUserRecipe = await recipeModel_1.default.findOne({
+                    userId: data.userId,
+                    recipeId: recipe._id,
+                })
+                    .populate('recipeBlendCategory')
+                    .populate({
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                })
+                    .populate([
+                    {
+                        path: 'defaultVersion',
+                        model: 'RecipeVersion',
+                        populate: {
+                            path: 'ingredients.ingredientId',
+                            model: 'BlendIngredient',
+                            select: 'ingredientName',
+                        },
+                        select: 'postfixTitle selectedImage calorie gigl errorIngredients',
+                    },
+                    {
+                        path: 'userId',
+                        model: 'User',
+                        select: '_id displayName image firstName lastName email',
+                    },
+                ])
+                    .populate('brand');
+                return returnUserRecipe;
+            }
+        }
         //ingredientId
         let userDefaultCollection;
         if (data.collection) {
@@ -937,7 +984,7 @@ let RecipeResolver = class RecipeResolver {
         newData.userId = user._id;
         if (newData.url) {
             const { hostname } = new URL(newData.url);
-            let brandName = "";
+            let brandName = '';
             brandName = hostname.replace('www.', '');
             brandName = brandName.replace('.com', '');
             let brand = await brand_1.default.findOne({

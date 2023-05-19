@@ -100,7 +100,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         if (data.editableObject.defaultPortion === '' ||
             data.editableObject.defaultPortion === null ||
             data.editableObject.defaultPortion === undefined) {
-            console.log('no default portion');
+            // console.log('no default portion');
             await blendIngredient_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         }
         else {
@@ -110,7 +110,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             for (let i = 0; i < newData.portions.length; i++) {
                 if (String(newData.portions[i]._id) ===
                     String(data.editableObject.defaultPortion)) {
-                    console.log('matched');
+                    // console.log('matched');
                     let changePortion = {
                         measurement: newData.portions[i].measurement,
                         measurement2: newData.portions[i].measurement2,
@@ -441,7 +441,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             });
         }
         let nutrientList = await this.getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
-        console.log(nutrientList);
+        // console.log(nutrientList);
         let giGl = await this.getGlAndNetCarbs2(ingredientsInfo);
         return {
             nutrients: nutrientList,
@@ -485,8 +485,8 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             data: dataX,
         };
         let res = await (0, axios_1.default)(config);
-        console.log('data', res.data);
-        console.log('best', res.data.parsed_data[0].best_match);
+        // console.log('data', res.data);
+        // console.log('best', res.data.parsed_data[0].best_match);
         return 'done';
     }
     async searchInScrappedRecipeFromUser(recipeIngredients, isClient) {
@@ -631,9 +631,8 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                         blends[i].quantity * blends[i].portions[j].meausermentWeight;
                     // blends[i].unit = 'g';
                     if (!blends[i].value) {
-                        blends[i].value =
-                            parseFraction(blends[i].quantity) *
-                                blends[i].portions[j].meausermentWeight;
+                        blends[i].value = 0 * blends[i].portions[j].meausermentWeight;
+                        blends[i].quantity = 0;
                     }
                     blends[i].weightInGram = blends[i].value;
                     blends[i].selectedPortionName = blends[i].unit;
@@ -644,13 +643,29 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             if (!blends[i].value) {
                 // console.log('helloooo');
                 if (!+blends[i].quantity) {
-                    let converted = (0, ingredient_unit_converter_1.converter)(parseFraction(blends[i].quantity), blends[i].unit, blends[i].portions[0].measurement);
+                    blends[i].quantity = 0;
+                    let converted = (0, ingredient_unit_converter_1.converter)(0, blends[i].unit, blends[i].portions[0].measurement);
                     console.log('', converted);
                     if (converted.error) {
-                        console.log('here');
-                        blends[i].error = converted.error;
+                        console.log('a');
+                        let qaId = '';
+                        let obj = {
+                            name: blends[i].name,
+                            unit: blends[i].unit,
+                            quantity: 0,
+                            comment: blends[i].comment,
+                            userIngredient: blends[i].userIngredient,
+                            issues: ['Quantity'],
+                            status: 'Review',
+                            bestMatch: blends[i].ingredientId,
+                        };
+                        let newQA = await QANotFound_1.default.create(obj);
+                        qaId = newQA._id;
+                        blends[i].qaId = qaId;
+                        blends[i].issues = ['Quantity'];
+                        blends[i].status = 'Review';
                         blends[i].errorString = blends[i].userIngredient;
-                        portionsProblem.push(blends[i]);
+                        notFountIndexes.push(blends[i].index);
                         continue;
                     }
                     blends[i].value =
@@ -659,11 +674,13 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 else {
                     let converted = (0, ingredient_unit_converter_1.converter)(blends[i].quantity, blends[i].unit, blends[i].portions[0].measurement);
                     if (converted.error) {
+                        // console.log('a');
                         let qaId = '';
                         let found = await QANotFound_1.default.findOne({
                             name: blends[i].name,
                             unit: blends[i].unit,
                         }).select('_id');
+                        // console.log('founnnnnnndddnndnnd', found);
                         if (found) {
                             qaId = found._id;
                         }
@@ -715,7 +732,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         });
         let processed = blends.filter((blend) => !blend.qaId);
         let notProcessed = blends.filter((blend) => blend.qaId);
-        console.log('processed', processed);
+        // console.log('processed', processed);
         if (isClient) {
             for (let i = 0; i < processed.length; i++) {
                 let ingredient = await blendIngredient_1.default.findOne({
@@ -847,7 +864,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             .lean()
             .select('-bodies -notBlendNutrients');
         for (let i = 0; i < ingredients.length; i++) {
-            console.log(data);
+            // console.log(data);
             let value = data.filter(
             // @ts-ignore
             (y) => y.ingredientId === String(ingredients[i]._id))[0].value;
