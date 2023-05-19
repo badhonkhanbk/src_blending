@@ -897,8 +897,7 @@ let RecipeResolver = class RecipeResolver {
                     });
                 }
                 let returnUserRecipe = await recipeModel_1.default.findOne({
-                    userId: data.userId,
-                    recipeId: recipe._id,
+                    _id: recipe._id,
                 })
                     .populate('recipeBlendCategory')
                     .populate({

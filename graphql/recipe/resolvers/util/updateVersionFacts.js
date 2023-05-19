@@ -39,7 +39,7 @@ async function updateVersionFacts(recipeVersionId) {
         _id: version._id,
     });
     let data = await (0, getNutrientsAndGiGl_1.default)(ingredientInfos);
-    console.log('xxxx', data);
+    // console.log('xxxx', data);
     let nutrients = JSON.parse(data.nutrients);
     let giGl = data.giGl;
     let calories = nutrients.Calories;
@@ -47,7 +47,17 @@ async function updateVersionFacts(recipeVersionId) {
     let minerals = nutrients.Minerals;
     let vitamins = nutrients.Vitamins;
     let calorieTrees = Object.keys(calories);
-    let formatedCalorie = await getFormatedNutrient(calories[calorieTrees[0]]);
+    let formatedCalorie = {};
+    if (calorieTrees.length === 0) {
+        formatedCalorie = {
+            value: 0,
+            blendNutrientRefference: '620b4606b82695d67f28e193',
+            parent: null,
+        };
+    }
+    else {
+        formatedCalorie = await getFormatedNutrient(calories[calorieTrees[0]]);
+    }
     if (versionFact) {
         await RecipeVersionModel_1.default.findOneAndUpdate({ _id: version._id }, {
             calorie: formatedCalorie,
@@ -57,10 +67,12 @@ async function updateVersionFacts(recipeVersionId) {
             vitamin: [],
         });
     }
+    // console.log('EEEE', energy);
     let energyTrees = Object.keys(energy);
     let mineralsTress = Object.keys(minerals);
     let vitaminsTrees = Object.keys(vitamins);
     for (let i = 0; i < energyTrees.length; i++) {
+        // console.log('hdichkjsdvkjcbdkj', energy[energyTrees[i]]);
         let formatedEnergy = await getFormatedNutrient(energy[energyTrees[i]]);
         await RecipeVersionModel_1.default.findOneAndUpdate({
             _id: version._id,
@@ -103,8 +115,9 @@ async function updateVersionFacts(recipeVersionId) {
 }
 exports.default = updateVersionFacts;
 async function getFormatedNutrient(data) {
+    // console.log('Data', data);
     return {
-        value: data.value,
+        value: data.value ? data.value : 0,
         blendNutrientRefference: data.blendNutrientRefference._id,
         parent: data.blendNutrientRefference.parent,
     };
