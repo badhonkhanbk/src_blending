@@ -61,8 +61,7 @@ async function default_1(tokens, userId) {
             path: 'ingredients.ingredientId',
             model: 'BlendIngredient',
             select: 'ingredientName',
-        })
-            .select('postfixTitle');
+        });
         let data = recipe;
         data.defaultVersion = defaultVersion;
         if (String(data.defaultVersion._id) === String(data.originalVersion._id)) {

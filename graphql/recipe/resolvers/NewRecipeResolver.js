@@ -29,6 +29,7 @@ const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
 const getAllGlobalRecipes_1 = __importDefault(require("./util/getAllGlobalRecipes"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNotesCompareAndUserCollection"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 // import RecipeFact from '../../../models/RecipeFacts';
 //**
 //*
@@ -439,31 +440,11 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         return returnRecipe;
     }
     async shanto() {
-        let urps = await UserRecipeProfile_1.default.find().populate({
-            path: 'recipeId',
-            model: 'RecipeModel',
-            populate: [
-                {
-                    path: 'recipeBlendCategory',
-                    model: 'RecipeCategory',
-                },
-                {
-                    path: 'brand',
-                    model: 'RecipeBrand',
-                },
-                {
-                    path: 'userId',
-                    model: 'User',
-                    select: 'firstName lastName image displayName email',
-                },
-            ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+        await recipeModel_1.default.updateMany({
+            recipeBlendCategory: null,
+        }, {
+            recipeBlendCategory: '61cafc34e1f3e015e7936587',
         });
-        for (let i = 0; i < urps.length; i++) {
-            if (!urps[i].recipeId) {
-                await UserRecipeProfile_1.default.findOneAndRemove({ _id: urps[i]._id });
-            }
-        }
         return '';
     }
 };

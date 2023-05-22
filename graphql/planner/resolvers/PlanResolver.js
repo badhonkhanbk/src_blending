@@ -103,7 +103,9 @@ let PlanResolver = class PlanResolver {
                 for (let j = 0; j < plan.planData[i].recipes.length; j++) {
                     recipeCategories.push({
                         //@ts-ignore
-                        _id: plan.planData[i].recipes[j].recipeBlendCategory._id,
+                        _id: plan.planData[i].recipes[j].recipeBlendCategory
+                            ? plan.planData[i].recipes[j].recipeBlendCategory._id
+                            : null,
                         //@ts-ignore
                         name: plan.planData[i].recipes[j].recipeBlendCategory.name,
                     });

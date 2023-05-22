@@ -23,6 +23,18 @@ const shareSchema = new mongoose_1.Schema({
             ref: 'recipeVersion',
         },
     },
+    globalAccepted: [
+        {
+            type: mongoose_1.SchemaTypes.ObjectId,
+            ref: 'Member',
+        },
+    ],
+    globalRejected: [
+        {
+            type: mongoose_1.SchemaTypes.ObjectId,
+            ref: 'Member',
+        },
+    ],
     isGlobal: {
         type: Boolean,
         default: false,

@@ -1266,6 +1266,16 @@ let RecipeResolver = class RecipeResolver {
         return recipes;
     }
     async getAllMyCreatedRecipes(userId) {
+        let xc = await UserRecipeProfile_1.default.find({
+            userId: userId,
+            myRecipes: true,
+        });
+        for (let i = 0; i < xc.length; i++) {
+            let recipe = await recipeModel_1.default.findOne({ _id: xc[i].recipeId });
+            if (!recipe) {
+                console.log(xc[i].recipeId);
+            }
+        }
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
             myRecipes: true,

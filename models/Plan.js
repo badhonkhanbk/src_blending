@@ -15,7 +15,7 @@ const PlanSchema = new mongoose_1.Schema({
     },
     planData: [
         {
-            recipes: [{ type: mongoose_1.SchemaTypes.ObjectId, ref: 'Recipe' }],
+            recipes: [{ type: mongoose_1.SchemaTypes.ObjectId, ref: 'RecipeModel' }],
             day: Number,
         },
     ],

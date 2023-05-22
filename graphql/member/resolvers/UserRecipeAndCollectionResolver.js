@@ -601,6 +601,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             'shareTo.userId': {
                 $in: [new mongoose_1.default.mongo.ObjectId(userId)],
             },
+            'shareTo.hasAccepted': true,
         }).select('_id');
         if (shares.length > 0) {
             let mappedForSingleRecipeCollection = shares.map((share) => share._id.toString());
@@ -622,6 +623,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             'shareTo.userId': {
                 $in: [new mongoose_1.default.mongo.ObjectId(userId)],
             },
+            'shareTo.hasAccepted': true,
         })
             .populate({
             path: 'recipes',
