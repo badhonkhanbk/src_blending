@@ -115,12 +115,10 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             if (!data) {
                 return new AppError_1.default('Invalid token', 404);
             }
+            recipeId = data;
         }
         if (!recipeId && !token) {
             return new AppError_1.default('Recipe not found', 404);
-        }
-        else {
-            recipeId = data;
         }
         let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
             userId: userId,
