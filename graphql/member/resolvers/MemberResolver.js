@@ -288,6 +288,7 @@ let MemberResolver = class MemberResolver {
             'shareTo.userId': {
                 $in: [new mongoose_1.default.mongo.ObjectId(user._id)],
             },
+            'shareTo.hasAccepted': true,
         }).populate({
             path: 'userId',
             select: 'displayName email firstName lastName',

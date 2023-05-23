@@ -4,20 +4,20 @@ const mongoose_1 = require("mongoose");
 const shareSchema = new mongoose_1.Schema({
     sharedBy: {
         type: mongoose_1.SchemaTypes.ObjectId,
-        ref: 'Member',
+        ref: 'User',
         required: [true, 'MemberId is required'],
     },
     shareTo: [
         {
             userId: {
                 type: mongoose_1.SchemaTypes.ObjectId,
-                ref: 'Member',
+                ref: 'User',
             },
             hasAccepted: Boolean,
         },
     ],
     shareData: {
-        recipeId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'recipe' },
+        recipeId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'RecipeModel' },
         version: {
             type: mongoose_1.SchemaTypes.ObjectId,
             ref: 'recipeVersion',
@@ -26,13 +26,13 @@ const shareSchema = new mongoose_1.Schema({
     globalAccepted: [
         {
             type: mongoose_1.SchemaTypes.ObjectId,
-            ref: 'Member',
+            ref: 'User',
         },
     ],
     globalRejected: [
         {
             type: mongoose_1.SchemaTypes.ObjectId,
-            ref: 'Member',
+            ref: 'User',
         },
     ],
     isGlobal: {

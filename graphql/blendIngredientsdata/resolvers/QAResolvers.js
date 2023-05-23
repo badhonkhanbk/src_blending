@@ -45,6 +45,7 @@ let QAResolver = class QAResolver {
         })
             .limit(limit)
             .skip(limit * (page - 1));
+        console.log(QAData[9].versions);
         let totalData = await QANotFound_1.default.countDocuments();
         return {
             QAData: QAData,
