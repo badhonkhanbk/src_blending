@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const RecipeVersion_1 = __importDefault(require("./RecipeVersion"));
 const Recipe2_1 = __importDefault(require("./Recipe2"));
+const ShareBy_1 = __importDefault(require("../../share/schemas/ShareBy"));
 let ProfileRecipeDesc = class ProfileRecipeDesc {
 };
 __decorate([
@@ -69,6 +70,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], ProfileRecipeDesc.prototype, "personalRating", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => ShareBy_1.default, { nullable: true }),
+    __metadata("design:type", ShareBy_1.default)
+], ProfileRecipeDesc.prototype, "sharedBy", void 0);
 ProfileRecipeDesc = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ProfileRecipeDesc);

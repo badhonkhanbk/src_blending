@@ -30,6 +30,8 @@ const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDes
 const getAllGlobalRecipes_1 = __importDefault(require("./util/getAllGlobalRecipes"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNotesCompareAndUserCollection"));
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
+const share_1 = __importDefault(require("../../../models/share"));
+const makeGlobalRecipe_1 = __importDefault(require("../../share/util/makeGlobalRecipe"));
 // import RecipeFact from '../../../models/RecipeFacts';
 //**
 //*
@@ -83,9 +85,32 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
+    async viewSharedRecipe(userId, token) {
+        const share = await share_1.default.findOne({ _id: token });
+        if (!share.isGlobal) {
+            let auth = share.shareTo.filter((sharePerson) => {
+                return String(sharePerson.userId) === String(userId);
+            })[0];
+            console.log(auth);
+            if (!auth) {
+                return new AppError_1.default('Invalid token', 404);
+            }
+        }
+        if (!share) {
+            return new AppError_1.default('Invalid token', 404);
+        }
+        return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
+    }
     async getARecipe2(recipeId, userId, token) {
         let data;
         if (token) {
+            const share = await share_1.default.findOne({ _id: token });
+            if (!share) {
+                return new AppError_1.default('Invalid token', 404);
+            }
+            if (share.isGlobal) {
+                return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
+            }
             data = await (0, util_1.default)(token.toString(), userId.toString());
             if (!data) {
                 return new AppError_1.default('Invalid token', 404);
@@ -462,6 +487,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getDiscoverRecipes", null);
+__decorate([
+    (0, type_graphql_1.Query)((type) => ProfileRecipeDesc_1.default),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], RecipeCorrectionResolver.prototype, "viewSharedRecipe", null);
 __decorate([
     (0, type_graphql_1.Query)((type) => ProfileRecipeDesc_1.default),
     __param(0, (0, type_graphql_1.Arg)('recipeId', { nullable: true })),

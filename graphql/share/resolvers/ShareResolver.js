@@ -24,7 +24,7 @@ const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeP
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
-const ShareNotification_1 = __importDefault(require("../schemas/ShareNotification"));
+const ShareNotificationsWithCount_1 = __importDefault(require("../schemas/ShareNotificationsWithCount"));
 let shareResolver = class shareResolver {
     async createShareLink(data) {
         let shareDataToStore = {};
@@ -52,6 +52,54 @@ let shareResolver = class shareResolver {
         }).select('_id');
         if (!userRecipe) {
             return new AppError_1.default('you are not eligible to share this recipe', 401);
+        }
+        let findShare = await share_1.default.findOne({
+            sharedBy: data.sharedBy,
+            'shareData.recipeId': data.shareData.recipeId,
+            isGlobal: false,
+        });
+        if (findShare) {
+            let notFound = [];
+            let shareTo = [];
+            for (let i = 0; i < data.shareTo.length; i++) {
+                let member = await memberModel_1.default.findOne({
+                    email: data.shareTo[i],
+                }).select('_id');
+                if (!member) {
+                    notFound.push(data.shareTo[i]);
+                }
+                else {
+                    let shareToAlreadyThere = await share_1.default.findOne({
+                        sharedBy: data.sharedBy,
+                        'shareData.recipeId': data.shareData.recipeId,
+                        'shareTo.userId': {
+                            $in: [member._id],
+                        },
+                    }).select('_id');
+                    if (!shareToAlreadyThere) {
+                        shareTo.push({
+                            userId: member._id,
+                            hasAccepted: false,
+                        });
+                    }
+                }
+            }
+            await share_1.default.findOneAndUpdate({
+                sharedBy: data.sharedBy,
+                'shareData.recipeId': data.shareData.recipeId,
+            }, {
+                $push: {
+                    shareTo: {
+                        $each: shareTo,
+                    },
+                },
+                $addToSet: {
+                    notFoundEmails: {
+                        $each: notFound,
+                    },
+                },
+            });
+            return findShare._id;
         }
         if (+data.shareTo.length === 0) {
             //@ts-ignore
@@ -85,10 +133,12 @@ let shareResolver = class shareResolver {
     }
     async getShareNotification(userId) {
         let myShareNotifications = await share_1.default.find({
-            'shareTo.userId': {
-                $in: [new mongoose_1.default.mongo.ObjectId(userId)],
+            shareTo: {
+                $elemMatch: {
+                    userId: new mongoose_1.default.mongo.ObjectId(userId),
+                    hasAccepted: false,
+                },
             },
-            'shareTo.hasAccepted': false,
         })
             .populate({
             path: 'sharedBy',
@@ -99,7 +149,10 @@ let shareResolver = class shareResolver {
             select: '_id name',
         });
         // console.log(myShareNotifications);
-        return myShareNotifications;
+        return {
+            shareNotifications: myShareNotifications,
+            totalNotification: myShareNotifications.length,
+        };
     }
     async acceptRecipeShare(token, userId) {
         await share_1.default.findOneAndUpdate({
@@ -113,10 +166,12 @@ let shareResolver = class shareResolver {
             },
         });
         let myShareNotifications = await share_1.default.find({
-            'shareTo.userId': {
-                $in: [new mongoose_1.default.mongo.ObjectId(userId)],
+            shareTo: {
+                $elemMatch: {
+                    userId: new mongoose_1.default.mongo.ObjectId(userId),
+                    hasAccepted: false,
+                },
             },
-            'shareTo.hasAccepted': false,
         })
             .populate({
             path: 'sharedBy',
@@ -127,7 +182,10 @@ let shareResolver = class shareResolver {
             select: '_id name',
         });
         // console.log(myShareNotifications);
-        return myShareNotifications;
+        return {
+            shareNotifications: myShareNotifications,
+            totalNotification: myShareNotifications.length,
+        };
     }
     async rejectRecipeShare(token, userId) {
         await share_1.default.findOneAndUpdate({
@@ -143,10 +201,12 @@ let shareResolver = class shareResolver {
             },
         });
         let myShareNotifications = await share_1.default.find({
-            'shareTo.userId': {
-                $in: [new mongoose_1.default.mongo.ObjectId(userId)],
+            shareTo: {
+                $elemMatch: {
+                    userId: new mongoose_1.default.mongo.ObjectId(userId),
+                    hasAccepted: false,
+                },
             },
-            'shareTo.hasAccepted': false,
         })
             .populate({
             path: 'sharedBy',
@@ -157,7 +217,10 @@ let shareResolver = class shareResolver {
             select: '_id name',
         });
         // console.log(myShareNotifications);
-        return myShareNotifications;
+        return {
+            shareNotifications: myShareNotifications,
+            totalNotification: myShareNotifications.length,
+        };
     }
     async removeAllShare() {
         await share_1.default.deleteMany();
@@ -172,14 +235,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "createShareLink", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [ShareNotification_1.default]),
+    (0, type_graphql_1.Query)(() => ShareNotificationsWithCount_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "getShareNotification", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [ShareNotification_1.default]),
+    (0, type_graphql_1.Mutation)(() => ShareNotificationsWithCount_1.default),
     __param(0, (0, type_graphql_1.Arg)('token')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
@@ -187,7 +250,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "acceptRecipeShare", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [ShareNotification_1.default]),
+    (0, type_graphql_1.Mutation)(() => ShareNotificationsWithCount_1.default),
     __param(0, (0, type_graphql_1.Arg)('token')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
