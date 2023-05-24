@@ -32,6 +32,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], ShareBy.prototype, "email", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], ShareBy.prototype, "image", void 0);
 ShareBy = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ShareBy);

@@ -29,6 +29,15 @@ async function default_1(token, userId) {
     if (!res) {
         return null;
     }
+    if (share.isGlobal) {
+        await share_1.default.findOneAndUpdate({
+            _id: token,
+        }, {
+            $addToSet: {
+                globalAccepted: userId,
+            },
+        });
+    }
     return share.shareData.recipeId;
 }
 exports.default = default_1;

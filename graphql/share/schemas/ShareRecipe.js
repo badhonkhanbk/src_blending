@@ -8,8 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const ImageType_1 = __importDefault(require("../../recipe/schemas/ImageType"));
 let ShareRecipe = class ShareRecipe {
 };
 __decorate([
@@ -20,6 +24,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], ShareRecipe.prototype, "name", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [ImageType_1.default]),
+    __metadata("design:type", Array)
+], ShareRecipe.prototype, "image", void 0);
 ShareRecipe = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ShareRecipe);

@@ -178,13 +178,12 @@ let shareResolver = class shareResolver {
         })
             .populate({
             path: 'sharedBy',
-            select: '_id firstName lastName email displayName',
+            select: '_id firstName lastName email displayName image',
         })
             .populate({
             path: 'shareData.recipeId',
-            select: '_id name',
+            select: '_id name image',
         });
-        // console.log(myShareNotifications);
         return {
             shareNotifications: myShareNotifications,
             totalNotification: myShareNotifications.length,
