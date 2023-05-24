@@ -20,6 +20,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], ShareData.prototype, "version", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [String]),
+    __metadata("design:type", Array)
+], ShareData.prototype, "turnedOnVersions", void 0);
 ShareData = __decorate([
     (0, type_graphql_1.InputType)()
 ], ShareData);

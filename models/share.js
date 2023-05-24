@@ -22,6 +22,16 @@ const shareSchema = new mongoose_1.Schema({
             type: mongoose_1.SchemaTypes.ObjectId,
             ref: 'recipeVersion',
         },
+        turnedOnVersions: [
+            {
+                type: mongoose_1.SchemaTypes.ObjectId,
+                ref: 'recipeVersion',
+            },
+        ],
+        turnedOnCount: {
+            type: Number,
+            default: 0,
+        },
     },
     globalAccepted: [
         {
@@ -44,6 +54,14 @@ const shareSchema = new mongoose_1.Schema({
         default: Date.now,
     },
     notFoundEmails: [String],
+});
+shareSchema.pre('save', async function (next) {
+    //@ts-ignore
+    if (this.shareData.turnedOnVersions.length > 0) {
+        //@ts-ignore
+        this.shareData.turnedOnCount = this.shareData.turnedOnVersions.length;
+    }
+    next();
 });
 const share = (0, mongoose_1.model)('share', shareSchema);
 exports.default = share;

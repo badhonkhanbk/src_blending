@@ -18,18 +18,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const share_1 = __importDefault(require("../../../models/share"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const CreateNewShareLink_1 = __importDefault(require("./input-type/CreateNewShareLink"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const ShareNotificationsWithCount_1 = __importDefault(require("../schemas/ShareNotificationsWithCount"));
+const util_1 = __importDefault(require("../../share/util"));
+const mongoose_1 = __importDefault(require("mongoose"));
 let shareResolver = class shareResolver {
     async createShareLink(data) {
         let shareDataToStore = {};
         let notFound = [];
         let shareTo = [];
+        let globalShare = false;
+        if (+data.shareTo.length === 0) {
+            globalShare = true;
+        }
+        // let turnedOnVersionsId = data.shareData.turnedOnVersions.map(
+        //   (turnedOnVersion) =>
+        //     new mongoose.mongo.ObjectId(turnedOnVersion.toString())
+        // );
         let recipe = await recipeModel_1.default.findOne({
             _id: data.shareData.recipeId,
         }).select('_id');
@@ -53,10 +62,24 @@ let shareResolver = class shareResolver {
         if (!userRecipe) {
             return new AppError_1.default('you are not eligible to share this recipe', 401);
         }
+        let turnedOnVersions = await RecipeVersionModel_1.default.find({
+            _id: {
+                $in: data.shareData.turnedOnVersions,
+            },
+        }).select('_id');
+        // console.log(turnedOnVersions.length);
+        if (data.shareData.turnedOnVersions.length !== turnedOnVersions.length) {
+            return new AppError_1.default('some versions are not found', 404);
+        }
         let findShare = await share_1.default.findOne({
             sharedBy: data.sharedBy,
             'shareData.recipeId': data.shareData.recipeId,
-            isGlobal: false,
+            'shareData.version': data.shareData.version,
+            'shareData.turnedOnVersions': {
+                $in: data.shareData.turnedOnVersions,
+            },
+            'shareData.turnedOnCount': data.shareData.turnedOnVersions.length,
+            isGlobal: globalShare,
         });
         if (findShare) {
             let notFound = [];
@@ -102,6 +125,19 @@ let shareResolver = class shareResolver {
             return findShare._id;
         }
         if (+data.shareTo.length === 0) {
+            let findGlobalShare = await share_1.default.findOne({
+                sharedBy: data.sharedBy,
+                'shareData.recipeId': data.shareData.recipeId,
+                'shareData.version': data.shareData.version,
+                'shareData.turnedOnVersions': {
+                    $in: data.shareData.turnedOnVersions,
+                },
+                'shareData.turnedOnCount': data.shareData.turnedOnVersions.length,
+                isGlobal: globalShare,
+            });
+            if (findGlobalShare) {
+                return findGlobalShare._id;
+            }
             //@ts-ignore
             shareDataToStore.isGlobal = true;
             shareDataToStore.shareTo = [];
@@ -155,6 +191,16 @@ let shareResolver = class shareResolver {
         };
     }
     async acceptRecipeShare(token, userId) {
+        let share = await share_1.default.findOne({ _id: token });
+        if (!share) {
+            return new AppError_1.default('invalid token', 404);
+        }
+        if (!share.isGlobal) {
+            let shareTo = share.shareTo.find((el) => String(el.userId) === String(userId));
+            if (!shareTo) {
+                return new AppError_1.default('invalid token', 404);
+            }
+        }
         await share_1.default.findOneAndUpdate({
             _id: token,
             'shareTo.userId': {
@@ -165,6 +211,10 @@ let shareResolver = class shareResolver {
                 'shareTo.$.hasAccepted': true,
             },
         });
+        let data = await (0, util_1.default)(token.toString(), userId.toString());
+        if (!data) {
+            return new AppError_1.default('Invalid token', 404);
+        }
         let myShareNotifications = await share_1.default.find({
             shareTo: {
                 $elemMatch: {
