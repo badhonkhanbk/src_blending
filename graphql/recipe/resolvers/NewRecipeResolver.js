@@ -23,7 +23,6 @@ const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
-const util_1 = __importDefault(require("../../share/util"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
@@ -104,18 +103,20 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
     async getARecipe2(recipeId, userId, token) {
         let data;
         if (token) {
-            const share = await share_1.default.findOne({ _id: token });
+            let share = await share_1.default.findOne({ _id: token });
+            if (!share.isGlobal) {
+                let auth = share.shareTo.filter((sharePerson) => {
+                    return String(sharePerson.userId) === String(userId);
+                })[0];
+                console.log(auth);
+                if (!auth) {
+                    return new AppError_1.default('Invalid token', 404);
+                }
+            }
             if (!share) {
                 return new AppError_1.default('Invalid token', 404);
             }
-            if (share.isGlobal) {
-                return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
-            }
-            data = await (0, util_1.default)(token.toString(), userId.toString());
-            if (!data) {
-                return new AppError_1.default('Invalid token', 404);
-            }
-            recipeId = data;
+            return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
         }
         if (!recipeId && !token) {
             return new AppError_1.default('Recipe not found', 404);
