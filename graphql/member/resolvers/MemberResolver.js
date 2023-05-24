@@ -396,12 +396,13 @@ let MemberResolver = class MemberResolver {
             };
         }
         let collection = await userCollection_1.default.findOne(query);
-        if (!page) {
+        if (!page || page <= 0) {
             page = 1;
         }
         if (!limit) {
             limit = 10;
         }
+        console.log(collection.recipes);
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
             recipeId: {

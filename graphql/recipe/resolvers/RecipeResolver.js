@@ -895,6 +895,16 @@ let RecipeResolver = class RecipeResolver {
                         allRecipe: true,
                         myRecipes: true,
                     });
+                    let userDefaultCollection;
+                    if (data.collection) {
+                        userDefaultCollection = data.collection;
+                    }
+                    else {
+                        userDefaultCollection = user.lastModifiedCollection
+                            ? user.defaultCollection
+                            : user.lastModifiedCollection;
+                    }
+                    await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
                 }
                 let returnUserRecipe = await recipeModel_1.default.findOne({
                     _id: recipe._id,
