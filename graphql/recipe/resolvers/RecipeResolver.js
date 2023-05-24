@@ -901,8 +901,8 @@ let RecipeResolver = class RecipeResolver {
                     }
                     else {
                         userDefaultCollection = user.lastModifiedCollection
-                            ? user.defaultCollection
-                            : user.lastModifiedCollection;
+                            ? user.lastModifiedCollection
+                            : user.defaultCollection;
                     }
                     await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
                 }
@@ -942,8 +942,8 @@ let RecipeResolver = class RecipeResolver {
         }
         else {
             userDefaultCollection = user.lastModifiedCollection
-                ? user.defaultCollection
-                : user.lastModifiedCollection;
+                ? user.lastModifiedCollection
+                : user.defaultCollection;
         }
         let newData = data;
         newData.foodCategories = [];
