@@ -402,7 +402,6 @@ let MemberResolver = class MemberResolver {
         if (!limit) {
             limit = 10;
         }
-        console.log(collection.recipes);
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
             recipeId: {

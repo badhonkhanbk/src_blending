@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+// import ImageType from '../../recipe/schemas/ImageType';
 let ShareRecipe = class ShareRecipe {
 };
 __decorate([

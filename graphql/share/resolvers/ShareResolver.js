@@ -27,6 +27,10 @@ const ShareNotificationsWithCount_1 = __importDefault(require("../schemas/ShareN
 const util_1 = __importDefault(require("../../share/util"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
+const ProfileRecipeDesc_1 = __importDefault(require("../../recipe/schemas/ProfileRecipeDesc"));
+const makeGlobalRecipe_1 = __importDefault(require("../util/makeGlobalRecipe"));
+const ProfileRecipe_1 = __importDefault(require("../../recipe/schemas/ProfileRecipe"));
+const makeShareRecipe_1 = __importDefault(require("../util/makeShareRecipe"));
 let shareResolver = class shareResolver {
     async createShareLink(data) {
         let shareDataToStore = {};
@@ -296,26 +300,15 @@ let shareResolver = class shareResolver {
         if (!data) {
             return new AppError_1.default('Invalid token', 404);
         }
-        let myShareNotifications = await share_1.default.find({
-            shareTo: {
-                $elemMatch: {
-                    userId: new mongoose_1.default.mongo.ObjectId(userId),
-                    hasAccepted: false,
-                },
-            },
-        })
-            .populate({
-            path: 'sharedBy',
-            select: '_id firstName lastName email displayName',
-        })
-            .populate({
-            path: 'shareData.recipeId',
-            select: '_id name',
-        });
-        // console.log(myShareNotifications);
+        let returnNotification = [];
+        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
+        returnNotification.push(...singleRecipeShareNotification);
+        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
+        returnNotification.push(...collectionShareNotification);
         return {
-            shareNotifications: myShareNotifications,
-            totalNotification: myShareNotifications.length,
+            shareNotifications: returnNotification,
+            totalNotification: singleRecipeShareNotification.length +
+                collectionShareNotification.length,
         };
     }
     async rejectRecipeShare(token, userId) {
@@ -331,31 +324,44 @@ let shareResolver = class shareResolver {
                 },
             },
         });
-        let myShareNotifications = await share_1.default.find({
-            shareTo: {
-                $elemMatch: {
-                    userId: new mongoose_1.default.mongo.ObjectId(userId),
-                    hasAccepted: false,
-                },
-            },
-        })
-            .populate({
-            path: 'sharedBy',
-            select: '_id firstName lastName email displayName',
-        })
-            .populate({
-            path: 'shareData.recipeId',
-            select: '_id name',
-        });
-        // console.log(myShareNotifications);
+        let returnNotification = [];
+        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
+        returnNotification.push(...singleRecipeShareNotification);
+        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
+        returnNotification.push(...collectionShareNotification);
         return {
-            shareNotifications: myShareNotifications,
-            totalNotification: myShareNotifications.length,
+            shareNotifications: returnNotification,
+            totalNotification: singleRecipeShareNotification.length +
+                collectionShareNotification.length,
         };
     }
     async removeAllShare() {
         await share_1.default.deleteMany();
         return 'done';
+    }
+    async viewSharedRecipe(userId, token) {
+        const share = await share_1.default.findOne({ _id: token });
+        if (!share.isGlobal) {
+            let auth = share.shareTo.filter((sharePerson) => {
+                return String(sharePerson.userId) === String(userId);
+            })[0];
+            console.log(auth);
+            if (!auth) {
+                return new AppError_1.default('Invalid token', 404);
+            }
+        }
+        if (!share) {
+            return new AppError_1.default('Invalid token', 404);
+        }
+        return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
+    }
+    async viewSharedCollection(userId, token) {
+        const shareCollection = await userCollection_1.default.findOne({ _id: token });
+        let returnRecipe = [];
+        for (let i = 0; i < shareCollection.recipes.length; i++) {
+            returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId)));
+        }
+        return returnRecipe;
     }
 };
 __decorate([
@@ -409,6 +415,24 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "removeAllShare", null);
+__decorate([
+    (0, type_graphql_1.Query)((type) => ProfileRecipeDesc_1.default),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], shareResolver.prototype, "viewSharedRecipe", null);
+__decorate([
+    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], shareResolver.prototype, "viewSharedCollection", null);
 shareResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], shareResolver);

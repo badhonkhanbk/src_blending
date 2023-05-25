@@ -84,22 +84,26 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
-    async viewSharedRecipe(userId, token) {
-        const share = await share_1.default.findOne({ _id: token });
-        if (!share.isGlobal) {
-            let auth = share.shareTo.filter((sharePerson) => {
-                return String(sharePerson.userId) === String(userId);
-            })[0];
-            console.log(auth);
-            if (!auth) {
-                return new AppError_1.default('Invalid token', 404);
-            }
-        }
-        if (!share) {
-            return new AppError_1.default('Invalid token', 404);
-        }
-        return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
-    }
+    // @Query((type) => ProfileRecipeDesc)
+    // async viewSharedRecipe(
+    //   @Arg('userId') userId: String,
+    //   @Arg('token') token: String
+    // ) {
+    //   const share = await ShareModel.findOne({ _id: token });
+    //   if (!share.isGlobal) {
+    //     let auth = share.shareTo.filter((sharePerson) => {
+    //       return String(sharePerson.userId) === String(userId);
+    //     })[0];
+    //     console.log(auth);
+    //     if (!auth) {
+    //       return new AppError('Invalid token', 404);
+    //     }
+    //   }
+    //   if (!share) {
+    //     return new AppError('Invalid token', 404);
+    //   }
+    //   return await makeGlobalRecipe(share, userId.toString());
+    // }
     async getARecipe2(recipeId, userId, token) {
         let data;
         if (token) {
@@ -486,15 +490,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getDiscoverRecipes", null);
-__decorate([
-    (0, type_graphql_1.Query)((type) => ProfileRecipeDesc_1.default),
-    __param(0, (0, type_graphql_1.Arg)('userId')),
-    __param(1, (0, type_graphql_1.Arg)('token')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String,
-        String]),
-    __metadata("design:returntype", Promise)
-], RecipeCorrectionResolver.prototype, "viewSharedRecipe", null);
 __decorate([
     (0, type_graphql_1.Query)((type) => ProfileRecipeDesc_1.default),
     __param(0, (0, type_graphql_1.Arg)('recipeId', { nullable: true })),

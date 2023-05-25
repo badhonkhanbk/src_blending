@@ -4,11 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
-async function default_1(share, userId) {
-    let recipe = await recipe_1.default.findOne({
-        _id: share.shareData.recipeId,
+const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+async function default_1(recipeId, userId) {
+    let recipe = await recipeModel_1.default.findOne({
+        _id: recipeId,
     })
         .populate([
         {
@@ -41,8 +42,16 @@ async function default_1(share, userId) {
         },
     ])
         .select('mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId');
+    console.log(recipe._id);
+    let userRecipe = await UserRecipeProfile_1.default.findOne({
+        userId: userId,
+        recipeId: recipeId,
+    }).select('defaultVersion');
+    if (!userRecipe) {
+        return null;
+    }
     let defaultVersion = await RecipeVersionModel_1.default.findOne({
-        _id: share.shareData.version,
+        _id: userRecipe.defaultVersion,
     }).populate([
         {
             path: 'ingredients.ingredientId',
@@ -54,28 +63,28 @@ async function default_1(share, userId) {
             select: '_id displayName firstName lastName image email',
         },
     ]);
-    let turnedOnVersion = await RecipeVersionModel_1.default.find({
-        _id: { $in: share.shareData.turnedOnVersions },
-    }).populate([
-        {
-            path: 'ingredients.ingredientId',
-            model: 'BlendIngredient',
-            select: 'ingredientName selectedImage',
-        },
-        {
-            path: 'createdBy',
-            select: '_id displayName firstName lastName image email',
-        },
-    ]);
+    // let turnedOnVersion = await RecipeVersionModel.find({
+    //   _id: { $in: share.shareData.turnedOnVersions },
+    // }).populate([
+    //   {
+    //     path: 'ingredients.ingredientId',
+    //     model: 'BlendIngredient',
+    //     select: 'ingredientName selectedImage',
+    //   },
+    //   {
+    //     path: 'createdBy',
+    //     select: '_id displayName firstName lastName image email',
+    //   },
+    // ]);
     let sharedBy = await memberModel_1.default.findOne({
-        _id: share.sharedBy,
+        _id: userId,
     });
     let userProfileRecipe = {
         recipeId: recipe,
         defaultVersion: defaultVersion,
-        turnedOnVersions: turnedOnVersion,
+        turnedOnVersions: [],
         turnedOffVersions: [],
-        isMatch: String(recipe.originalVersion._id) === String(share.shareData.version),
+        isMatch: String(recipe.originalVersion._id) === String(userRecipe.defaultVersion),
         allRecipes: false,
         myRecipes: false,
         tags: [],
