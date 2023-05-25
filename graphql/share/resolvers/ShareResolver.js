@@ -169,6 +169,18 @@ let shareResolver = class shareResolver {
         return share._id;
     }
     async getShareNotification(userId) {
+        let returnNotification = [];
+        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
+        returnNotification.push(...singleRecipeShareNotification);
+        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
+        returnNotification.push(...collectionShareNotification);
+        return {
+            shareNotifications: returnNotification,
+            totalNotification: singleRecipeShareNotification.length +
+                collectionShareNotification.length,
+        };
+    }
+    async getShareNotificationForSingleRecipe(userId) {
         let myShareNotifications = await share_1.default.find({
             shareTo: {
                 $elemMatch: {
@@ -185,6 +197,9 @@ let shareResolver = class shareResolver {
             path: 'shareData.recipeId',
             select: '_id name image',
         });
+        if (myShareNotifications.length === 0) {
+            return [];
+        }
         let returnNotification = [];
         for (let i = 0; i < myShareNotifications.length; i++) {
             let singleEntity = {};
@@ -192,8 +207,9 @@ let shareResolver = class shareResolver {
             //@ts-ignore
             let recipeImages = myShareNotifications[i].shareData.recipeId.image;
             if (recipeImages.length > 0) {
-                singleEntity.image = recipeImages.filter((ri) => ri.default === true)[0].image;
-                if (!singleEntity.recipeImage) {
+                let searchDefaultImage = recipeImages.filter((ri) => ri.default === true)[0];
+                let image = searchDefaultImage ? searchDefaultImage.image : null;
+                if (!image) {
                     singleEntity.image = recipeImages[0].image;
                 }
             }
@@ -206,10 +222,7 @@ let shareResolver = class shareResolver {
             singleEntity.type = 'Recipe';
             returnNotification.push(singleEntity);
         }
-        return {
-            shareNotifications: returnNotification,
-            totalNotification: returnNotification.length,
-        };
+        return returnNotification;
     }
     async getShareNotificationForCollection(userId) {
         let mySharedNotification = await userCollection_1.default.find({
@@ -223,6 +236,10 @@ let shareResolver = class shareResolver {
             path: 'userId',
             select: '_id firstName lastName email displayName image',
         });
+        // console.log(mySharedNotification);
+        if (mySharedNotification.length === 0) {
+            return [];
+        }
         let returnNotification = [];
         for (let i = 0; i < mySharedNotification.length; i++) {
             let singleEntity = {};
@@ -230,8 +247,9 @@ let shareResolver = class shareResolver {
                 _id: mySharedNotification[i].recipes[mySharedNotification[i].recipes.length - 1],
             }).select('image');
             if (recipe.image.length > 0) {
-                singleEntity.image = recipe.image.filter((ri) => ri.default === true)[0].image;
-                if (!singleEntity.recipeImage) {
+                let searchDefaultImage = recipe.image.filter((ri) => ri.default === true)[0];
+                let image = searchDefaultImage ? searchDefaultImage.image : null;
+                if (!image) {
                     singleEntity.image = recipe.image[0].image;
                 }
             }
@@ -251,10 +269,7 @@ let shareResolver = class shareResolver {
             singleEntity.type = 'Collection';
             returnNotification.push(singleEntity);
         }
-        return {
-            shareNotifications: returnNotification,
-            totalNotification: returnNotification.length,
-        };
+        return returnNotification;
     }
     async acceptRecipeShare(token, userId) {
         let share = await share_1.default.findOne({ _id: token });
@@ -357,6 +372,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "getShareNotification", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => ShareNotificationsWithCount_1.default),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], shareResolver.prototype, "getShareNotificationForSingleRecipe", null);
 __decorate([
     (0, type_graphql_1.Query)(() => ShareNotificationsWithCount_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
