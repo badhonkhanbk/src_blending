@@ -11,6 +11,12 @@ const shareCollectionGlobalSchema = new mongoose_1.Schema({
         type: mongoose_1.SchemaTypes.ObjectId,
         ref: 'UserCollection',
     },
+    globalAccepted: [
+        {
+            type: mongoose_1.SchemaTypes.ObjectId,
+            ref: 'User',
+        },
+    ],
 });
 const shareCollectionGlobal = (0, mongoose_1.model)('shareCollectionGlobal', shareCollectionGlobalSchema);
 exports.default = shareCollectionGlobal;

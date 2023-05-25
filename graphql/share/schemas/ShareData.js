@@ -23,11 +23,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)((type) => ShareRecipe_1.default, { nullable: true }),
     __metadata("design:type", ShareRecipe_1.default)
-], MyShareData.prototype, "recipeId", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], MyShareData.prototype, "version", void 0);
+], MyShareData.prototype, "entityId", void 0);
 MyShareData = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], MyShareData);

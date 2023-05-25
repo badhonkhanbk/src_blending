@@ -26,6 +26,7 @@ const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVers
 const ShareNotificationsWithCount_1 = __importDefault(require("../schemas/ShareNotificationsWithCount"));
 const util_1 = __importDefault(require("../../share/util"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 let shareResolver = class shareResolver {
     async createShareLink(data) {
         let shareDataToStore = {};
@@ -184,9 +185,75 @@ let shareResolver = class shareResolver {
             path: 'shareData.recipeId',
             select: '_id name image',
         });
+        let returnNotification = [];
+        for (let i = 0; i < myShareNotifications.length; i++) {
+            let singleEntity = {};
+            singleEntity = myShareNotifications[i];
+            //@ts-ignore
+            let recipeImages = myShareNotifications[i].shareData.recipeId.image;
+            if (recipeImages.length > 0) {
+                singleEntity.image = recipeImages.filter((ri) => ri.default === true)[0].image;
+                if (!singleEntity.recipeImage) {
+                    singleEntity.image = recipeImages[0].image;
+                }
+            }
+            else {
+                singleEntity.image = null;
+            }
+            // console.log(singleEntity.image);
+            singleEntity.shareData.entityId =
+                myShareNotifications[i].shareData.recipeId;
+            singleEntity.type = 'Recipe';
+            returnNotification.push(singleEntity);
+        }
         return {
-            shareNotifications: myShareNotifications,
-            totalNotification: myShareNotifications.length,
+            shareNotifications: returnNotification,
+            totalNotification: returnNotification.length,
+        };
+    }
+    async getShareNotificationForCollection(userId) {
+        let mySharedNotification = await userCollection_1.default.find({
+            shareTo: {
+                $elemMatch: {
+                    userId: new mongoose_1.default.mongo.ObjectId(userId),
+                    hasAccepted: false,
+                },
+            },
+        }).populate({
+            path: 'userId',
+            select: '_id firstName lastName email displayName image',
+        });
+        let returnNotification = [];
+        for (let i = 0; i < mySharedNotification.length; i++) {
+            let singleEntity = {};
+            let recipe = await recipeModel_1.default.findOne({
+                _id: mySharedNotification[i].recipes[mySharedNotification[i].recipes.length - 1],
+            }).select('image');
+            if (recipe.image.length > 0) {
+                singleEntity.image = recipe.image.filter((ri) => ri.default === true)[0].image;
+                if (!singleEntity.recipeImage) {
+                    singleEntity.image = recipe.image[0].image;
+                }
+            }
+            else {
+                singleEntity.image = null;
+            }
+            singleEntity._id = mySharedNotification[i]._id;
+            singleEntity.sharedBy = mySharedNotification[i].userId;
+            singleEntity.createdAt = mySharedNotification[i].createdAt;
+            singleEntity.shareData = {
+                _id: mySharedNotification[i]._id,
+                entityId: {
+                    _id: mySharedNotification[i]._id,
+                    name: mySharedNotification[i].name,
+                },
+            };
+            singleEntity.type = 'Collection';
+            returnNotification.push(singleEntity);
+        }
+        return {
+            shareNotifications: returnNotification,
+            totalNotification: returnNotification.length,
         };
     }
     async acceptRecipeShare(token, userId) {
@@ -290,6 +357,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "getShareNotification", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => ShareNotificationsWithCount_1.default),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], shareResolver.prototype, "getShareNotificationForCollection", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => ShareNotificationsWithCount_1.default),
     __param(0, (0, type_graphql_1.Arg)('token')),

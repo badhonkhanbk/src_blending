@@ -33,6 +33,14 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", Date)
 ], ShareNotification.prototype, "createdAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], ShareNotification.prototype, "image", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], ShareNotification.prototype, "type", void 0);
 ShareNotification = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ShareNotification);
