@@ -23,6 +23,7 @@ const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeP
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
+const ShareNotification_1 = __importDefault(require("../schemas/ShareNotification"));
 const ShareNotificationsWithCount_1 = __importDefault(require("../schemas/ShareNotificationsWithCount"));
 const util_1 = __importDefault(require("../../share/util"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -31,6 +32,8 @@ const ProfileRecipeDesc_1 = __importDefault(require("../../recipe/schemas/Profil
 const makeGlobalRecipe_1 = __importDefault(require("../util/makeGlobalRecipe"));
 const ProfileRecipe_1 = __importDefault(require("../../recipe/schemas/ProfileRecipe"));
 const makeShareRecipe_1 = __importDefault(require("../util/makeShareRecipe"));
+const collectionShareGlobal_1 = __importDefault(require("../../../models/collectionShareGlobal"));
+const checkShareCollectionLink_1 = __importDefault(require("../util/checkShareCollectionLink"));
 let shareResolver = class shareResolver {
     async createShareLink(data) {
         let shareDataToStore = {};
@@ -210,11 +213,15 @@ let shareResolver = class shareResolver {
             singleEntity = myShareNotifications[i];
             //@ts-ignore
             let recipeImages = myShareNotifications[i].shareData.recipeId.image;
+            let searchDefaultImage = null;
             if (recipeImages.length > 0) {
-                let searchDefaultImage = recipeImages.filter((ri) => ri.default === true)[0];
+                searchDefaultImage = recipeImages.filter((ri) => ri.default === true)[0];
                 let image = searchDefaultImage ? searchDefaultImage.image : null;
                 if (!image) {
                     singleEntity.image = recipeImages[0].image;
+                }
+                else {
+                    singleEntity.image = image;
                 }
             }
             else {
@@ -250,11 +257,15 @@ let shareResolver = class shareResolver {
             let recipe = await recipeModel_1.default.findOne({
                 _id: mySharedNotification[i].recipes[mySharedNotification[i].recipes.length - 1],
             }).select('image');
+            let searchDefaultImage = null;
             if (recipe.image.length > 0) {
-                let searchDefaultImage = recipe.image.filter((ri) => ri.default === true)[0];
+                searchDefaultImage = recipe.image.filter((ri) => ri.default === true)[0];
                 let image = searchDefaultImage ? searchDefaultImage.image : null;
                 if (!image) {
                     singleEntity.image = recipe.image[0].image;
+                }
+                else {
+                    singleEntity.image = image;
                 }
             }
             else {
@@ -363,6 +374,55 @@ let shareResolver = class shareResolver {
         }
         return returnRecipe;
     }
+    async acceptShareCollection(userId, token) {
+        let shareCollection = await userCollection_1.default.findOne({ _id: token });
+        if (!shareCollection) {
+            return new AppError_1.default('invalid token', 404);
+        }
+        let checkIfGlobal = await collectionShareGlobal_1.default.findOne({
+            collectionId: token,
+        });
+        if (!checkIfGlobal) {
+            let shareTo = shareCollection.shareTo.find((el) => String(el.userId) === String(userId));
+            if (!shareTo) {
+                return new AppError_1.default('invalid token', 404);
+            }
+        }
+        for (let i = 0; i < shareCollection.recipes.length; i++) {
+            await (0, checkShareCollectionLink_1.default)(String(shareCollection.recipes[i]), String(shareCollection.userId), userId);
+        }
+        if (checkIfGlobal) {
+            await collectionShareGlobal_1.default.findOneAndUpdate({
+                collectionId: token,
+            }, {
+                $addToSet: {
+                    globalAccepted: userId,
+                },
+            });
+        }
+        else {
+            await userCollection_1.default.findOneAndUpdate({
+                _id: token,
+                'shareTo.userId': {
+                    $in: [new mongoose_1.default.mongo.ObjectId(userId)],
+                },
+            }, {
+                $set: {
+                    'shareTo.$.hasAccepted': true,
+                },
+            });
+        }
+        let returnNotification = [];
+        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
+        returnNotification.push(...singleRecipeShareNotification);
+        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
+        returnNotification.push(...collectionShareNotification);
+        return {
+            shareNotifications: returnNotification,
+            totalNotification: singleRecipeShareNotification.length +
+                collectionShareNotification.length,
+        };
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
@@ -379,14 +439,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "getShareNotification", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => ShareNotificationsWithCount_1.default),
+    (0, type_graphql_1.Query)(() => [ShareNotification_1.default]),
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "getShareNotificationForSingleRecipe", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => ShareNotificationsWithCount_1.default),
+    (0, type_graphql_1.Query)(() => [ShareNotification_1.default]),
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -433,6 +493,14 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "viewSharedCollection", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [ShareNotificationsWithCount_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], shareResolver.prototype, "acceptShareCollection", null);
 shareResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], shareResolver);

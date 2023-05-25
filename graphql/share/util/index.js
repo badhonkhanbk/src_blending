@@ -79,7 +79,11 @@ async function checkShareAndAdd(share, userId) {
     let checkDefault = String(share.shareData.version) === String(userRecipe.defaultVersion);
     if (checkDefault) {
         // console.log('here');
-        await mergeTurnedOnVersion(userId, share.shareData.recipeId, share.shareData.turnedOnVersions);
+        // await mergeTurnedOnVersion(
+        //   userId,
+        //   share.shareData.recipeId,
+        //   share.shareData.turnedOnVersions
+        // );
         return true;
     }
     let checkOriginal = String(share.shareData.version) === String(recipe.originalVersion);
@@ -114,6 +118,7 @@ async function checkShareAndAdd(share, userId) {
             },
         },
     });
+    return true;
 }
 async function mergeTurnedOnVersion(userId, recipeId, newTurnedOn) {
     // let convertedTurnedOn = newTurnedOn.map((nt) => String(nt));
