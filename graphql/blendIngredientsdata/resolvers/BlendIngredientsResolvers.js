@@ -46,6 +46,8 @@ const QANotFound_1 = __importDefault(require("../../../models/QANotFound"));
 const BlendPortion_1 = __importDefault(require("../schemas/BlendPortion"));
 const BlendPortionInput_1 = __importDefault(require("./input-type/BlendPortionInput"));
 const addIngredientFromSrc_1 = __importDefault(require("./util/addIngredientFromSrc"));
+const Compare_1 = __importDefault(require("../../../models/Compare"));
+const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
 let BlendIngredientResolver = class BlendIngredientResolver {
     async getAllBlendIngredients() {
         let blendIngredients = await blendIngredient_1.default.find()
@@ -489,7 +491,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         // console.log('best', res.data.parsed_data[0].best_match);
         return 'done';
     }
-    async searchInScrappedRecipeFromUser(recipeIngredients, isClient) {
+    async searchInScrappedRecipeFromUser(recipeIngredients, url, userId, isClient) {
         let ingredientsShape = {
             recipeIngredients: recipeIngredients,
         };
@@ -748,11 +750,36 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             notBlends.push(notProcessed[i]);
         }
         let myData = await this.getNutrientsListAndGiGlByIngredientsForScrappingPanel(formateBlends);
+        let alreadyInCompare = false;
+        if (url && userId) {
+            let recipe = await recipeModel_1.default.findOne({
+                url: url,
+            }).select('_id');
+            if (recipe) {
+                let recipeCompare = await Compare_1.default.findOne({
+                    recipeId: recipe._id,
+                    userId: userId,
+                });
+                if (recipeCompare) {
+                    alreadyInCompare = true;
+                }
+                else {
+                    let tempCompare = await temporaryCompareCollection_1.default.findOne({
+                        recipeId: recipe._id,
+                        userId: userId,
+                    });
+                    if (tempCompare) {
+                        alreadyInCompare = true;
+                    }
+                }
+            }
+        }
         return {
             ...myData,
             notFoundIndexes: notFountIndexes.sort((a, b) => a - b),
             blendIngredients: processed,
             errorIngredients: notBlends,
+            isAlreadyInCompared: alreadyInCompare,
         };
     }
     async getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
@@ -1558,9 +1585,13 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Mutation)((type) => NutrientListAndGiGlForScrapper_1.default),
     __param(0, (0, type_graphql_1.Arg)('recipeIngredients', (type) => [String], { nullable: true })),
-    __param(1, (0, type_graphql_1.Arg)('isClient', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('url', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('userId', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('isClient', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, Boolean]),
+    __metadata("design:paramtypes", [Array, String,
+        String,
+        Boolean]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "searchInScrappedRecipeFromUser", null);
 __decorate([

@@ -31,6 +31,8 @@ const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNo
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const share_1 = __importDefault(require("../../../models/share"));
 const makeGlobalRecipe_1 = __importDefault(require("../../share/util/makeGlobalRecipe"));
+const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
+const checkTemporaryCompareList_1 = __importDefault(require("./util/checkTemporaryCompareList"));
 // import RecipeFact from '../../../models/RecipeFacts';
 //**
 //*
@@ -39,9 +41,8 @@ const makeGlobalRecipe_1 = __importDefault(require("../../share/util/makeGlobalR
 //*
 let RecipeCorrectionResolver = class RecipeCorrectionResolver {
     async removeNow() {
-        await UserRecipeProfile_1.default.updateMany({}, {
-            lastSeen: Date.now(),
-        });
+        let temporaryCompareList = await (0, checkTemporaryCompareList_1.default)('5f9b3b3b1c9d440000f3b0b0');
+        return '';
     }
     async getDiscoverRecipes(userId) {
         let checkIfNew = await UserRecipeProfile_1.default.find({
@@ -259,12 +260,20 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         if (checkIfNew.length === 0) {
             await (0, getAllGlobalRecipes_1.default)(userId);
         }
-        const compareList = await Compare_1.default.find({ userId: userId });
+        let compareList = await Compare_1.default.find({ userId: userId });
+        let temporaryCompareList = await temporaryCompareCollection_1.default.find({
+            userId: userId,
+        });
+        if (temporaryCompareList.length !== 0) {
+            temporaryCompareList = await (0, checkTemporaryCompareList_1.default)(userId);
+        }
         if (compareList.length === 0) {
-            console.log('dishdisjh');
             return [];
         }
-        let recipeIds = compareList.map((compareItem) => compareItem.recipeId);
+        for (let i = 0; i < temporaryCompareList.length; i++) {
+            compareList.push(temporaryCompareList[i]);
+        }
+        // let recipeIds = compareList.map((compareItem) => compareItem.recipeId);
         let userProfileRecipes = [];
         for (let i = 0; i < compareList.length; i++) {
             let userProfileRecipe = await UserRecipeProfile_1.default.findOne({

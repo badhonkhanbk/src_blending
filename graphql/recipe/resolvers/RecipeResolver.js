@@ -49,6 +49,8 @@ const slugify_1 = __importDefault(require("slugify"));
 const Plan_1 = __importDefault(require("../../../models/Plan"));
 const Planner_1 = __importDefault(require("../../../models/Planner"));
 const planCollection_1 = __importDefault(require("../../../models/planCollection"));
+const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
+const changeCompare_1 = __importDefault(require("../../member/resolvers/util/changeCompare"));
 let RecipeResolver = class RecipeResolver {
     async tya() {
         let recipeVersions = await RecipeVersionModel_1.default.find({
@@ -874,7 +876,7 @@ let RecipeResolver = class RecipeResolver {
         let recipe = await recipeModel_1.default.create(newData);
         return 'recipe added successfully';
     }
-    async addRecipeFromUser(data) {
+    async addRecipeFromUser(data, isAddToTemporaryCompareList) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
             return new AppError_1.default('User not found', 404);
@@ -895,16 +897,35 @@ let RecipeResolver = class RecipeResolver {
                         allRecipe: true,
                         myRecipes: true,
                     });
-                    let userDefaultCollection;
-                    if (data.collection) {
-                        userDefaultCollection = data.collection;
+                    if (!isAddToTemporaryCompareList) {
+                        let userDefaultCollection;
+                        if (data.collection) {
+                            userDefaultCollection = data.collection;
+                        }
+                        else {
+                            userDefaultCollection = user.lastModifiedCollection
+                                ? user.lastModifiedCollection
+                                : user.defaultCollection;
+                        }
+                        await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
                     }
                     else {
-                        userDefaultCollection = user.lastModifiedCollection
-                            ? user.lastModifiedCollection
-                            : user.defaultCollection;
+                        let tempCompareList = await temporaryCompareCollection_1.default.findOne({
+                            userId: data.userId,
+                            recipeId: recipe._id,
+                        });
+                        if (!tempCompareList) {
+                            await temporaryCompareCollection_1.default.create({
+                                userId: data.userId,
+                                recipeId: recipe._id,
+                                versionId: recipe.defaultVersion,
+                                url: data.url
+                                    ? data.url
+                                    : String(new mongoose_1.default.mongo.ObjectId()),
+                            });
+                        }
+                        await (0, changeCompare_1.default)(String(recipe._id), data.userId);
                     }
-                    await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
                 }
                 let returnUserRecipe = await recipeModel_1.default.findOne({
                     _id: recipe._id,
@@ -1016,7 +1037,6 @@ let RecipeResolver = class RecipeResolver {
             }
         }
         let userRecipe = await recipeModel_1.default.create(newData);
-        await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
         let recipeVersion = await RecipeVersionModel_1.default.create({
             recipeId: userRecipe._id,
             postfixTitle: data.name,
@@ -1030,6 +1050,24 @@ let RecipeResolver = class RecipeResolver {
             isDefault: true,
             isOriginal: true,
         });
+        if (!isAddToTemporaryCompareList) {
+            await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
+        }
+        else {
+            let tempCompareList = await temporaryCompareCollection_1.default.findOne({
+                userId: data.userId,
+                recipeId: userRecipe._id,
+            });
+            if (!tempCompareList) {
+                await temporaryCompareCollection_1.default.create({
+                    userId: data.userId,
+                    recipeId: userRecipe._id,
+                    versionId: recipeVersion._id,
+                    url: data.url ? data.url : String(new mongoose_1.default.mongo.ObjectId()),
+                });
+            }
+            await (0, changeCompare_1.default)(String(userRecipe._id), data.userId);
+        }
         //@ts-ignore
         await (0, updateVersionFacts_1.default)(recipeVersion._id);
         if (data.errorIngredients) {
@@ -1816,8 +1854,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Mutation)((type) => Recipe_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
+    __param(1, (0, type_graphql_1.Arg)('isAddToTemporaryCompareList')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CreateRecipe_1.default]),
+    __metadata("design:paramtypes", [CreateRecipe_1.default,
+        Boolean]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "addRecipeFromUser", null);
 __decorate([

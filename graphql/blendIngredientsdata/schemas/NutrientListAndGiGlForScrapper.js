@@ -39,6 +39,10 @@ __decorate([
     (0, type_graphql_1.Field)(() => [ErrorIngredient_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], NutrientsWithGiGlForScrapper.prototype, "errorIngredients", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], NutrientsWithGiGlForScrapper.prototype, "isAlreadyInCompared", void 0);
 NutrientsWithGiGlForScrapper = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], NutrientsWithGiGlForScrapper);

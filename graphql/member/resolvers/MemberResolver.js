@@ -38,6 +38,8 @@ const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeP
 const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
 const ShowAllCollection_1 = __importDefault(require("../schemas/ShowAllCollection"));
 const SimpleCollection_1 = __importDefault(require("../schemas/SimpleCollection"));
+const changeCompare_1 = __importDefault(require("./util/changeCompare"));
+const checkTemporaryCompareList_1 = __importDefault(require("../../recipe/resolvers/util/checkTemporaryCompareList"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -450,15 +452,7 @@ let MemberResolver = class MemberResolver {
         };
     }
     async createNewUser(data) {
-        let user = await memberModel_1.default.findOne({ email: data.email })
-            .populate('configuration')
-            .populate({
-            path: 'collections',
-            populate: {
-                path: 'recipes',
-                model: 'RecipeModel',
-            },
-        });
+        let user = await memberModel_1.default.findOne({ email: data.email }).select('_id');
         if (!user) {
             let configuration = await memberConfiguiration_1.default.create({
                 isCreated: false,
@@ -498,14 +492,24 @@ let MemberResolver = class MemberResolver {
             });
             return user3;
         }
+        await (0, checkTemporaryCompareList_1.default)(String(user._id));
+        let returnUser = await memberModel_1.default.findOne({ email: data.email })
+            .populate('configuration')
+            .populate({
+            path: 'collections',
+            populate: {
+                path: 'recipes',
+                model: 'RecipeModel',
+            },
+        });
         let checkIfNew = await UserRecipeProfile_1.default.find({
-            userId: user._id,
+            userId: returnUser._id,
         }).select('_id');
         if (checkIfNew.length === 0) {
             //@ts-ignore
-            await (0, getAllGlobalRecipes_1.default)(user._id);
+            await (0, getAllGlobalRecipes_1.default)(returnUser._id);
         }
-        return user;
+        return returnUser;
     }
     async getASingleUserByEmail(email) {
         let user = await memberModel_1.default.findOne({ email })
@@ -628,37 +632,7 @@ let MemberResolver = class MemberResolver {
     async changeCompare(recipeId, userId
     // @Arg('versionId') versionId: String
     ) {
-        let userRecipe = await UserRecipeProfile_1.default.findOne({
-            userId: userId,
-            recipeId: recipeId,
-        });
-        if (!userRecipe) {
-            return new AppError_1.default('recipe not found', 401);
-        }
-        let user = await memberModel_1.default.findOne({ _id: userId });
-        let check = false;
-        let updatedUser;
-        for (let i = 0; i < user.compareList.length; i++) {
-            if (String(user.compareList[i]) === recipeId) {
-                updatedUser = await memberModel_1.default.findOneAndUpdate({ _id: userId }, { $pull: { compareList: recipeId }, $inc: { compareLength: -1 } }, { new: true });
-                check = true;
-                await Compare_1.default.findOneAndRemove({
-                    userId: userId,
-                    recipeId: recipeId,
-                    versionId: userRecipe.defaultVersion,
-                });
-                break;
-            }
-        }
-        if (!check) {
-            updatedUser = await memberModel_1.default.findOneAndUpdate({ _id: userId }, { $push: { compareList: recipeId }, $inc: { compareLength: 1 } }, { new: true });
-            await Compare_1.default.create({
-                recipeId: recipeId,
-                userId: userId,
-                versionId: userRecipe.defaultVersion,
-            });
-        }
-        return updatedUser.compareList.length;
+        return await (0, changeCompare_1.default)(recipeId, userId);
     }
     async emptyCompareList(userId) {
         let user = await memberModel_1.default.findOne({ _id: userId });
