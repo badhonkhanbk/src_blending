@@ -365,6 +365,8 @@ let MemberResolver = class MemberResolver {
         }
         const shareCollection = await userCollection_1.default.findOne({
             _id: token,
+        }).populate({
+            path: 'userId',
         });
         // console.log('ssss', shareCollection.userId);
         if (!shareCollection) {
@@ -379,7 +381,7 @@ let MemberResolver = class MemberResolver {
         let returnRecipe = [];
         for (let i = start; i < end; i++) {
             console.log(i);
-            returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId)));
+            returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId._id)));
         }
         // console.log('big');
         return {
@@ -389,7 +391,7 @@ let MemberResolver = class MemberResolver {
             image: shareCollection.image,
             totalRecipes: shareCollection.recipes.length,
             recipes: returnRecipe,
-            creatorInfo: null,
+            creatorInfo: shareCollection.userId,
             accepted: false,
         };
     }
