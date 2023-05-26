@@ -414,6 +414,7 @@ let shareResolver = class shareResolver {
         let checkIfGlobal = await collectionShareGlobal_1.default.findOne({
             collectionId: token,
         });
+        console.log(checkIfGlobal);
         if (!checkIfGlobal) {
             let shareTo = shareCollection.shareTo.find((el) => String(el.userId) === String(userId));
             if (!shareTo) {
@@ -517,7 +518,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "viewSharedRecipe", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [ShareNotificationsWithCount_1.default]),
+    (0, type_graphql_1.Mutation)(() => ShareNotificationsWithCount_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __param(1, (0, type_graphql_1.Arg)('token')),
     __metadata("design:type", Function),

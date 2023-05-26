@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 async function default_1(recipeId, userId, mergeWithUser) {
-    let recipe = await recipe_1.default.findOne({
+    console.log('here');
+    let recipe = await recipeModel_1.default.findOne({
         _id: recipeId,
     });
     if (!recipe) {
@@ -17,6 +18,7 @@ async function default_1(recipeId, userId, mergeWithUser) {
         userId: userId,
         recipeId: recipeId,
     });
+    console.log('!', userRecipe);
     if (!userRecipe) {
         return null;
     }
@@ -40,6 +42,7 @@ async function checkShareAndAdd(recipe, defaultVersion, userId) {
         if (String(recipe.originalVersion) === String(defaultVersion)) {
             isMatch = true;
         }
+        console.log('aaaaa');
         await UserRecipeProfile_1.default.create({
             userId: userId,
             recipeId: recipe._id,

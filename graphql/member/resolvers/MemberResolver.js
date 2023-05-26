@@ -363,20 +363,25 @@ let MemberResolver = class MemberResolver {
         if (!limit) {
             limit = 10;
         }
-        let start = (page - 1) * limit;
-        let end = start + limit;
         const shareCollection = await userCollection_1.default.findOne({
             _id: token,
-        }).populate({
-            path: 'userId',
         });
+        // console.log('ssss', shareCollection.userId);
         if (!shareCollection) {
             return new AppError_1.default('Invalid token', 404);
         }
+        let start = limit * (page - 1) > shareCollection.recipes.length - 1
+            ? shareCollection.recipes.length - 1
+            : limit * (page - 1);
+        let end = start + limit > shareCollection.recipes.length - 1
+            ? shareCollection.recipes.length
+            : start + limit;
         let returnRecipe = [];
         for (let i = start; i < end; i++) {
+            console.log(i);
             returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId)));
         }
+        // console.log('big');
         return {
             _id: shareCollection._id,
             name: shareCollection.name,
@@ -384,7 +389,7 @@ let MemberResolver = class MemberResolver {
             image: shareCollection.image,
             totalRecipes: shareCollection.recipes.length,
             recipes: returnRecipe,
-            creatorInfo: shareCollection.userId,
+            creatorInfo: null,
             accepted: false,
         };
     }
@@ -392,7 +397,7 @@ let MemberResolver = class MemberResolver {
         let searchId;
         let query = {};
         if (singleRecipeCollectionId) {
-            return await this.getSingleRecipeCollection(userId);
+            return await this.getSingleRecipeCollection(userId.toString());
         }
         if (token) {
             let globalShare = await collectionShareGlobal_1.default.findOne({
@@ -695,8 +700,11 @@ let MemberResolver = class MemberResolver {
     }
     async getSingleRecipeCollection(userId) {
         let shares = await share_1.default.find({
-            'shareTo.userId': {
-                $in: [new mongoose_1.default.mongo.ObjectId(userId.toString())],
+            shareTo: {
+                $elemMatch: {
+                    userId: new mongoose_1.default.mongo.ObjectId(userId),
+                    hasAccepted: false,
+                },
             },
         }).select('_id');
         let singleSharedRecipes = [];
@@ -713,6 +721,7 @@ let MemberResolver = class MemberResolver {
             //@ts-ignore
             image: null,
             recipes: singleSharedRecipes,
+            accepted: true,
         };
     }
 };

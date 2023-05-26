@@ -42,11 +42,13 @@ async function default_1(recipeId, userId) {
         },
     ])
         .select('mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId');
-    console.log(recipe._id);
+    // console.log('jin', recipe._id);
     let userRecipe = await UserRecipeProfile_1.default.findOne({
         userId: userId,
         recipeId: recipeId,
     }).select('defaultVersion');
+    // console.log('!', userRecipe);
+    // console.log('x', recipe.originalVersion._id);
     if (!userRecipe) {
         return null;
     }
@@ -79,6 +81,7 @@ async function default_1(recipeId, userId) {
     let sharedBy = await memberModel_1.default.findOne({
         _id: userId,
     });
+    // console.log('sb', sharedBy);
     let userProfileRecipe = {
         recipeId: recipe,
         defaultVersion: defaultVersion,
@@ -94,6 +97,7 @@ async function default_1(recipeId, userId) {
         personalRating: 0,
         sharedBy: sharedBy,
     };
+    // console.log('daffodil', userProfileRecipe);
     return userProfileRecipe;
 }
 exports.default = default_1;
