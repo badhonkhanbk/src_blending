@@ -40,6 +40,7 @@ const ShowAllCollection_1 = __importDefault(require("../schemas/ShowAllCollectio
 const SimpleCollection_1 = __importDefault(require("../schemas/SimpleCollection"));
 const changeCompare_1 = __importDefault(require("./util/changeCompare"));
 const checkTemporaryCompareList_1 = __importDefault(require("../../recipe/resolvers/util/checkTemporaryCompareList"));
+const makeShareRecipe_1 = __importDefault(require("../../share/util/makeShareRecipe"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -355,8 +356,39 @@ let MemberResolver = class MemberResolver {
             collections: collections,
         };
     }
+    async viewSharedCollection(userId, token, page, limit) {
+        if (!page || page <= 0) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
+        }
+        let start = (page - 1) * limit;
+        let end = start + limit;
+        const shareCollection = await userCollection_1.default.findOne({
+            _id: token,
+        }).populate({
+            path: 'userId',
+        });
+        if (!shareCollection) {
+            return new AppError_1.default('Invalid token', 404);
+        }
+        let returnRecipe = [];
+        for (let i = start; i < end; i++) {
+            returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId)));
+        }
+        return {
+            _id: shareCollection._id,
+            name: shareCollection.name,
+            slug: shareCollection.slug,
+            image: shareCollection.image,
+            totalRecipes: shareCollection.recipes.length,
+            recipes: returnRecipe,
+            creatorInfo: shareCollection.userId,
+            accepted: false,
+        };
+    }
     async getASingleCollection(slug, userId, collectionId, token, singleRecipeCollectionId, page, limit) {
-        console.log();
         let searchId;
         let query = {};
         if (singleRecipeCollectionId) {
@@ -368,6 +400,10 @@ let MemberResolver = class MemberResolver {
             });
             if (!globalShare) {
                 return new AppError_1.default('Invalid token', 400);
+            }
+            let acceptedGlobalShare = globalShare.globalAccepted.filter((user) => String(user) === userId)[0];
+            if (!acceptedGlobalShare) {
+                return await this.viewSharedCollection(userId, token, page, limit);
             }
             query = {
                 _id: globalShare.collectionId,
@@ -384,6 +420,9 @@ let MemberResolver = class MemberResolver {
                 let shareTo = collection.shareTo.filter((share) => String(share.userId) === userId)[0];
                 if (!shareTo) {
                     return new AppError_1.default('Invalid collection', 400);
+                }
+                if (shareTo.hasAccepted === false) {
+                    return await this.viewSharedCollection(userId, collectionId, page, limit);
                 }
             }
             query = {
@@ -449,6 +488,7 @@ let MemberResolver = class MemberResolver {
             totalRecipes: collection.recipes.length,
             recipes: returnRecipe,
             creatorInfo: collection.userId,
+            accepted: true,
         };
     }
     async createNewUser(data) {
@@ -697,6 +737,17 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "getUserCollectionsAndThemes", null);
+__decorate([
+    (0, type_graphql_1.Query)((type) => Collection_1.default),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('token')),
+    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], MemberResolver.prototype, "viewSharedCollection", null);
 __decorate([
     (0, type_graphql_1.Query)(() => Collection_1.default),
     __param(0, (0, type_graphql_1.Arg)('slug')),

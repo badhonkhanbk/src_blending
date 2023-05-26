@@ -30,8 +30,6 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const ProfileRecipeDesc_1 = __importDefault(require("../../recipe/schemas/ProfileRecipeDesc"));
 const makeGlobalRecipe_1 = __importDefault(require("../util/makeGlobalRecipe"));
-const ProfileRecipe_1 = __importDefault(require("../../recipe/schemas/ProfileRecipe"));
-const makeShareRecipe_1 = __importDefault(require("../util/makeShareRecipe"));
 const collectionShareGlobal_1 = __importDefault(require("../../../models/collectionShareGlobal"));
 const checkShareCollectionLink_1 = __importDefault(require("../util/checkShareCollectionLink"));
 let shareResolver = class shareResolver {
@@ -366,14 +364,48 @@ let shareResolver = class shareResolver {
         }
         return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
     }
-    async viewSharedCollection(userId, token) {
-        const shareCollection = await userCollection_1.default.findOne({ _id: token });
-        let returnRecipe = [];
-        for (let i = 0; i < shareCollection.recipes.length; i++) {
-            returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId)));
-        }
-        return returnRecipe;
-    }
+    // @Query((type) => Collection)
+    // async viewSharedCollection(
+    //   @Arg('userId') userId: String,
+    //   @Arg('token') token: String,
+    //   @Arg('page', { nullable: true }) page: number,
+    //   @Arg('limit', { nullable: true }) limit: number
+    // ) {
+    //   if (!page || page <= 0) {
+    //     page = 1;
+    //   }
+    //   if (!limit) {
+    //     limit = 10;
+    //   }
+    //   let start = (page - 1) * limit;
+    //   let end = start + limit;
+    //   const shareCollection = await UserCollectionModel.findOne({
+    //     _id: token,
+    //   }).populate({
+    //     path: 'userId',
+    //   });
+    //   if (!shareCollection) {
+    //     return new AppError('Invalid token', 404);
+    //   }
+    //   let returnRecipe = [];
+    //   for (let i = start; i < end; i++) {
+    //     returnRecipe.push(
+    //       await makeShareRecipe(
+    //         shareCollection.recipes[i],
+    //         String(shareCollection.userId)
+    //       )
+    //     );
+    //   }
+    //   return {
+    //     _id: shareCollection._id,
+    //     name: shareCollection.name,
+    //     slug: shareCollection.slug,
+    //     image: shareCollection.image,
+    //     totalRecipes: shareCollection.recipes.length,
+    //     recipes: returnRecipe,
+    //     creatorInfo: shareCollection.userId,
+    //   };
+    // }
     async acceptShareCollection(userId, token) {
         let shareCollection = await userCollection_1.default.findOne({ _id: token });
         if (!shareCollection) {
@@ -484,15 +516,6 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "viewSharedRecipe", null);
-__decorate([
-    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default]),
-    __param(0, (0, type_graphql_1.Arg)('userId')),
-    __param(1, (0, type_graphql_1.Arg)('token')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String,
-        String]),
-    __metadata("design:returntype", Promise)
-], shareResolver.prototype, "viewSharedCollection", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [ShareNotificationsWithCount_1.default]),
     __param(0, (0, type_graphql_1.Arg)('userId')),

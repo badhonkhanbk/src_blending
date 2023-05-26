@@ -49,6 +49,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => Member_1.default, { nullable: true }),
     __metadata("design:type", Member_1.default)
 ], CollectionType.prototype, "creatorInfo", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], CollectionType.prototype, "accepted", void 0);
 CollectionType = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], CollectionType);
