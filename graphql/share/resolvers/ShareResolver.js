@@ -456,6 +456,39 @@ let shareResolver = class shareResolver {
                 collectionShareNotification.length,
         };
     }
+    async rejectShareCollection(userId, token) {
+        let shareCollection = await userCollection_1.default.findOne({ _id: token });
+        if (!shareCollection) {
+            return new AppError_1.default('invalid token', 404);
+        }
+        let checkIfGlobal = await collectionShareGlobal_1.default.findOne({
+            collectionId: token,
+        });
+        console.log(checkIfGlobal);
+        if (!checkIfGlobal) {
+            let shareTo = shareCollection.shareTo.find((el) => String(el.userId) === String(userId));
+            if (!shareTo) {
+                return new AppError_1.default('invalid token', 404);
+            }
+        }
+        await userCollection_1.default.findOneAndUpdate({ _id: token }, {
+            $pull: {
+                shareTo: {
+                    userId: userId,
+                },
+            },
+        });
+        let returnNotification = [];
+        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
+        returnNotification.push(...singleRecipeShareNotification);
+        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
+        returnNotification.push(...collectionShareNotification);
+        return {
+            shareNotifications: returnNotification,
+            totalNotification: singleRecipeShareNotification.length +
+                collectionShareNotification.length,
+        };
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
@@ -525,6 +558,14 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "acceptShareCollection", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => ShareNotificationsWithCount_1.default),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], shareResolver.prototype, "rejectShareCollection", null);
 shareResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], shareResolver);
