@@ -177,6 +177,7 @@ let UserDailyResolver = class UserDailyResolver {
             _id: user.configuration,
         });
         let daily = await this.getDaily(config.age.months, Number(config.age.quantity), config.activity, config.gender, Number(config.weightInKilograms), Number(config.heightInCentimeters), userId);
+        // console.log(daily);
         return daily;
     }
     async getDaily(isAgeInMonth, ageInNumber, activity, gender, weightInKG, heightInCM, userId) {
@@ -222,7 +223,23 @@ let UserDailyResolver = class UserDailyResolver {
                 : //@ts-ignore
                     daily[i].blendNutrientRef.altName;
             let myData;
-            if (!daily[i].showPercentage) {
+            if (daily[i].ranges.length === 0) {
+                myData = {
+                    nutrientName: name,
+                    data: {
+                        value: 0,
+                        //@ts-ignore
+                        units: daily[i].blendNutrientRef.units,
+                        upperLimit: 0,
+                    },
+                    blendNutrientRef: daily[i].blendNutrientRef._id,
+                    showPercentage: daily[i].showPercentage,
+                };
+            }
+            else if (!daily[i].showPercentage) {
+                // if (daily[i].categoryName === 'Energy') {
+                //   console.log(i, daily[i]);
+                // }
                 myData = {
                     nutrientName: name,
                     data: await this.getDataFromRanges(JSON.stringify(daily[i].ranges), ageInNumber, calories, 
@@ -315,6 +332,9 @@ let UserDailyResolver = class UserDailyResolver {
                 }
             }
         }
+        if (value.value === null) {
+            console.log(value);
+        }
         return value;
     }
     async bmiCalculation(weightInKilograms, heightInCentimeters) {
@@ -325,14 +345,14 @@ let UserDailyResolver = class UserDailyResolver {
     async getDailyCalorie(activity, ageInYears, bmi, gender, weightInKG, heightInCM) {
         let heightInMeters = Number(heightInCM) * 0.01;
         let totalCaloriesNeeded;
-        console.log('activity', activity);
-        console.log('ageInYears', ageInYears);
-        console.log('bmi', bmi);
-        console.log('gender', gender);
-        console.log('weightInKG', weightInKG);
-        console.log('heightInCM', heightInCM);
+        // console.log('activity', activity);
+        // console.log('ageInYears', ageInYears);
+        // console.log('bmi', bmi);
+        // console.log('gender', gender);
+        // console.log('weightInKG', weightInKG);
+        // console.log('heightInCM', heightInCM);
         if (+bmi >= 18.5 && +bmi <= 25) {
-            console.log('step 1');
+            // console.log('step 1');
             if (+ageInYears >= 9 && +ageInYears <= 18) {
                 if (gender === 'male') {
                     let pal;
@@ -400,7 +420,7 @@ let UserDailyResolver = class UserDailyResolver {
                     return totalCaloriesNeeded;
                 }
                 else if (gender == 'female') {
-                    console.log('step 2');
+                    // console.log('step 2');
                     let pal;
                     if (activity === 'low') {
                         pal = 1;
@@ -409,7 +429,7 @@ let UserDailyResolver = class UserDailyResolver {
                         pal = 1.12;
                     }
                     else if (activity === 'high') {
-                        console.log('step 3');
+                        // console.log('step 3');
                         pal = 1.27;
                     }
                     else if (activity === 'extreme') {
