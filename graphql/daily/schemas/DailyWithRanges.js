@@ -60,3 +60,4 @@ DailyWithRanges = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], DailyWithRanges);
 exports.default = DailyWithRanges;
+//dailyWithRRanges

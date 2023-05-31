@@ -48,6 +48,8 @@ const BlendPortionInput_1 = __importDefault(require("./input-type/BlendPortionIn
 const addIngredientFromSrc_1 = __importDefault(require("./util/addIngredientFromSrc"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
+const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 let BlendIngredientResolver = class BlendIngredientResolver {
     async getAllBlendIngredients() {
         let blendIngredients = await blendIngredient_1.default.find()
@@ -751,6 +753,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         let myData = await this.getNutrientsListAndGiGlByIngredientsForScrappingPanel(formateBlends);
         let alreadyInCompare = false;
+        let collections = [];
         if (url && userId) {
             let recipe = await recipeModel_1.default.findOne({
                 url: url,
@@ -772,6 +775,19 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                         alreadyInCompare = true;
                     }
                 }
+                let userRecipe = await UserRecipeProfile_1.default.findOne({
+                    recipeId: recipe._id,
+                    userId: userId,
+                });
+                if (userRecipe) {
+                    collections = await userCollection_1.default.find({
+                        userId,
+                        recipes: {
+                            $in: [recipe._id],
+                        },
+                    });
+                    collections = collections.map((collection) => String(collection._id));
+                }
             }
         }
         return {
@@ -780,6 +796,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             blendIngredients: processed,
             errorIngredients: notBlends,
             isAlreadyInCompared: alreadyInCompare,
+            collections: collections,
         };
     }
     async getNutrientsListAndGiGlByIngredients(ingredientsInfo) {

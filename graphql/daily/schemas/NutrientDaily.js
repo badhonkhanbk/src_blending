@@ -32,3 +32,4 @@ NutrientDaily = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], NutrientDaily);
 exports.default = NutrientDaily;
+//vitamins

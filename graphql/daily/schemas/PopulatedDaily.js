@@ -44,3 +44,4 @@ PopulatedDaily = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], PopulatedDaily);
 exports.default = PopulatedDaily;
+//goal

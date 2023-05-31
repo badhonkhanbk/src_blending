@@ -270,3 +270,4 @@ UserCommentsResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], UserCommentsResolver);
 exports.default = UserCommentsResolver;
+//memberResolver
