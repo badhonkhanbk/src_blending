@@ -754,6 +754,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         let myData = await this.getNutrientsListAndGiGlByIngredientsForScrappingPanel(formateBlends);
         let alreadyInCompare = false;
         let collections = [];
+        let recipeId = '';
         if (url && userId) {
             let recipe = await recipeModel_1.default.findOne({
                 url: url,
@@ -787,6 +788,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                         },
                     });
                     collections = collections.map((collection) => String(collection._id));
+                    recipeId = recipe._id;
                 }
             }
         }

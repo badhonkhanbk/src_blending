@@ -13,7 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+// import Recipe from './Recipe';
 const SimpleRecipe_1 = __importDefault(require("./SimpleRecipe"));
+// import SimpleVersion from './SimpleVersion';
 const RecipeVersion_1 = __importDefault(require("./RecipeVersion"));
 let ProfileRecipe = class ProfileRecipe {
 };

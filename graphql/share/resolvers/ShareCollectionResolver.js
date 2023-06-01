@@ -46,6 +46,15 @@ let shareCollectionResolver = class shareCollectionResolver {
                 userId: data.sharedBy,
             });
             if (!ownCollection) {
+                // let hasAccessForShareCollection = await UserCollectionModel.findOne({
+                //   _id: data.collectionId,
+                //   shareTo: {
+                //     $elemMatch: {
+                //       userId: new mongoose.mongo.ObjectId(data.sharedBy.toString()),
+                //       hasAccepted: true,
+                //     },
+                //   },
+                // });
                 throw new AppError_1.default('You can not share it globally', 404);
             }
             return await this.shareGlobalCollection(data.sharedBy, data.collectionId);

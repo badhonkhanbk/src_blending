@@ -47,6 +47,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [String]),
     __metadata("design:type", Array)
 ], NutrientsWithGiGlForScrapper.prototype, "collections", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], NutrientsWithGiGlForScrapper.prototype, "recipeId", void 0);
 NutrientsWithGiGlForScrapper = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], NutrientsWithGiGlForScrapper);
