@@ -788,6 +788,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                         },
                     });
                     collections = collections.map((collection) => String(collection._id));
+                    console.log(recipe._id);
                     recipeId = recipe._id;
                 }
             }
@@ -799,6 +800,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             errorIngredients: notBlends,
             isAlreadyInCompared: alreadyInCompare,
             collections: collections,
+            recipeId: recipeId,
         };
     }
     async getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
