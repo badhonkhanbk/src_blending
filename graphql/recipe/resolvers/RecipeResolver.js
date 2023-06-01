@@ -910,6 +910,7 @@ let RecipeResolver = class RecipeResolver {
                         await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
                     }
                     else {
+                        console.log('hello');
                         let tempCompareList = await temporaryCompareCollection_1.default.findOne({
                             userId: data.userId,
                             recipeId: recipe._id,
@@ -1054,11 +1055,14 @@ let RecipeResolver = class RecipeResolver {
             await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
         }
         else {
+            console.log('hello');
             let tempCompareList = await temporaryCompareCollection_1.default.findOne({
                 userId: data.userId,
                 recipeId: userRecipe._id,
             });
+            console.log(tempCompareList);
             if (!tempCompareList) {
+                console.log('new model created');
                 await temporaryCompareCollection_1.default.create({
                     userId: data.userId,
                     recipeId: userRecipe._id,
