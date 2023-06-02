@@ -295,22 +295,27 @@ let shareResolver = class shareResolver {
         let returnNotification = [];
         for (let i = 0; i < mySharedNotification.length; i++) {
             let singleEntity = {};
-            let recipe = await recipeModel_1.default.findOne({
-                _id: mySharedNotification[i].recipes[mySharedNotification[i].recipes.length - 1],
-            }).select('image');
-            let searchDefaultImage = null;
-            if (recipe.image.length > 0) {
-                searchDefaultImage = recipe.image.filter((ri) => ri.default === true)[0];
-                let image = searchDefaultImage ? searchDefaultImage.image : null;
-                if (!image) {
-                    singleEntity.image = recipe.image[0].image;
-                }
-                else {
-                    singleEntity.image = image;
-                }
+            if (mySharedNotification[i].recipes.length === 0) {
+                singleEntity.image = null;
             }
             else {
-                singleEntity.image = null;
+                let recipe = await recipeModel_1.default.findOne({
+                    _id: mySharedNotification[i].recipes[mySharedNotification[i].recipes.length - 1],
+                }).select('image');
+                let searchDefaultImage = null;
+                if (recipe.image.length > 0) {
+                    searchDefaultImage = recipe.image.filter((ri) => ri.default === true)[0];
+                    let image = searchDefaultImage ? searchDefaultImage.image : null;
+                    if (!image) {
+                        singleEntity.image = recipe.image[0].image;
+                    }
+                    else {
+                        singleEntity.image = image;
+                    }
+                }
+                else {
+                    singleEntity.image = null;
+                }
             }
             singleEntity._id = mySharedNotification[i]._id;
             singleEntity.sharedBy = mySharedNotification[i].userId;
