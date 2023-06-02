@@ -451,7 +451,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     async deleteCollection(data) {
         let userDefaultCollection = await userCollection_1.default.findOne({
             userId: data.userId,
-            isDefault: true,
+            name: 'My Favorite',
         });
         if (String(userDefaultCollection._id) === String(data.collectionId)) {
             return new AppError_1.default('cant remove your default collection', 404);
