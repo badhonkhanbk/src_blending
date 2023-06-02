@@ -32,6 +32,7 @@ const ProfileRecipeDesc_1 = __importDefault(require("../../recipe/schemas/Profil
 const makeGlobalRecipe_1 = __importDefault(require("../util/makeGlobalRecipe"));
 const collectionShareGlobal_1 = __importDefault(require("../../../models/collectionShareGlobal"));
 const checkShareCollectionLink_1 = __importDefault(require("../util/checkShareCollectionLink"));
+const InviteForChallenge_1 = __importDefault(require("../../../models/InviteForChallenge"));
 let shareResolver = class shareResolver {
     async createShareLink(data) {
         let shareDataToStore = {};
@@ -179,11 +180,53 @@ let shareResolver = class shareResolver {
         returnNotification.push(...singleRecipeShareNotification);
         let collectionShareNotification = await this.getShareNotificationForCollection(userId);
         returnNotification.push(...collectionShareNotification);
+        let challengeInviteNotification = await this.getInviteNotificationForChallenge(userId);
+        returnNotification.push(...challengeInviteNotification);
         return {
             shareNotifications: returnNotification,
             totalNotification: singleRecipeShareNotification.length +
-                collectionShareNotification.length,
+                collectionShareNotification.length +
+                challengeInviteNotification.length,
         };
+    }
+    async getInviteNotificationForChallenge(userId) {
+        let invites = await InviteForChallenge_1.default.find({
+            invitedWith: {
+                $elemMatch: {
+                    memberId: new mongoose_1.default.mongo.ObjectId(userId),
+                    hasAccepted: false,
+                },
+            },
+        })
+            .populate({
+            path: 'invitedBy',
+            select: '_id firstName lastName email displayName image',
+        })
+            .populate({
+            path: 'challengeId',
+            select: '_id challengeName',
+        });
+        let returnNotification = [];
+        if (invites.length <= 0) {
+            return [];
+        }
+        // console.log(invites.length);
+        for (let i = 0; i < invites.length; i++) {
+            let entity = {};
+            entity._id = invites[i]._id;
+            entity.sharedBy = invites[i].invitedBy;
+            entity.createdAt = invites[i].createdAt;
+            entity.type = 'Challenge';
+            entity.shareData = {
+                _id: invites[i].challengeId._id,
+                entityId: {
+                    _id: invites[i].challengeId._id,
+                    name: invites[i].challengeId.challengeName,
+                },
+            };
+            returnNotification.push(entity);
+        }
+        return returnNotification;
     }
     async getShareNotificationForSingleRecipe(userId) {
         let myShareNotifications = await share_1.default.find({
@@ -295,30 +338,11 @@ let shareResolver = class shareResolver {
                 return new AppError_1.default('invalid token', 404);
             }
         }
-        await share_1.default.findOneAndUpdate({
-            _id: token,
-            'shareTo.userId': {
-                $in: [new mongoose_1.default.mongo.ObjectId(userId)],
-            },
-        }, {
-            $set: {
-                'shareTo.$.hasAccepted': true,
-            },
-        });
         let data = await (0, util_1.default)(token.toString(), userId.toString());
         if (!data) {
             return new AppError_1.default('Invalid token', 404);
         }
-        let returnNotification = [];
-        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
-        returnNotification.push(...singleRecipeShareNotification);
-        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
-        returnNotification.push(...collectionShareNotification);
-        return {
-            shareNotifications: returnNotification,
-            totalNotification: singleRecipeShareNotification.length +
-                collectionShareNotification.length,
-        };
+        return await this.getShareNotification(userId);
     }
     async rejectRecipeShare(token, userId) {
         await share_1.default.findOneAndUpdate({
@@ -333,16 +357,7 @@ let shareResolver = class shareResolver {
                 },
             },
         });
-        let returnNotification = [];
-        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
-        returnNotification.push(...singleRecipeShareNotification);
-        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
-        returnNotification.push(...collectionShareNotification);
-        return {
-            shareNotifications: returnNotification,
-            totalNotification: singleRecipeShareNotification.length +
-                collectionShareNotification.length,
-        };
+        return await this.getShareNotification(userId);
     }
     async removeAllShare() {
         await share_1.default.deleteMany();
@@ -445,16 +460,7 @@ let shareResolver = class shareResolver {
                 },
             });
         }
-        let returnNotification = [];
-        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
-        returnNotification.push(...singleRecipeShareNotification);
-        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
-        returnNotification.push(...collectionShareNotification);
-        return {
-            shareNotifications: returnNotification,
-            totalNotification: singleRecipeShareNotification.length +
-                collectionShareNotification.length,
-        };
+        return await this.getShareNotification(userId);
     }
     async rejectShareCollection(userId, token) {
         let shareCollection = await userCollection_1.default.findOne({ _id: token });
@@ -478,16 +484,29 @@ let shareResolver = class shareResolver {
                 },
             },
         });
-        let returnNotification = [];
-        let singleRecipeShareNotification = await this.getShareNotificationForSingleRecipe(userId);
-        returnNotification.push(...singleRecipeShareNotification);
-        let collectionShareNotification = await this.getShareNotificationForCollection(userId);
-        returnNotification.push(...collectionShareNotification);
-        return {
-            shareNotifications: returnNotification,
-            totalNotification: singleRecipeShareNotification.length +
-                collectionShareNotification.length,
-        };
+        return await this.getShareNotification(userId);
+    }
+    async rejectChallengeInvite(inviteId, memberId) {
+        let invite = await InviteForChallenge_1.default.findOne({ _id: inviteId });
+        if (!invite) {
+            return new AppError_1.default('Invalid invite', 400);
+        }
+        let data = invite.invitedWith.filter(
+        //@ts-ignore
+        (iw) => String(iw.memberId) === memberId)[0];
+        console.log(data);
+        if (!data) {
+            return new AppError_1.default('Invalid invite', 400);
+        }
+        let mongoMemberId = new mongoose_1.default.mongo.ObjectId(memberId.toString());
+        let inviteChallenge = await InviteForChallenge_1.default.findOneAndUpdate({ _id: inviteId }, {
+            $pull: {
+                invitedWith: {
+                    memberId: mongoMemberId,
+                },
+            },
+        });
+        return await this.getShareNotification(memberId);
     }
 };
 __decorate([
@@ -504,6 +523,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "getShareNotification", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [ShareNotification_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], shareResolver.prototype, "getInviteNotificationForChallenge", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [ShareNotification_1.default]),
     __param(0, (0, type_graphql_1.Arg)('userId')),
@@ -566,6 +592,14 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], shareResolver.prototype, "rejectShareCollection", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => ShareNotificationsWithCount_1.default),
+    __param(0, (0, type_graphql_1.Arg)('inviteId')),
+    __param(1, (0, type_graphql_1.Arg)('memberId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], shareResolver.prototype, "rejectChallengeInvite", null);
 shareResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], shareResolver);

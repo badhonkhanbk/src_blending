@@ -252,7 +252,8 @@ let WikiResolver = class WikiResolver {
             let data = wikiIngredients[i];
             let blendIngredient = await blendIngredient_1.default.findOne({
                 _id: wikiIngredients[i]._id,
-            }).select('portions');
+            }).select('portions featuredImage');
+            data.image = blendIngredient.featuredImage;
             data.portions = blendIngredient.portions;
             if (userId) {
                 let comments = await wikiComment_1.default.find({

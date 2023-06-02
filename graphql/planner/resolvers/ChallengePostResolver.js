@@ -312,35 +312,104 @@ let ChallengePostResolver = class ChallengePostResolver {
         let data = invite.invitedWith.filter(
         //@ts-ignore
         (iw) => String(iw.memberId) === memberId)[0];
+        console.log(data);
         if (!data) {
             return new AppError_1.default('Invalid invite', 400);
         }
         let mongoMemberId = new mongoose_1.default.mongo.ObjectId(memberId.toString());
-        await InviteForChallenge_1.default.findOneAndUpdate({ _id: inviteId }, {
+        let inviteChallenge = await InviteForChallenge_1.default.findOneAndUpdate({ _id: inviteId }, {
             $pull: {
-                'sharedWith.memberId': mongoMemberId,
-            },
-        });
-        await InviteForChallenge_1.default.findOneAndUpdate({ _id: inviteId }, {
-            $push: {
-                memberId: data.memberId,
-                hasAccepted: true,
-                canInviteWithOthers: data.canInviteWithOthers,
-            },
-        });
-        let challengeInfo = await this.getChallengeInfo(String(memberId), false, '', String(invite.challengeId));
-        await challenge_1.default.findOneAndUpdate({
-            _id: String(invite.challengeId),
-        }, {
-            $push: {
-                sharedWith: {
-                    memberId: data.memberId,
-                    canInviteWithOthers: data.canInviteWithOthers,
-                    blendScore: Math.round(challengeInfo.blendScore),
+                invitedWith: {
+                    memberId: mongoMemberId,
                 },
             },
         });
+        // await InviteChallengeModel.findOneAndUpdate(
+        //   { _id: inviteId },
+        //   {
+        //     $push: {
+        //       memberId: data.memberId,
+        //       hasAccepted: true,
+        //       canInviteWithOthers: data.canInviteWithOthers,
+        //     },
+        //   }
+        // );
+        // await ShareModel.findOneAndUpdate(
+        //   {
+        //     _id: token,
+        //     'shareTo.userId': {
+        //       $in: [new mongoose.mongo.ObjectId(userId)],
+        //     },
+        //   },
+        //   {
+        //     $set: {
+        //       'shareTo.$.hasAccepted': true,
+        //     },
+        //   }
+        // );
+        let challengeInfo = await this.getChallengeInfo(String(memberId), false, '', String(invite.challengeId));
+        // await InviteChallengeModel.findOneAndUpdate(
+        //   {
+        //     challengeId: String(invite.challengeId),
+        //     'sharedWith.memberId': {
+        //       $in: [mongoMemberId],
+        //     },
+        //   },
+        //   {
+        //     $set: {
+        //       'shareTo.$.hasAccepted': true,
+        //       'shareTo.$.blendScore': Math.round(challengeInfo.blendScore),
+        //     },
+        //   }
+        // );
+        // await UserChallengeModel.findOneAndUpdate(
+        //   {
+        //     _id: String(invite.challengeId),
+        //   },
+        //   {
+        //     $push: {
+        //       sharedWith: {
+        //         memberId: data.memberId,
+        //         hasAccepted: !data.hasAccepted,
+        //         canInviteWithOthers: data.canInviteWithOthers,
+        //         blendScore: Math.round(challengeInfo.blendScore),
+        //       },
+        //     },
+        //   }
+        // );
         await this.upgradeTopIngredient(String(invite.challengeId));
+        let userChallenge = await challenge_1.default.findOne({
+            _id: invite.challengeId,
+            'sharedWith.memberId': {
+                $in: [mongoMemberId],
+            },
+        });
+        if (userChallenge) {
+            await challenge_1.default.findOneAndUpdate({
+                _id: invite.challengeId,
+                'sharedWith.memberId': {
+                    $in: [mongoMemberId],
+                },
+            }, {
+                $set: {
+                    'sharedWith.$.canInviteWithOthers': data.canInviteWithOthers,
+                },
+            });
+        }
+        else {
+            await challenge_1.default.findOneAndUpdate({
+                _id: invite.challengeId,
+            }, {
+                $push: {
+                    sharedWith: {
+                        memberId: mongoMemberId,
+                        canInviteWithOthers: data.canInviteWithOthers,
+                        blendScore: Math.round(challengeInfo.blendScore),
+                        isDefault: false,
+                    },
+                },
+            });
+        }
         return invite.challengeId;
     }
     async hjkl() {
