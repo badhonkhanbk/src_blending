@@ -240,10 +240,35 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 isMatch: recipe.isMatch,
                 allRecipes: false,
                 myRecipes: false,
-                turnedOffVersions: recipe.turnedOffVersion,
+                turnedOffVersions: recipe.turnedOffVersions,
                 turnedOnVersions: recipe.turnedOnVersions,
                 defaultVersion: recipe.defaultVersion,
             });
+        }
+        if (collection.shareTo) {
+            for (let n = 0; n < collection.shareTo.length; n++) {
+                if (collection.shareTo[n].hasAccepted) {
+                    let userRecipe = await UserRecipeProfile_1.default.findOne({
+                        recipeId: data.recipe,
+                        userId: collection.shareTo[n].userId,
+                    });
+                    if (!userRecipe) {
+                        let recipe = await recipeModel_1.default.findOne({
+                            _id: data.recipe,
+                        }).select('isMatch turnedOffVersions turnedOnVersions defaultVersion');
+                        await UserRecipeProfile_1.default.create({
+                            recipeId: recipe._id,
+                            userId: collection.shareTo[n].userId,
+                            isMatch: recipe.isMatch,
+                            allRecipes: false,
+                            myRecipes: false,
+                            turnedOffVersions: recipe.turnedOffVersions,
+                            turnedOnVersions: recipe.turnedOnVersions,
+                            defaultVersion: recipe.defaultVersion,
+                        });
+                    }
+                }
+            }
         }
         // let member = await MemberModel.findOne({ _id: data.userId }).populate({
         //   path: 'collections',
@@ -537,7 +562,6 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         return 'successful';
     }
     async addOrRemoveRecipeFromCollection(data) {
-        console.log('for ref');
         if (!data.isCollectionData) {
             data.isCollectionData = false;
         }
@@ -555,7 +579,6 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         for (let i = 0; i < otherCollections.length; i++) {
             pullFromUserCollections.push(otherCollections[i]._id);
         }
-        console.log(pullFromUserCollections);
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
@@ -579,6 +602,33 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 }
                 else {
                     addTotheseCollection.push(collection._id);
+                    if (collection.shareTo) {
+                        for (let m = 0; m < data.recipes.length; m++) {
+                            for (let n = 0; n < collection.shareTo.length; n++) {
+                                if (collection.shareTo[n].hasAccepted) {
+                                    let userRecipe = await UserRecipeProfile_1.default.findOne({
+                                        recipeId: data.recipes[m],
+                                        userId: collection.shareTo[n].userId,
+                                    });
+                                    if (!userRecipe) {
+                                        let recipe = await recipeModel_1.default.findOne({
+                                            _id: data.recipes[m],
+                                        }).select('isMatch turnedOffVersions turnedOnVersions defaultVersion');
+                                        await UserRecipeProfile_1.default.create({
+                                            recipeId: recipe._id,
+                                            userId: collection.shareTo[n].userId,
+                                            isMatch: recipe.isMatch,
+                                            allRecipes: false,
+                                            myRecipes: false,
+                                            turnedOffVersions: recipe.turnedOffVersions,
+                                            turnedOnVersions: recipe.turnedOnVersions,
+                                            defaultVersion: recipe.defaultVersion,
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
