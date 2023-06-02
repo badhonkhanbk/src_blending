@@ -61,17 +61,21 @@ let shareCollectionResolver = class shareCollectionResolver {
         }
         if (data.isSharedCollection) {
             let collection = await userCollection_1.default.findOne({
-                collectionId: data.collectionId,
+                _id: data.collectionId,
             });
+            if (!collection) {
+                return new AppError_1.default('collection not exist', 404);
+            }
+            // console.log(collection);
             let filtered = collection.shareTo.filter((st) => {
                 return String(st.userId) === String(data.sharedBy);
-            });
-            if (filtered.length <= 0) {
+            })[0];
+            if (!filtered) {
                 return new AppError_1.default('You can not share it', 404);
             }
             //@ts-ignore
-            if (!filtered.canShareWithOthers) {
-                return new AppError_1.default('You can not share it', 404);
+            if (!filtered.canShareWithOther) {
+                return new AppError_1.default('You do not have permission to share share it', 404);
             }
         }
         for (let i = 0; i < data.shareTo.length; i++) {
