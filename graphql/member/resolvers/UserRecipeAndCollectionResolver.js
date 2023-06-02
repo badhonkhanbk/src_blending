@@ -213,6 +213,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         let collection = await userCollection_1.default.findOne({
             _id: collectionId,
         });
+        console.log(collection);
         let found = false;
         for (let k = 0; k < collection.recipes.length; k++) {
             if (String(collection.recipes[k]) === String(data.recipe)) {
@@ -448,6 +449,13 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         return member.collections;
     }
     async deleteCollection(data) {
+        let userDefaultCollection = await userCollection_1.default.findOne({
+            userId: data.userId,
+            isDefault: true,
+        });
+        if (String(userDefaultCollection._id) === String(data.collectionId)) {
+            return new AppError_1.default('cant remove your default collection', 404);
+        }
         let user = await memberModel_1.default.findOne({
             _id: data.userId,
         }).populate({
@@ -470,6 +478,9 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                     },
                 },
             });
+            if (String(user.lastModifiedCollection) === data.collectionId) {
+                await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { $set: { lastModifiedCollection: userDefaultCollection._id } });
+            }
         }
         else {
             // look for collection in user
