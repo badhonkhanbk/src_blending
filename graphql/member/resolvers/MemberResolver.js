@@ -343,7 +343,7 @@ let MemberResolver = class MemberResolver {
                 select: 'selectedImage',
             })
                 .select('defaultVersion');
-            console.log(userProfileRecipe);
+            console.log('nimta', userProfileRecipe, collections[i].recipes[collections[i].recipes.length - 1]._id, 'ssss', collections[i]._id);
             if (userProfileRecipe.defaultVersion.selectedImage === '') {
                 collections[i].image = null;
                 continue;
@@ -382,8 +382,8 @@ let MemberResolver = class MemberResolver {
         for (let i = start; i < end; i++) {
             console.log(i);
             returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId._id)));
+            console.log(returnRecipe[i].recipeId._id);
         }
-        // console.log('big');
         return {
             _id: shareCollection._id,
             name: shareCollection.name,

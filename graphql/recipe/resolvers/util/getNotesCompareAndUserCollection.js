@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const memberModel_1 = __importDefault(require("../../../../models/memberModel"));
 const Compare_1 = __importDefault(require("../../../../models/Compare"));
 const userNote_1 = __importDefault(require("../../../../models/userNote"));
+const userCollection_1 = __importDefault(require("../../../../models/userCollection"));
+const mongoose_1 = __importDefault(require("mongoose"));
 // import RecipeFact from '../../../../models/RecipeFacts';
 async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
     let returnRecipe = [];
@@ -17,7 +19,12 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
         select: 'recipes',
     })
         .select('-_id collections');
-    // console.log(member.collections);
+    let otherCollections = await userCollection_1.default.find({
+        'shareTo.userId': {
+            $in: [new mongoose_1.default.mongo.ObjectId(userId.toString())],
+        },
+        'shareTo.hasAccepted': true,
+    });
     for (let i = 0; i < member.collections.length; i++) {
         //@ts-ignore
         let items = member.collections[i].recipes.map(
@@ -26,6 +33,15 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
             return {
                 recipeId: String(recipe),
                 recipeCollection: String(member.collections[i]._id),
+            };
+        });
+        collectionRecipes.push(...items);
+    }
+    for (let i = 0; i < otherCollections.length; i++) {
+        let items = otherCollections[i].recipes.map((recipe) => {
+            return {
+                recipeId: String(recipe),
+                recipeCollection: String(otherCollections[i]._id),
             };
         });
         collectionRecipes.push(...items);
