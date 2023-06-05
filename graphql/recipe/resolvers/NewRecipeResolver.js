@@ -266,6 +266,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         });
         if (temporaryCompareList.length !== 0) {
             temporaryCompareList = await (0, checkTemporaryCompareList_1.default)(userId);
+            compareList = await Compare_1.default.find({ userId: userId });
         }
         // for (let i = 0; i < temporaryCompareList.length; i++) {
         //   compareList.push({ ...temporaryCompareList[i]._doc, isTemp: true });
