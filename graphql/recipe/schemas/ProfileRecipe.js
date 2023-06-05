@@ -63,6 +63,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], ProfileRecipe.prototype, "personalRating", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], ProfileRecipe.prototype, "isTemp", void 0);
 ProfileRecipe = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ProfileRecipe);

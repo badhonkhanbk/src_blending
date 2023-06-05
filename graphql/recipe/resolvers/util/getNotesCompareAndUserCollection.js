@@ -94,6 +94,8 @@ async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
                 addedToCompare: addedToCompare,
                 userCollections: collectionData,
                 versionCount: versionsCount,
+                //@ts-ignore
+                isTemp: userProfileRecipes.isTemp ? true : false,
             });
         }
         // let facts = await RecipeFact.findOne({

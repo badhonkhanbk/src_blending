@@ -911,20 +911,27 @@ let RecipeResolver = class RecipeResolver {
                     await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
                 }
                 else {
-                    console.log('hello');
-                    let tempCompareList = await temporaryCompareCollection_1.default.findOne({
-                        userId: data.userId,
+                    let recipeCompare = await Compare_1.default.findOne({
                         recipeId: recipe._id,
+                        userId: data.userId,
                     });
-                    if (!tempCompareList) {
-                        await temporaryCompareCollection_1.default.create({
+                    if (!recipeCompare) {
+                        let tempCompareList = await temporaryCompareCollection_1.default.findOne({
                             userId: data.userId,
                             recipeId: recipe._id,
-                            versionId: recipe.defaultVersion,
-                            url: data.url ? data.url : String(new mongoose_1.default.mongo.ObjectId()),
                         });
+                        if (!tempCompareList) {
+                            await temporaryCompareCollection_1.default.create({
+                                userId: data.userId,
+                                recipeId: recipe._id,
+                                versionId: recipe.defaultVersion,
+                                url: data.url
+                                    ? data.url
+                                    : String(new mongoose_1.default.mongo.ObjectId()),
+                            });
+                            await (0, changeCompare_1.default)(String(recipe._id), data.userId);
+                        }
                     }
-                    await (0, changeCompare_1.default)(String(recipe._id), data.userId);
                 }
                 let returnUserRecipe = await recipeModel_1.default.findOne({
                     _id: recipe._id,

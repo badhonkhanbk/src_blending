@@ -267,15 +267,16 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         if (temporaryCompareList.length !== 0) {
             temporaryCompareList = await (0, checkTemporaryCompareList_1.default)(userId);
         }
+        for (let i = 0; i < temporaryCompareList.length; i++) {
+            compareList.push({ ...temporaryCompareList[i], isTemp: true });
+        }
         if (compareList.length === 0) {
             return [];
-        }
-        for (let i = 0; i < temporaryCompareList.length; i++) {
-            compareList.push(temporaryCompareList[i]);
         }
         // let recipeIds = compareList.map((compareItem) => compareItem.recipeId);
         let userProfileRecipes = [];
         for (let i = 0; i < compareList.length; i++) {
+            console.log(compareList[i].recipeId);
             let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
                 userId: userId,
                 recipeId: compareList[i].recipeId,
@@ -318,6 +319,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 turnedOffVersions: userProfileRecipe.turnedOffVersions,
                 isMatch: false,
                 compare: true,
+                isTemp: compareList[i].isTemp ? true : false,
             };
             userProfileRecipes.push(compareRecipe);
         }
