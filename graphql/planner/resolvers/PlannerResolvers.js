@@ -36,6 +36,7 @@ const getIngredientStats_1 = __importDefault(require("./utils/getIngredientStats
 const PlannersIngredientAndCategoryPercentage_1 = __importDefault(require("../schemas/PlannersIngredientAndCategoryPercentage"));
 const getNotesCompareAndUserCollectionsForPlanner_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollectionsForPlanner"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
+const checkGroceryList_1 = __importDefault(require("../../grocery/util/checkGroceryList"));
 var MergeOrReplace;
 (function (MergeOrReplace) {
     MergeOrReplace["MERGE"] = "MERGE";
@@ -500,37 +501,30 @@ let PlannerResolver = class PlannerResolver {
         let groceryList = await GroceryList_1.default.findOne({
             memberId: memberId,
         });
-        let groceryIngredients = [];
-        if (groceryList) {
-            for (let i = 0; i < recipe.defaultVersion.ingredients.length; i++) {
-                if (!groceryList.list.filter(
-                //@ts-ignore
-                (item) => String(item.ingredientId) ===
-                    String(recipe.defaultVersion.ingredients[i].ingredientId))[0]) {
-                    groceryIngredients.push({
-                        ingredientId: recipe.defaultVersion.ingredients[i].ingredientId,
-                        selectedPortion: recipe.defaultVersion.ingredients[i].selectedPortion.name,
-                        quantity: recipe.defaultVersion.ingredients[i].selectedPortion.quantity,
-                    });
-                }
+        if (!groceryList) {
+            groceryList = await GroceryList_1.default.create({
+                memberId: memberId,
+                list: [],
+            });
+        }
+        let data = {};
+        data.ingredients = [];
+        for (let i = 0; i < recipe.defaultVersion.ingredients.length; i++) {
+            if (!groceryList.list.filter(
+            //@ts-ignore
+            (item) => String(item.ingredientId) ===
+                String(recipe.defaultVersion.ingredients[i].ingredientId))[0]) {
+                data.ingredients.push({
+                    ingredientId: recipe.defaultVersion.ingredients[i].ingredientId,
+                    selectedPortion: recipe.defaultVersion.ingredients[i].selectedPortion.name,
+                    quantity: recipe.defaultVersion.ingredients[i].selectedPortion.quantity,
+                });
             }
         }
-        if (groceryIngredients.length === 0) {
+        if (data.ingredients.length === 0) {
             return 'done';
         }
-        if (!groceryList) {
-            await GroceryList_1.default.create({
-                memberId: memberId,
-                list: groceryIngredients,
-            });
-        }
-        else {
-            await GroceryList_1.default.findOneAndUpdate({ memberId: memberId }, {
-                $push: {
-                    list: groceryIngredients,
-                },
-            });
-        }
+        await (0, checkGroceryList_1.default)(data, GroceryList_1.default, groceryList);
         return 'successfully added to grocery';
     }
     async mergeOrReplacePlanner(startDate, endDate, memberId, planId, mergeOrReplace) {

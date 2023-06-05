@@ -22,6 +22,7 @@ const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const pantryList_1 = __importDefault(require("../../../models/pantryList"));
 const StapleList_1 = __importDefault(require("../../../models/StapleList"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
+const checkGroceryList_1 = __importDefault(require("../util/checkGroceryList"));
 let PantryResolver = class PantryResolver {
     async addPantryList(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
@@ -39,18 +40,12 @@ let PantryResolver = class PantryResolver {
             memberId: data.memberId,
         });
         if (!groceryList) {
-            await model.create({
+            groceryList = await model.create({
                 memberId: data.memberId,
-                list: data.ingredients,
+                list: [],
             });
         }
-        else {
-            await model.findOneAndUpdate({ memberId: data.memberId }, {
-                $push: {
-                    list: data.ingredients,
-                },
-            });
-        }
+        await (0, checkGroceryList_1.default)(data, model, groceryList);
         return 'Successfully added to pantry list';
     }
     async getPantryList(memberId) {
@@ -72,6 +67,11 @@ let PantryResolver = class PantryResolver {
             select: 'ingredientName portions featuredImage',
         });
         return pantryList.list;
+    }
+    async removeAllPantryAndStapleList() {
+        await pantryList_1.default.deleteMany();
+        await StapleList_1.default.deleteMany();
+        return 'done';
     }
 };
 __decorate([
@@ -95,6 +95,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PantryResolver.prototype, "getStapleList", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PantryResolver.prototype, "removeAllPantryAndStapleList", null);
 PantryResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], PantryResolver);

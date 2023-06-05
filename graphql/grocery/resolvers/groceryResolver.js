@@ -25,7 +25,9 @@ const GroceryIngredientType_1 = __importDefault(require("../schemas/GroceryIngre
 const pantryList_1 = __importDefault(require("../../../models/pantryList"));
 const StapleList_1 = __importDefault(require("../../../models/StapleList"));
 const GroceryIngredient_1 = __importDefault(require("./input-type/GroceryIngredient"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
+const checkGroceryList_1 = __importDefault(require("../util/checkGroceryList"));
 let GroceryResolver = class GroceryResolver {
     async addGroceryList(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
@@ -36,18 +38,12 @@ let GroceryResolver = class GroceryResolver {
             memberId: data.memberId,
         });
         if (!groceryList) {
-            await GroceryList_2.default.create({
+            groceryList = await GroceryList_2.default.create({
                 memberId: data.memberId,
-                list: data.ingredients,
+                list: [],
             });
         }
-        else {
-            await GroceryList_2.default.findOneAndUpdate({ memberId: data.memberId }, {
-                $push: {
-                    list: data.ingredients,
-                },
-            });
-        }
+        await (0, checkGroceryList_1.default)(data, GroceryList_2.default, groceryList);
         return 'true';
     }
     async getMyGroceryList(memberId) {
@@ -101,23 +97,25 @@ let GroceryResolver = class GroceryResolver {
         else {
             model = StapleList_1.default;
         }
-        await model.findOneAndUpdate({
+        let data = {};
+        data.ingredients = [ingredient];
+        let groceryList = await model.findOne({
             memberId: memberId,
+        });
+        if (!groceryList) {
+            groceryList = await model.create({
+                memberId: memberId,
+                list: [],
+            });
+        }
+        await model.findOneAndUpdate({
+            _id: groceryList._id,
         }, {
             $pull: {
-                list: {
-                    ingredientId: { $in: ingredient.ingredientId },
-                },
+                list: new mongoose_1.default.Types.ObjectId(ingredient.ingredientId.toString()),
             },
         });
-        await model.findOneAndUpdate({
-            memberId: memberId,
-        }, {
-            $push: {
-                list: ingredient,
-            },
-        });
-        console.log('test');
+        await (0, checkGroceryList_1.default)(data, model, groceryList);
         return 'Successfully updated';
     }
     async searchBlendIngredientsForGrocery(searchTerm, memberId) {
@@ -188,6 +186,10 @@ let GroceryResolver = class GroceryResolver {
         let finalList = list1.concat(list2.concat(list3));
         return finalList;
     }
+    async removeAllGroceryList() {
+        await GroceryList_2.default.deleteMany();
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
@@ -237,6 +239,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], GroceryResolver.prototype, "getMyIngredientList", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GroceryResolver.prototype, "removeAllGroceryList", null);
 GroceryResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], GroceryResolver);
