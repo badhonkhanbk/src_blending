@@ -51,6 +51,8 @@ const Planner_1 = __importDefault(require("../../../models/Planner"));
 const planCollection_1 = __importDefault(require("../../../models/planCollection"));
 const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
 const changeCompare_1 = __importDefault(require("../../member/resolvers/util/changeCompare"));
+const GetASingleRecipe_1 = __importDefault(require("./util/GetASingleRecipe"));
+const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
 let RecipeResolver = class RecipeResolver {
     async tya() {
         let recipeVersions = await RecipeVersionModel_1.default.find({
@@ -933,33 +935,7 @@ let RecipeResolver = class RecipeResolver {
                         }
                     }
                 }
-                let returnUserRecipe = await recipeModel_1.default.findOne({
-                    _id: recipe._id,
-                })
-                    .populate('recipeBlendCategory')
-                    .populate({
-                    path: 'ingredients.ingredientId',
-                    model: 'BlendIngredient',
-                })
-                    .populate([
-                    {
-                        path: 'defaultVersion',
-                        model: 'RecipeVersion',
-                        populate: {
-                            path: 'ingredients.ingredientId',
-                            model: 'BlendIngredient',
-                            select: 'ingredientName',
-                        },
-                        select: 'postfixTitle selectedImage calorie gigl errorIngredients',
-                    },
-                    {
-                        path: 'userId',
-                        model: 'User',
-                        select: '_id displayName image firstName lastName email',
-                    },
-                ])
-                    .populate('brand');
-                return returnUserRecipe;
+                return await (0, GetASingleRecipe_1.default)(String(recipe._id), String(data.userId), null);
             }
         }
         //ingredientId
@@ -1129,7 +1105,7 @@ let RecipeResolver = class RecipeResolver {
             allRecipe: true,
             myRecipes: true,
         });
-        return returnUserRecipe;
+        return await (0, GetASingleRecipe_1.default)(String(returnUserRecipe._id), String(data.userId), null);
     }
     async janoyar() {
         let userRecipes = await UserRecipeProfile_1.default.find();
@@ -1861,7 +1837,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "addRecipeFromAdmin", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => Recipe_1.default),
+    (0, type_graphql_1.Mutation)((type) => ProfileRecipeDesc_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __param(1, (0, type_graphql_1.Arg)('isAddToTemporaryCompareList')),
     __metadata("design:type", Function),
