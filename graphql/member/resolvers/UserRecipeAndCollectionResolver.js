@@ -43,6 +43,7 @@ const Collection_3 = __importDefault(require("../schemas/Collection"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
 const slugify_1 = __importDefault(require("slugify"));
+const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
 let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     async getMyRecentRecipes(page, limit, userId) {
         if (!page) {
@@ -227,6 +228,16 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         });
         console.log(collection);
         let found = false;
+        let checkIfInTempCollection = await temporaryCompareCollection_1.default.findOne({
+            recipeId: data.recipe,
+            userId: data.userId,
+        });
+        if (checkIfInTempCollection) {
+            await temporaryCompareCollection_1.default.findOneAndDelete({
+                recipeId: data.recipe,
+                userId: data.userId,
+            });
+        }
         for (let k = 0; k < collection.recipes.length; k++) {
             if (String(collection.recipes[k]) === String(data.recipe)) {
                 found = true;
