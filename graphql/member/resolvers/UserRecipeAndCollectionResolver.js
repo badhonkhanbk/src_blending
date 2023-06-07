@@ -41,8 +41,8 @@ const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVers
 const Collection_2 = __importDefault(require("../schemas/Collection"));
 const Collection_3 = __importDefault(require("../schemas/Collection"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
-const ProfileRecipe_1 = __importDefault(require("../../recipe/schemas/ProfileRecipe"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
+const slugify_1 = __importDefault(require("slugify"));
 let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     async getMyRecentRecipes(page, limit, userId) {
         if (!page) {
@@ -90,7 +90,19 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             .limit(limit)
             .skip((page - 1) * limit);
         let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
-        return returnRecentRecipe;
+        let totalUserRecipes = await UserRecipeProfile_1.default.countDocuments({
+            userId: userId,
+        });
+        return {
+            _id: new mongoose_1.default.mongo.ObjectId(),
+            name: 'My Recent Recipes',
+            slug: (0, slugify_1.default)('My Recent Recipes').toLowerCase(),
+            image: '',
+            totalRecipes: totalUserRecipes,
+            recipes: returnRecentRecipe,
+            creatorInfo: null,
+            accepted: true,
+        };
     }
     async createNewUserRecipeWithCollection(data) {
         let user = await memberModel_1.default.findOne({ email: data.userEmail });
@@ -1067,9 +1079,9 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => [ProfileRecipe_1.default]),
+    (0, type_graphql_1.Query)(() => Collection_3.default),
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
-    __param(1, (0, type_graphql_1.Arg)('Limit', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Number, String]),

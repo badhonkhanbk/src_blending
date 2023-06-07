@@ -42,7 +42,6 @@ const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrap
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("./util/getNotesCompareAndUserCollection"));
-const ProfileRecipe_1 = __importDefault(require("../schemas/ProfileRecipe"));
 const QANotFound_1 = __importDefault(require("../../../models/QANotFound"));
 const brand_1 = __importDefault(require("../../../models/brand"));
 const slugify_1 = __importDefault(require("slugify"));
@@ -53,6 +52,7 @@ const temporaryCompareCollection_1 = __importDefault(require("../../../models/te
 const changeCompare_1 = __importDefault(require("../../member/resolvers/util/changeCompare"));
 const GetASingleRecipe_1 = __importDefault(require("./util/GetASingleRecipe"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
+const Collection_1 = __importDefault(require("../../member/schemas/Collection"));
 let RecipeResolver = class RecipeResolver {
     async tya() {
         let recipeVersions = await RecipeVersionModel_1.default.find({
@@ -897,7 +897,7 @@ let RecipeResolver = class RecipeResolver {
                         defaultVersion: recipe.defaultVersion,
                         isMatch: true,
                         allRecipe: true,
-                        myRecipes: true,
+                        myRecipes: false,
                     });
                 }
                 if (!isAddToTemporaryCompareList) {
@@ -1298,7 +1298,13 @@ let RecipeResolver = class RecipeResolver {
             .populate('recipeBlendCategory');
         return recipes;
     }
-    async getAllMyCreatedRecipes(userId) {
+    async getAllMyCreatedRecipes(userId, page, limit) {
+        if (!page || page <= 0) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
+        }
         let xc = await UserRecipeProfile_1.default.find({
             userId: userId,
             myRecipes: true,
@@ -1343,10 +1349,23 @@ let RecipeResolver = class RecipeResolver {
             },
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
-            .limit(20);
+            .limit(limit)
+            .skip(limit * (page - 1));
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
-        // console.log(returnRecipe[0].recipeId);
-        return returnRecipe;
+        let totalRecipes = await UserRecipeProfile_1.default.countDocuments({
+            userId: userId,
+            myRecipes: true,
+        });
+        return {
+            _id: new mongoose_1.default.mongo.ObjectId(),
+            name: 'My Recipes',
+            slug: (0, slugify_1.default)('My Recipes').toLocaleLowerCase(),
+            image: '',
+            totalRecipes: totalRecipes,
+            recipes: returnRecipe,
+            creatorInfo: null,
+            accepted: true,
+        };
     }
     async addMacroInfo() {
         let recipes = await recipeModel_1.default.find().select('userId');
@@ -1885,10 +1904,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getAllRecipesBasedOnIngredient", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default]),
+    (0, type_graphql_1.Query)((type) => Collection_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getAllMyCreatedRecipes", null);
 __decorate([

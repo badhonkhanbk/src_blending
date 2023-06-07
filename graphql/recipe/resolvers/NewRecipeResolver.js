@@ -110,13 +110,14 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             await (0, getAllGlobalRecipes_1.default)(userId);
         }
         let compareList = await Compare_1.default.find({ userId: userId });
-        let temporaryCompareList = await temporaryCompareCollection_1.default.find({
-            userId: userId,
-        });
-        if (temporaryCompareList.length !== 0) {
-            temporaryCompareList = await (0, checkTemporaryCompareList_1.default)(userId);
-            compareList = await Compare_1.default.find({ userId: userId });
-        }
+        // let temporaryCompareList: any[] =
+        //   await TemporaryCompareCollectionModel.find({
+        //     userId: userId,
+        //   });
+        // if (temporaryCompareList.length !== 0) {
+        // temporaryCompareList = await checkTemporaryCompareList(userId);
+        //   compareList = await CompareModel.find({ userId: userId });
+        // }
         // for (let i = 0; i < temporaryCompareList.length; i++) {
         //   compareList.push({ ...temporaryCompareList[i]._doc, isTemp: true });
         // }

@@ -39,7 +39,6 @@ const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe
 const ShowAllCollection_1 = __importDefault(require("../schemas/ShowAllCollection"));
 const SimpleCollection_1 = __importDefault(require("../schemas/SimpleCollection"));
 const changeCompare_1 = __importDefault(require("./util/changeCompare"));
-const checkTemporaryCompareList_1 = __importDefault(require("../../recipe/resolvers/util/checkTemporaryCompareList"));
 const makeShareRecipe_1 = __importDefault(require("../../share/util/makeShareRecipe"));
 // type SimpleCollection = {
 //   _id: String;
@@ -539,7 +538,7 @@ let MemberResolver = class MemberResolver {
             });
             return user3;
         }
-        await (0, checkTemporaryCompareList_1.default)(String(user._id));
+        // await checkTemporaryCompareList(String(user._id));
         let returnUser = await memberModel_1.default.findOne({ email: data.email })
             .populate('configuration')
             .populate({

@@ -15,6 +15,11 @@ const ThemeSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now,
     },
+    // collectionType: {
+    //   type: String,
+    //   required: [true, 'collection type is required'],
+    //   enum: ['Ingredient', 'Recipe', 'Wiki', 'GeneraBlog', 'Plan'],
+    // },
     updatedAt: Date,
 });
 const Theme = (0, mongoose_1.model)('Theme', ThemeSchema);
