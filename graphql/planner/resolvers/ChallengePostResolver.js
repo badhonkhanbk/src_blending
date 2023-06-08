@@ -412,13 +412,6 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         return invite.challengeId;
     }
-    async hjkl() {
-        let challenges = await challenge_1.default.find().select('_id');
-        for (let i = 0; i < challenges.length; i++) {
-            await this.upgradeTopIngredient(String(challenges[i]._id));
-        }
-        return 'done';
-    }
     async upgradeTopIngredient(challengeId) {
         let challenge = await challenge_1.default.findOne({
             _id: challengeId,
@@ -492,6 +485,29 @@ let ChallengePostResolver = class ChallengePostResolver {
     }
     async editAChallengePost(data) {
         let isoDate = new Date(data.assignDate).toISOString();
+        let prevChallengeDoc = await ChallengePost_2.default.findOne({
+            memberId: data.memberId,
+            assignDate: isoDate,
+        })
+            .populate('posts.recipeBlendCategory')
+            .populate('posts.ingredients.ingredientId');
+        let prevDoc = {
+            _id: prevChallengeDoc._id,
+            images: prevChallengeDoc.images,
+            assignDate: prevChallengeDoc.assignDate,
+            date: new Date(prevChallengeDoc.assignDate).getDate(),
+            dayName: new Date(prevChallengeDoc.assignDate).toLocaleString('default', {
+                weekday: 'short',
+            }),
+            formattedDate: (0, FormateDate_1.default)(prevChallengeDoc.assignDate),
+            posts: prevChallengeDoc.posts,
+        };
+        // let challengeInfo = await this.getChallengeInfo(
+        //   data.memberId,
+        //   false,
+        //   '',
+        //   String(userChallenge._id)
+        // );
         let blendCategory = await recipeCategory_1.default.findOne({
             _id: data.post.recipeBlendCategory,
         }).select('name');
@@ -579,13 +595,6 @@ let ChallengePostResolver = class ChallengePostResolver {
             });
         }
         else {
-            // let images = [];
-            // for (let i = 0; i < data.post.images.length; i++) {
-            //   images = await this.addUniqueObj(
-            //     challengePostDoc.images,
-            //     data.post.images[i]
-            //   );
-            // }
             await ChallengePost_2.default.create({
                 memberId: data.memberId,
                 assignDate: isoDate,
@@ -597,29 +606,6 @@ let ChallengePostResolver = class ChallengePostResolver {
             memberId: data.memberId,
             isActive: true,
         });
-        // let tempDay = new Date(new Date().toISOString().slice(0, 10));
-        // if (userChallenge.days > 30) {
-        //   if (
-        //     userChallenge.startDate <= tempDay &&
-        //     userChallenge.endDate >= tempDay
-        //   ) {
-        //     //@ts-ignore
-        //     let diffTime = Math.abs(tempDay - userChallenge.startDate);
-        //     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        //     if (diffDays >= 30) {
-        //       let StartCount = Math.abs(diffDays - 30) + 1;
-        //       let day = userChallenge.startDate;
-        //       tempDay = new Date(day.setDate(day.getDate() + StartCount));
-        //     } else {
-        //       tempDay = userChallenge.startDate;
-        //     }
-        //   } else {
-        //     let day = userChallenge.endDate;
-        //     tempDay = new Date(day.setDate(day.getDate() - 30));
-        //   }
-        // } else {
-        //   tempDay = userChallenge.startDate;
-        // }
         let challengeDoc = await ChallengePost_2.default.findOne({
             memberId: data.memberId,
             assignDate: isoDate,
@@ -638,7 +624,11 @@ let ChallengePostResolver = class ChallengePostResolver {
             posts: challengeDoc.posts,
         };
         let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', String(userChallenge._id));
-        return { challenge: doc, challengeInfo: challengeInfo };
+        return {
+            challenge: doc,
+            previousChallenge: prevDoc,
+            challengeInfo: challengeInfo,
+        };
     }
     async checkIfChallengeIsGlobal(challengeId, token) {
         let data = await shareChallengeGlobal_1.default.findOne({
@@ -1576,12 +1566,6 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "acceptChallenge", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => String),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ChallengePostResolver.prototype, "hjkl", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __param(0, (0, type_graphql_1.Arg)('challengeId')),

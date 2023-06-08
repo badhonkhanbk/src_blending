@@ -22,6 +22,10 @@ __decorate([
     __metadata("design:type", Challenge_1.default)
 ], ChallengeAndSingleChallengeDoc.prototype, "challenge", void 0);
 __decorate([
+    (0, type_graphql_1.Field)((type) => Challenge_1.default, { nullable: true }),
+    __metadata("design:type", Challenge_1.default)
+], ChallengeAndSingleChallengeDoc.prototype, "previousChallenge", void 0);
+__decorate([
     (0, type_graphql_1.Field)((type) => ChallngeInfo_1.default, { nullable: true }),
     __metadata("design:type", ChallngeInfo_1.default)
 ], ChallengeAndSingleChallengeDoc.prototype, "challengeInfo", void 0);

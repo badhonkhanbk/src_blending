@@ -21,6 +21,8 @@ const Banner_1 = __importDefault(require("../schemas/Banner"));
 const EditBanner_1 = __importDefault(require("./input-type/EditBanner"));
 const BannerInput_1 = __importDefault(require("./input-type/BannerInput"));
 const newModel_1 = __importDefault(require("../../../models/newModel"));
+const Widget_1 = __importDefault(require("../../../models/Widget"));
+const AppError_1 = __importDefault(require("../../../utils/AppError"));
 let BannerResolver = class BannerResolver {
     async createNewBanner(data) {
         let theme = await banner_1.default.create(data);
@@ -33,8 +35,22 @@ let BannerResolver = class BannerResolver {
         theme.save();
         return 'successfully edited';
     }
-    async removeABanner(themeId) {
-        await banner_1.default.findByIdAndDelete(themeId);
+    async removeABanner(bannerId) {
+        let widget = await Widget_1.default.findOne({
+            bannerId: bannerId,
+        }).select('_id');
+        if (widget) {
+            return new AppError_1.default('The banner is in use in widget', 401);
+        }
+        let widgetWidgetCollection = await Widget_1.default.findOne({
+            'widgetCollections.bannerId': {
+                $in: [bannerId],
+            },
+        });
+        if (widgetWidgetCollection) {
+            return new AppError_1.default('The banner is in use in widgetCollection under a widget', 401);
+        }
+        await banner_1.default.findByIdAndDelete(bannerId);
         return 'theme removed successfully';
     }
     async getASingleBanner(themeId) {
