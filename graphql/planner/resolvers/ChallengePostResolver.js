@@ -559,9 +559,13 @@ let ChallengePostResolver = class ChallengePostResolver {
         let previousPost = challenge.posts.filter(
         //@ts-ignore
         (item) => String(item._id) === String(post._id))[0];
-        let prevPostDate = null;
+        let prevPost = null;
         if (previousPost) {
-            prevPostDate = previousPost.createdAt;
+            prevPost = {
+                prevPostDate: (0, FormateDate_2.default)(previousPost.createdAt),
+                //@ts-ignore
+                postId: previousPost._id,
+            };
         }
         await ChallengePost_2.default.findOneAndUpdate({
             _id: post.docId,
@@ -631,7 +635,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', String(userChallenge._id));
         return {
             challenge: doc,
-            prevPostDate: (0, FormateDate_2.default)(prevPostDate),
+            prevPost,
             challengeInfo: challengeInfo,
         };
     }

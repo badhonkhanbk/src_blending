@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const Challenge_1 = __importDefault(require("./Challenge"));
 const ChallngeInfo_1 = __importDefault(require("./ChallngeInfo"));
+const PrevPost_1 = __importDefault(require("./PrevPost"));
 let ChallengeAndSingleChallengeDoc = class ChallengeAndSingleChallengeDoc {
 };
 __decorate([
@@ -22,9 +23,9 @@ __decorate([
     __metadata("design:type", Challenge_1.default)
 ], ChallengeAndSingleChallengeDoc.prototype, "challenge", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], ChallengeAndSingleChallengeDoc.prototype, "prevPostDate", void 0);
+    (0, type_graphql_1.Field)(type => PrevPost_1.default, { nullable: true }),
+    __metadata("design:type", PrevPost_1.default)
+], ChallengeAndSingleChallengeDoc.prototype, "prevPost", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => ChallngeInfo_1.default, { nullable: true }),
     __metadata("design:type", ChallngeInfo_1.default)
