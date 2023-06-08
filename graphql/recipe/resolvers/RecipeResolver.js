@@ -1032,27 +1032,6 @@ let RecipeResolver = class RecipeResolver {
             isDefault: true,
             isOriginal: true,
         });
-        if (!isAddToTemporaryCompareList) {
-            await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
-        }
-        else {
-            console.log('hello');
-            let tempCompareList = await temporaryCompareCollection_1.default.findOne({
-                userId: data.userId,
-                recipeId: userRecipe._id,
-            });
-            console.log(tempCompareList);
-            if (!tempCompareList) {
-                console.log('new model created');
-                await temporaryCompareCollection_1.default.create({
-                    userId: data.userId,
-                    recipeId: userRecipe._id,
-                    versionId: recipeVersion._id,
-                    url: data.url ? data.url : String(new mongoose_1.default.mongo.ObjectId()),
-                });
-            }
-            await (0, changeCompare_1.default)(String(userRecipe._id), data.userId);
-        }
         //@ts-ignore
         await (0, updateVersionFacts_1.default)(recipeVersion._id);
         if (data.errorIngredients) {
@@ -1105,6 +1084,30 @@ let RecipeResolver = class RecipeResolver {
             allRecipe: true,
             myRecipes: true,
         });
+        if (!isAddToTemporaryCompareList) {
+            await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: returnUserRecipe._id } });
+        }
+        else {
+            let recipeCompare = await Compare_1.default.findOne({
+                recipeId: userRecipe._id,
+                userId: data.userId,
+            });
+            if (!recipeCompare) {
+                let tempCompareList = await temporaryCompareCollection_1.default.findOne({
+                    userId: data.userId,
+                    recipeId: returnUserRecipe._id,
+                });
+                if (!tempCompareList) {
+                    await temporaryCompareCollection_1.default.create({
+                        userId: data.userId,
+                        recipeId: returnUserRecipe._id,
+                        versionId: userRecipe.defaultVersion,
+                        url: data.url ? data.url : String(new mongoose_1.default.mongo.ObjectId()),
+                    });
+                    await (0, changeCompare_1.default)(String(returnUserRecipe._id), data.userId);
+                }
+            }
+        }
         return await (0, GetASingleRecipe_1.default)(String(returnUserRecipe._id), String(data.userId), null);
     }
     async janoyar() {
