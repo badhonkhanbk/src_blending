@@ -47,6 +47,16 @@ let GroceryResolver = class GroceryResolver {
         return 'true';
     }
     async getMyGroceryList(memberId) {
+        let foundGrocery = await GroceryList_2.default.findOne({
+            memberId: memberId,
+        });
+        if (!foundGrocery) {
+            let groceryList = await GroceryList_2.default.findOne({
+                memberId: memberId,
+                list: [],
+            });
+            return groceryList;
+        }
         let groceryList = await GroceryList_2.default.findOne({
             memberId: memberId,
         }).populate({

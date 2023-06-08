@@ -49,6 +49,16 @@ let PantryResolver = class PantryResolver {
         return 'Successfully added to pantry list';
     }
     async getPantryList(memberId) {
+        let pantrtyList = await pantryList_1.default.findOne({
+            memberId: memberId,
+        });
+        if (!pantrtyList) {
+            pantrtyList = await pantryList_1.default.create({
+                memberId: memberId,
+                list: [],
+            });
+            return pantrtyList;
+        }
         let pantryList = await pantryList_1.default.findOne({
             memberId: memberId,
         }).populate({
@@ -59,6 +69,16 @@ let PantryResolver = class PantryResolver {
         return pantryList.list;
     }
     async getStapleList(memberId) {
+        let pantrtyList = await StapleList_1.default.findOne({
+            memberId: memberId,
+        });
+        if (!pantrtyList) {
+            pantrtyList = await StapleList_1.default.create({
+                memberId: memberId,
+                list: [],
+            });
+            return pantrtyList;
+        }
         let pantryList = await StapleList_1.default.findOne({
             memberId: memberId,
         }).populate({
