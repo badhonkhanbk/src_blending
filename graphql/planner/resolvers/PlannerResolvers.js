@@ -508,6 +508,7 @@ let PlannerResolver = class PlannerResolver {
             });
         }
         let data = {};
+        data.memberId = memberId;
         data.ingredients = [];
         for (let i = 0; i < recipe.defaultVersion.ingredients.length; i++) {
             if (!groceryList.list.filter(
@@ -515,7 +516,7 @@ let PlannerResolver = class PlannerResolver {
             (item) => String(item.ingredientId) ===
                 String(recipe.defaultVersion.ingredients[i].ingredientId))[0]) {
                 data.ingredients.push({
-                    ingredientId: recipe.defaultVersion.ingredients[i].ingredientId,
+                    ingredientId: String(recipe.defaultVersion.ingredients[i].ingredientId._id),
                     selectedPortion: recipe.defaultVersion.ingredients[i].selectedPortion.name,
                     quantity: recipe.defaultVersion.ingredients[i].selectedPortion.quantity,
                 });
@@ -524,6 +525,7 @@ let PlannerResolver = class PlannerResolver {
         if (data.ingredients.length === 0) {
             return 'done';
         }
+        console.log(data.ingredients[0].ingredientId);
         await (0, checkGroceryList_1.default)(data, GroceryList_1.default, groceryList);
         return 'successfully added to grocery';
     }
