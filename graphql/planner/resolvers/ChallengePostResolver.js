@@ -45,6 +45,7 @@ const ChsllengeAndSingleDoc_1 = __importDefault(require("../schemas/ChsllengeAnd
 const DateDocPostId_1 = __importDefault(require("../schemas/DateDocPostId"));
 const ChallngeInfo_1 = __importDefault(require("../schemas/ChallngeInfo"));
 const InviteInfoSharedWithAndTopIngredients_1 = __importDefault(require("../schemas/InviteInfoSharedWithAndTopIngredients"));
+const FormateDate_2 = __importDefault(require("../../../utils/FormateDate"));
 let ChallengePostResolver = class ChallengePostResolver {
     async ins() {
         await InviteForChallenge_1.default.deleteMany();
@@ -485,23 +486,23 @@ let ChallengePostResolver = class ChallengePostResolver {
     }
     async editAChallengePost(data) {
         let isoDate = new Date(data.assignDate).toISOString();
-        let prevChallengeDoc = await ChallengePost_2.default.findOne({
-            memberId: data.memberId,
-            assignDate: isoDate,
-        })
-            .populate('posts.recipeBlendCategory')
-            .populate('posts.ingredients.ingredientId');
-        let prevDoc = {
-            _id: prevChallengeDoc._id,
-            images: prevChallengeDoc.images,
-            assignDate: prevChallengeDoc.assignDate,
-            date: new Date(prevChallengeDoc.assignDate).getDate(),
-            dayName: new Date(prevChallengeDoc.assignDate).toLocaleString('default', {
-                weekday: 'short',
-            }),
-            formattedDate: (0, FormateDate_1.default)(prevChallengeDoc.assignDate),
-            posts: prevChallengeDoc.posts,
-        };
+        // let prevChallengeDoc = await ChallengePostModel.findOne({
+        //   memberId: data.memberId,
+        //   assignDate: isoDate,
+        // })
+        //   .populate('posts.recipeBlendCategory')
+        //   .populate('posts.ingredients.ingredientId');
+        // let prevDoc = {
+        //   _id: prevChallengeDoc._id,
+        //   images: prevChallengeDoc.images,
+        //   assignDate: prevChallengeDoc.assignDate,
+        //   date: new Date(prevChallengeDoc.assignDate).getDate(),
+        //   dayName: new Date(prevChallengeDoc.assignDate).toLocaleString('default', {
+        //     weekday: 'short',
+        //   }),
+        //   formattedDate: formateDate(prevChallengeDoc.assignDate),
+        //   posts: prevChallengeDoc.posts,
+        // };
         // let challengeInfo = await this.getChallengeInfo(
         //   data.memberId,
         //   false,
@@ -558,6 +559,10 @@ let ChallengePostResolver = class ChallengePostResolver {
         let previousPost = challenge.posts.filter(
         //@ts-ignore
         (item) => String(item._id) === String(post._id))[0];
+        let prevPostDate = null;
+        if (previousPost) {
+            prevPostDate = previousPost.createdAt;
+        }
         await ChallengePost_2.default.findOneAndUpdate({
             _id: post.docId,
         }, {
@@ -626,7 +631,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', String(userChallenge._id));
         return {
             challenge: doc,
-            previousChallenge: prevDoc,
+            prevPostDate: (0, FormateDate_2.default)(prevPostDate),
             challengeInfo: challengeInfo,
         };
     }
