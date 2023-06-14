@@ -8,6 +8,7 @@ const blendIngredient_1 = __importDefault(require("../models/blendIngredient"));
 const generalBlog_1 = __importDefault(require("../models/generalBlog"));
 const recipe_1 = __importDefault(require("../models/recipe"));
 const wiki_1 = __importDefault(require("../models/wiki"));
+const blendNutrient_1 = __importDefault(require("../models/blendNutrient"));
 function getGenericModel(collectionType) {
     if (collectionType === 'Ingredient') {
         return blendIngredient_1.default;
@@ -23,6 +24,9 @@ function getGenericModel(collectionType) {
     }
     else if (collectionType === 'Plan') {
         return Plan_1.default;
+    }
+    else if (collectionType === 'Nutrient') {
+        return blendNutrient_1.default;
     }
     else {
         return null;

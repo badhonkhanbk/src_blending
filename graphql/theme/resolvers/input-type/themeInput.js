@@ -25,10 +25,6 @@ __decorate([
     __metadata("design:type", String)
 ], ThemeInput.prototype, "link", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
-    __metadata("design:type", String)
-], ThemeInput.prototype, "channel", void 0);
-__decorate([
     (0, type_graphql_1.Field)(() => [String]),
     __metadata("design:type", Array)
 ], ThemeInput.prototype, "viewPorts", void 0);
@@ -36,6 +32,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], ThemeInput.prototype, "thumbnailImage", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], ThemeInput.prototype, "domain", void 0);
 ThemeInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], ThemeInput);

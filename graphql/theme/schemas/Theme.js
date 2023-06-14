@@ -29,9 +29,9 @@ __decorate([
     __metadata("design:type", String)
 ], Theme.prototype, "link", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], Theme.prototype, "channel", void 0);
+], Theme.prototype, "domain", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => [String]),
     __metadata("design:type", Array)

@@ -36,7 +36,6 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const GlobalBookmarkLink_1 = __importDefault(require("../../../models/GlobalBookmarkLink"));
 const BookmarkAndExternalGlobalLInk_1 = __importDefault(require("../schemas/BookmarkAndExternalGlobalLInk"));
 const usedBookmark_1 = __importDefault(require("../../../models/usedBookmark"));
-const generalBlog_1 = __importDefault(require("../../../models/generalBlog"));
 let WikiResolver = class WikiResolver {
     async getNutrientWikiList(userId, limit, page, ids) {
         if (!limit) {
@@ -110,7 +109,6 @@ let WikiResolver = class WikiResolver {
         if (!page) {
             page = 1;
         }
-        //cullinert helth super powwer for mere power
         let returnData = [];
         let totalNutrients = 0;
         let find = {};
@@ -280,7 +278,9 @@ let WikiResolver = class WikiResolver {
     }
     async getWikiList(userId) {
         let returnData = [];
-        let blendNutrients = await blendNutrient_1.default.find()
+        let blendNutrients = await blendNutrient_1.default.find({
+            isPublished: true,
+        })
             .lean()
             .select('-uniqueNutrientId -related_sources -parent -bodies -wikiCoverImages');
         for (let i = 0; i < blendNutrients.length; i++) {
@@ -308,7 +308,9 @@ let WikiResolver = class WikiResolver {
             }
             returnData.push(data);
         }
-        let blendIngredients = await blendIngredient_1.default.find()
+        let blendIngredients = await blendIngredient_1.default.find({
+            isPublished: true,
+        })
             .select('wikiTitle _id ingredientName wikiDescription category blendStatus createdAt portions featuredImage description isPublished')
             .lean();
         for (let i = 0; i < blendIngredients.length; i++) {
@@ -354,7 +356,7 @@ let WikiResolver = class WikiResolver {
     }
     async getWikiList2(userId) {
         let returnData = [];
-        let wikis = await wiki_1.default.find({ isBookmarked: false })
+        let wikis = await wiki_1.default.find({ isBookmarked: false, isPublished: true })
             .lean()
             .sort({ wikiTitle: 1 });
         if (userId) {
@@ -382,60 +384,70 @@ let WikiResolver = class WikiResolver {
         }
         return returnData;
     }
-    async getBlendNutritionBasedIngredientsWiki(ingredientsInfo, userId) {
-        let data = ingredientsInfo;
-        // @ts-ignore
-        let hello = data.map((x) => new mongoose_1.default.mongo.ObjectId(x.ingredientId));
-        let ingredient = await blendIngredient_1.default.findOne({
-            _id: ingredientsInfo[0].ingredientId,
-        });
-        let commentsCount = 0;
-        let hasInCompare = false;
-        if (userId) {
-            let comments = await wikiComment_1.default.find({
-                entityId: ingredient._id,
-            }).select('_id');
-            let compare = await UserIngredientCompareList_1.default.findOne({
-                userId: userId,
-                ingredients: { $in: ingredient._id },
-            }).select('_id');
-            if (compare) {
-                hasInCompare = true;
-            }
-            commentsCount = comments.length;
-        }
-        let returnData = {
-            wikiTitle: ingredient.wikiTitle,
-            wikiDescription: ingredient.wikiDescription,
-            ingredientName: ingredient.ingredientName,
-            wikiCoverImages: ingredient.wikiCoverImages,
-            wikiFeatureImage: ingredient.wikiFeatureImage,
-            bodies: ingredient.bodies,
-            type: 'Ingredient',
-            category: ingredient.category ? ingredient.category : '',
-            publishedBy: 'g. Braun',
-            seoTitle: ingredient.seoTitle,
-            seoSlug: ingredient.seoSlug,
-            portions: ingredient.portions,
-            seoCanonicalURL: ingredient.seoCanonicalURL,
-            seoSiteMapPriority: ingredient.seoSiteMapPriority,
-            seoKeywords: ingredient.seoKeywords,
-            seoMetaDescription: ingredient.seoMetaDescription,
-            isPublished: ingredient.isPublished,
-            commentsCount: commentsCount,
-            hasInCompare: hasInCompare,
-        };
-        return returnData;
-    }
+    // @Query(() => NutritionFromIngredient) // wait
+    // async getBlendNutritionBasedIngredientsWiki(
+    //   @Arg('ingredientsInfo', (type) => [BlendIngredientInfo])
+    //   ingredientsInfo: BlendIngredientInfo[],
+    //   @Arg('userId', { nullable: true }) userId: String
+    // ) {
+    //   let data: any = ingredientsInfo;
+    //   // @ts-ignore
+    //   let hello = data.map((x) => new mongoose.mongo.ObjectId(x.ingredientId));
+    //   let ingredient: any = await BlendIngredientModel.findOne({
+    //     _id: ingredientsInfo[0].ingredientId,
+    //   });
+    //   let commentsCount = 0;
+    //   let hasInCompare = false;
+    //   if (userId) {
+    //     let comments = await WikiCommentModel.find({
+    //       entityId: ingredient._id,
+    //     }).select('_id');
+    //     let compare = await UserIngredientsCompareModel.findOne({
+    //       userId: userId,
+    //       ingredients: { $in: ingredient._id },
+    //     }).select('_id');
+    //     if (compare) {
+    //       hasInCompare = true;
+    //     }
+    //     commentsCount = comments.length;
+    //   }
+    //   let returnData = {
+    //     wikiTitle: ingredient.wikiTitle,
+    //     wikiDescription: ingredient.wikiDescription,
+    //     ingredientName: ingredient.ingredientName,
+    //     wikiCoverImages: ingredient.wikiCoverImages,
+    //     wikiFeatureImage: ingredient.wikiFeatureImage,
+    //     bodies: ingredient.bodies,
+    //     type: 'Ingredient',
+    //     category: ingredient.category ? ingredient.category : '',
+    //     publishedBy: 'g. Braun',
+    //     seoTitle: ingredient.seoTitle,
+    //     seoSlug: ingredient.seoSlug,
+    //     portions: ingredient.portions,
+    //     seoCanonicalURL: ingredient.seoCanonicalURL,
+    //     seoSiteMapPriority: ingredient.seoSiteMapPriority,
+    //     seoKeywords: ingredient.seoKeywords,
+    //     seoMetaDescription: ingredient.seoMetaDescription,
+    //     isPublished: ingredient.isPublished,
+    //     commentsCount: commentsCount,
+    //     hasInCompare: hasInCompare,
+    //   };
+    //   return returnData;
+    // }
     async getBlendNutritionBasedIngredientsWiki2(ingredientsInfo, userId) {
         let data = ingredientsInfo;
         // @ts-ignore
         let hello = data.map((x) => new mongoose_1.default.mongo.ObjectId(x.ingredientId));
         let wiki = await wiki_1.default.findOne({
             _id: ingredientsInfo[0].ingredientId,
-        }).populate({
+        })
+            .populate({
             path: 'ingredientBookmarkList.ingredientId',
             select: '_id ingredientName portions',
+        })
+            .populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
         });
         let blendIngredient = await blendIngredient_1.default.findOne({
             _id: wiki._id,
@@ -460,111 +472,133 @@ let WikiResolver = class WikiResolver {
         wiki.portions = blendIngredient.portions;
         return wiki;
     }
-    async getAllIngredientsBasedOnNutrition(data, userId) {
-        let nutrient = await blendNutrient_1.default.findOne({
-            _id: data.nutritionID,
-        }).populate('category');
-        let ingredients;
-        if (data.category === 'All') {
-            ingredients = await blendIngredient_1.default.find({
-                classType: 'Class - 1',
-                blendStatus: 'Active',
-            })
-                .select('-srcFoodReference -description -classType -blendStatus -category -sourceName -notBlendNutrients')
-                .populate('blendNutrients.blendNutrientRefference');
-        }
-        else {
-            ingredients = await blendIngredient_1.default.find({
-                classType: 'Class - 1',
-                blendStatus: 'Active',
-                category: data.category,
-            })
-                .select('-srcFoodReference -description -classType -blendStatus -category -sourceName -notBlendNutrients')
-                .populate('blendNutrients.blendNutrientRefference');
-        }
-        let returnIngredients = {};
-        for (let i = 0; i < ingredients.length; i++) {
-            for (let j = 0; j < ingredients[i].blendNutrients.length; j++) {
-                if (ingredients[i].blendNutrients[j].blendNutrientRefference === null)
-                    continue;
-                if (String(ingredients[i].blendNutrients[j].blendNutrientRefference._id) === data.nutritionID) {
-                    if (!returnIngredients[ingredients[i].ingredientName]) {
-                        // let value = await this.convertToGram({
-                        //   amount: parseInt(ingredients[i].blendNutrients[j].value),
-                        //   unit: ingredients[i].blendNutrients[j].blendNutrientRefference
-                        //     .units,
-                        // });
-                        let defaultPortion = ingredients[i].portions.filter(
-                        //@ts-ignore
-                        (a) => a.default === true)[0];
-                        if (!defaultPortion) {
-                            defaultPortion = ingredients[i].portions[0];
-                        }
-                        returnIngredients[ingredients[i].ingredientName] = {
-                            ingredientId: ingredients[i]._id,
-                            name: ingredients[i].ingredientName,
-                            value: parseFloat(ingredients[i].blendNutrients[j].value),
-                            units: ingredients[i].blendNutrients[j].blendNutrientRefference.units,
-                            portion: defaultPortion,
-                        };
-                    }
-                    else {
-                        let defaultPortion = ingredients[i].portions.filter(
-                        //@ts-ignore
-                        (a) => a.default === true)[0];
-                        returnIngredients[ingredients[i].ingredientName] = {
-                            ingredientId: ingredients[i]._id,
-                            name: ingredients[i].ingredientName,
-                            value: parseFloat(returnIngredients[ingredients[i].ingredientName].value) + parseFloat(ingredients[i].blendNutrients[j].value),
-                            units: ingredients[i].blendNutrients[j].blendNutrientRefference.units,
-                            portion: defaultPortion,
-                        };
-                    }
-                }
-            }
-        }
-        let sortArray = [];
-        Object.keys(returnIngredients).forEach((key) => {
-            sortArray.push(returnIngredients[key]);
-        });
-        //@ts-ignore
-        let result = sortArray.sort((a, b) => {
-            return b.value - a.value;
-        });
-        let commentsCount = 0;
-        if (userId) {
-            let comments = await wikiComment_1.default.find({
-                entityId: nutrient._id,
-            }).select('_id');
-            commentsCount = comments.length;
-        }
-        let returnData = {
-            wikiTitle: nutrient.wikiTitle,
-            wikiDescription: nutrient.wikiDescription,
-            nutrientName: nutrient.nutrientName,
-            wikiCoverImages: nutrient.wikiCoverImages,
-            wikiFeatureImage: nutrient.wikiFeatureImage,
-            bodies: nutrient.bodies,
-            ingredients: result.slice(0, 10),
-            type: 'Nutrient',
-            publishedBy: 'g. Braun',
-            seoTitle: nutrient.seoTitle,
-            seoSlug: nutrient.seoSlug,
-            seoCanonicalURL: nutrient.seoCanonicalURL,
-            seoSiteMapPriority: nutrient.seoSiteMapPriority,
-            seoKeywords: nutrient.seoKeywords,
-            seoMetaDescription: nutrient.seoMetaDescription,
-            isPublished: nutrient.isPublished,
-            commentsCount: commentsCount,
-        };
-        return returnData;
-    }
+    // @Query(() => IngredientFromNutrition)
+    // async getAllIngredientsBasedOnNutrition(
+    //   @Arg('data') data: GetIngredientsFromNutrition,
+    //   @Arg('userId', { nullable: true }) userId: String
+    // ) {
+    //   let nutrient = await BlendNutrientModel.findOne({
+    //     _id: data.nutritionID,
+    //   }).populate('category');
+    //   let ingredients: any;
+    //   if (data.category === 'All') {
+    //     ingredients = await BlendIngredientModel.find({
+    //       classType: 'Class - 1',
+    //       blendStatus: 'Active',
+    //     })
+    //       .select(
+    //         '-srcFoodReference -description -classType -blendStatus -category -sourceName -notBlendNutrients'
+    //       )
+    //       .populate('blendNutrients.blendNutrientRefference');
+    //   } else {
+    //     ingredients = await BlendIngredientModel.find({
+    //       classType: 'Class - 1',
+    //       blendStatus: 'Active',
+    //       category: data.category,
+    //     })
+    //       .select(
+    //         '-srcFoodReference -description -classType -blendStatus -category -sourceName -notBlendNutrients'
+    //       )
+    //       .populate('blendNutrients.blendNutrientRefference');
+    //   }
+    //   let returnIngredients: any = {};
+    //   for (let i = 0; i < ingredients.length; i++) {
+    //     for (let j = 0; j < ingredients[i].blendNutrients.length; j++) {
+    //       if (ingredients[i].blendNutrients[j].blendNutrientRefference === null)
+    //         continue;
+    //       if (
+    //         String(
+    //           ingredients[i].blendNutrients[j].blendNutrientRefference._id
+    //         ) === data.nutritionID
+    //       ) {
+    //         if (!returnIngredients[ingredients[i].ingredientName]) {
+    //           // let value = await this.convertToGram({
+    //           //   amount: parseInt(ingredients[i].blendNutrients[j].value),
+    //           //   unit: ingredients[i].blendNutrients[j].blendNutrientRefference
+    //           //     .units,
+    //           // });
+    //           let defaultPortion = ingredients[i].portions.filter(
+    //             //@ts-ignore
+    //             (a) => a.default === true
+    //           )[0];
+    //           if (!defaultPortion) {
+    //             defaultPortion = ingredients[i].portions[0];
+    //           }
+    //           returnIngredients[ingredients[i].ingredientName] = {
+    //             ingredientId: ingredients[i]._id,
+    //             name: ingredients[i].ingredientName,
+    //             value: parseFloat(ingredients[i].blendNutrients[j].value),
+    //             units:
+    //               ingredients[i].blendNutrients[j].blendNutrientRefference.units,
+    //             portion: defaultPortion,
+    //           };
+    //         } else {
+    //           let defaultPortion = ingredients[i].portions.filter(
+    //             //@ts-ignore
+    //             (a) => a.default === true
+    //           )[0];
+    //           returnIngredients[ingredients[i].ingredientName] = {
+    //             ingredientId: ingredients[i]._id,
+    //             name: ingredients[i].ingredientName,
+    //             value:
+    //               parseFloat(
+    //                 returnIngredients[ingredients[i].ingredientName].value
+    //               ) + parseFloat(ingredients[i].blendNutrients[j].value),
+    //             units:
+    //               ingredients[i].blendNutrients[j].blendNutrientRefference.units,
+    //             portion: defaultPortion,
+    //           };
+    //         }
+    //       }
+    //     }
+    //   }
+    //   let sortArray: any = [];
+    //   Object.keys(returnIngredients).forEach((key) => {
+    //     sortArray.push(returnIngredients[key]);
+    //   });
+    //   //@ts-ignore
+    //   let result = sortArray.sort((a, b) => {
+    //     return b.value - a.value;
+    //   });
+    //   let commentsCount = 0;
+    //   if (userId) {
+    //     let comments = await WikiCommentModel.find({
+    //       entityId: nutrient._id,
+    //     }).select('_id');
+    //     commentsCount = comments.length;
+    //   }
+    //   let returnData = {
+    //     wikiTitle: nutrient.wikiTitle,
+    //     wikiDescription: nutrient.wikiDescription,
+    //     nutrientName: nutrient.nutrientName,
+    //     wikiCoverImages: nutrient.wikiCoverImages,
+    //     wikiFeatureImage: nutrient.wikiFeatureImage,
+    //     bodies: nutrient.bodies,
+    //     ingredients: result.slice(0, 10),
+    //     type: 'Nutrient',
+    //     publishedBy: 'g. Braun',
+    //     seoTitle: nutrient.seoTitle,
+    //     seoSlug: nutrient.seoSlug,
+    //     seoCanonicalURL: nutrient.seoCanonicalURL,
+    //     seoSiteMapPriority: nutrient.seoSiteMapPriority,
+    //     seoKeywords: nutrient.seoKeywords,
+    //     seoMetaDescription: nutrient.seoMetaDescription,
+    //     isPublished: nutrient.isPublished,
+    //     commentsCount: commentsCount,
+    //   };
+    //   return returnData;
+    // }
     async getAllIngredientsBasedOnNutrition2(data, userId) {
         let wiki = await wiki_1.default.findOne({
             _id: data.nutritionID,
-        }).populate({
+        })
+            .populate({
             path: 'nutrientBookmarkList.nutrientId',
             select: '_id nutrientName',
+        })
+            .populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
         });
         if (!wiki) {
             return new AppError_1.default('wiki not found', 404);
@@ -653,11 +687,19 @@ let WikiResolver = class WikiResolver {
         return 'success';
     }
     async editIngredientWiki2(data) {
-        await wiki_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
+        let newData = data;
+        if (newData.editableObject.isPublished) {
+            newData.editableObject.publishDate = new Date();
+        }
+        await wiki_1.default.findOneAndUpdate({ _id: data.editId }, newData.editableObject);
         return 'success';
     }
     async editNutrientWiki(data) {
-        await blendNutrient_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
+        let newData = data;
+        if (newData.editableObject.isPublished) {
+            newData.editableObject.publishDate = new Date();
+        }
+        await blendNutrient_1.default.findOneAndUpdate({ _id: data.editId }, newData.editableObject);
         return 'success';
     }
     async editNutrientWiki2(data) {
@@ -1238,26 +1280,46 @@ let WikiResolver = class WikiResolver {
         }
         return 'done';
     }
-    async getData() {
-        // await WikiModel.updateMany(
-        //   {
-        //     onModel: 'BlendNutrient',
-        //   },
-        //   {
-        //     nutrientBookmarkList: [],
+    async getThemeWidgetData() {
+        // let blendNutrients = await BlendNutrientModel.find().select('_id');
+        // let doubleWiki = [];
+        // let notInWiki = [];
+        // for (let i = 0; i < blendNutrients.length; i++) {
+        //   let wikis = await WikiModel.find({ _id: blendNutrients[i]._id }).select(
+        //     '_id'
+        //   );
+        //   if (wikis.length > 1) {
+        //     doubleWiki.push(wikis[0]._id);
         //   }
-        // );
-        // await WikiModel.updateMany(
-        //   {
-        //     onModel: 'BlendIngredient',
-        //   },
-        //   {
-        //     ingredientBookmarkList: [],
+        //   if (wikis.length === 0) {
+        //     notInWiki.push(blendNutrients[i]._id);
         //   }
-        // );
-        await generalBlog_1.default.updateMany({}, {
-            bookmarkList: [],
-        });
+        // }
+        // console.log('d', doubleWiki);
+        // console.log('niw', notInWiki);
+        let notFoundInIngredient = [];
+        let notFoundInNutrient = [];
+        let wikis = await wiki_1.default.find().select('_id type');
+        for (let i = 0; i < wikis.length; i++) {
+            if (wikis[i].type === 'Ingredient') {
+                let blendIngredient = await wiki_1.default.findOne({
+                    _id: wikis[i]._id,
+                });
+                if (!blendIngredient) {
+                    notFoundInIngredient.push(wikis[i]._id);
+                }
+            }
+            else if (wikis[i].type === 'Nutrient') {
+                let blendNutrient = await wiki_1.default.findOne({
+                    _id: wikis[i]._id,
+                });
+                if (!blendNutrient) {
+                    notFoundInNutrient.push(wikis[i]._id);
+                }
+            }
+        }
+        console.log('notFoundInIngredient', notFoundInIngredient);
+        console.log('notFoundInNutrient', notFoundInNutrient);
         return 'done';
     }
 };
@@ -1319,15 +1381,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getWikiList2", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => NutrientsFromIngredient_1.default) // wait
-    ,
-    __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
-    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, String]),
-    __metadata("design:returntype", Promise)
-], WikiResolver.prototype, "getBlendNutritionBasedIngredientsWiki", null);
-__decorate([
     (0, type_graphql_1.Query)(() => NutrientsFromIngredient_1.default) // TODO
     ,
     __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
@@ -1336,15 +1389,6 @@ __decorate([
     __metadata("design:paramtypes", [Array, String]),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getBlendNutritionBasedIngredientsWiki2", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => IngredientsFromNutrition_1.default),
-    __param(0, (0, type_graphql_1.Arg)('data')),
-    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [GetIngredientsFromNutrition_1.default,
-        String]),
-    __metadata("design:returntype", Promise)
-], WikiResolver.prototype, "getAllIngredientsBasedOnNutrition", null);
 __decorate([
     (0, type_graphql_1.Query)(() => IngredientsFromNutrition_1.default) //todo
     ,
@@ -1480,8 +1524,22 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], WikiResolver.prototype, "getData", null);
+], WikiResolver.prototype, "getThemeWidgetData", null);
 WikiResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], WikiResolver);
 exports.default = WikiResolver;
+// niwIngredient [
+//   new ObjectId("643d0ebd384536a988f070b5"),
+//   new ObjectId("643d1b6b69f8bba51125758f"),
+//   new ObjectId("643d1bd369f8bba5112575ea"),
+//   new ObjectId("643d1ca969f8bba5112575f4"),
+//   new ObjectId("643d1d5c69f8bba511257658"),
+//   new ObjectId("643d1d7169f8bba511257668"),
+//   new ObjectId("643d1d9269f8bba5112576da"),
+//   new ObjectId("643e5498b99f96d33e577afd"),
+//   new ObjectId("643e57c0b99f96d33e577d0a"),
+//   new ObjectId("643e581bb99f96d33e577f6f"),
+//   new ObjectId("643e586bb99f96d33e5780e7"),
+//   new ObjectId("643e5b20b99f96d33e57857e")
+// ]

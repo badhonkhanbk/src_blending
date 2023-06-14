@@ -45,7 +45,6 @@ const ChsllengeAndSingleDoc_1 = __importDefault(require("../schemas/ChsllengeAnd
 const DateDocPostId_1 = __importDefault(require("../schemas/DateDocPostId"));
 const ChallngeInfo_1 = __importDefault(require("../schemas/ChallngeInfo"));
 const InviteInfoSharedWithAndTopIngredients_1 = __importDefault(require("../schemas/InviteInfoSharedWithAndTopIngredients"));
-const FormateDate_2 = __importDefault(require("../../../utils/FormateDate"));
 let ChallengePostResolver = class ChallengePostResolver {
     async ins() {
         await InviteForChallenge_1.default.deleteMany();
@@ -562,7 +561,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         let prevPost = null;
         if (previousPost) {
             prevPost = {
-                prevPostDate: (0, FormateDate_2.default)(previousPost.createdAt),
+                prevPostDate: challenge.date,
                 //@ts-ignore
                 postId: previousPost._id,
             };

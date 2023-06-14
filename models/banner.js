@@ -13,6 +13,11 @@ const BannerSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now,
     },
+    domain: {
+        type: String,
+        required: [true, 'collection type is required'],
+        enum: ['Ingredient', 'Recipe', 'Nutrient', 'Wiki', 'GeneraBlog', 'Plan'],
+    },
     updatedAt: Date,
 });
 const Banner = (0, mongoose_1.model)('Banner', BannerSchema);

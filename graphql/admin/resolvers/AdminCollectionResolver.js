@@ -52,6 +52,7 @@ let AdminCollectionResolver = class AdminCollectionResolver {
                 'Wiki',
                 'GeneraBlog',
                 'Plan',
+                'Nutrient',
             ].join(', ')}`, 404);
         }
         if (data.checked) {
@@ -93,13 +94,14 @@ let AdminCollectionResolver = class AdminCollectionResolver {
                 'Wiki',
                 'GeneraBlog',
                 'Plan',
+                'Nutrient',
             ].join(', ')}`, 404);
         }
         let widget = await Widget_1.default.findOne({
             'widgetCollections.collectionData': collection._id,
         }).select('_id');
         if (widget) {
-            return new AppError_1.default('Collection is in user', 401);
+            return new AppError_1.default('Collection is in used', 401);
         }
         for (let i = 0; i < collection.children.length; i++) {
             await Model.updateOne({ _id: collection.children[i] }, { $pull: { collections: collection._id } });
@@ -126,7 +128,7 @@ let AdminCollectionResolver = class AdminCollectionResolver {
         return collections;
     }
     async getAllAdminCollectionType() {
-        return ['Recipe', 'Ingredient', 'Wiki', 'GeneralBlog', 'Plan'];
+        return ['Recipe', 'Ingredient', 'Wiki', 'GeneralBlog', 'Plan', 'Nutrient'];
     }
     async emptyCollections(collectionType) {
         await Widget_1.default.updateMany({}, {

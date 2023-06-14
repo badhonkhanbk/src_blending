@@ -30,7 +30,10 @@ const wikiSchema = new mongoose_1.Schema({
     sourceName: String,
     isPublished: { type: Boolean, default: false },
     publishDate: Date,
-    publishedBy: String,
+    author: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'Admin',
+    },
     isBookmarked: { type: Boolean, default: false },
     collections: {
         type: [

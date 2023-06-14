@@ -33,6 +33,10 @@ __decorate([
     __metadata("design:type", String)
 ], CreateEditIngreidntAndNutrientWiki.prototype, "bodies", void 0);
 __decorate([
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
+    __metadata("design:type", String)
+], CreateEditIngreidntAndNutrientWiki.prototype, "author", void 0);
+__decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], CreateEditIngreidntAndNutrientWiki.prototype, "isPublished", void 0);

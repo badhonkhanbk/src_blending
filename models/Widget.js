@@ -7,7 +7,11 @@ const widgetSchema = new mongoose_1.Schema({
         required: [true, 'Widget Name Is Required'],
         unique: true,
     },
-    slug: String,
+    slug: {
+        type: String,
+        required: [true, 'Slug Is Required'],
+        unique: true,
+    },
     bannerId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Banner' },
     widgetType: String,
     clickCount: { type: Number, default: 0 },

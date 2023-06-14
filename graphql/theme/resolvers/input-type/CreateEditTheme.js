@@ -29,9 +29,9 @@ __decorate([
     __metadata("design:type", Array)
 ], CreateEditTheme.prototype, "viewPorts", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], CreateEditTheme.prototype, "channel", void 0);
+], CreateEditTheme.prototype, "domain", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)

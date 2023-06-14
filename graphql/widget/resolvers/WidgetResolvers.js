@@ -29,6 +29,11 @@ const theme_1 = __importDefault(require("../../../models/theme"));
 const banner_1 = __importDefault(require("../../../models/banner"));
 const WidgetCollectionForClient_1 = __importDefault(require("../schemas/WidgetCollectionForClient"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
+const banner_2 = __importDefault(require("../../../models/banner"));
+const adminCollection_1 = __importDefault(require("../../../models/adminCollection"));
+const theme_2 = __importDefault(require("../../../models/theme"));
+const SingleWidgetCollection_1 = __importDefault(require("../schemas/SingleWidgetCollection"));
+const mongoose_1 = __importDefault(require("mongoose"));
 var key;
 (function (key) {
     key["Ingredient"] = "foodCategories";
@@ -43,6 +48,7 @@ let WigdetResolver = class WigdetResolver {
     // change
     async addNewWidgetCollection(widgetId, widgetCollection) {
         let data = widgetCollection;
+        data._id = new mongoose_1.default.mongo.ObjectId();
         if (data.isPublished) {
             data.publishedAt = Date.now();
         }
@@ -50,7 +56,14 @@ let WigdetResolver = class WigdetResolver {
             $push: { widgetCollections: data },
             $inc: { collectionCount: 1 },
         });
-        return 'new widget collection added successfully';
+        data.bannerId = await banner_2.default.findOne({
+            _id: widgetCollection.bannerId,
+        });
+        data.collectionData = await adminCollection_1.default.findOne({
+            _id: widgetCollection.collectionData,
+        });
+        data.theme = await theme_2.default.findOne({ _id: widgetCollection.theme });
+        return data;
     }
     async removeAWidgetCollection(widgetId, widgetCollectionId) {
         await Widget_1.default.findOneAndUpdate({ _id: widgetId }, {
@@ -78,7 +91,14 @@ let WigdetResolver = class WigdetResolver {
         await Widget_1.default.findOneAndUpdate({ _id: widgetId }, {
             $push: { widgetCollections: data },
         });
-        return 'widget collection edit successfully';
+        data.bannerId = await banner_2.default.findOne({
+            _id: widgetCollection.bannerId,
+        });
+        data.collectionData = await adminCollection_1.default.findOne({
+            _id: widgetCollection.collectionData,
+        });
+        data.theme = await theme_2.default.findOne({ _id: widgetCollection.theme });
+        return data;
     }
     async removeAWidget(widgetId) {
         await Widget_1.default.findOneAndRemove({ _id: widgetId });
@@ -294,7 +314,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "addNewWidget", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => SingleWidgetCollection_1.default),
     __param(0, (0, type_graphql_1.Arg)('widgetId')),
     __param(1, (0, type_graphql_1.Arg)('widgetCollection')),
     __metadata("design:type", Function),
@@ -312,7 +332,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "removeAWidgetCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => SingleWidgetCollection_1.default),
     __param(0, (0, type_graphql_1.Arg)('widgetId')),
     __param(1, (0, type_graphql_1.Arg)('widgetCollection')),
     __metadata("design:type", Function),

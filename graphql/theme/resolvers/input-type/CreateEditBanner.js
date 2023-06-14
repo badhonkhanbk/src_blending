@@ -25,9 +25,9 @@ __decorate([
     __metadata("design:type", String)
 ], CreateEditBanner.prototype, "link", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], CreateEditBanner.prototype, "channel", void 0);
+], CreateEditBanner.prototype, "domain", void 0);
 CreateEditBanner = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateEditBanner);
