@@ -51,12 +51,15 @@ let ChallengeResolver = class ChallengeResolver {
         if (userChallenges.length === 0) {
             let modifiedData = data;
             modifiedData.isActive = true;
+            modifiedData.canInviteWithOthers = true;
             let userChallenge = await challenge_1.default.create(modifiedData);
             return userChallenge._id;
         }
-        data.startDate = isoStartDate;
-        data.endDate = isoEndDate;
-        let userChallenge = await challenge_1.default.create(data);
+        let modifiedData = data;
+        modifiedData.startDate = isoStartDate;
+        modifiedData.endDate = isoEndDate;
+        modifiedData.canInviteWithOthers = true;
+        let userChallenge = await challenge_1.default.create(modifiedData);
         return userChallenge;
     }
     async activateChallenge(memberId, challengeId, previousDefaultChallengeId) {
@@ -134,6 +137,7 @@ let ChallengeResolver = class ChallengeResolver {
             modifiedData.endDateString = (0, FormateDate_1.default)(new Date(modifiedData.endDate));
         }
         let userChallenge = await challenge_1.default.findOneAndUpdate({ _id: data.challengeId }, modifiedData, { new: true });
+        userChallenge.editUserChallenge = true;
         return userChallenge;
     }
     async getMyChallengeList(memberId) {
