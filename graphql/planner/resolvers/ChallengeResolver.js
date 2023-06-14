@@ -58,8 +58,8 @@ let ChallengeResolver = class ChallengeResolver {
         let modifiedData = data;
         modifiedData.startDate = isoStartDate;
         modifiedData.endDate = isoEndDate;
-        modifiedData.canInviteWithOthers = true;
         let userChallenge = await challenge_1.default.create(modifiedData);
+        userChallenge.canInviteWithOthers = true;
         return userChallenge;
     }
     async activateChallenge(memberId, challengeId, previousDefaultChallengeId) {
