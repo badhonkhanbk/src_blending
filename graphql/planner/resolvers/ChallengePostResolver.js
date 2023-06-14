@@ -292,8 +292,12 @@ let ChallengePostResolver = class ChallengePostResolver {
             select: 'ingredientName featuredImage',
         });
         let shareWithData = [];
+        let sharedWith = challenge.sharedWith;
+        for (let i = 0; i < sharedWith.length; i++) {
+        }
         if (challenge.sharedWith.length > 1) {
             shareWithData = challenge.sharedWith.sort((m1, m2) => m2.blendScore - m1.blendScore);
+            let iinviteChallenge;
         }
         // if (challenge.topIngredients.length === 0) {
         //   this.upgradeTopIngredient(challenge._id);
@@ -1520,6 +1524,16 @@ let ChallengePostResolver = class ChallengePostResolver {
             returnObjDate: returnObjDate,
         };
     }
+    async gobletOfFire() {
+        let cps = await ChallengePost_2.default.find();
+        for (let i = 0; i < cps.length; i++) {
+            if (!cps[i].date) {
+                cps[i].date = (0, FormateDate_1.default)(cps[i].assignDate);
+                await cps[i].save();
+            }
+        }
+        return 'd';
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => String),
@@ -1715,6 +1729,12 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "testGetNuteientsStats", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChallengePostResolver.prototype, "gobletOfFire", null);
 ChallengePostResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], ChallengePostResolver);

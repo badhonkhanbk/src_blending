@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const Portion_1 = __importDefault(require("../../src_food/schemas/Portion"));
+const Admin_1 = __importDefault(require("../../admin/resolvers/schemas/Admin"));
 let wikiList = class wikiList {
 };
 __decorate([
@@ -76,6 +77,10 @@ __decorate([
     (0, type_graphql_1.Field)(() => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
 ], wikiList.prototype, "collections", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Admin_1.default, { nullable: true }),
+    __metadata("design:type", Admin_1.default)
+], wikiList.prototype, "author", void 0);
 wikiList = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], wikiList);

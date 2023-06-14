@@ -56,6 +56,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], UserChallenge.prototype, "hasCreatedByMe", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], UserChallenge.prototype, "canInviteWithOthers", void 0);
 UserChallenge = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], UserChallenge);

@@ -144,6 +144,7 @@ let ChallengeResolver = class ChallengeResolver {
         for (let i = 0; i < userChallenges.length; i++) {
             let userChallenge = userChallenges[i];
             userChallenge.hasCreatedByMe = true;
+            userChallenge.canInviteWithOthers = true;
             list.push(userChallenge);
         }
         let sharedChallenges = await challenge_1.default.find({
@@ -156,6 +157,7 @@ let ChallengeResolver = class ChallengeResolver {
             let sharedChallenge = sharedChallenges[i];
             let sharedWith = sharedChallenge.sharedWith.filter((sw) => String(sw.memberId) === memberId)[0];
             sharedChallenge.hasCreatedByMe = false;
+            sharedChallenge.canInviteWithOthers = sharedWith.canInviteWithOthers;
             sharedChallenge.isActive = sharedWith.isDefault;
             list.push(sharedChallenge);
         }

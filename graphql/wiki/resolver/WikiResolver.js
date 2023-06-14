@@ -357,6 +357,10 @@ let WikiResolver = class WikiResolver {
     async getWikiList2(userId) {
         let returnData = [];
         let wikis = await wiki_1.default.find({ isBookmarked: false, isPublished: true })
+            .populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
+        })
             .lean()
             .sort({ wikiTitle: 1 });
         if (userId) {
@@ -435,9 +439,9 @@ let WikiResolver = class WikiResolver {
     //   return returnData;
     // }
     async getBlendNutritionBasedIngredientsWiki2(ingredientsInfo, userId) {
-        let data = ingredientsInfo;
-        // @ts-ignore
-        let hello = data.map((x) => new mongoose_1.default.mongo.ObjectId(x.ingredientId));
+        // let data: any = ingredientsInfo;
+        // // @ts-ignore
+        // let hello = data.map((x) => new mongoose.mongo.ObjectId(x.ingredientId));
         let wiki = await wiki_1.default.findOne({
             _id: ingredientsInfo[0].ingredientId,
         })
@@ -451,7 +455,7 @@ let WikiResolver = class WikiResolver {
         });
         let blendIngredient = await blendIngredient_1.default.findOne({
             _id: wiki._id,
-        }).select('portions');
+        }).select('portions category');
         let commentsCount = 0;
         let hasInCompare = false;
         if (userId) {
@@ -470,6 +474,7 @@ let WikiResolver = class WikiResolver {
         wiki.commentsCount = commentsCount;
         wiki.hasInCompare = hasInCompare;
         wiki.portions = blendIngredient.portions;
+        wiki.category = blendIngredient.category;
         return wiki;
     }
     // @Query(() => IngredientFromNutrition)
@@ -603,74 +608,88 @@ let WikiResolver = class WikiResolver {
         if (!wiki) {
             return new AppError_1.default('wiki not found', 404);
         }
+        let blendNutrient = await blendNutrient_1.default.findOne({
+            _id: data.nutritionID,
+        }).populate({
+            path: 'category',
+            select: 'categoryName',
+        });
         let wikiData = wiki;
-        let ingredients;
-        if (data.category === 'All') {
-            ingredients = await blendIngredient_1.default.find({
-                classType: 'Class - 1',
-                blendStatus: 'Active',
-            })
-                .select('-srcFoodReference -description -classType -blendStatus -category -sourceName -notBlendNutrients')
-                .populate('blendNutrients.blendNutrientRefference');
-        }
-        else {
-            ingredients = await blendIngredient_1.default.find({
-                classType: 'Class - 1',
-                blendStatus: 'Active',
-                category: data.category,
-            })
-                .select('-srcFoodReference -description -classType -blendStatus -category -sourceName -notBlendNutrients')
-                .populate('blendNutrients.blendNutrientRefference');
-        }
-        let returnIngredients = {};
-        for (let i = 0; i < ingredients.length; i++) {
-            for (let j = 0; j < ingredients[i].blendNutrients.length; j++) {
-                if (ingredients[i].blendNutrients[j].blendNutrientRefference === null)
-                    continue;
-                if (String(ingredients[i].blendNutrients[j].blendNutrientRefference._id) === data.nutritionID) {
-                    if (!returnIngredients[ingredients[i].ingredientName]) {
-                        // let value = await this.convertToGram({
-                        //   amount: parseInt(ingredients[i].blendNutrients[j].value),
-                        //   unit: ingredients[i].blendNutrients[j].blendNutrientRefference
-                        //     .units,
-                        // });
-                        let defaultPortion = ingredients[i].portions.filter(
-                        //@ts-ignore
-                        (a) => a.default === true)[0];
-                        if (!defaultPortion) {
-                            defaultPortion = ingredients[i].portions[0];
+        if (userId) {
+            let ingredients;
+            if (data.category === 'All') {
+                ingredients = await blendIngredient_1.default.find({
+                    classType: 'Class - 1',
+                    blendStatus: 'Active',
+                })
+                    .select('-srcFoodReference -description -classType -blendStatus -category -sourceName -notBlendNutrients')
+                    .populate('blendNutrients.blendNutrientRefference');
+            }
+            else {
+                ingredients = await blendIngredient_1.default.find({
+                    classType: 'Class - 1',
+                    blendStatus: 'Active',
+                    category: data.category,
+                })
+                    .select('-srcFoodReference -description -classType -blendStatus -category -sourceName -notBlendNutrients')
+                    .populate('blendNutrients.blendNutrientRefference');
+            }
+            let returnIngredients = {};
+            for (let i = 0; i < ingredients.length; i++) {
+                for (let j = 0; j < ingredients[i].blendNutrients.length; j++) {
+                    if (ingredients[i].blendNutrients[j].blendNutrientRefference === null)
+                        continue;
+                    if (String(ingredients[i].blendNutrients[j].blendNutrientRefference._id) === data.nutritionID) {
+                        if (!returnIngredients[ingredients[i].ingredientName]) {
+                            // let value = await this.convertToGram({
+                            //   amount: parseInt(ingredients[i].blendNutrients[j].value),
+                            //   unit: ingredients[i].blendNutrients[j].blendNutrientRefference
+                            //     .units,
+                            // });
+                            let defaultPortion = ingredients[i].portions.filter(
+                            //@ts-ignore
+                            (a) => a.default === true)[0];
+                            if (!defaultPortion) {
+                                defaultPortion = ingredients[i].portions[0];
+                            }
+                            returnIngredients[ingredients[i].ingredientName] = {
+                                ingredientId: ingredients[i]._id,
+                                name: ingredients[i].ingredientName,
+                                value: parseFloat(ingredients[i].blendNutrients[j].value),
+                                units: ingredients[i].blendNutrients[j].blendNutrientRefference
+                                    .units,
+                                portion: defaultPortion,
+                            };
                         }
-                        returnIngredients[ingredients[i].ingredientName] = {
-                            ingredientId: ingredients[i]._id,
-                            name: ingredients[i].ingredientName,
-                            value: parseFloat(ingredients[i].blendNutrients[j].value),
-                            units: ingredients[i].blendNutrients[j].blendNutrientRefference.units,
-                            portion: defaultPortion,
-                        };
-                    }
-                    else {
-                        let defaultPortion = ingredients[i].portions.filter(
-                        //@ts-ignore
-                        (a) => a.default === true)[0];
-                        returnIngredients[ingredients[i].ingredientName] = {
-                            ingredientId: ingredients[i]._id,
-                            name: ingredients[i].ingredientName,
-                            value: parseFloat(returnIngredients[ingredients[i].ingredientName].value) + parseFloat(ingredients[i].blendNutrients[j].value),
-                            units: ingredients[i].blendNutrients[j].blendNutrientRefference.units,
-                            portion: defaultPortion,
-                        };
+                        else {
+                            let defaultPortion = ingredients[i].portions.filter(
+                            //@ts-ignore
+                            (a) => a.default === true)[0];
+                            returnIngredients[ingredients[i].ingredientName] = {
+                                ingredientId: ingredients[i]._id,
+                                name: ingredients[i].ingredientName,
+                                value: parseFloat(returnIngredients[ingredients[i].ingredientName].value) + parseFloat(ingredients[i].blendNutrients[j].value),
+                                units: ingredients[i].blendNutrients[j].blendNutrientRefference
+                                    .units,
+                                portion: defaultPortion,
+                            };
+                        }
                     }
                 }
             }
+            let sortArray = [];
+            Object.keys(returnIngredients).forEach((key) => {
+                sortArray.push(returnIngredients[key]);
+            });
+            //@ts-ignore
+            let result = sortArray.sort((a, b) => {
+                return b.value - a.value;
+            });
+            wikiData.ingredients = result.slice(0, 10);
         }
-        let sortArray = [];
-        Object.keys(returnIngredients).forEach((key) => {
-            sortArray.push(returnIngredients[key]);
-        });
-        //@ts-ignore
-        let result = sortArray.sort((a, b) => {
-            return b.value - a.value;
-        });
+        else {
+            wikiData.ingredients = [];
+        }
         let commentsCount = 0;
         if (userId) {
             let comments = await wikiComment_1.default.find({
@@ -679,7 +698,11 @@ let WikiResolver = class WikiResolver {
             commentsCount = comments.length;
         }
         wikiData.comments = commentsCount;
-        wikiData.ingredients = result.slice(0, 10);
+        //@ts-ignore
+        wikiData.category = blendNutrient.category.categoryName
+            ? //@ts-ignore
+                blendNutrient.category.categoryName
+            : 'No Category Assigned';
         return wikiData;
     }
     async editIngredientWiki(data) {
