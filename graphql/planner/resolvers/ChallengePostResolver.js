@@ -561,7 +561,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         let prevPost = null;
         if (previousPost) {
             prevPost = {
-                prevPostDate: challenge.date,
+                prevPostDate: (0, FormateDate_1.default)(challenge.assignDate),
                 //@ts-ignore
                 postId: previousPost._id,
             };
