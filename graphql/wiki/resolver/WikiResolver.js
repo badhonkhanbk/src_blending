@@ -130,11 +130,23 @@ let WikiResolver = class WikiResolver {
             });
         }
         let wikiNutrients = await wiki_1.default.find(find)
+            .populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
+        })
             .limit(limit)
             .skip(limit * (page - 1))
             .sort({ wikiTitle: 1 });
         for (let i = 0; i < wikiNutrients.length; i++) {
+            let nutrient = await blendNutrient_1.default.findOne({
+                _id: wikiNutrients[i]._id,
+            }).populate({
+                path: 'category',
+                select: 'categoryName',
+            });
             let data = wikiNutrients[i];
+            //@ts-ignore
+            data.category = nutrient.category ? nutrient.category.categoryName : '';
             if (userId) {
                 let comments = await wikiComment_1.default.find({
                     entityId: wikiNutrients[i]._id,
@@ -242,6 +254,10 @@ let WikiResolver = class WikiResolver {
             });
         }
         let wikiIngredients = await wiki_1.default.find(find)
+            .populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
+        })
             .limit(limit)
             .skip(limit * (page - 1))
             .lean()
@@ -250,8 +266,9 @@ let WikiResolver = class WikiResolver {
             let data = wikiIngredients[i];
             let blendIngredient = await blendIngredient_1.default.findOne({
                 _id: wikiIngredients[i]._id,
-            }).select('portions featuredImage');
+            }).select('portions featuredImage category');
             data.image = blendIngredient.featuredImage;
+            data.category = blendIngredient.category;
             data.portions = blendIngredient.portions;
             if (userId) {
                 let comments = await wikiComment_1.default.find({
