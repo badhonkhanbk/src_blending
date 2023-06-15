@@ -45,10 +45,9 @@ async function default_1(data, Model, groceryList) {
                 let mainQuantity = baseQuantity * +inList.quantity;
                 await Model.findOneAndUpdate({
                     _id: groceryList._id,
-                    'list.$.ingredientId': inList.ingredientId,
+                    'list.ingredientId': inList.ingredientId,
                 }, {
                     $set: {
-                        'list.$.ingredientId': inList.ingredientId,
                         'list.$.quantity': +mainQuantity + +newQuantity,
                         'list.$.selectedPortion': defaultPortion.measurement,
                     },
