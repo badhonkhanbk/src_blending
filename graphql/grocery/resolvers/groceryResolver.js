@@ -54,7 +54,7 @@ let GroceryResolver = class GroceryResolver {
             let groceryList = await GroceryList_2.default.findOne({
                 memberId: memberId,
                 list: [],
-            }).sort('createdAt');
+            }).sort('');
             return groceryList;
         }
         let groceryList = await GroceryList_2.default.findOne({

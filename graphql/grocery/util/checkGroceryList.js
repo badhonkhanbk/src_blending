@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
-const mongoose_1 = __importDefault(require("mongoose"));
 async function default_1(data, Model, groceryList) {
     for (let i = 0; i < data.ingredients.length; i++) {
         let ingredient = await blendIngredient_1.default.findOne({
@@ -26,15 +25,18 @@ async function default_1(data, Model, groceryList) {
         }
         let inList = groceryList.list.filter((gl) => gl.ingredientId.toString() === data.ingredients[i].ingredientId)[0];
         if (inList) {
-            await Model.findOneAndUpdate({
-                _id: groceryList._id,
-            }, {
-                $pull: {
-                    list: {
-                        ingredientId: new mongoose_1.default.Types.ObjectId(inList.ingredientId),
-                    },
-                },
-            });
+            // await Model.findOneAndUpdate(
+            //   {
+            //     _id: groceryList._id,
+            //   },
+            //   {
+            //     $pull: {
+            //       list: {
+            //         ingredientId: new mongoose.Types.ObjectId(inList.ingredientId),
+            //       },
+            //     },
+            //   }
+            // );
             let inListPortion = ingredient.portions.filter((portion) => portion.measurement === inList.selectedPortion)[0];
             if (!inListPortion) {
             }
@@ -43,13 +45,12 @@ async function default_1(data, Model, groceryList) {
                 let mainQuantity = baseQuantity * +inList.quantity;
                 await Model.findOneAndUpdate({
                     _id: groceryList._id,
+                    'list.$.ingredientId': inList.ingredientId,
                 }, {
-                    $push: {
-                        list: {
-                            ingredientId: inList.ingredientId,
-                            quantity: +mainQuantity + +newQuantity,
-                            selectedPortion: defaultPortion.measurement,
-                        },
+                    $set: {
+                        'list.$.ingredientId': inList.ingredientId,
+                        'list.$.quantity': +mainQuantity + +newQuantity,
+                        'list.$.selectedPortion': defaultPortion.measurement,
                     },
                 });
             }
