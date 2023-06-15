@@ -206,6 +206,9 @@ let ChallengePostResolver = class ChallengePostResolver {
     }
     async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers) {
         let challenge = await challenge_1.default.findOne({ _id: challengeId });
+        if (!challenge) {
+            return new AppError_1.default('no challenge found', 403);
+        }
         if (String(challenge.memberId) !== invitedBy) {
             return new AppError_1.default('You are not the owner of this challenge', 400);
         }
@@ -216,6 +219,9 @@ let ChallengePostResolver = class ChallengePostResolver {
                 let member = await memberModel_1.default.findOne({
                     email: invitedWith[i],
                 }).select('_id');
+                if (String(member._id) === String(challenge.memberId)) {
+                    continue;
+                }
                 members.push({
                     memberId: member._id,
                     hasAccepted: false,
@@ -247,6 +253,9 @@ let ChallengePostResolver = class ChallengePostResolver {
                 let member = await memberModel_1.default.findOne({
                     email: invitedWith[i],
                 }).select('_id');
+                if (String(member._id) === String(challenge.memberId)) {
+                    continue;
+                }
                 let data = invite.invitedWith.filter((inv) => String(inv.memberId) === String(member._id))[0];
                 if (!data) {
                     await InviteForChallenge_1.default.findOneAndUpdate({
@@ -293,8 +302,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         });
         let shareWithData = [];
         let sharedWith = challenge.sharedWith;
-        for (let i = 0; i < sharedWith.length; i++) {
-        }
+        for (let i = 0; i < sharedWith.length; i++) { }
         if (challenge.sharedWith.length > 1) {
             shareWithData = challenge.sharedWith.sort((m1, m2) => m2.blendScore - m1.blendScore);
             let iinviteChallenge;
