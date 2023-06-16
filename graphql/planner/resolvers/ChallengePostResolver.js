@@ -204,8 +204,12 @@ let ChallengePostResolver = class ChallengePostResolver {
         let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', String(challenge._id));
         return { challenge: doc, challengeInfo: challengeInfo };
     }
-    async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers) {
+    async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers, currentDate) {
+        let ISOCurrentDate = new Date(currentDate);
         let challenge = await challenge_1.default.findOne({ _id: challengeId });
+        if (challenge.startDate.valueOf() < ISOCurrentDate.valueOf()) {
+            return new AppError_1.default('Challenge has already started', 400);
+        }
         if (!challenge) {
             return new AppError_1.default('no challenge found', 403);
         }
@@ -1575,9 +1579,10 @@ __decorate([
     __param(1, (0, type_graphql_1.Arg)('invitedBy')),
     __param(2, (0, type_graphql_1.Arg)('invitedWith', (type) => [String])),
     __param(3, (0, type_graphql_1.Arg)('canInviteWithOthers')),
+    __param(4, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
-        String, Array, Boolean]),
+        String, Array, Boolean, String]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "inviteToChallenge", null);
 __decorate([
