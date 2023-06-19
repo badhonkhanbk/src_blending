@@ -398,7 +398,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getWidgetsForClient", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default) // 
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('slug')),
     __metadata("design:type", Function),

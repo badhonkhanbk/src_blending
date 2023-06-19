@@ -30,6 +30,18 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [TopIngredient_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], InviteInfoSharedWithAndTopIngredients.prototype, "topIngredients", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], InviteInfoSharedWithAndTopIngredients.prototype, "hasAccepted", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], InviteInfoSharedWithAndTopIngredients.prototype, "hasInvited", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], InviteInfoSharedWithAndTopIngredients.prototype, "isOwner", void 0);
 InviteInfoSharedWithAndTopIngredients = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], InviteInfoSharedWithAndTopIngredients);

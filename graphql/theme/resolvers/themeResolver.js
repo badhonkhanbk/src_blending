@@ -40,9 +40,17 @@ let ThemeResolver = class ThemeResolver {
         let theme = await theme_1.default.findOne({ _id: themeId });
         return theme;
     }
-    async getAllThemes() {
-        let themes = await theme_1.default.find().sort({ createdAt: -1 });
-        return themes;
+    async getAllThemes(domain) {
+        if (!domain) {
+            let themes = await theme_1.default.find().sort({ createdAt: -1 });
+            return themes;
+        }
+        else {
+            let themes = await theme_1.default.find({ domain: domain }).sort({
+                createdAt: -1,
+            });
+            return themes;
+        }
     }
     async removeAllThemes() {
         await theme_1.default.deleteMany();
@@ -79,8 +87,9 @@ __decorate([
 ], ThemeResolver.prototype, "getASingleTheme", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [Theme_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('domain', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ThemeResolver.prototype, "getAllThemes", null);
 __decorate([

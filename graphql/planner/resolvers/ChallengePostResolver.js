@@ -207,8 +207,15 @@ let ChallengePostResolver = class ChallengePostResolver {
     async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers, currentDate) {
         let ISOCurrentDate = new Date(currentDate);
         let challenge = await challenge_1.default.findOne({ _id: challengeId });
-        if (challenge.startDate.valueOf() < ISOCurrentDate.valueOf()) {
-            return new AppError_1.default('Challenge has already started', 400);
+        if (currentDate) {
+            if (challenge.startDate.valueOf() < ISOCurrentDate.valueOf()) {
+                return new AppError_1.default('Challenge has already started', 400);
+            }
+        }
+        else {
+            if (challenge.startDate.valueOf() < new Date().valueOf()) {
+                return new AppError_1.default('Challenge has already started', 400);
+            }
         }
         if (!challenge) {
             return new AppError_1.default('no challenge found', 403);
@@ -278,7 +285,10 @@ let ChallengePostResolver = class ChallengePostResolver {
             return invite._id;
         }
     }
-    async getInviteChallengeInfo(inviteId) {
+    async getInviteChallengeInfo(inviteId, memberId) {
+        let isOwner = '';
+        let hasAccepted = '';
+        let hasInvited = '';
         let invite = await InviteForChallenge_1.default.findOne({ _id: inviteId })
             .populate({
             path: 'challengeId',
@@ -288,6 +298,13 @@ let ChallengePostResolver = class ChallengePostResolver {
             path: 'invitedBy',
             select: 'firstName lastName image displayName email',
         });
+        if (memberId) {
+            if (invite.invitedWith.filter((iw) => String(iw.memberId) === memberId)[0]) {
+                isOwner = false;
+                hasInvited = true;
+                hasAccepted = false;
+            }
+        }
         // console.log(invite);
         if (!invite.challengeId) {
             return new AppError_1.default('challenge not found', 402);
@@ -304,12 +321,29 @@ let ChallengePostResolver = class ChallengePostResolver {
             path: 'topIngredients.ingredientId',
             select: 'ingredientName featuredImage',
         });
+        if (memberId) {
+            if (String(challenge.memberId) === memberId) {
+                isOwner = true;
+                hasAccepted = true;
+                hasInvited = true;
+            }
+            else if (challenge.sharedWith.filter((iw) => String(iw.memberId) === memberId)[0]) {
+                isOwner = false;
+                hasAccepted = true;
+                hasInvited = false;
+            }
+            if (isOwner === '' && hasAccepted === '' && hasInvited === '') {
+                isOwner = false;
+                hasAccepted = false;
+                hasInvited = false;
+            }
+        }
         let shareWithData = [];
         let sharedWith = challenge.sharedWith;
         for (let i = 0; i < sharedWith.length; i++) { }
         if (challenge.sharedWith.length > 1) {
             shareWithData = challenge.sharedWith.sort((m1, m2) => m2.blendScore - m1.blendScore);
-            let iinviteChallenge;
+            // let iinviteChallenge;
         }
         // if (challenge.topIngredients.length === 0) {
         //   this.upgradeTopIngredient(challenge._id);
@@ -318,6 +352,9 @@ let ChallengePostResolver = class ChallengePostResolver {
             invite,
             sharedWith: shareWithData,
             topIngredients: challenge.topIngredients,
+            isOwner: isOwner === '' ? null : isOwner,
+            hasAccepted: hasAccepted === '' ? null : hasAccepted,
+            hasInvited: hasInvited === '' ? null : hasInvited,
         };
     }
     async acceptChallenge(inviteId, memberId) {
@@ -1588,8 +1625,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => InviteInfoSharedWithAndTopIngredients_1.default),
     __param(0, (0, type_graphql_1.Arg)('inviteId')),
+    __param(1, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String,
+        String]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getInviteChallengeInfo", null);
 __decorate([

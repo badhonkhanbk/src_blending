@@ -14,6 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const AddFilter_1 = __importDefault(require("./AddFilter"));
+var OrderBy;
+(function (OrderBy) {
+    OrderBy["PUBLISHED_DATE"] = "PUBLISHED_DATE";
+    OrderBy["POPULARITY"] = "POPULARITY";
+    OrderBy["ALPHABETICALLY"] = "ALPHABETICALLY";
+})(OrderBy || (OrderBy = {}));
+(0, type_graphql_1.registerEnumType)(OrderBy, {
+    name: 'category',
+    description: 'The basic directions', // this one is optional
+});
 let WidgetCollection = class WidgetCollection {
 };
 __decorate([

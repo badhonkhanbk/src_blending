@@ -57,9 +57,17 @@ let BannerResolver = class BannerResolver {
         let theme = await banner_1.default.findOne({ _id: themeId });
         return theme;
     }
-    async getAllBanners() {
-        let themes = await banner_1.default.find().sort({ createdAt: -1 });
-        return themes;
+    async getAllBanners(domain) {
+        if (!domain) {
+            let banners = await banner_1.default.find().sort({ createdAt: -1 });
+            return banners;
+        }
+        else {
+            let banners = await banner_1.default.find({ domain: domain }).sort({
+                createdAt: -1,
+            });
+            return banners;
+        }
     }
     async removeAllBanners() {
         await banner_1.default.deleteMany();
@@ -100,8 +108,9 @@ __decorate([
 ], BannerResolver.prototype, "getASingleBanner", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [Banner_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('domain', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BannerResolver.prototype, "getAllBanners", null);
 __decorate([
