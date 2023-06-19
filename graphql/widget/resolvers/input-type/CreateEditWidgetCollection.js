@@ -49,6 +49,10 @@ __decorate([
     __metadata("design:type", String)
 ], CreateEditWidgetCollection.prototype, "publishDate", void 0);
 __decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], CreateEditWidgetCollection.prototype, "expiryDate", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
 ], CreateEditWidgetCollection.prototype, "publishedBy", void 0);

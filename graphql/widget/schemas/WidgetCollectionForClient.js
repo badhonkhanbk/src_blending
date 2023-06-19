@@ -57,6 +57,14 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], WidgetCollectionForClient.prototype, "bannerLink", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], WidgetCollectionForClient.prototype, "publishDate", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], WidgetCollectionForClient.prototype, "expiryDate", void 0);
 WidgetCollectionForClient = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], WidgetCollectionForClient);

@@ -56,6 +56,10 @@ __decorate([
 ], WidgetCollection.prototype, "publishDate", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], WidgetCollection.prototype, "expiryDate", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], WidgetCollection.prototype, "showTabMenu", void 0);
 __decorate([

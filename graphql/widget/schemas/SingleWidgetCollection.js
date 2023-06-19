@@ -46,6 +46,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
+], SingleWidgetCollecType.prototype, "expiryDate", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
 ], SingleWidgetCollecType.prototype, "slug", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => type_graphql_1.ID, { nullable: true }),
