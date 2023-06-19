@@ -17,7 +17,7 @@ const inviteChallengeSchema = new mongoose_1.Schema({
             canInviteWithOthers: { type: Boolean, default: false },
         },
     ],
-    challengeId: { type: String, ref: 'challenge' },
+    challengeId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'challenge' },
     createdAt: {
         type: Date,
         default: Date.now,
