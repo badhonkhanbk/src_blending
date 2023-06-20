@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const DataTypeForClient_1 = __importDefault(require("./DataTypeForClient"));
 const FilterType_1 = __importDefault(require("./FilterType"));
+const AdminCollection_1 = __importDefault(require("../../admin/resolvers/schemas/AdminCollection"));
 let WidgetCollectionForClient = class WidgetCollectionForClient {
 };
 __decorate([
@@ -65,6 +66,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], WidgetCollectionForClient.prototype, "expiryDate", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", AdminCollection_1.default)
+], WidgetCollectionForClient.prototype, "collectionData", void 0);
 WidgetCollectionForClient = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], WidgetCollectionForClient);

@@ -13,8 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const BlendIngredientData_1 = __importDefault(require("../../blendIngredientsdata/schemas/BlendIngredientData"));
 const Recipe_1 = __importDefault(require("../../recipe/schemas/Recipe"));
+const Wikilist_1 = __importDefault(require("../../wiki/schemas/Wikilist"));
+const Plan_1 = __importDefault(require("../../planner/schemas/PlanSchema/Plan"));
 let DataType = class DataType {
 };
 __decorate([
@@ -24,11 +25,15 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)((type) => [Recipe_1.default], { nullable: true }),
     __metadata("design:type", Array)
-], DataType.prototype, "Recipe", void 0);
+], DataType.prototype, "Recipes", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(() => [BlendIngredientData_1.default], { nullable: true }),
+    (0, type_graphql_1.Field)(() => [Wikilist_1.default], { nullable: true }),
     __metadata("design:type", Array)
-], DataType.prototype, "Ingredient", void 0);
+], DataType.prototype, "Wikis", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [Plan_1.default], { nullable: true }),
+    __metadata("design:type", Array)
+], DataType.prototype, "Plans", void 0);
 DataType = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], DataType);
