@@ -1420,6 +1420,7 @@ let RecipeResolver = class RecipeResolver {
     //   return 'done';
     // }
     async filterRecipe(data, userId, page, limit) {
+        console.log(data.collectionsIds);
         if (
         //@ts-ignore
         data.blendTypes.length == 0 &&
@@ -1430,7 +1431,9 @@ let RecipeResolver = class RecipeResolver {
             //@ts-ignore
             data.nutrientMatrix.length == 0 &&
             //@ts-ignore
-            data.excludeIngredientIds.length == 0) {
+            data.excludeIngredientIds.length == 0 &&
+            //@ts-ignore
+            data.collectionsIds.length == 0) {
             return {
                 recipes: [],
                 totalRecipes: 0,
@@ -1461,15 +1464,36 @@ let RecipeResolver = class RecipeResolver {
                 'ingredients.ingredientId': { $in: data.includeIngredientIds },
             };
         }
+        if (data.collectionsIds.length > 0) {
+            let allRecipeIds = [];
+            for (let i = 0; i < data.collectionsIds.length; i++) {
+                let collection = await userCollection_1.default.findOne({
+                    _id: data.collectionsIds[i],
+                });
+                if (!collection) {
+                    continue;
+                }
+                // console.log(collection.recipes);
+                allRecipeIds = allRecipeIds.concat(collection.recipes);
+            }
+            if (allRecipeIds.length !== 0) {
+                let recipeIdsSet = new Set(allRecipeIds);
+                let uniqueRecipeArray = Array.from(recipeIdsSet);
+                find = {
+                    _id: {
+                        $in: uniqueRecipeArray,
+                    },
+                };
+            }
+        }
         let findKeys = Object.keys(find);
+        // console.log('f', find);
         if (findKeys.length > 0) {
-            console.log(find);
             recipeData = await recipeModel_1.default.find(find).select('_id');
         }
         else {
             recipeData = [];
         }
-        console.log('hello');
         if (recipeData.length > 0 && data.excludeIngredientIds.length > 0) {
             let recipeIds = recipeData.map((recipe) => recipe._id);
             recipeData = await recipeModel_1.default.find({
