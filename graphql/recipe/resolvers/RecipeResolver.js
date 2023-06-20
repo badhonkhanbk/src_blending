@@ -1447,22 +1447,18 @@ let RecipeResolver = class RecipeResolver {
         }
         let recipeData = [];
         let find = {
-            global: true,
-            userId: null,
-            addedByAdmin: true,
-            discovery: true,
-            isPublished: true,
+        // global: true,
+        // userId: null,
+        // addedByAdmin: true,
+        // discovery: true,
+        // isPublished: true,
         };
         //@ts-ignore
         if (data.blendTypes.length > 0) {
-            find = {
-                recipeBlendCategory: { $in: data.blendTypes },
-            };
+            find.recipeBlendCategory = { $in: data.blendTypes };
         }
         if (data.includeIngredientIds.length > 0) {
-            find = {
-                'ingredients.ingredientId': { $in: data.includeIngredientIds },
-            };
+            find['ingredients.ingredientId'] = { $in: data.includeIngredientIds };
         }
         if (data.collectionsIds.length > 0) {
             let allRecipeIds = [];
@@ -1479,13 +1475,12 @@ let RecipeResolver = class RecipeResolver {
             if (allRecipeIds.length !== 0) {
                 let recipeIdsSet = new Set(allRecipeIds);
                 let uniqueRecipeArray = Array.from(recipeIdsSet);
-                find = {
-                    _id: {
-                        $in: uniqueRecipeArray,
-                    },
+                find._id = {
+                    $in: uniqueRecipeArray,
                 };
             }
         }
+        // console.log(find);
         let findKeys = Object.keys(find);
         // console.log('f', find);
         if (findKeys.length > 0) {

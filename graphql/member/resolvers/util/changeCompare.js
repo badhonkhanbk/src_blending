@@ -31,6 +31,12 @@ async function default_1(recipeId, userId) {
         }
     }
     if (!check) {
+        let compareCount = await Compare_1.default.countDocuments({
+            userId,
+        });
+        if (compareCount === 10) {
+            return new AppError_1.default('The maximum limit of Compare is 10', 401);
+        }
         updatedUser = await memberModel_1.default.findOneAndUpdate({ _id: userId }, { $push: { compareList: recipeId }, $inc: { compareLength: 1 } }, { new: true });
         await Compare_1.default.create({
             recipeId: recipeId,
