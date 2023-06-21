@@ -848,7 +848,12 @@ let WigdetResolver = class WigdetResolver {
                 //     }
                 //   );
                 // }
-                plans = await Plan_1.default.find({ isGlobal: true })
+                plans = await Plan_1.default.find({
+                    _id: {
+                        //@ts-ignore
+                        $in: widgetCollection.collectionData.children,
+                    },
+                })
                     .populate({
                     path: 'planData.recipes',
                     populate: [
