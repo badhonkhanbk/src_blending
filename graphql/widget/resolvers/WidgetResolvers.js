@@ -20,7 +20,7 @@ const AddWidgetInput_1 = __importDefault(require("./input-type/AddWidgetInput"))
 const WidgetCollection_1 = __importDefault(require("./input-type/WidgetCollection"));
 const CreateEditWidgetCollection_1 = __importDefault(require("./input-type/CreateEditWidgetCollection"));
 const EditWidget_1 = __importDefault(require("./input-type/EditWidget"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const Widget_1 = __importDefault(require("../../../models/Widget"));
 const WidgetForClient_1 = __importDefault(require("../schemas/WidgetForClient"));
 const Widget_2 = __importDefault(require("../schemas/Widget"));
@@ -40,6 +40,7 @@ var key;
 (function (key) {
     key["Ingredient"] = "foodCategories";
     key["Type"] = "recipeBlendCategory";
+    key["Random"] = "adminIds";
     // WIKI = 'Wiki',
 })(key || (key = {}));
 let WigdetResolver = class WigdetResolver {
@@ -133,7 +134,7 @@ let WigdetResolver = class WigdetResolver {
         return widget.widgetType;
     }
     //grid
-    async getWidgetCollections(widgetSlug) {
+    async getWidgetCollections(widgetSlug, currentDate) {
         let widget = await Widget_1.default.findOne({
             slug: widgetSlug,
         })
@@ -141,9 +142,34 @@ let WigdetResolver = class WigdetResolver {
             .populate({
             path: 'widgetCollections.collectionData',
         });
-        if (widget.widgetType !== 'Grid') {
-            return new AppError_1.default('The request muust be for Grid type only', 403);
+        if (!widget) {
+            return new AppError_1.default('Widget not found!', 404);
         }
+        if (widget.widgetType !== 'Grid') {
+            return new AppError_1.default('The request must be for Grid type only', 403);
+        }
+        if (currentDate) {
+            let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+            widget.widgetCollections = widget.widgetCollections.filter((wc) => {
+                if (wc.publishDate) {
+                    return new Date(wc.publishDate) >= today;
+                }
+                else if (wc.publishDate && wc.expiryDate) {
+                    return (new Date(wc.publishDate) >= today &&
+                        new Date(wc.expiryDate) <= today);
+                }
+                else {
+                    return true;
+                }
+            });
+        }
+        await Widget_1.default.findOneAndUpdate({
+            _id: widget._id,
+        }, {
+            $inc: {
+                viewCount: 1,
+            },
+        });
         return widget;
     }
     //Grid
@@ -164,27 +190,56 @@ let WigdetResolver = class WigdetResolver {
         //@ts-ignore
         let collectionType = widgetCollection.collectionData.collectionType;
         if (collectionType === 'Recipe') {
+            let orderBy = {};
+            if (!widgetCollection.orderBy) {
+                widgetCollection.orderBy = 'PUBLISHED_DATE';
+            }
+            if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                orderBy = { createdAt: 1 };
+            }
+            else if (widgetCollection.orderBy === 'POPULARITY') {
+                orderBy = { averageRating: -1 };
+            }
+            else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                orderBy = { name: 1 };
+            }
+            else {
+                orderBy = { createdAt: -1 };
+            }
+            // console.log("ft",widgetCollection.filter.filterType);
+            let filter = {};
             if (widgetCollection.filter.filterType === 'Ingredient') {
                 //@ts-ignore
                 values = widgetCollection.filter.values.map((v) => {
                     return v.label;
                 });
+                filter = {
+                    $in: values,
+                };
             }
             else if (widgetCollection.filter.filterType === 'Type') {
                 //@ts-ignore
                 values = widgetCollection.filter.values.map((v) => {
                     return v.value;
                 });
+                filter = {
+                    $in: values,
+                };
+            }
+            else {
+                widgetCollection.filter.filterType = 'Random';
+                values = widgetCollection.filter.values.map((v) => {
+                    return v.value;
+                });
+                filter = [];
             }
             let recipes;
-            recipes = await recipe_1.default.find({
+            recipes = await recipeModel_1.default.find({
                 _id: {
                     //@ts-ignore
                     $in: widgetCollection.collectionData.children,
                 },
-                // [key[widgetCollection.filter.filterType as keyof typeof key]]: {
-                //   $in: values,
-                // },
+                [key[widgetCollection.filter.filterType]]: filter,
             })
                 .populate({
                 path: 'ingredients.ingredientId',
@@ -192,6 +247,7 @@ let WigdetResolver = class WigdetResolver {
             })
                 .populate('brand')
                 .populate('recipeBlendCategory')
+                .sort(orderBy)
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
@@ -218,10 +274,15 @@ let WigdetResolver = class WigdetResolver {
                 showTabMenu: widgetCollection.showTabMenu,
                 themeLink: theme.link ? theme.link : null,
                 bannerLink: banner.link ? banner.link : null,
-                filter: {
-                    filterType: key[widgetCollection.filter.filterType],
-                    values: widgetCollection.filter.values,
-                },
+                filter: widgetCollection.filter.filterType === 'Random'
+                    ? {
+                        filterType: 'Random',
+                        values: [],
+                    }
+                    : {
+                        filterType: key[widgetCollection.filter.filterType],
+                        values: widgetCollection.filter.values,
+                    },
                 data: {
                     collectionType: collectionType,
                     Recipes: recipes,
@@ -241,7 +302,7 @@ let WigdetResolver = class WigdetResolver {
             .populate('widgetCollections.collectionData bannerId')
             .select('widgetCollections widgetName widgetType collectionCount');
         if (widget.widgetType !== 'Grid') {
-            return new AppError_1.default('The request muust be for Grid type only', 403);
+            return new AppError_1.default('The request muut be for Grid type only', 403);
         }
         let widgetCollection = widget.widgetCollections.filter(
         //@ts-ignore
@@ -253,6 +314,16 @@ let WigdetResolver = class WigdetResolver {
         //@ts-ignore
         let collectionType = widgetCollection.collectionData.collectionType;
         if (collectionType === 'Wiki') {
+            let orderBy = {};
+            if (!widgetCollection.orderBy) {
+                widgetCollection.orderBy = 'ALPHABETICALLY';
+            }
+            if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                orderBy = { wikiTitle: 1 };
+            }
+            else {
+                orderBy = { createdAt: -1 };
+            }
             let wikis;
             wikis = await wiki_1.default.find({
                 _id: {
@@ -264,6 +335,7 @@ let WigdetResolver = class WigdetResolver {
                 path: 'author',
                 select: 'firstName lastName displayName email profilePicture',
             })
+                .sort(orderBy)
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
@@ -329,7 +401,24 @@ let WigdetResolver = class WigdetResolver {
         let collectionType = widgetCollection.collectionData.collectionType;
         if (collectionType === 'Plan') {
             let plans;
-            plans = await Plan_1.default.find({ isGlobal: true }).populate({
+            let orderBy = {};
+            if (!widgetCollection.orderBy) {
+                widgetCollection.orderBy = 'PUBLISHED_DATE';
+            }
+            if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                orderBy = { createdAt: 1 };
+            }
+            else if (widgetCollection.orderBy === 'POPULARITY') {
+                orderBy = { planName: 1 };
+            }
+            else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                orderBy = { planName: 1 };
+            }
+            else {
+                orderBy = { createdAt: -1 };
+            }
+            plans = await Plan_1.default.find({ isGlobal: true })
+                .populate({
                 path: 'planData.recipes',
                 populate: [
                     {
@@ -348,7 +437,9 @@ let WigdetResolver = class WigdetResolver {
                         path: 'recipeBlendCategory',
                     },
                 ],
-            });
+            })
+                .sort(orderBy)
+                .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
             }).select('link');
@@ -391,11 +482,26 @@ let WigdetResolver = class WigdetResolver {
             return new AppError_1.default('This collection is only for Plans', 403);
         }
     }
-    async getRecipeWidget(widgetSlug) {
+    async getRecipeWidget(widgetSlug, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
             .select('widgetCollections widgetName widgetType collectionCount slug');
+        if (currentDate) {
+            let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+            widget.widgetCollections = widget.widgetCollections.filter((wc) => {
+                if (wc.publishDate) {
+                    return new Date(wc.publishDate) >= today;
+                }
+                else if (wc.publishDate && wc.expiryDate) {
+                    return (new Date(wc.publishDate) >= today &&
+                        new Date(wc.expiryDate) <= today);
+                }
+                else {
+                    return true;
+                }
+            });
+        }
         returnWidget._id = widget._id;
         returnWidget.bannerId = widget.bannerId;
         returnWidget.slug = widget.slug;
@@ -411,6 +517,51 @@ let WigdetResolver = class WigdetResolver {
             //@ts-ignore
             widget.widgetCollections[i].collectionData.collectionType;
             if (collectionType === 'Recipe') {
+                let orderBy = {};
+                let widgetCollection = widget.widgetCollections[i];
+                if (!widgetCollection.orderBy) {
+                    widgetCollection.orderBy = 'PUBLISHED_DATE';
+                }
+                if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                    orderBy = { createdAt: 1 };
+                }
+                else if (widgetCollection.orderBy === 'POPULARITY') {
+                    orderBy = { averageRating: -1 };
+                }
+                else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                    orderBy = { name: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                // console.log("ft",widgetCollection.filter.filterType);
+                let filter = {};
+                let values = [];
+                if (widgetCollection.filter.filterType === 'Ingredient') {
+                    //@ts-ignore
+                    values = widgetCollection.filter.values.map((v) => {
+                        return v.label;
+                    });
+                    filter = {
+                        $in: values,
+                    };
+                }
+                else if (widgetCollection.filter.filterType === 'Type') {
+                    //@ts-ignore
+                    values = widgetCollection.filter.values.map((v) => {
+                        return v.value;
+                    });
+                    filter = {
+                        $in: values,
+                    };
+                }
+                else {
+                    widgetCollection.filter.filterType = 'Random';
+                    values = widgetCollection.filter.values.map((v) => {
+                        return v.value;
+                    });
+                    filter = [];
+                }
                 let recipes;
                 // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
                 //   //@ts-ignore
@@ -428,7 +579,7 @@ let WigdetResolver = class WigdetResolver {
                 //     }
                 //   );
                 // }
-                recipes = await recipe_1.default.find({
+                recipes = await recipeModel_1.default.find({
                     _id: {
                         //@ts-ignore
                         $in: widget.widgetCollections[i].collectionData.children,
@@ -437,9 +588,7 @@ let WigdetResolver = class WigdetResolver {
                         //   8
                         // ),
                     },
-                    // [key[
-                    //   widget.widgetCollections[i].filter.filterType as keyof typeof key
-                    // ]]: { $in: values },
+                    [key[widget.widgetCollections[i].filter.filterType]]: { $in: values },
                 })
                     .populate({
                     path: 'ingredients.ingredientId',
@@ -447,6 +596,7 @@ let WigdetResolver = class WigdetResolver {
                 })
                     .populate('brand')
                     .populate('recipeBlendCategory')
+                    .sort('orderBy')
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
@@ -474,11 +624,15 @@ let WigdetResolver = class WigdetResolver {
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
                     themeLink: theme.link ? theme.link : null,
                     bannerLink: banner.link ? banner.link : null,
-                    filter: {
-                        filterType: key[widget.widgetCollections[i].filter
-                            .filterType],
-                        values: widget.widgetCollections[i].filter.values,
-                    },
+                    filter: widgetCollection.filter.filterType === 'Random'
+                        ? {
+                            filterType: 'Random',
+                            values: [],
+                        }
+                        : {
+                            filterType: key[widgetCollection.filter.filterType],
+                            values: widgetCollection.filter.values,
+                        },
                     data: {
                         collectionType: collectionType,
                         Recipes: recipes,
@@ -491,13 +645,35 @@ let WigdetResolver = class WigdetResolver {
                 return new AppError_1.default('Corrupted data', 401);
             }
         }
+        await Widget_1.default.findOneAndUpdate({
+            _id: widget._id,
+        }, {
+            $inc: {
+                viewCount: 1,
+            },
+        });
         return returnWidget;
     }
-    async getWikiWidget(widgetSlug) {
+    async getWikiWidget(widgetSlug, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
             .select('widgetCollections widgetName widgetType collectionCount slug');
+        if (currentDate) {
+            let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+            widget.widgetCollections = widget.widgetCollections.filter((wc) => {
+                if (wc.publishDate) {
+                    return new Date(wc.publishDate) >= today;
+                }
+                else if (wc.publishDate && wc.expiryDate) {
+                    return (new Date(wc.publishDate) >= today &&
+                        new Date(wc.expiryDate) <= today);
+                }
+                else {
+                    return true;
+                }
+            });
+        }
         returnWidget._id = widget._id;
         returnWidget.bannerId = widget.bannerId;
         returnWidget.slug = widget.slug;
@@ -513,6 +689,16 @@ let WigdetResolver = class WigdetResolver {
             //@ts-ignore
             widget.widgetCollections[i].collectionData.collectionType;
             if (collectionType === 'Wiki') {
+                let orderBy = {};
+                if (!widget.widgetCollections[i].orderBy) {
+                    widget.widgetCollections[i].orderBy = 'ALPHABETICALLY';
+                }
+                if (widget.widgetCollections[i].orderBy === 'ALPHABETICALLY') {
+                    orderBy = { wikiTitle: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
                 let wikis;
                 // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
                 //   //@ts-ignore
@@ -584,13 +770,35 @@ let WigdetResolver = class WigdetResolver {
                 return new AppError_1.default('Corrupted data', 401);
             }
         }
+        await Widget_1.default.findOneAndUpdate({
+            _id: widget._id,
+        }, {
+            $inc: {
+                viewCount: 1,
+            },
+        });
         return returnWidget;
     }
-    async getPlanWidget(widgetSlug) {
+    async getPlanWidget(widgetSlug, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
             .select('widgetCollections widgetName widgetType collectionCount slug');
+        if (currentDate) {
+            let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+            widget.widgetCollections = widget.widgetCollections.filter((wc) => {
+                if (wc.publishDate) {
+                    return new Date(wc.publishDate) >= today;
+                }
+                else if (wc.publishDate && wc.expiryDate) {
+                    return (new Date(wc.publishDate) >= today &&
+                        new Date(wc.expiryDate) <= today);
+                }
+                else {
+                    return true;
+                }
+            });
+        }
         returnWidget._id = widget._id;
         returnWidget.bannerId = widget.bannerId;
         returnWidget.slug = widget.slug;
@@ -601,11 +809,28 @@ let WigdetResolver = class WigdetResolver {
         // let recipes = [];
         // let ingredients: any[] = [];
         for (let i = 0; i < widget.widgetCollections.length; i++) {
+            let orderBy = {};
             // let values: any[] = [];
             let collectionType = 
             //@ts-ignore
             widget.widgetCollections[i].collectionData.collectionType;
             if (collectionType === 'Plan') {
+                let widgetCollection = widget.widgetCollections[i];
+                if (!widgetCollection.orderBy) {
+                    widgetCollection.orderBy = 'PUBLISHED_DATE';
+                }
+                if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                    orderBy = { createdAt: 1 };
+                }
+                else if (widgetCollection.orderBy === 'POPULARITY') {
+                    orderBy = { planName: 1 };
+                }
+                else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                    orderBy = { planName: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
                 let plans;
                 // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
                 //   //@ts-ignore
@@ -623,7 +848,8 @@ let WigdetResolver = class WigdetResolver {
                 //     }
                 //   );
                 // }
-                plans = await Plan_1.default.find({ isGlobal: true }).populate({
+                plans = await Plan_1.default.find({ isGlobal: true })
+                    .populate({
                     path: 'planData.recipes',
                     populate: [
                         {
@@ -642,7 +868,9 @@ let WigdetResolver = class WigdetResolver {
                             path: 'recipeBlendCategory',
                         },
                     ],
-                });
+                })
+                    .sort(orderBy)
+                    .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
                 }).select('link');
@@ -686,6 +914,13 @@ let WigdetResolver = class WigdetResolver {
                 return new AppError_1.default('Corrupted data', 401);
             }
         }
+        await Widget_1.default.findOneAndUpdate({
+            _id: widget._id,
+        }, {
+            $inc: {
+                viewCount: 1,
+            },
+        });
         return returnWidget;
     }
     async getWidgetsForClient(slug) {
@@ -724,7 +959,7 @@ let WigdetResolver = class WigdetResolver {
                         return v.value;
                     });
                 }
-                recipes = await recipe_1.default.find({
+                recipes = await recipeModel_1.default.find({
                     _id: {
                         //@ts-ignore
                         $in: widget.widgetCollections[i].collectionData.children,
@@ -813,7 +1048,7 @@ let WigdetResolver = class WigdetResolver {
                 });
             }
             let recipes;
-            recipes = await recipe_1.default.find({
+            recipes = await recipeModel_1.default.find({
                 _id: {
                     //@ts-ignore
                     $in: widgetCollection.collectionData.children.slice(0, 8),
@@ -958,8 +1193,9 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
+    __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getWidgetCollections", null);
 __decorate([
@@ -992,22 +1228,25 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
+    __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getRecipeWidget", null);
 __decorate([
     (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
+    __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getWikiWidget", null);
 __decorate([
     (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
+    __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getPlanWidget", null);
 __decorate([

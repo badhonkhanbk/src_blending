@@ -30,6 +30,7 @@ const widgetSchema = new mongoose_1.Schema({
             collectionData: { type: mongoose_1.Schema.Types.ObjectId, ref: 'AdminCollection' },
             isPublished: { type: Boolean, default: false },
             publishDate: String,
+            expiryDate: String,
             publishedBy: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Admin' },
             orderBy: String,
             theme: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Theme' },
