@@ -36,6 +36,50 @@ const PlanSchema = new mongoose_1.Schema({
             ref: 'AdminCollection',
         },
     ],
+    ingredients: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' }],
+    calorie: {
+        value: Number,
+        blendNutrientRefference: {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'BlendNutrient',
+        },
+        parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+    },
+    energy: [
+        {
+            value: Number,
+            blendNutrientRefference: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'BlendIngredient',
+            },
+            parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+        },
+    ],
+    mineral: [
+        {
+            value: Number,
+            blendNutrientRefference: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'BlendIngredient',
+            },
+            parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+        },
+    ],
+    vitamin: [
+        {
+            value: Number,
+            blendNutrientRefference: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'BlendIngredient',
+            },
+            parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+        },
+    ],
+    gigl: {
+        totalGi: Number,
+        netCarbs: Number,
+        totalGL: Number,
+    },
 });
 const Plan = (0, mongoose_1.model)('Plan', PlanSchema);
 exports.default = Plan;

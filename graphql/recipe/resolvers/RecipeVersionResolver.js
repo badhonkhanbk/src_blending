@@ -34,15 +34,21 @@ const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDes
 let RecipeVersionResolver = class RecipeVersionResolver {
     async editAVersionOfRecipe(data) {
         let recipe = await recipeModel_1.default.findOne({ _id: data.recipeId }).select('userId adminId originalVersion');
+        if (!recipe) {
+            return new AppError_1.default('recipe mnot Found', 404);
+        }
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
             _id: data.editId,
         }).select('createdBy');
+        if (!recipeVersion) {
+            return new AppError_1.default('recipeVersion mnot Found', 404);
+        }
         let userRecipe = await UserRecipeProfile_1.default.findOne({
             recipeId: recipe._id,
             userId: data.userId,
         }).select('originalVersion defaultVersion isMatch');
         if (!userRecipe) {
-            return new AppError_1.default('Recipe not found', 404);
+            return new AppError_1.default('User Recipe not found', 404);
         }
         let willBeModifiedData = data.editableObject;
         if (!willBeModifiedData.selectedImage) {
@@ -58,7 +64,6 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 let mainPortion = ingredient.portions.filter(
                 //@ts-ignore
                 (portion) => portion.measurement === ingredients[i].selectedPortionName)[0];
-                console.log('mainPortion', mainPortion);
                 let selectedPortion = {
                     name: ingredients[i].selectedPortionName,
                     gram: ingredients[i].weightInGram,
@@ -85,6 +90,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             willBeModifiedData.editedAt = Date.now();
         }
         if (String(data.userId) === String(recipeVersion.createdBy)) {
+            console.log('here');
             let newVersion = await RecipeVersionModel_1.default.findOneAndUpdate({ _id: data.editId }, willBeModifiedData, { new: true });
             //@ts-ignore
             await (0, updateVersionFacts_1.default)(newVersion._id);
@@ -105,6 +111,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 return new AppError_1.default('You can not edit this version', 400);
             }
             let createdVersion = await RecipeVersionModel_1.default.create(newVersion);
+            // console.log(createdVersion);
             if (String(userRecipe.defaultVersion) === String(data.editId) &&
                 !userRecipe.isMatch) {
                 await UserRecipeProfile_1.default.findOneAndUpdate({ _id: userRecipe._id }, { defaultVersion: createdVersion._id });
@@ -145,7 +152,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             //@ts-ignore
             await (0, updateVersionFacts_1.default)(createdVersion._id);
             return {
-                status: newVersion._id,
+                status: createdVersion._id,
                 isNew: true,
             };
         }
