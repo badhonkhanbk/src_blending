@@ -26,6 +26,10 @@ const PlanSchema = new mongoose_1.Schema({
     createdAt: { type: Date, default: Date.now() },
     updatedAt: Date,
     isGlobal: Boolean,
+    numberOfRating: { type: Number, default: 0 },
+    totalRating: { type: Number, default: 0 },
+    totalViews: { type: Number, default: 0 },
+    averageRating: { type: Number, default: 0 },
     collections: [
         {
             type: mongoose_1.Schema.Types.ObjectId,

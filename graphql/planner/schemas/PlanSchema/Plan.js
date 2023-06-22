@@ -59,6 +59,26 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Plan.prototype, "isGlobal", void 0);
 __decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], Plan.prototype, "numberOfRating", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], Plan.prototype, "totalRating", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], Plan.prototype, "totalViews", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], Plan.prototype, "averageRating", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], Plan.prototype, "myRating", void 0);
+__decorate([
     (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
 ], Plan.prototype, "collections", void 0);

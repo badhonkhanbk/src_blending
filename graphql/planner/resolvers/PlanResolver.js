@@ -32,6 +32,7 @@ const PlansAndRecipes_1 = __importDefault(require("../schemas/PlanSchema/PlansAn
 const checkThePlanIsInCollectionOrNot_1 = __importDefault(require("./utils/checkThePlanIsInCollectionOrNot"));
 const attachCommentsCountWithPlan_1 = __importDefault(require("./utils/attachCommentsCountWithPlan"));
 const planCollection_1 = __importDefault(require("../../../models/planCollection"));
+const PlanRating_1 = __importDefault(require("../../../models/PlanRating"));
 let PlanResolver = class PlanResolver {
     async createAPlan(input) {
         let myPlan = input;
@@ -135,6 +136,16 @@ let PlanResolver = class PlanResolver {
         if (memberId) {
             plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
             plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            let myPlanRating = await PlanRating_1.default.findOne({
+                memberId: memberId,
+                planId: plan._id,
+            });
+            if (myPlanRating) {
+                plan.myRating = myPlanRating.rating;
+            }
+            else {
+                plan.myRating = 0;
+            }
             plan.planCollectionsDescription = await planCollection_1.default.find({
                 memberId: memberId,
                 plans: {
@@ -265,6 +276,16 @@ let PlanResolver = class PlanResolver {
             let plan = plans[i];
             plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
             plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            let myPlanRating = await PlanRating_1.default.findOne({
+                memberId: memberId,
+                planId: plan._id,
+            });
+            if (myPlanRating) {
+                plan.myRating = myPlanRating.rating;
+            }
+            else {
+                plan.myRating = 0;
+            }
             planWithCollectionAndComments.push(plan);
         }
         return {
@@ -308,6 +329,16 @@ let PlanResolver = class PlanResolver {
             let plan = plans[i];
             plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
             plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            let myPlanRating = await PlanRating_1.default.findOne({
+                memberId: memberId,
+                planId: plan._id,
+            });
+            if (myPlanRating) {
+                plan.myRating = myPlanRating.rating;
+            }
+            else {
+                plan.myRating = 0;
+            }
             planWithCollectionAndComments.push(plan);
         }
         return {
@@ -347,6 +378,16 @@ let PlanResolver = class PlanResolver {
             let plan = plans[i];
             plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
             plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            let myPlanRating = await PlanRating_1.default.findOne({
+                memberId: memberId,
+                planId: plan._id,
+            });
+            if (myPlanRating) {
+                plan.myRating = myPlanRating.rating;
+            }
+            else {
+                plan.myRating = 0;
+            }
             planWithCollectionAndComments.push(plan);
         }
         return planWithCollectionAndComments;
@@ -387,6 +428,16 @@ let PlanResolver = class PlanResolver {
             let plan = plans[i];
             plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
             plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            let myPlanRating = await PlanRating_1.default.findOne({
+                memberId: memberId,
+                planId: plan._id,
+            });
+            if (myPlanRating) {
+                plan.myRating = myPlanRating.rating;
+            }
+            else {
+                plan.myRating = 0;
+            }
             planWithCollectionAndComments.push(plan);
         }
         return {
@@ -430,6 +481,16 @@ let PlanResolver = class PlanResolver {
             let plan = plans[i];
             plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
             plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            let myPlanRating = await PlanRating_1.default.findOne({
+                memberId: memberId,
+                planId: plan._id,
+            });
+            if (myPlanRating) {
+                plan.myRating = myPlanRating.rating;
+            }
+            else {
+                plan.myRating = 0;
+            }
             planWithCollectionAndComments.push(plan);
         }
         return {
@@ -501,10 +562,10 @@ let PlanResolver = class PlanResolver {
     }
     async fixPlans() {
         await Plan_1.default.updateMany({}, {
-            image: {
-                url: '',
-                hash: '',
-            },
+            numberOfRating: 0,
+            totalRating: 0,
+            totalViews: 0,
+            averageRating: 0,
         });
         return 'done';
     }
