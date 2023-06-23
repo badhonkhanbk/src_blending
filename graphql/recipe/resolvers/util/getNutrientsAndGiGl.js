@@ -9,6 +9,7 @@ const blendNutrient_1 = __importDefault(require("../../../../models/blendNutrien
 const blendNutrientCategory_1 = __importDefault(require("../../../../models/blendNutrientCategory"));
 async function getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
     let nutrientList = await getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
+    // console.log(nutrientList);
     let giGl = await getGlAndNetCarbs2(ingredientsInfo);
     const returnData = {
         nutrients: nutrientList,
@@ -256,10 +257,15 @@ async function getBlendNutritionBasedOnRecipexxx(ingredientsInfo) {
     })
         .sort({ rank: 1 })
         .lean();
+    // console.log(ingredients.length);
     for (let i = 0; i < ingredients.length; i++) {
+        // console.log(ingredients[i]);
         let value = data.filter(
         // @ts-ignore
         (y) => y.ingredientId === String(ingredients[i]._id))[0].value;
+        // if (!value) {
+        //   console.log(ingredients[i]);
+        // }
         for (let j = 0; j < ingredients[i].blendNutrients.length; j++) {
             ingredients[i].blendNutrients[j].value =
                 (+ingredients[i].blendNutrients[j].value / 100) * value;

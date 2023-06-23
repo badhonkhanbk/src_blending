@@ -33,6 +33,7 @@ const checkThePlanIsInCollectionOrNot_1 = __importDefault(require("./utils/check
 const attachCommentsCountWithPlan_1 = __importDefault(require("./utils/attachCommentsCountWithPlan"));
 const planCollection_1 = __importDefault(require("../../../models/planCollection"));
 const PlanRating_1 = __importDefault(require("../../../models/PlanRating"));
+const updatePlanFacts_1 = __importDefault(require("../../recipe/resolvers/util/updatePlanFacts"));
 let PlanResolver = class PlanResolver {
     async createAPlan(input) {
         let myPlan = input;
@@ -44,7 +45,8 @@ let PlanResolver = class PlanResolver {
         }
         //TODO
         myPlan.isGlobal = true;
-        await Plan_1.default.create(myPlan);
+        let plan = await Plan_1.default.create(myPlan);
+        await (0, updatePlanFacts_1.default)(String(plan._id));
         return 'Plan created';
     }
     async updateAPlan(input) {
@@ -64,10 +66,12 @@ let PlanResolver = class PlanResolver {
                 .slice(0, 10));
         }
         myPlan.updatedAt = Date.now();
-        console.log(myPlan);
         await Plan_1.default.findOneAndUpdate({
             _id: input.editId,
-        }, myPlan);
+        }, myPlan, {
+            new: true,
+        });
+        await (0, updatePlanFacts_1.default)(String(plan._id));
         return 'Plan updated';
     }
     async getMyPlans(memberId) {
@@ -561,12 +565,11 @@ let PlanResolver = class PlanResolver {
         };
     }
     async fixPlans() {
-        await Plan_1.default.updateMany({}, {
-            numberOfRating: 0,
-            totalRating: 0,
-            totalViews: 0,
-            averageRating: 0,
-        });
+        let plans = await Plan_1.default.find();
+        for (let i = 0; i < plans.length; i++) {
+            console.log(i);
+            await (0, updatePlanFacts_1.default)(String(plans[i]._id));
+        }
         return 'done';
     }
 };
