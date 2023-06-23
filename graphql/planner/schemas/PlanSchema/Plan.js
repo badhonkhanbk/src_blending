@@ -16,6 +16,8 @@ const type_graphql_1 = require("type-graphql");
 const PlanCollection_1 = __importDefault(require("../PlanCollection/PlanCollection"));
 const PlanData_1 = __importDefault(require("./PlanData"));
 const ImageWithHash_1 = __importDefault(require("../ImageWithHash"));
+const CalorieInfo_1 = __importDefault(require("../../../recipe/schemas/CalorieInfo"));
+const GIGl_1 = __importDefault(require("../../../blendIngredientsdata/schemas/GIGl"));
 let Plan = class Plan {
 };
 __decorate([
@@ -82,6 +84,14 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
 ], Plan.prototype, "collections", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => CalorieInfo_1.default, { nullable: true }),
+    __metadata("design:type", CalorieInfo_1.default)
+], Plan.prototype, "calorie", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", GIGl_1.default)
+], Plan.prototype, "gigl", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)

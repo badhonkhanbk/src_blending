@@ -49,8 +49,7 @@ async function updatePlanFacts(planId) {
             continue;
         }
         for (let j = 0; j < version.ingredients.length; j++) {
-            let index = ingredientInfo.findIndex((el) => el.ingredientId ===
-                String(version.ingredients[j].ingredientId));
+            let index = ingredientInfo.findIndex((el) => el.ingredientId === String(version.ingredients[j].ingredientId));
             if (index === -1) {
                 ingredients.push(version.ingredients[j].ingredientId);
                 ingredientInfo.push({
@@ -86,6 +85,7 @@ async function updatePlanFacts(planId) {
     }
     await Plan_1.default.findOneAndUpdate({ _id: planId }, {
         gigl: giGl,
+        calorie: formatedCalorie,
     });
     let energyTrees = Object.keys(energy);
     let mineralsTress = Object.keys(minerals);

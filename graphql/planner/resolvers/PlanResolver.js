@@ -16,6 +16,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const mongoose_1 = __importDefault(require("mongoose"));
 const CreateNewPlan_1 = __importDefault(require("./input-type/planInput/CreateNewPlan"));
 const Plan_1 = __importDefault(require("../../../models/Plan"));
 const EditPlan_1 = __importDefault(require("./input-type/planInput/EditPlan"));
@@ -34,6 +35,8 @@ const attachCommentsCountWithPlan_1 = __importDefault(require("./utils/attachCom
 const planCollection_1 = __importDefault(require("../../../models/planCollection"));
 const PlanRating_1 = __importDefault(require("../../../models/PlanRating"));
 const updatePlanFacts_1 = __importDefault(require("../../recipe/resolvers/util/updatePlanFacts"));
+const FilterPlan_1 = __importDefault(require("./input-type/planInput/FilterPlan"));
+const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 let PlanResolver = class PlanResolver {
     async createAPlan(input) {
         let myPlan = input;
@@ -502,6 +505,241 @@ let PlanResolver = class PlanResolver {
             totalPlans: await Plan_1.default.countDocuments({ isGlobal: true }),
         };
     }
+    async filterPlans(data, userId, page, limit) {
+        console.log(data.collectionsIds);
+        if (
+        //@ts-ignore
+        data.includeIngredientIds.length == 0 &&
+            //@ts-ignore
+            data.nutrientFilters.length == 0 &&
+            //@ts-ignore
+            data.nutrientMatrix.length == 0 &&
+            //@ts-ignore
+            data.excludeIngredientIds.length == 0 &&
+            //@ts-ignore
+            data.collectionsIds.length == 0) {
+            return {
+                plans: [],
+                totalRecipes: 0,
+            };
+        }
+        if (!page) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 5;
+        }
+        let planData = [];
+        let find = {
+        // global: true,
+        // userId: null,
+        // addedByAdmin: true,
+        // discovery: true,
+        // isPublished: true,
+        };
+        if (data.includeIngredientIds.length > 0) {
+            find.ingredients = { $in: data.includeIngredientIds };
+        }
+        if (data.collectionsIds.length > 0) {
+            let allRecipeIds = [];
+            for (let i = 0; i < data.collectionsIds.length; i++) {
+                let collection = await userCollection_1.default.findOne({
+                    _id: data.collectionsIds[i],
+                });
+                if (!collection) {
+                    continue;
+                }
+                // console.log(collection.recipes);
+                allRecipeIds = allRecipeIds.concat(collection.recipes);
+            }
+            if (allRecipeIds.length !== 0) {
+                let recipeIdsSet = new Set(allRecipeIds);
+                let uniqueRecipeArray = Array.from(recipeIdsSet);
+                find._id = {
+                    $in: uniqueRecipeArray,
+                };
+            }
+        }
+        console.log(find);
+        let findKeys = Object.keys(find);
+        // console.log('f', find);
+        if (findKeys.length > 0) {
+            planData = await Plan_1.default.find(find).select('_id');
+        }
+        else {
+            planData = [];
+        }
+        if (planData.length > 0 && data.excludeIngredientIds.length > 0) {
+            let planIds = planData.map((plan) => plan._id);
+            planData = await Plan_1.default.find({
+                _id: { $in: planIds },
+                ingredients: { $nin: data.excludeIngredientIds },
+            }).select('_id');
+        }
+        let findfacts = {
+        // global: true,
+        // userId: null,
+        // addedByAdmin: true,
+        // discovery: true,
+        // isPublished: true,
+        };
+        if (planData.length > 0) {
+            let planIds = planData.map((plan) => plan._id);
+            findfacts = {
+                _id: { $in: planIds },
+            };
+        }
+        else {
+            findfacts = {
+                _id: { $in: [] },
+            };
+        }
+        for (let i = 0; i < data.nutrientMatrix.length; i++) {
+            let val = '';
+            if (data.nutrientMatrix[i].matrixName === 'netCarbs') {
+                val = 'gigl.netCarbs';
+                findfacts[val] = {};
+            }
+            else if (data.nutrientMatrix[i].matrixName === 'calorie') {
+                val = 'calorie.value';
+                findfacts[val] = {};
+            }
+            else if (data.nutrientMatrix[i].matrixName === 'totalGi') {
+                val = 'gigl.totalGi';
+                findfacts[val] = {};
+            }
+            else if (data.nutrientMatrix[i].matrixName === 'totalGl') {
+                val = 'gigl.totalGl';
+                findfacts[val] = {};
+            }
+            if (data.nutrientMatrix[i].lessThan) {
+                findfacts[val] = { $lt: data.nutrientMatrix[i].value };
+            }
+            else if (data.nutrientMatrix[i].greaterThan) {
+                findfacts[val] = { $gt: data.nutrientMatrix[i].value };
+            }
+            else if (data.nutrientMatrix[i].beetween) {
+                findfacts[val] = {
+                    $gt: data.nutrientMatrix[i].value1,
+                    $lt: data.nutrientMatrix[i].value2,
+                };
+            }
+        }
+        let energy = [];
+        let mineral = [];
+        let vitamin = [];
+        for (let i = 0; i < data.nutrientFilters.length; i++) {
+            let obj = {};
+            obj.blendNutrientRefference = new mongoose_1.default.mongo.ObjectId(data.nutrientFilters[i].nutrientId.toString());
+            if (data.nutrientFilters[i].lessThan) {
+                obj.value = { $lt: data.nutrientFilters[i].value };
+            }
+            else if (data.nutrientFilters[i].greaterThan) {
+                obj.value = { $gt: data.nutrientFilters[i].value };
+            }
+            else if (data.nutrientFilters[i].beetween) {
+                obj.value = {
+                    $gt: data.nutrientFilters[i].value1,
+                    $lt: data.nutrientFilters[i].value2,
+                };
+            }
+            if (data.nutrientFilters[i].category === 'energy') {
+                energy.push(obj);
+            }
+            else if (data.nutrientFilters[i].category === 'mineral') {
+                mineral.push(obj);
+            }
+            else if (data.nutrientFilters[i].category === 'vitamin') {
+                vitamin.push(obj);
+            }
+        }
+        let planFacts = [];
+        let planIds = [];
+        if (energy.length > 0) {
+            for (let i = 0; i < energy.length; i++) {
+                findfacts['energy'] = { $elemMatch: energy[i] };
+                planFacts = await Plan_1.default.find(findfacts).select('_id');
+                planIds = planFacts.map((plan) => plan._id);
+                findfacts._id = { $in: planIds };
+                delete findfacts['energy'];
+            }
+        }
+        if (mineral.length > 0) {
+            for (let i = 0; i < mineral.length; i++) {
+                findfacts['mineral'] = { $elemMatch: mineral[i] };
+                planFacts = await Plan_1.default.find(findfacts).select('_id');
+                planIds = planFacts.map((plan) => plan._id);
+                findfacts._id = { $in: planIds };
+                delete findfacts['mineral'];
+            }
+        }
+        if (vitamin.length > 0) {
+            for (let i = 0; i < vitamin.length; i++) {
+                findfacts['vitamin'] = { $elemMatch: vitamin[i] };
+                planFacts = await Plan_1.default.find(findfacts).select('_id');
+                planIds = planFacts.map((plan) => plan._id);
+                findfacts._id = { $in: planIds };
+                delete findfacts['vitamin'];
+            }
+        }
+        if (planIds.length === 0) {
+            planFacts = await Plan_1.default.find(findfacts).select('_id');
+            planIds = planFacts.map((plan) => plan._id);
+            // recipeIds = [];
+        }
+        console.log('pid', planIds);
+        let plans = await Plan_1.default.find({
+            _id: {
+                $in: planIds,
+            },
+        })
+            .populate({
+            path: 'planData.recipes',
+            populate: [
+                {
+                    path: 'defaultVersion',
+                    populate: {
+                        path: 'ingredients.ingredientId',
+                        model: 'BlendIngredient',
+                        select: 'ingredientName',
+                    },
+                    select: 'postfixTitle ingredients',
+                },
+                {
+                    path: 'brand',
+                },
+                {
+                    path: 'recipeBlendCategory',
+                },
+            ],
+        })
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .skip(limit * (page - 1));
+        let planWithCollectionAndComments = [];
+        for (let i = 0; i < plans.length; i++) {
+            let plan = plans[i];
+            plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
+            plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, userId);
+            let myPlanRating = await PlanRating_1.default.findOne({
+                memberId: userId,
+                planId: plan._id,
+            });
+            if (myPlanRating) {
+                plan.myRating = myPlanRating.rating;
+            }
+            else {
+                plan.myRating = 0;
+            }
+            planWithCollectionAndComments.push(plan);
+        }
+        return {
+            plans: planWithCollectionAndComments,
+            totalPlans: planIds.length > 0
+                ? await Plan_1.default.countDocuments({ _id: planIds })
+                : 0,
+        };
+    }
     async sharePlan(planId, memberId) {
         let planShare = await planShare_1.default.findOne({
             planId: planId,
@@ -661,6 +899,17 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllPopularPlans", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __param(1, (0, type_graphql_1.Arg)('userId')),
+    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [FilterPlan_1.default,
+        String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], PlanResolver.prototype, "filterPlans", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __param(0, (0, type_graphql_1.Arg)('planId')),
