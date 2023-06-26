@@ -172,6 +172,271 @@ let WigdetResolver = class WigdetResolver {
         });
         return widget;
     }
+    //
+    async getEntityCollection(widgetSlug, collectionSlug) {
+        let widget = await Widget_1.default.findOne({ slug: widgetSlug })
+            .populate('widgetCollections.collectionData bannerId')
+            .select('widgetCollections widgetName widgetType collectionCount');
+        if (widget.widgetType !== 'Grid') {
+            return new AppError_1.default('The request must be for Grid type only', 403);
+        }
+        let widgetCollection = widget.widgetCollections.filter(
+        //@ts-ignore
+        (wc) => wc.slug === collectionSlug)[0];
+        if (!widgetCollection) {
+            return new AppError_1.default('No widget collection found', 404);
+        }
+        let values = [];
+        //@ts-ignore
+        let collectionType = widgetCollection.collectionData.collectionType;
+        if (collectionType === 'Recipe') {
+            let orderBy = {};
+            if (!widgetCollection.orderBy) {
+                widgetCollection.orderBy = 'PUBLISHED_DATE';
+            }
+            if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                orderBy = { createdAt: 1 };
+            }
+            else if (widgetCollection.orderBy === 'POPULARITY') {
+                orderBy = { averageRating: -1 };
+            }
+            else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                orderBy = { name: 1 };
+            }
+            else {
+                orderBy = { createdAt: -1 };
+            }
+            // console.log("ft",widgetCollection.filter.filterType);
+            let filter = {};
+            if (widgetCollection.filter.filterType === 'Ingredient') {
+                //@ts-ignore
+                values = widgetCollection.filter.values.map((v) => {
+                    return v.label;
+                });
+                filter = {
+                    $in: values,
+                };
+            }
+            else if (widgetCollection.filter.filterType === 'Type') {
+                //@ts-ignore
+                values = widgetCollection.filter.values.map((v) => {
+                    return v.value;
+                });
+                filter = {
+                    $in: values,
+                };
+            }
+            else {
+                widgetCollection.filter.filterType = 'Random';
+                values = widgetCollection.filter.values.map((v) => {
+                    return v.value;
+                });
+                filter = [];
+            }
+            let recipes;
+            recipes = await recipeModel_1.default.find({
+                _id: {
+                    //@ts-ignore
+                    $in: widgetCollection.collectionData.children,
+                },
+                [key[widgetCollection.filter.filterType]]: filter,
+            })
+                .populate({
+                path: 'ingredients.ingredientId',
+                model: 'BlendIngredient',
+            })
+                .populate('brand')
+                .populate('recipeBlendCategory')
+                .sort(orderBy)
+                .lean();
+            let theme = await theme_1.default.findOne({
+                _id: widgetCollection.theme,
+            }).select('link');
+            let banner = await banner_1.default.findOne({
+                _id: widgetCollection.bannerId,
+            }).select('link');
+            if (!theme) {
+                theme = {
+                    link: null,
+                };
+            }
+            if (!banner) {
+                banner = {
+                    link: null,
+                };
+            }
+            let returnWidgetCollection = {
+                //@ts-ignore
+                _id: widgetCollection._id,
+                displayName: widgetCollection.displayName,
+                icon: widgetCollection.icon,
+                banner: widgetCollection.banner,
+                showTabMenu: widgetCollection.showTabMenu,
+                themeLink: theme.link ? theme.link : null,
+                bannerLink: banner.link ? banner.link : null,
+                filter: widgetCollection.filter.filterType === 'Random'
+                    ? {
+                        filterType: 'Random',
+                        values: [],
+                    }
+                    : {
+                        filterType: key[widgetCollection.filter.filterType],
+                        values: widgetCollection.filter.values,
+                    },
+                data: {
+                    collectionType: collectionType,
+                    Recipes: recipes,
+                    Wikis: [],
+                    Plans: [],
+                },
+            };
+            return returnWidgetCollection;
+        }
+        else if (collectionType === 'Wiki') {
+            let orderBy = {};
+            if (!widgetCollection.orderBy) {
+                widgetCollection.orderBy = 'ALPHABETICALLY';
+            }
+            if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                orderBy = { wikiTitle: 1 };
+            }
+            else {
+                orderBy = { createdAt: -1 };
+            }
+            let wikis;
+            wikis = await wiki_1.default.find({
+                _id: {
+                    //@ts-ignore
+                    $in: widgetCollection.collectionData.children,
+                },
+            })
+                .populate({
+                path: 'author',
+                select: 'firstName lastName displayName email profilePicture',
+            })
+                .sort(orderBy)
+                .lean();
+            let theme = await theme_1.default.findOne({
+                _id: widgetCollection.theme,
+            }).select('link');
+            let banner = await banner_1.default.findOne({
+                _id: widgetCollection.bannerId,
+            }).select('link');
+            if (!theme) {
+                theme = {
+                    link: null,
+                };
+            }
+            if (!banner) {
+                banner = {
+                    link: null,
+                };
+            }
+            let returnWidgetCollection = {
+                //@ts-ignore
+                _id: widgetCollection._id,
+                displayName: widgetCollection.displayName,
+                icon: widgetCollection.icon,
+                banner: widgetCollection.banner,
+                showTabMenu: widgetCollection.showTabMenu,
+                themeLink: theme.link ? theme.link : null,
+                bannerLink: banner.link ? banner.link : null,
+                filter: {
+                    filterType: key[widgetCollection.filter.filterType],
+                    values: widgetCollection.filter.values,
+                },
+                data: {
+                    collectionType: collectionType,
+                    Recipes: [],
+                    Wikis: wikis,
+                    Plans: [],
+                },
+            };
+            return returnWidgetCollection;
+        }
+        else if (collectionType === 'Plan') {
+            let plans;
+            let orderBy = {};
+            if (!widgetCollection.orderBy) {
+                widgetCollection.orderBy = 'PUBLISHED_DATE';
+            }
+            if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                orderBy = { createdAt: 1 };
+            }
+            else if (widgetCollection.orderBy === 'POPULARITY') {
+                orderBy = { averageRating: 1 };
+            }
+            else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                orderBy = { planName: 1 };
+            }
+            else {
+                orderBy = { createdAt: -1 };
+            }
+            plans = await Plan_1.default.find({ isGlobal: true })
+                .populate({
+                path: 'planData.recipes',
+                populate: [
+                    {
+                        path: 'defaultVersion',
+                        populate: {
+                            path: 'ingredients.ingredientId',
+                            model: 'BlendIngredient',
+                            select: 'ingredientName',
+                        },
+                        select: 'postfixTitle ingredients',
+                    },
+                    {
+                        path: 'brand',
+                    },
+                    {
+                        path: 'recipeBlendCategory',
+                    },
+                ],
+            })
+                .sort(orderBy)
+                .lean();
+            let theme = await theme_1.default.findOne({
+                _id: widgetCollection.theme,
+            }).select('link');
+            let banner = await banner_1.default.findOne({
+                _id: widgetCollection.bannerId,
+            }).select('link');
+            if (!theme) {
+                theme = {
+                    link: null,
+                };
+            }
+            if (!banner) {
+                banner = {
+                    link: null,
+                };
+            }
+            let returnWidgetCollection = {
+                //@ts-ignore
+                _id: widgetCollection._id,
+                displayName: widgetCollection.displayName,
+                icon: widgetCollection.icon,
+                banner: widgetCollection.banner,
+                showTabMenu: widgetCollection.showTabMenu,
+                themeLink: theme.link ? theme.link : null,
+                bannerLink: banner.link ? banner.link : null,
+                filter: {
+                    filterType: key[widgetCollection.filter.filterType],
+                    values: widgetCollection.filter.values,
+                },
+                data: {
+                    collectionType: collectionType,
+                    Recipes: [],
+                    Wikis: [],
+                    Plans: plans,
+                },
+            };
+            return returnWidgetCollection;
+        }
+        else {
+            return new AppError_1.default('Error CollectionType not Exists', 403);
+        }
+    }
     //Grid
     async getRecipeCollection(widgetSlug, collectionSlug) {
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
@@ -482,6 +747,355 @@ let WigdetResolver = class WigdetResolver {
             return new AppError_1.default('This collection is only for Plans', 403);
         }
     }
+    async getEntityWidget(widgetSlug, currentDate) {
+        let returnWidget = {};
+        let widget = await Widget_1.default.findOne({ slug: widgetSlug })
+            .populate('widgetCollections.collectionData bannerId')
+            .select('widgetCollections widgetName widgetType collectionCount slug');
+        if (currentDate) {
+            let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+            widget.widgetCollections = widget.widgetCollections.filter((wc) => {
+                if (wc.publishDate) {
+                    return new Date(wc.publishDate) >= today;
+                }
+                else if (wc.publishDate && wc.expiryDate) {
+                    return (new Date(wc.publishDate) >= today &&
+                        new Date(wc.expiryDate) <= today);
+                }
+                else {
+                    return true;
+                }
+            });
+        }
+        returnWidget._id = widget._id;
+        returnWidget.bannerId = widget.bannerId;
+        returnWidget.slug = widget.slug;
+        returnWidget.widgetName = widget.widgetName;
+        returnWidget.widgetType = widget.widgetType;
+        returnWidget.collectionCount = widget.collectionCount;
+        returnWidget.widgetCollections = [];
+        // let recipes = [];
+        // let ingredients: any[] = [];
+        for (let i = 0; i < widget.widgetCollections.length; i++) {
+            // let values: any[] = [];
+            let collectionType = 
+            //@ts-ignore
+            widget.widgetCollections[i].collectionData.collectionType;
+            if (collectionType === 'Recipe') {
+                let orderBy = {};
+                let widgetCollection = widget.widgetCollections[i];
+                if (!widgetCollection.orderBy) {
+                    widgetCollection.orderBy = 'PUBLISHED_DATE';
+                }
+                if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                    orderBy = { createdAt: 1 };
+                }
+                else if (widgetCollection.orderBy === 'POPULARITY') {
+                    orderBy = { averageRating: -1 };
+                }
+                else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                    orderBy = { name: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                // console.log("ft",widgetCollection.filter.filterType);
+                let filter = {};
+                let values = [];
+                if (widgetCollection.filter.filterType === 'Ingredient') {
+                    //@ts-ignore
+                    values = widgetCollection.filter.values.map((v) => {
+                        return v.label;
+                    });
+                    filter = {
+                        $in: values,
+                    };
+                }
+                else if (widgetCollection.filter.filterType === 'Type') {
+                    //@ts-ignore
+                    values = widgetCollection.filter.values.map((v) => {
+                        return v.value;
+                    });
+                    filter = {
+                        $in: values,
+                    };
+                }
+                else {
+                    widgetCollection.filter.filterType = 'Random';
+                    values = widgetCollection.filter.values.map((v) => {
+                        return v.value;
+                    });
+                    filter = [];
+                }
+                let recipes;
+                // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                //   //@ts-ignore
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.label;
+                //     }
+                //   );
+                // } else if (widget.widgetCollections[i].filter.filterType === 'Type') {
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.value;
+                //     }
+                //   );
+                // }
+                recipes = await recipeModel_1.default.find({
+                    _id: {
+                        //@ts-ignore
+                        $in: widget.widgetCollections[i].collectionData.children,
+                        // .slice(
+                        //   0,
+                        //   8
+                        // ),
+                    },
+                    [key[widget.widgetCollections[i].filter.filterType]]: filter,
+                })
+                    .populate({
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                })
+                    .populate('brand')
+                    .populate('recipeBlendCategory')
+                    .sort('orderBy')
+                    .lean();
+                let theme = await theme_1.default.findOne({
+                    _id: widget.widgetCollections[i].theme,
+                }).select('link');
+                let banner = await banner_1.default.findOne({
+                    _id: widget.widgetCollections[i].bannerId,
+                }).select('link');
+                if (!theme) {
+                    theme = {
+                        link: null,
+                    };
+                }
+                if (!banner) {
+                    banner = {
+                        link: null,
+                    };
+                }
+                returnWidget.widgetCollections.push({
+                    //@ts-ignore
+                    _id: widget.widgetCollections[i]._id,
+                    displayName: widget.widgetCollections[i].displayName,
+                    icon: widget.widgetCollections[i].icon,
+                    slug: widget.widgetCollections[i].slug,
+                    banner: widget.widgetCollections[i].banner,
+                    showTabMenu: widget.widgetCollections[i].showTabMenu,
+                    themeLink: theme.link ? theme.link : null,
+                    bannerLink: banner.link ? banner.link : null,
+                    filter: widgetCollection.filter.filterType === 'Random'
+                        ? {
+                            filterType: 'Random',
+                            values: [],
+                        }
+                        : {
+                            filterType: key[widgetCollection.filter.filterType],
+                            values: widgetCollection.filter.values,
+                        },
+                    data: {
+                        collectionType: collectionType,
+                        Recipes: recipes,
+                        Plans: [],
+                        Wikis: [],
+                    },
+                });
+            }
+            else if (collectionType === 'Wiki') {
+                let orderBy = {};
+                if (!widget.widgetCollections[i].orderBy) {
+                    widget.widgetCollections[i].orderBy = 'ALPHABETICALLY';
+                }
+                if (widget.widgetCollections[i].orderBy === 'ALPHABETICALLY') {
+                    orderBy = { wikiTitle: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                let wikis;
+                // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                //   //@ts-ignore
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.label;
+                //     }
+                //   );
+                // } else if (widget.widgetCollections[i].filter.filterType === 'Type') {
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.value;
+                //     }
+                //   );
+                // }
+                wikis = await wiki_1.default.find({
+                    _id: {
+                        //@ts-ignore
+                        $in: widgetCollection.collectionData.children,
+                    },
+                })
+                    .populate({
+                    path: 'author',
+                    select: 'firstName lastName displayName email profilePicture',
+                })
+                    .lean();
+                let theme = await theme_1.default.findOne({
+                    _id: widget.widgetCollections[i].theme,
+                }).select('link');
+                let banner = await banner_1.default.findOne({
+                    _id: widget.widgetCollections[i].bannerId,
+                }).select('link');
+                if (!theme) {
+                    theme = {
+                        link: null,
+                    };
+                }
+                if (!banner) {
+                    banner = {
+                        link: null,
+                    };
+                }
+                returnWidget.widgetCollections.push({
+                    //@ts-ignore
+                    _id: widget.widgetCollections[i]._id,
+                    displayName: widget.widgetCollections[i].displayName,
+                    icon: widget.widgetCollections[i].icon,
+                    slug: widget.widgetCollections[i].slug,
+                    banner: widget.widgetCollections[i].banner,
+                    showTabMenu: widget.widgetCollections[i].showTabMenu,
+                    themeLink: theme.link ? theme.link : null,
+                    bannerLink: banner.link ? banner.link : null,
+                    filter: {
+                        filterType: key[widget.widgetCollections[i].filter
+                            .filterType],
+                        values: widget.widgetCollections[i].filter.values,
+                    },
+                    data: {
+                        collectionType: collectionType,
+                        Recipes: [],
+                        Plans: [],
+                        Wikis: wikis,
+                    },
+                });
+            }
+            else if (collectionType === 'Plan') {
+                let orderBy = {};
+                let widgetCollection = widget.widgetCollections[i];
+                if (!widgetCollection.orderBy) {
+                    widgetCollection.orderBy = 'PUBLISHED_DATE';
+                }
+                if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                    orderBy = { createdAt: 1 };
+                }
+                else if (widgetCollection.orderBy === 'POPULARITY') {
+                    orderBy = { averageRating: 1 };
+                }
+                else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                    orderBy = { planName: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                let plans;
+                // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                //   //@ts-ignore
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.label;
+                //     }
+                //   );
+                // } else if (widget.widgetCollections[i].filter.filterType === 'Type') {
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.value;
+                //     }
+                //   );
+                // }
+                plans = await Plan_1.default.find({
+                    _id: {
+                        //@ts-ignore
+                        $in: widgetCollection.collectionData.children,
+                    },
+                })
+                    .populate({
+                    path: 'planData.recipes',
+                    populate: [
+                        {
+                            path: 'defaultVersion',
+                            populate: {
+                                path: 'ingredients.ingredientId',
+                                model: 'BlendIngredient',
+                                select: 'ingredientName',
+                            },
+                            select: 'postfixTitle ingredients',
+                        },
+                        {
+                            path: 'brand',
+                        },
+                        {
+                            path: 'recipeBlendCategory',
+                        },
+                    ],
+                })
+                    .sort(orderBy)
+                    .lean();
+                let theme = await theme_1.default.findOne({
+                    _id: widget.widgetCollections[i].theme,
+                }).select('link');
+                let banner = await banner_1.default.findOne({
+                    _id: widget.widgetCollections[i].bannerId,
+                }).select('link');
+                if (!theme) {
+                    theme = {
+                        link: null,
+                    };
+                }
+                if (!banner) {
+                    banner = {
+                        link: null,
+                    };
+                }
+                returnWidget.widgetCollections.push({
+                    //@ts-ignore
+                    _id: widget.widgetCollections[i]._id,
+                    displayName: widget.widgetCollections[i].displayName,
+                    icon: widget.widgetCollections[i].icon,
+                    slug: widget.widgetCollections[i].slug,
+                    banner: widget.widgetCollections[i].banner,
+                    showTabMenu: widget.widgetCollections[i].showTabMenu,
+                    themeLink: theme.link ? theme.link : null,
+                    bannerLink: banner.link ? banner.link : null,
+                    filter: {
+                        filterType: key[widget.widgetCollections[i].filter
+                            .filterType],
+                        values: widget.widgetCollections[i].filter.values,
+                    },
+                    data: {
+                        collectionType: collectionType,
+                        Recipes: [],
+                        Plans: plans,
+                        Wikis: [],
+                    },
+                });
+            }
+        }
+        await Widget_1.default.findOneAndUpdate({
+            _id: widget._id,
+        }, {
+            $inc: {
+                viewCount: 1,
+            },
+        });
+        return returnWidget;
+    }
     async getRecipeWidget(widgetSlug, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
@@ -641,18 +1255,15 @@ let WigdetResolver = class WigdetResolver {
                     },
                 });
             }
-            else {
-                return new AppError_1.default('Corrupted data', 401);
-            }
+            await Widget_1.default.findOneAndUpdate({
+                _id: widget._id,
+            }, {
+                $inc: {
+                    viewCount: 1,
+                },
+            });
+            return returnWidget;
         }
-        await Widget_1.default.findOneAndUpdate({
-            _id: widget._id,
-        }, {
-            $inc: {
-                viewCount: 1,
-            },
-        });
-        return returnWidget;
     }
     async getWikiWidget(widgetSlug, currentDate) {
         let returnWidget = {};
@@ -1211,6 +1822,15 @@ __decorate([
     __metadata("design:paramtypes", [String,
         String]),
     __metadata("design:returntype", Promise)
+], WigdetResolver.prototype, "getEntityCollection", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default),
+    __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
+    __param(1, (0, type_graphql_1.Arg)('collectionSlug')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getRecipeCollection", null);
 __decorate([
     (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default),
@@ -1230,6 +1850,14 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getPlanCollection", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
+    __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
+    __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], WigdetResolver.prototype, "getEntityWidget", null);
 __decorate([
     (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),

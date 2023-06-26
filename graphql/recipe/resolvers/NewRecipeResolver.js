@@ -110,6 +110,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             await (0, getAllGlobalRecipes_1.default)(userId);
         }
         let compareList = await Compare_1.default.find({ userId: userId });
+        console.log(compareList);
         // let temporaryCompareList: any[] =
         //   await TemporaryCompareCollectionModel.find({
         //     userId: userId,
