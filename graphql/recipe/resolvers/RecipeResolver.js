@@ -1480,7 +1480,7 @@ let RecipeResolver = class RecipeResolver {
                 };
             }
         }
-        // console.log(find);
+        console.log(find);
         let findKeys = Object.keys(find);
         // console.log('f', find);
         if (findKeys.length > 0) {
@@ -1497,11 +1497,12 @@ let RecipeResolver = class RecipeResolver {
             }).select('_id');
         }
         let findfacts = {
-            global: true,
-            userId: null,
-            addedByAdmin: true,
-            discovery: true,
-            isPublished: true,
+        // isDefault: true,
+        // global: true,
+        // userId: null,
+        // addedByAdmin: true,
+        // discovery: true,
+        // isPublished: true,
         };
         if (recipeData.length > 0) {
             let recipeIds = recipeData.map((recipe) => recipe._id);
@@ -1514,6 +1515,9 @@ let RecipeResolver = class RecipeResolver {
                 recipeId: { $in: [] },
             };
         }
+        let userRecipes = await UserRecipeProfile_1.default.find(findfacts).select('defaultVersion');
+        let defaultVersions = userRecipes.map((ur) => ur.defaultVersion);
+        findfacts._id = { $in: defaultVersions };
         for (let i = 0; i < data.nutrientMatrix.length; i++) {
             let val = '';
             if (data.nutrientMatrix[i].matrixName === 'netCarbs') {
@@ -1602,6 +1606,7 @@ let RecipeResolver = class RecipeResolver {
                 delete findfacts['vitamin'];
             }
         }
+        // console.log(findfacts);
         if (recipeIds.length === 0) {
             recipeFacts = await RecipeVersionModel_1.default.find(findfacts).select('recipeId');
             recipeIds = recipeFacts.map((recipe) => recipe.recipeId);
