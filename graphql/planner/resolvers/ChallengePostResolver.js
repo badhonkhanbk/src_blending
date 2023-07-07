@@ -984,7 +984,10 @@ let ChallengePostResolver = class ChallengePostResolver {
             posts: { $ne: [] },
         }).select('_id');
         let daysRemaining = 0;
-        if (today > challenge.endDate) {
+        if (challenge.startDate > today) {
+            daysRemaining = challenge.days;
+        }
+        else if (today > challenge.endDate) {
             daysRemaining = 0;
         }
         else {
