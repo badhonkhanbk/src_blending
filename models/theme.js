@@ -20,6 +20,7 @@ const ThemeSchema = new mongoose_1.Schema({
         required: [true, 'collection type is required'],
         enum: ['Ingredient', 'Recipe', 'Nutrient', 'Wiki', 'GeneraBlog', 'Plan'],
     },
+    style: String,
     updatedAt: Date,
 });
 const Theme = (0, mongoose_1.model)('Theme', ThemeSchema);

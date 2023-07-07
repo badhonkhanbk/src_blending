@@ -15,7 +15,7 @@ async function nutrientRankChange(nutrientID, rank, prevRank) {
         .select('_id rank')
         .sort('rank');
     if (prevRank > rank) {
-        for (let i = +rank - 1; i <= prevRank; i++) {
+        for (let i = +rank - 1; i <= prevRank.valueOf(); i++) {
             if (nutrientID !== String(blendNutrients[i]._id)) {
                 await blendNutrient_1.default.findOneAndUpdate({
                     _id: blendNutrients[i]._id,
@@ -24,7 +24,7 @@ async function nutrientRankChange(nutrientID, rank, prevRank) {
         }
     }
     else {
-        for (let i = +rank - 1; i >= prevRank; i--) {
+        for (let i = +rank - 1; i >= prevRank.valueOf(); i--) {
             if (nutrientID !== String(blendNutrients[i]._id)) {
                 await blendNutrient_1.default.findOneAndUpdate({
                     _id: blendNutrients[i]._id,

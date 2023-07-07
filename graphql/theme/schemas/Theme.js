@@ -48,6 +48,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Date)
 ], Theme.prototype, "updatedAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], Theme.prototype, "style", void 0);
 Theme = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], Theme);

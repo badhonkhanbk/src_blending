@@ -36,6 +36,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], ThemeInput.prototype, "domain", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], ThemeInput.prototype, "style", void 0);
 ThemeInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], ThemeInput);

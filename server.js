@@ -31,6 +31,8 @@ async function bootstrap() {
         schema = await (0, type_graphql_1.buildSchema)({
             //@ts-ignore
             resolvers: (0, AllResolvers_1.default)(),
+            // automatically create `schema.gql` file with schema definition in project's working directory
+            emitSchemaFile: true,
         });
     }
     catch (e) {

@@ -36,6 +36,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CreateEditTheme.prototype, "thumbnailImage", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], CreateEditTheme.prototype, "style", void 0);
 CreateEditTheme = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateEditTheme);
