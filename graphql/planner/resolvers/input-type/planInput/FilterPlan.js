@@ -41,6 +41,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
 ], FilterPlan.prototype, "collectionsIds", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], FilterPlan.prototype, "searchTerm", void 0);
 FilterPlan = __decorate([
     (0, type_graphql_1.InputType)()
 ], FilterPlan);

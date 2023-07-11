@@ -125,9 +125,15 @@ let WigdetResolver = class WigdetResolver {
         // @ts-ignore
         (widgetCollection) => String(widgetCollection._id) === widgetCollectionId);
     }
+    /**
+     * Edits a widget.
+     *
+     * @param data - The data for editing the widget.
+     * @returns A message indicating the success of the edit operation.
+     */
     async editAWidget(data) {
         await Widget_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
-        return 'new widget created successfully';
+        return 'Widget edited successfully.';
     }
     async getWidgetTypeBySlug(slug) {
         let widget = await Widget_1.default.findOne({ slug: slug }).select('widgetType');
@@ -1637,6 +1643,13 @@ let WigdetResolver = class WigdetResolver {
         }
         return returnWidget;
     }
+    /**
+     * Retrieves a widget collection for a client based on the provided slug.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} slug - The slug of the widget collection.
+     * @return {WidgetCollectionForClient} The widget collection for the client.
+     */
     async getWidgetCollectionbySlugForClient(widgetSlug, slug) {
         let widget = await Widget_1.default.find({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
@@ -1793,7 +1806,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getASingleWidgetCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Edits a widget.
+     *
+     * @param data - The data for editing the widget.
+     * @returns A message indicating the success of the edit operation.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditWidget_1.default]),

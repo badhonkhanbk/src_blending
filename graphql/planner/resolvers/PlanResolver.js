@@ -505,8 +505,10 @@ let PlanResolver = class PlanResolver {
             totalPlans: await Plan_1.default.countDocuments({ isGlobal: true }),
         };
     }
+    //planName: { $regex: searchTerm, $options: 'i' },
     async filterPlans(data, userId, page, limit) {
         console.log(data.collectionsIds);
+        let isSearchTerm = data.searchTerm === '' || data.searchTerm === null;
         if (
         //@ts-ignore
         data.includeIngredientIds.length == 0 &&
@@ -517,7 +519,8 @@ let PlanResolver = class PlanResolver {
             //@ts-ignore
             data.excludeIngredientIds.length == 0 &&
             //@ts-ignore
-            data.collectionsIds.length == 0) {
+            data.collectionsIds.length == 0 &&
+            isSearchTerm) {
             return {
                 plans: [],
                 totalRecipes: 0,
@@ -559,6 +562,9 @@ let PlanResolver = class PlanResolver {
                     $in: uniqueRecipeArray,
                 };
             }
+        }
+        if (!isSearchTerm) {
+            find.planName = { $regex: data.searchTerm, $options: 'i' };
         }
         console.log(find);
         let findKeys = Object.keys(find);
