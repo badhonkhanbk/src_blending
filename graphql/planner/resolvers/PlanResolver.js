@@ -36,7 +36,6 @@ const planCollection_1 = __importDefault(require("../../../models/planCollection
 const PlanRating_1 = __importDefault(require("../../../models/PlanRating"));
 const updatePlanFacts_1 = __importDefault(require("../../recipe/resolvers/util/updatePlanFacts"));
 const FilterPlan_1 = __importDefault(require("./input-type/planInput/FilterPlan"));
-const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 let PlanResolver = class PlanResolver {
     async createAPlan(input) {
         let myPlan = input;
@@ -546,27 +545,33 @@ let PlanResolver = class PlanResolver {
         if (data.collectionsIds.length > 0) {
             let allRecipeIds = [];
             for (let i = 0; i < data.collectionsIds.length; i++) {
-                let collection = await userCollection_1.default.findOne({
+                let collection = await planCollection_1.default.findOne({
                     _id: data.collectionsIds[i],
                 });
                 if (!collection) {
                     continue;
                 }
                 // console.log(collection.recipes);
-                allRecipeIds = allRecipeIds.concat(collection.recipes);
+                allRecipeIds = allRecipeIds.concat(collection.plans);
             }
             if (allRecipeIds.length !== 0) {
                 let recipeIdsSet = new Set(allRecipeIds);
                 let uniqueRecipeArray = Array.from(recipeIdsSet);
+                console.log(uniqueRecipeArray);
                 find._id = {
                     $in: uniqueRecipeArray,
+                };
+            }
+            else {
+                find._id = {
+                    $in: [],
                 };
             }
         }
         if (!isSearchTerm) {
             find.planName = { $regex: data.searchTerm, $options: 'i' };
         }
-        console.log(find);
+        console.log('d', find);
         let findKeys = Object.keys(find);
         // console.log('f', find);
         if (findKeys.length > 0) {
