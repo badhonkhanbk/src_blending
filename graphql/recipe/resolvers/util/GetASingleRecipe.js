@@ -59,7 +59,7 @@ async function default_1(recipeId, userId, token) {
                     {
                         path: 'ingredients.ingredientId',
                         model: 'BlendIngredient',
-                        select: 'ingredientName selectedImage',
+                        select: 'ingredientName featuredImage images',
                     },
                     {
                         path: 'createdBy',
@@ -77,7 +77,7 @@ async function default_1(recipeId, userId, token) {
             {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName selectedImage',
+                select: 'ingredientName featuredImage images',
             },
             {
                 path: 'createdBy',

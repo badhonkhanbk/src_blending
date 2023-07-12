@@ -170,7 +170,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 path: 'createdBy',
                 select: '_id image firstName lastName email',
             });
-            // console.log(compareVersion);
+            console.log(compareVersion);
             let compareRecipe = {
                 recipeId: userProfileRecipe.recipeId,
                 defaultVersion: compareVersion,
@@ -183,6 +183,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             userProfileRecipes.push(compareRecipe);
         }
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
+        console.log(userProfileRecipes);
         return returnRecipe;
     }
     async getAllrecomendedRecipes2(userId) {
