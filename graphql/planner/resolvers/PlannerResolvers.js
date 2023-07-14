@@ -356,7 +356,7 @@ let PlannerResolver = class PlannerResolver {
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
-                select: 'ingredientName selectedImage featuredImage',
+                select: 'ingredientName selectedImage featuredImage portions',
             },
         })
             .lean()
