@@ -885,7 +885,7 @@ let RecipeResolver = class RecipeResolver {
         }
         if (data.url) {
             let recipe = await recipeModel_1.default.findOne({ url: data.url }).select('_id defaultVersion');
-            console.log(recipe._id);
+            // console.log(recipe._id);
             if (recipe) {
                 let userRecipe = await UserRecipeProfile_1.default.findOne({
                     userId: data.userId,
