@@ -885,6 +885,7 @@ let RecipeResolver = class RecipeResolver {
         }
         if (data.url) {
             let recipe = await recipeModel_1.default.findOne({ url: data.url }).select('_id defaultVersion');
+            console.log(recipe._id);
             if (recipe) {
                 let userRecipe = await UserRecipeProfile_1.default.findOne({
                     userId: data.userId,
@@ -910,7 +911,7 @@ let RecipeResolver = class RecipeResolver {
                             ? user.lastModifiedCollection
                             : user.defaultCollection;
                     }
-                    await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: userRecipe._id } });
+                    await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $addToSet: { recipes: recipe._id } });
                 }
                 else {
                     let recipeCompare = await Compare_1.default.findOne({
@@ -1085,7 +1086,7 @@ let RecipeResolver = class RecipeResolver {
             myRecipes: true,
         });
         if (!isAddToTemporaryCompareList) {
-            await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $push: { recipes: returnUserRecipe._id } });
+            await userCollection_1.default.findOneAndUpdate({ _id: userDefaultCollection }, { $addToSet: { recipes: returnUserRecipe._id } });
         }
         else {
             let recipeCompare = await Compare_1.default.findOne({
