@@ -164,7 +164,56 @@ let PlanResolver = class PlanResolver {
             plan: plan,
             topIngredients: ingredientsStats,
             recipeCategoriesPercentage: categoryPercentages,
+            macroMakeup: await this.averageCarbsProteinFatsForAPlanner(planId),
         };
+    }
+    async averageCarbsProteinFatsForAPlanner(planId) {
+        let returnData = {};
+        let plan = await Plan_1.default.findOne({
+            _id: planId,
+        });
+        if (!plan) {
+            return {
+                carbs: 0,
+                protein: 0,
+                fats: 0,
+            };
+        }
+        let numberOfDays = 0;
+        for (let i = 0; i < plan.planData.length; i++) {
+            if (plan.planData[i].recipes.length > 0) {
+                numberOfDays++;
+            }
+        }
+        if (numberOfDays === 0) {
+            return {
+                carbs: 0,
+                protein: 0,
+                fats: 0,
+            };
+        }
+        let protein = plan.energy.filter((item) => String(item.blendNutrientRefference) === '620b4607b82695d67f28e196')[0];
+        if (!protein) {
+            returnData.protein = 0;
+        }
+        else {
+            returnData.protein = protein.value / numberOfDays;
+        }
+        let fats = plan.energy.filter((item) => String(item.blendNutrientRefference) === '620b4607b82695d67f28e199')[0];
+        if (!fats) {
+            returnData.fats = 0;
+        }
+        else {
+            returnData.fats = fats.value / numberOfDays;
+        }
+        let carbs = plan.energy.filter((item) => String(item.blendNutrientRefference) === '620b4608b82695d67f28e19c')[0];
+        if (!carbs) {
+            returnData.carbs = 0;
+        }
+        else {
+            returnData.carbs = carbs.value / numberOfDays;
+        }
+        return returnData;
     }
     // async getIngredientsStats(recipes: any[]) {
     //   let ingredients: any = {};
@@ -854,6 +903,13 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAPlan", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('planId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PlanResolver.prototype, "averageCarbsProteinFatsForAPlanner", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __param(0, (0, type_graphql_1.Arg)('planId')),

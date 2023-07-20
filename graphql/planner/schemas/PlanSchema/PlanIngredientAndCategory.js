@@ -16,6 +16,7 @@ const type_graphql_1 = require("type-graphql");
 const CategoryPercentage_1 = __importDefault(require("./CategoryPercentage"));
 const Plan_1 = __importDefault(require("./Plan"));
 const TopIngredient_1 = __importDefault(require("./TopIngredient"));
+const MacroMakeup_1 = __importDefault(require("./MacroMakeup"));
 let PlanIngredientAndCategory = class PlanIngredientAndCategory {
 };
 __decorate([
@@ -30,6 +31,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [CategoryPercentage_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], PlanIngredientAndCategory.prototype, "recipeCategoriesPercentage", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => MacroMakeup_1.default),
+    __metadata("design:type", MacroMakeup_1.default)
+], PlanIngredientAndCategory.prototype, "macroMakeup", void 0);
 PlanIngredientAndCategory = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], PlanIngredientAndCategory);
