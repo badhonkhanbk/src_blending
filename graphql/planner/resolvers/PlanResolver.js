@@ -93,7 +93,7 @@ let PlanResolver = class PlanResolver {
                         model: 'BlendIngredient',
                         select: 'ingredientName featuredImage',
                     },
-                    select: 'postfixTitle ingredients',
+                    // select: 'postfixTitle ingredients',
                 },
                 {
                     path: 'brand',
