@@ -7,7 +7,7 @@ const userNoteSchema = new mongoose_1.Schema({
         required: [true, 'name is required'],
     },
     body: String,
-    recipeId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Recipe' },
+    recipeId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeModel' },
     userId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: Date,

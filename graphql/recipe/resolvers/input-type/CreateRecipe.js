@@ -16,133 +16,133 @@ const type_graphql_1 = require("type-graphql");
 const ImageInput_1 = __importDefault(require("./ImageInput"));
 const CreateIngredientData_1 = __importDefault(require("./CreateIngredientData"));
 const ErrorIngredientInput_1 = __importDefault(require("./ErrorIngredientInput"));
-let xCreateRecipe = class xCreateRecipe {
+let CreateRecipe = class CreateRecipe {
 };
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "mainEntityOfPage", void 0);
+], CreateRecipe.prototype, "mainEntityOfPage", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "name", void 0);
+], CreateRecipe.prototype, "name", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [ImageInput_1.default], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "image", void 0);
+], CreateRecipe.prototype, "image", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
-], xCreateRecipe.prototype, "servingSize", void 0);
+], CreateRecipe.prototype, "servingSize", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
-], xCreateRecipe.prototype, "servings", void 0);
+], CreateRecipe.prototype, "servings", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "datePublished", void 0);
+], CreateRecipe.prototype, "datePublished", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "description", void 0);
+], CreateRecipe.prototype, "description", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "prepTime", void 0);
+], CreateRecipe.prototype, "prepTime", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "cookTime", void 0);
+], CreateRecipe.prototype, "cookTime", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "totalTime", void 0);
+], CreateRecipe.prototype, "totalTime", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "recipeYield", void 0);
+], CreateRecipe.prototype, "recipeYield", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "recipeIngredients", void 0);
+], CreateRecipe.prototype, "recipeIngredients", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "recipeInstructions", void 0);
+], CreateRecipe.prototype, "recipeInstructions", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "recipeCuisines", void 0);
+], CreateRecipe.prototype, "recipeCuisines", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "author", void 0);
+], CreateRecipe.prototype, "author", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "recipeBlendCategory", void 0);
+], CreateRecipe.prototype, "recipeBlendCategory", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "brandName", void 0);
+], CreateRecipe.prototype, "brandName", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "foodCategories", void 0);
+], CreateRecipe.prototype, "foodCategories", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [CreateIngredientData_1.default], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "ingredients", void 0);
+], CreateRecipe.prototype, "ingredients", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "url", void 0);
+], CreateRecipe.prototype, "url", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "favicon", void 0);
+], CreateRecipe.prototype, "favicon", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "userId", void 0);
+], CreateRecipe.prototype, "userId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "adminId", void 0);
+], CreateRecipe.prototype, "adminId", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "seoTitle", void 0);
+], CreateRecipe.prototype, "seoTitle", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "seoSlug", void 0);
+], CreateRecipe.prototype, "seoSlug", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "seoCanonicalURL", void 0);
+], CreateRecipe.prototype, "seoCanonicalURL", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
-], xCreateRecipe.prototype, "seoSiteMapPriority", void 0);
+], CreateRecipe.prototype, "seoSiteMapPriority", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "seoKeywords", void 0);
+], CreateRecipe.prototype, "seoKeywords", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "seoMetaDescription", void 0);
+], CreateRecipe.prototype, "seoMetaDescription", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [ErrorIngredientInput_1.default], { nullable: true }),
     __metadata("design:type", Array)
-], xCreateRecipe.prototype, "errorIngredients", void 0);
+], CreateRecipe.prototype, "errorIngredients", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
-], xCreateRecipe.prototype, "collection", void 0);
-xCreateRecipe = __decorate([
+], CreateRecipe.prototype, "collection", void 0);
+CreateRecipe = __decorate([
     (0, type_graphql_1.InputType)()
-], xCreateRecipe);
-exports.default = xCreateRecipe;
+], CreateRecipe);
+exports.default = CreateRecipe;

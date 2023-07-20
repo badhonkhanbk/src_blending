@@ -33,7 +33,7 @@ let ConfiguirationResolver = class ConfiguirationResolver {
         await memberConfiguiration_1.default.findByIdAndRemove(configuirationId);
         return 'successfullRemoved';
     }
-    async editConfifuirationById(data) {
+    async editConfigurationById(data) {
         let newData = data.editableObject;
         let hasGender = data.editableObject.gender !== undefined && newData.gender !== '';
         let hasWeightInKilograms = data.editableObject.weightInKilograms
@@ -87,7 +87,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditConfiguiration_1.default]),
     __metadata("design:returntype", Promise)
-], ConfiguirationResolver.prototype, "editConfifuirationById", null);
+], ConfiguirationResolver.prototype, "editConfigurationById", null);
 ConfiguirationResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], ConfiguirationResolver);

@@ -14,17 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const CreateEditConfiguiration_1 = __importDefault(require("./CreateEditConfiguiration"));
-let EditConfiguiration = class EditConfiguiration {
+let EditConfiguration = class EditConfiguration {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], EditConfiguiration.prototype, "editId", void 0);
+], EditConfiguration.prototype, "editId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => CreateEditConfiguiration_1.default),
     __metadata("design:type", CreateEditConfiguiration_1.default)
-], EditConfiguiration.prototype, "editableObject", void 0);
-EditConfiguiration = __decorate([
+], EditConfiguration.prototype, "editableObject", void 0);
+EditConfiguration = __decorate([
     (0, type_graphql_1.InputType)()
-], EditConfiguiration);
-exports.default = EditConfiguiration;
+], EditConfiguration);
+exports.default = EditConfiguration;
