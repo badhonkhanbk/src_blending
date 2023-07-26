@@ -4,7 +4,7 @@ const mongoose_1 = require("mongoose");
 const DailyGoalSchema = new mongoose_1.Schema({
     memberId: {
         type: mongoose_1.SchemaTypes.ObjectId,
-        ref: 'Member',
+        ref: 'User',
         unique: true,
         required: [true, 'Member ID is required'],
     },

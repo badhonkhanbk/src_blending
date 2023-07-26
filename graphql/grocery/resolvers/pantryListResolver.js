@@ -24,6 +24,12 @@ const StapleList_1 = __importDefault(require("../../../models/StapleList"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const checkGroceryList_1 = __importDefault(require("../util/checkGroceryList"));
 let PantryResolver = class PantryResolver {
+    /**
+   * Adds a pantry list.
+   *
+   * @param {CreateNewPantry} data - the data for creating a new pantry
+   * @return {Promise<string>} - a message indicating if the pantry list was successfully added
+   */
     async addPantryList(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
         if (!user) {
@@ -48,6 +54,12 @@ let PantryResolver = class PantryResolver {
         await (0, checkGroceryList_1.default)(data, model, groceryList);
         return 'Successfully added to pantry list';
     }
+    /**
+   * Retrieves the pantry list for a given member ID.
+   *
+   * @param {string} memberId - The ID of the member.
+   * @return {Promise<Array>} - The pantry list as an array of ingredients.
+   */
     async getPantryList(memberId) {
         let pantrtyList = await pantryList_1.default.findOne({
             memberId: memberId,
@@ -68,6 +80,12 @@ let PantryResolver = class PantryResolver {
         });
         return pantryList.list;
     }
+    /**
+     * Retrieves the staple list for a given member.
+     *
+     * @param {string} memberId - The ID of the member.
+     * @return {Promise<Array>} An array of staple items.
+     */
     async getStapleList(memberId) {
         let pantrtyList = await StapleList_1.default.findOne({
             memberId: memberId,
@@ -88,6 +106,11 @@ let PantryResolver = class PantryResolver {
         });
         return pantryList.list;
     }
+    /**
+     * Removes all pantry and staple lists.
+     *
+     * @return {Promise<string>} Returns 'done' when completed.
+     */
     async removeAllPantryAndStapleList() {
         await pantryList_1.default.deleteMany();
         await StapleList_1.default.deleteMany();

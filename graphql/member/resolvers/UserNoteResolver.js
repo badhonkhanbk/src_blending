@@ -42,8 +42,12 @@ let UserNotesResolver = class UserNotesResolver {
         });
         return notes;
     }
-    // @Mutation(() => String)
-    // async editUserNote(@Arg('data') data: E)
+    /**
+     * Retrieves the notes of a user for a specific recipe.
+     *
+     * @param {GetMyNote} data - The data object containing the user ID and recipe ID.
+     * @return {Promise<UserNote[]>} The notes of the user for the specified recipe.
+     */
     async getMyNotesForARecipe(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {

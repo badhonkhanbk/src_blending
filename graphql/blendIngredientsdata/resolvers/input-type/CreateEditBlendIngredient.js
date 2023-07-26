@@ -72,6 +72,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
 ], CreateEditBlendIngredient.prototype, "aliases", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], CreateEditBlendIngredient.prototype, "rxScore", void 0);
 CreateEditBlendIngredient = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateEditBlendIngredient);

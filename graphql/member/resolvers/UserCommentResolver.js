@@ -28,18 +28,14 @@ const comment_1 = __importDefault(require("../../../models/comment"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const ReturnRatingInfo_1 = __importDefault(require("../schemas/ReturnRatingInfo"));
 let UserCommentsResolver = class UserCommentsResolver {
-    // @Query(() => Boolean)
-    // async notyrPola() {
-    //   await UserRecipeProfile.updateMany(
-    //     {
-    //       personalRating: null,
-    //     },
-    //     {
-    //       personalRating: 0,
-    //     }
-    //   );
-    //   return 'done';
-    // }
+    /**
+   * Updates the rating of a recipe and returns the updated recipe details.
+   *
+   * @param {String} userId - The ID of the user.
+   * @param {String} recipeId - The ID of the recipe.
+   * @param {number} rating - The new rating for the recipe.
+   * @return {Object} - An object containing the updated recipe details.
+   */
     async changeRecipeRating(userId, recipeId, rating) {
         let user = await memberModel_1.default.findOne({ _id: userId });
         if (!user) {
@@ -80,6 +76,12 @@ let UserCommentsResolver = class UserCommentsResolver {
             myRating: rating,
         };
     }
+    /**
+   * Create a new comment.
+   *
+   * @param {CreateComment} data - The data for creating the comment.
+   * @return {Promise<{comments: Comment[], recipe: Recipe}>} - The created comment and the updated recipe.
+   */
     async createComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -104,6 +106,12 @@ let UserCommentsResolver = class UserCommentsResolver {
         });
         return { comments: otherComments, recipe: returnRecipe };
     }
+    /**
+   * Retrieves all comments for a recipe.
+   *
+   * @param {GetAllComments} data - The data object containing the recipe ID and user ID.
+   * @return {Promise<{comments: Comment[], recipe: Recipe}>} - A promise that resolves to an object with the comments and recipe.
+   */
     async getAllCommentsForARecipe(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -122,6 +130,14 @@ let UserCommentsResolver = class UserCommentsResolver {
         });
         return { comments, recipe };
     }
+    /**
+   * Removes a comment from the database.
+   *
+   * @param {RemoveComment} data - the data for removing the comment
+   * @return {Promise<{ comments: Comment[], returnRecipe: Recipe }>}
+   * - comments: the updated list of comments for the recipe
+   * - returnRecipe: the updated recipe
+   */
     async removeComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -163,6 +179,12 @@ let UserCommentsResolver = class UserCommentsResolver {
         });
         return { comments, returnRecipe: recipe };
     }
+    /**
+   * Edit a comment.
+   *
+   * @param {EditComment} data - The data object containing the information to edit the comment.
+   * @return {Promise<{ comments: Comment[]; recipe: Recipe; }>} An object containing the updated comments and the recipe.
+   */
     async editComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -207,6 +229,11 @@ let UserCommentsResolver = class UserCommentsResolver {
         });
         return { comments, recipe: recipe };
     }
+    /**
+   * Asynchronously updates the comments count for each recipe in the database.
+   *
+   * @return {Promise<string>} A string indicating the completion of the update.
+   */
     async xxxx12() {
         let recipies = await recipeModel_1.default.find().select('_id');
         for (let i = 0; i < recipies.length; i++) {
