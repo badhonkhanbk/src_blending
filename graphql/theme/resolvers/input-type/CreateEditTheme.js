@@ -29,7 +29,7 @@ __decorate([
     __metadata("design:type", Array)
 ], CreateEditTheme.prototype, "viewPorts", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CreateEditTheme.prototype, "domain", void 0);
 __decorate([
@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateEditTheme.prototype, "thumbnailImage", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CreateEditTheme.prototype, "style", void 0);
 CreateEditTheme = __decorate([

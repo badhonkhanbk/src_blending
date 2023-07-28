@@ -1219,7 +1219,11 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         let netCarbs = totalCarbs - dietaryFiber;
         let totalGL = netCarbs * (+GI / 100);
         // console.log(totalGL);
-        return totalGL.toString();
+        return {
+            totalGi: GI,
+            netCarbs: netCarbs,
+            totalGL: totalGL,
+        };
     }
     async getGlAndNetCarbs(versionId) {
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
@@ -1269,9 +1273,10 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 //@ts-ignore
                 _id: recipeVersion.ingredients[i]._id,
                 gl: totalGL,
-                gi: 55,
+                gi: ingredient.gi ? ingredient.gi : 55,
                 netCarbs: netCarbs,
             });
+            console.log('gi', ingredient.gi);
             overAllGi += 55;
             overAllCarbs += totalCarbs;
             overAllFiber += dietaryFiber;
@@ -1289,6 +1294,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             acc += item.totalPercentage;
             return acc;
         }, 0);
+        console.log(totalGi);
         let netCarbs = overAllCarbs - overAllFiber;
         let totalGL = (totalGi * netCarbs) / 100;
         // console.log(totalGi, netCarbs, totalGL);
@@ -1322,7 +1328,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             }
             let blendIngredient = await blendIngredient_1.default.findOne({
                 _id: ingredientsInfo[i].ingredientId,
-            }).select('gi');
+            }).select('gi gl netCarbs rxScore');
             if (!blendIngredient.gi || blendIngredient.gi === 0) {
                 blendIngredient.gi = 55;
             }
@@ -1331,20 +1337,29 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             res.push({
                 _id: ingredientsInfo[i].ingredientId,
                 gl: totalGL,
-                gi: blendIngredient.gi,
+                gi: blendIngredient.gi ? blendIngredient.gi : 55,
                 netCarbs: netCarbs,
+                rxScore: blendIngredient.rxScore ? blendIngredient.rxScore : 20,
             });
+            console.log('gi', blendIngredient.gi);
             overAllGi += 55;
             overAllCarbs += totalCarbs;
             overAllFiber += dietaryFiber;
         }
-        let checkLength = res.length;
         res = res.filter((resItem) => resItem.netCarbs !== 0);
-        if (checkLength === 1 && res.length === 0) {
+        if (res.length === 0) {
             return {
                 totalGi: 0,
                 netCarbs: 0,
                 totalGL: 0,
+            };
+        }
+        if (res.length === 1) {
+            return {
+                totalGi: res[0].gi,
+                netCarbs: res[0].netCarbs,
+                totalGL: res[0].gl,
+                rxScore: res[0].rxScore,
             };
         }
         let result = res.map((item) => {
@@ -1360,6 +1375,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             acc += item.totalPercentage;
             return acc;
         }, 0);
+        console.log(totalGi);
         let netCarbs = overAllCarbs - overAllFiber;
         let totalGL = (totalGi * netCarbs) / 100;
         return {
@@ -1449,7 +1465,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         return JSON.stringify(obj);
     }
     async addGiToTheIngredients() {
-        await blendIngredient_1.default.updateMany({}, { aliases: [] });
+        await blendIngredient_1.default.updateMany({}, { rxScore: 0 });
         return 'done';
     }
 };
@@ -1671,7 +1687,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "changeWaterValue", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => GIGl_1.default),
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __param(1, (0, type_graphql_1.Arg)('GI')),
     __metadata("design:type", Function),

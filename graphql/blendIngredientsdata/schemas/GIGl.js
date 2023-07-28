@@ -24,6 +24,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], GiGl.prototype, "totalGL", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], GiGl.prototype, "rxScore", void 0);
 GiGl = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], GiGl);

@@ -69,6 +69,14 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], AddNewBlendIngredient.prototype, "rxScore", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], AddNewBlendIngredient.prototype, "gl", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], AddNewBlendIngredient.prototype, "netCarbs", void 0);
 AddNewBlendIngredient = __decorate([
     (0, type_graphql_1.InputType)()
 ], AddNewBlendIngredient);

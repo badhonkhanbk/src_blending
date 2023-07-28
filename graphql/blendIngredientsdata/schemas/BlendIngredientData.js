@@ -83,6 +83,18 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], BlendIngredientData.prototype, "gi", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], BlendIngredientData.prototype, "gl", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], BlendIngredientData.prototype, "netCarbs", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], BlendIngredientData.prototype, "rxScore", void 0);
 BlendIngredientData = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], BlendIngredientData);

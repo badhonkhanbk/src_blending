@@ -59,7 +59,18 @@ const blendIngredientSchema = new mongoose_1.Schema({
         },
     ],
     varrient: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
-    gi: Number,
+    gi: {
+        type: Number,
+        default: 55,
+    },
+    gl: {
+        type: Number,
+        default: 0
+    },
+    netCarbs: {
+        type: Number,
+        default: 0
+    },
     wikiCoverImages: [String],
     wikiFeatureImage: String,
     wikiTitle: String,
