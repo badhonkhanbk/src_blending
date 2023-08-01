@@ -257,7 +257,7 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link');
+            }).select('link style');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
@@ -279,6 +279,7 @@ let WigdetResolver = class WigdetResolver {
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
                 themeLink: theme.link ? theme.link : null,
+                themeStyle: theme.style ? theme.style : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: widgetCollection.filter.filterType === 'Random'
                     ? {
@@ -291,9 +292,9 @@ let WigdetResolver = class WigdetResolver {
                     },
                 data: {
                     collectionType: collectionType,
-                    Recipes: recipes,
-                    Wikis: [],
-                    Plans: [],
+                    Recipe: recipes,
+                    Wiki: [],
+                    Plan: [],
                 },
             };
             return returnWidgetCollection;
@@ -324,7 +325,7 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link');
+            }).select('link style');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
@@ -346,6 +347,7 @@ let WigdetResolver = class WigdetResolver {
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
                 themeLink: theme.link ? theme.link : null,
+                themeStyle: theme.style ? theme.style : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],
@@ -353,9 +355,9 @@ let WigdetResolver = class WigdetResolver {
                 },
                 data: {
                     collectionType: collectionType,
-                    Recipes: [],
-                    Wikis: wikis,
-                    Plans: [],
+                    Recipe: [],
+                    Wiki: wikis,
+                    Plan: [],
                 },
             };
             return returnWidgetCollection;
@@ -403,7 +405,7 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link');
+            }).select('link style');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
@@ -425,6 +427,7 @@ let WigdetResolver = class WigdetResolver {
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
                 themeLink: theme.link ? theme.link : null,
+                themeStyle: theme.style ? theme.style : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],
@@ -522,7 +525,7 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link');
+            }).select('link style');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
@@ -544,6 +547,7 @@ let WigdetResolver = class WigdetResolver {
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
                 themeLink: theme.link ? theme.link : null,
+                themeStyle: theme.style ? theme.style : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: widgetCollection.filter.filterType === 'Random'
                     ? {
@@ -610,7 +614,7 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link');
+            }).select('link style');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
@@ -632,6 +636,7 @@ let WigdetResolver = class WigdetResolver {
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
                 themeLink: theme.link ? theme.link : null,
+                themeStyle: theme.style ? theme.style : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],
@@ -713,7 +718,7 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link');
+            }).select('link style');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
@@ -735,6 +740,7 @@ let WigdetResolver = class WigdetResolver {
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
                 themeLink: theme.link ? theme.link : null,
+                themeStyle: theme.style ? theme.style : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],
@@ -871,7 +877,7 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link');
+                }).select('link style');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -894,6 +900,7 @@ let WigdetResolver = class WigdetResolver {
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
                     themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: widgetCollection.filter.filterType === 'Random'
                         ? {
@@ -906,9 +913,9 @@ let WigdetResolver = class WigdetResolver {
                         },
                     data: {
                         collectionType: collectionType,
-                        Recipes: recipes,
-                        Plans: [],
-                        Wikis: [],
+                        Recipe: recipes,
+                        Plan: [],
+                        Wiki: [],
                     },
                 });
             }
@@ -953,7 +960,7 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link');
+                }).select('link style');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -976,6 +983,7 @@ let WigdetResolver = class WigdetResolver {
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
                     themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -984,9 +992,9 @@ let WigdetResolver = class WigdetResolver {
                     },
                     data: {
                         collectionType: collectionType,
-                        Recipes: [],
-                        Plans: [],
-                        Wikis: wikis,
+                        Recipe: [],
+                        Plan: [],
+                        Wiki: wikis,
                     },
                 });
             }
@@ -1055,7 +1063,7 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link');
+                }).select('link style');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -1078,6 +1086,7 @@ let WigdetResolver = class WigdetResolver {
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
                     themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1086,9 +1095,9 @@ let WigdetResolver = class WigdetResolver {
                     },
                     data: {
                         collectionType: collectionType,
-                        Recipes: [],
-                        Plans: plans,
-                        Wikis: [],
+                        Recipe: [],
+                        Plan: plans,
+                        Wiki: [],
                     },
                 });
             }
@@ -1220,7 +1229,7 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link');
+                }).select('link style');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -1243,6 +1252,7 @@ let WigdetResolver = class WigdetResolver {
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
                     themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: widgetCollection.filter.filterType === 'Random'
                         ? {
@@ -1255,9 +1265,9 @@ let WigdetResolver = class WigdetResolver {
                         },
                     data: {
                         collectionType: collectionType,
-                        Recipes: recipes,
-                        Plans: [],
-                        Wikis: [],
+                        Recipe: recipes,
+                        Plan: [],
+                        Wiki: [],
                     },
                 });
             }
@@ -1346,7 +1356,7 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link');
+                }).select('link style');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -1369,6 +1379,7 @@ let WigdetResolver = class WigdetResolver {
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
                     themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1377,9 +1388,9 @@ let WigdetResolver = class WigdetResolver {
                     },
                     data: {
                         collectionType: collectionType,
-                        Recipes: [],
-                        Plans: [],
-                        Wikis: wikis,
+                        Recipe: [],
+                        Plan: [],
+                        Wiki: wikis,
                     },
                 });
             }
@@ -1495,7 +1506,7 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link');
+                }).select('link style');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -1518,6 +1529,7 @@ let WigdetResolver = class WigdetResolver {
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
                     themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1526,9 +1538,9 @@ let WigdetResolver = class WigdetResolver {
                     },
                     data: {
                         collectionType: collectionType,
-                        Recipes: [],
-                        Plans: plans,
-                        Wikis: [],
+                        Recipe: [],
+                        Plan: plans,
+                        Wiki: [],
                     },
                 });
             }
@@ -1564,23 +1576,70 @@ let WigdetResolver = class WigdetResolver {
             let collectionType = 
             //@ts-ignore
             widget.widgetCollections[i].collectionData.collectionType;
+            let widgetCollection = widget.widgetCollections[i];
             if (collectionType === 'Recipe') {
-                let recipes;
-                if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                let orderBy = {};
+                let widgetCollection = widget.widgetCollections[i];
+                if (!widgetCollection.orderBy) {
+                    widgetCollection.orderBy = 'PUBLISHED_DATE';
+                }
+                if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                    orderBy = { createdAt: 1 };
+                }
+                else if (widgetCollection.orderBy === 'POPULARITY') {
+                    orderBy = { averageRating: -1 };
+                }
+                else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                    orderBy = { name: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                // console.log("ft",widgetCollection.filter.filterType);
+                let filter = {};
+                let values = [];
+                if (widgetCollection.filter.filterType === 'Ingredient') {
                     //@ts-ignore
-                    values = widget.widgetCollections[i].filter.values.map(
-                    //@ts-ignore
-                    (v) => {
+                    values = widgetCollection.filter.values.map((v) => {
                         return v.label;
                     });
+                    filter = {
+                        $in: values,
+                    };
                 }
-                else if (widget.widgetCollections[i].filter.filterType === 'Type') {
-                    values = widget.widgetCollections[i].filter.values.map(
+                else if (widgetCollection.filter.filterType === 'Type') {
                     //@ts-ignore
-                    (v) => {
+                    values = widgetCollection.filter.values.map((v) => {
                         return v.value;
                     });
+                    filter = {
+                        $in: values,
+                    };
                 }
+                else {
+                    widgetCollection.filter.filterType = 'Random';
+                    values = widgetCollection.filter.values.map((v) => {
+                        return v.value;
+                    });
+                    filter = [];
+                }
+                let recipes;
+                // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                //   //@ts-ignore
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.label;
+                //     }
+                //   );
+                // } else if (widget.widgetCollections[i].filter.filterType === 'Type') {
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.value;
+                //     }
+                //   );
+                // }
                 recipes = await recipeModel_1.default.find({
                     _id: {
                         //@ts-ignore
@@ -1590,9 +1649,7 @@ let WigdetResolver = class WigdetResolver {
                         //   8
                         // ),
                     },
-                    // [key[
-                    //   widget.widgetCollections[i].filter.filterType as keyof typeof key
-                    // ]]: { $in: values },
+                    [key[widget.widgetCollections[i].filter.filterType]]: filter,
                 })
                     .populate({
                     path: 'ingredients.ingredientId',
@@ -1600,10 +1657,11 @@ let WigdetResolver = class WigdetResolver {
                 })
                     .populate('brand')
                     .populate('recipeBlendCategory')
+                    .sort('orderBy')
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link');
+                }).select('link style');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -1626,6 +1684,90 @@ let WigdetResolver = class WigdetResolver {
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
                     themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
+                    bannerLink: banner.link ? banner.link : null,
+                    filter: widgetCollection.filter.filterType === 'Random'
+                        ? {
+                            filterType: 'Random',
+                            values: [],
+                        }
+                        : {
+                            filterType: key[widgetCollection.filter.filterType],
+                            values: widgetCollection.filter.values,
+                        },
+                    data: {
+                        collectionType: collectionType,
+                        Recipe: recipes,
+                        Plan: [],
+                        Wiki: [],
+                    },
+                });
+            }
+            else if (collectionType === 'Wiki') {
+                let orderBy = {};
+                if (!widget.widgetCollections[i].orderBy) {
+                    widget.widgetCollections[i].orderBy = 'ALPHABETICALLY';
+                }
+                if (widget.widgetCollections[i].orderBy === 'ALPHABETICALLY') {
+                    orderBy = { wikiTitle: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                let wikis;
+                // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                //   //@ts-ignore
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.label;
+                //     }
+                //   );
+                // } else if (widget.widgetCollections[i].filter.filterType === 'Type') {
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.value;
+                //     }
+                //   );
+                // }
+                wikis = await wiki_1.default.find({
+                    _id: {
+                        //@ts-ignore
+                        $in: widgetCollection.collectionData.children,
+                    },
+                })
+                    .populate({
+                    path: 'author',
+                    select: 'firstName lastName displayName email profilePicture',
+                })
+                    .lean();
+                let theme = await theme_1.default.findOne({
+                    _id: widget.widgetCollections[i].theme,
+                }).select('link style');
+                let banner = await banner_1.default.findOne({
+                    _id: widget.widgetCollections[i].bannerId,
+                }).select('link');
+                if (!theme) {
+                    theme = {
+                        link: null,
+                    };
+                }
+                if (!banner) {
+                    banner = {
+                        link: null,
+                    };
+                }
+                returnWidget.widgetCollections.push({
+                    //@ts-ignore
+                    _id: widget.widgetCollections[i]._id,
+                    displayName: widget.widgetCollections[i].displayName,
+                    icon: widget.widgetCollections[i].icon,
+                    slug: widget.widgetCollections[i].slug,
+                    banner: widget.widgetCollections[i].banner,
+                    showTabMenu: widget.widgetCollections[i].showTabMenu,
+                    themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1634,9 +1776,112 @@ let WigdetResolver = class WigdetResolver {
                     },
                     data: {
                         collectionType: collectionType,
-                        Recipes: recipes,
-                        Wikis: [],
-                        Plans: [],
+                        Recipe: [],
+                        Plan: [],
+                        Wiki: wikis,
+                    },
+                });
+            }
+            else if (collectionType === 'Plan') {
+                let orderBy = {};
+                let widgetCollection = widget.widgetCollections[i];
+                if (!widgetCollection.orderBy) {
+                    widgetCollection.orderBy = 'PUBLISHED_DATE';
+                }
+                if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                    orderBy = { createdAt: 1 };
+                }
+                else if (widgetCollection.orderBy === 'POPULARITY') {
+                    orderBy = { averageRating: 1 };
+                }
+                else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                    orderBy = { planName: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                let plans;
+                // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                //   //@ts-ignore
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.label;
+                //     }
+                //   );
+                // } else if (widget.widgetCollections[i].filter.filterType === 'Type') {
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.value;
+                //     }
+                //   );
+                // }
+                plans = await Plan_1.default.find({
+                    _id: {
+                        //@ts-ignore
+                        $in: widgetCollection.collectionData.children,
+                    },
+                })
+                    .populate({
+                    path: 'planData.recipes',
+                    populate: [
+                        {
+                            path: 'defaultVersion',
+                            populate: {
+                                path: 'ingredients.ingredientId',
+                                model: 'BlendIngredient',
+                                select: 'ingredientName',
+                            },
+                            select: 'postfixTitle ingredients',
+                        },
+                        {
+                            path: 'brand',
+                        },
+                        {
+                            path: 'recipeBlendCategory',
+                        },
+                    ],
+                })
+                    .sort(orderBy)
+                    .lean();
+                let theme = await theme_1.default.findOne({
+                    _id: widget.widgetCollections[i].theme,
+                }).select('link style');
+                let banner = await banner_1.default.findOne({
+                    _id: widget.widgetCollections[i].bannerId,
+                }).select('link');
+                if (!theme) {
+                    theme = {
+                        link: null,
+                    };
+                }
+                if (!banner) {
+                    banner = {
+                        link: null,
+                    };
+                }
+                returnWidget.widgetCollections.push({
+                    //@ts-ignore
+                    _id: widget.widgetCollections[i]._id,
+                    displayName: widget.widgetCollections[i].displayName,
+                    icon: widget.widgetCollections[i].icon,
+                    slug: widget.widgetCollections[i].slug,
+                    banner: widget.widgetCollections[i].banner,
+                    showTabMenu: widget.widgetCollections[i].showTabMenu,
+                    themeLink: theme.link ? theme.link : null,
+                    themeStyle: theme.style ? theme.style : null,
+                    bannerLink: banner.link ? banner.link : null,
+                    filter: {
+                        filterType: key[widget.widgetCollections[i].filter
+                            .filterType],
+                        values: widget.widgetCollections[i].filter.values,
+                    },
+                    data: {
+                        collectionType: collectionType,
+                        Recipe: [],
+                        Plan: plans,
+                        Wiki: [],
                     },
                 });
             }
@@ -1695,7 +1940,7 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link');
+            }).select('link style');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
@@ -1717,6 +1962,7 @@ let WigdetResolver = class WigdetResolver {
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
                 themeLink: theme.link ? theme.link : null,
+                themeStyle: theme.style ? theme.style : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],

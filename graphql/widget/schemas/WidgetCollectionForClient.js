@@ -57,6 +57,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
+], WidgetCollectionForClient.prototype, "themeStyle", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
 ], WidgetCollectionForClient.prototype, "bannerLink", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),

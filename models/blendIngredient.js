@@ -65,11 +65,11 @@ const blendIngredientSchema = new mongoose_1.Schema({
     },
     gl: {
         type: Number,
-        default: 0
+        default: 0,
     },
     netCarbs: {
         type: Number,
-        default: 0
+        default: 0,
     },
     wikiCoverImages: [String],
     wikiFeatureImage: String,
@@ -87,7 +87,7 @@ const blendIngredientSchema = new mongoose_1.Schema({
     sourceName: { type: String, default: 'Blending101' },
     isPublished: Boolean,
     isBookmarked: { type: Boolean, default: false },
-    rxScore: { type: Number, default: 0 }
+    rxScore: { type: Number, default: 0 },
 });
 blendIngredientSchema.pre('save', async function (next) {
     //@ts-ignore

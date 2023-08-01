@@ -25,7 +25,7 @@ async function getGlAndNetCarbs2(ingredientsInfo) {
     let overAllFiber = 0;
     for (let i = 0; i < ingredientsInfo.length; i++) {
         let AuthUser = (info) => {
-            return getBlendNutritionBasedOnRecipexxx2(info);
+            return this.getBlendNutritionBasedOnRecipexxx2(info);
         };
         let data = await AuthUser([ingredientsInfo[i]]);
         // console.log(data);
@@ -42,7 +42,7 @@ async function getGlAndNetCarbs2(ingredientsInfo) {
         }
         let blendIngredient = await blendIngredient_1.default.findOne({
             _id: ingredientsInfo[i].ingredientId,
-        }).select('gi');
+        }).select('gi gl netCarbs rxScore');
         if (!blendIngredient.gi || blendIngredient.gi === 0) {
             blendIngredient.gi = 55;
         }
@@ -51,20 +51,29 @@ async function getGlAndNetCarbs2(ingredientsInfo) {
         res.push({
             _id: ingredientsInfo[i].ingredientId,
             gl: totalGL,
-            gi: blendIngredient.gi,
+            gi: blendIngredient.gi ? blendIngredient.gi : 55,
             netCarbs: netCarbs,
+            rxScore: blendIngredient.rxScore ? blendIngredient.rxScore : 20,
         });
+        console.log('gi', blendIngredient.gi);
         overAllGi += 55;
         overAllCarbs += totalCarbs;
         overAllFiber += dietaryFiber;
     }
-    let checkLength = res.length;
     res = res.filter((resItem) => resItem.netCarbs !== 0);
-    if (checkLength === 1 && res.length === 0) {
+    if (res.length === 0) {
         return {
             totalGi: 0,
             netCarbs: 0,
             totalGL: 0,
+        };
+    }
+    if (res.length === 1) {
+        return {
+            totalGi: res[0].gi,
+            netCarbs: res[0].netCarbs,
+            totalGL: res[0].gl,
+            rxScore: res[0].rxScore,
         };
     }
     let result = res.map((item) => {
@@ -80,6 +89,7 @@ async function getGlAndNetCarbs2(ingredientsInfo) {
         acc += item.totalPercentage;
         return acc;
     }, 0);
+    console.log(totalGi);
     let netCarbs = overAllCarbs - overAllFiber;
     let totalGL = (totalGi * netCarbs) / 100;
     return {

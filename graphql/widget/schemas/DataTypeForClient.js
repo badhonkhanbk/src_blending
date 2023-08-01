@@ -25,15 +25,15 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)((type) => [Recipe_1.default], { nullable: true }),
     __metadata("design:type", Array)
-], DataType.prototype, "Recipes", void 0);
+], DataType.prototype, "Recipe", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => [Wikilist_1.default], { nullable: true }),
     __metadata("design:type", Array)
-], DataType.prototype, "Wikis", void 0);
+], DataType.prototype, "Wiki", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => [Plan_1.default], { nullable: true }),
     __metadata("design:type", Array)
-], DataType.prototype, "Plans", void 0);
+], DataType.prototype, "Plan", void 0);
 DataType = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], DataType);

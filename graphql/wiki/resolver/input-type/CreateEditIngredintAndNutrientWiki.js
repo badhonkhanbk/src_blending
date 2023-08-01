@@ -64,6 +64,14 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CreateEditIngreidntAndNutrientWiki.prototype, "seoMetaDescription", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], CreateEditIngreidntAndNutrientWiki.prototype, "rxScore", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], CreateEditIngreidntAndNutrientWiki.prototype, "gi", void 0);
 CreateEditIngreidntAndNutrientWiki = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateEditIngreidntAndNutrientWiki);

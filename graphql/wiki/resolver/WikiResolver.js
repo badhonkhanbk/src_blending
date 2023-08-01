@@ -1039,6 +1039,34 @@ let WikiResolver = class WikiResolver {
         }
         return 'hello';
     }
+    async makeOtherIngredientWiki() {
+        let blendNutrients = await blendNutrient_1.default.find()
+            .lean()
+            .select('-uniqueNutrientId -related_sources -parent -bodies -wikiCoverImages');
+        for (let i = 0; i < blendNutrients.length; i++) {
+            let wiki = await wiki_1.default.findOne({ _id: blendNutrients[i]._id }).select('_id');
+            if (!wiki) {
+                let data = {
+                    _id: blendNutrients[i]._id,
+                    onModel: 'BlendNutrient',
+                    wikiTitle: blendNutrients[i].wikiTitle
+                        ? blendNutrients[i].wikiTitle
+                        : blendNutrients[i].nutrientName,
+                    wikiDescription: blendNutrients[i].wikiDescription
+                        ? blendNutrients[i].wikiDescription
+                        : ' ',
+                    type: 'Nutrient',
+                    status: blendNutrients[i].status,
+                    description: '',
+                    image: '',
+                    publishedBy: 'g. braun',
+                    isPublished: blendNutrients[i].isPublished,
+                };
+                await wiki_1.default.create(data);
+            }
+        }
+        return 'done';
+    }
     async manipulateBookMarks(wikiId, bookmarkId, // no need
     link, type, // no need
     customBookmarkName, removeCustomBookmark) {
@@ -1521,6 +1549,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "makeWikis", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], WikiResolver.prototype, "makeOtherIngredientWiki", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => BookmarkAndExternalGlobalLInk_1.default),
     __param(0, (0, type_graphql_1.Arg)('wikiId')),
