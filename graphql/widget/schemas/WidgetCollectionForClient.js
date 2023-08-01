@@ -16,6 +16,7 @@ const type_graphql_1 = require("type-graphql");
 const DataTypeForClient_1 = __importDefault(require("./DataTypeForClient"));
 const FilterType_1 = __importDefault(require("./FilterType"));
 const AdminCollection_1 = __importDefault(require("../../admin/resolvers/schemas/AdminCollection"));
+const Theme_1 = __importDefault(require("../../theme/schemas/Theme"));
 let WidgetCollectionForClient = class WidgetCollectionForClient {
 };
 __decorate([
@@ -51,13 +52,9 @@ __decorate([
     __metadata("design:type", String)
 ], WidgetCollectionForClient.prototype, "slug", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], WidgetCollectionForClient.prototype, "themeLink", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], WidgetCollectionForClient.prototype, "themeStyle", void 0);
+    (0, type_graphql_1.Field)(type => Theme_1.default, { nullable: true }),
+    __metadata("design:type", Theme_1.default)
+], WidgetCollectionForClient.prototype, "theme", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)

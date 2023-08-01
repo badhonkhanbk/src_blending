@@ -257,15 +257,15 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link style');
+            }).select('link style _id');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
-            if (!theme) {
-                theme = {
-                    link: null,
-                };
-            }
+            // if (!theme) {
+            //   theme = {
+            //     link: null,
+            //   };
+            // }
             if (!banner) {
                 banner = {
                     link: null,
@@ -278,8 +278,7 @@ let WigdetResolver = class WigdetResolver {
                 icon: widgetCollection.icon,
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
-                themeLink: theme.link ? theme.link : null,
-                themeStyle: theme.style ? theme.style : null,
+                theme: theme ? theme : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: widgetCollection.filter.filterType === 'Random'
                     ? {
@@ -325,15 +324,10 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link style');
+            }).select('link style _id');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
-            if (!theme) {
-                theme = {
-                    link: null,
-                };
-            }
             if (!banner) {
                 banner = {
                     link: null,
@@ -346,8 +340,7 @@ let WigdetResolver = class WigdetResolver {
                 icon: widgetCollection.icon,
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
-                themeLink: theme.link ? theme.link : null,
-                themeStyle: theme.style ? theme.style : null,
+                theme: theme ? theme : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],
@@ -405,15 +398,10 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link style');
+            }).select('link style _id');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
-            if (!theme) {
-                theme = {
-                    link: null,
-                };
-            }
             if (!banner) {
                 banner = {
                     link: null,
@@ -426,8 +414,7 @@ let WigdetResolver = class WigdetResolver {
                 icon: widgetCollection.icon,
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
-                themeLink: theme.link ? theme.link : null,
-                themeStyle: theme.style ? theme.style : null,
+                theme: theme ? theme : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],
@@ -525,15 +512,10 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link style');
+            }).select('link style _id');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
-            if (!theme) {
-                theme = {
-                    link: null,
-                };
-            }
             if (!banner) {
                 banner = {
                     link: null,
@@ -546,8 +528,7 @@ let WigdetResolver = class WigdetResolver {
                 icon: widgetCollection.icon,
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
-                themeLink: theme.link ? theme.link : null,
-                themeStyle: theme.style ? theme.style : null,
+                theme: theme ? theme : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: widgetCollection.filter.filterType === 'Random'
                     ? {
@@ -614,15 +595,10 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link style');
+            }).select('link style _id');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
-            if (!theme) {
-                theme = {
-                    link: null,
-                };
-            }
             if (!banner) {
                 banner = {
                     link: null,
@@ -635,8 +611,7 @@ let WigdetResolver = class WigdetResolver {
                 icon: widgetCollection.icon,
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
-                themeLink: theme.link ? theme.link : null,
-                themeStyle: theme.style ? theme.style : null,
+                theme: theme ? theme : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],
@@ -718,15 +693,10 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link style');
+            }).select('link style _id');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
-            if (!theme) {
-                theme = {
-                    link: null,
-                };
-            }
             if (!banner) {
                 banner = {
                     link: null,
@@ -739,8 +709,7 @@ let WigdetResolver = class WigdetResolver {
                 icon: widgetCollection.icon,
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
-                themeLink: theme.link ? theme.link : null,
-                themeStyle: theme.style ? theme.style : null,
+                theme: theme ? theme : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],
@@ -877,15 +846,10 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
-                if (!theme) {
-                    theme = {
-                        link: null,
-                    };
-                }
                 if (!banner) {
                     banner = {
                         link: null,
@@ -899,8 +863,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: widgetCollection.filter.filterType === 'Random'
                         ? {
@@ -960,15 +923,10 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
-                if (!theme) {
-                    theme = {
-                        link: null,
-                    };
-                }
                 if (!banner) {
                     banner = {
                         link: null,
@@ -982,8 +940,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1063,15 +1020,10 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
-                if (!theme) {
-                    theme = {
-                        link: null,
-                    };
-                }
                 if (!banner) {
                     banner = {
                         link: null,
@@ -1085,8 +1037,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1229,15 +1180,10 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
-                if (!theme) {
-                    theme = {
-                        link: null,
-                    };
-                }
                 if (!banner) {
                     banner = {
                         link: null,
@@ -1251,8 +1197,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: widgetCollection.filter.filterType === 'Random'
                         ? {
@@ -1356,15 +1301,10 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
-                if (!theme) {
-                    theme = {
-                        link: null,
-                    };
-                }
                 if (!banner) {
                     banner = {
                         link: null,
@@ -1378,8 +1318,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1506,15 +1445,10 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
-                if (!theme) {
-                    theme = {
-                        link: null,
-                    };
-                }
                 if (!banner) {
                     banner = {
                         link: null,
@@ -1528,8 +1462,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1661,7 +1594,7 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -1683,8 +1616,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: widgetCollection.filter.filterType === 'Random'
                         ? {
@@ -1744,7 +1676,7 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
@@ -1766,8 +1698,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1847,15 +1778,10 @@ let WigdetResolver = class WigdetResolver {
                     .lean();
                 let theme = await theme_1.default.findOne({
                     _id: widget.widgetCollections[i].theme,
-                }).select('link style');
+                }).select('link style _id');
                 let banner = await banner_1.default.findOne({
                     _id: widget.widgetCollections[i].bannerId,
                 }).select('link');
-                if (!theme) {
-                    theme = {
-                        link: null,
-                    };
-                }
                 if (!banner) {
                     banner = {
                         link: null,
@@ -1869,8 +1795,7 @@ let WigdetResolver = class WigdetResolver {
                     slug: widget.widgetCollections[i].slug,
                     banner: widget.widgetCollections[i].banner,
                     showTabMenu: widget.widgetCollections[i].showTabMenu,
-                    themeLink: theme.link ? theme.link : null,
-                    themeStyle: theme.style ? theme.style : null,
+                    theme: theme ? theme : null,
                     bannerLink: banner.link ? banner.link : null,
                     filter: {
                         filterType: key[widget.widgetCollections[i].filter
@@ -1940,15 +1865,10 @@ let WigdetResolver = class WigdetResolver {
                 .lean();
             let theme = await theme_1.default.findOne({
                 _id: widgetCollection.theme,
-            }).select('link style');
+            }).select('link style _id');
             let banner = await banner_1.default.findOne({
                 _id: widgetCollection.bannerId,
             }).select('link');
-            if (!theme) {
-                theme = {
-                    link: null,
-                };
-            }
             if (!banner) {
                 banner = {
                     link: null,
@@ -1961,8 +1881,7 @@ let WigdetResolver = class WigdetResolver {
                 icon: widgetCollection.icon,
                 banner: widgetCollection.banner,
                 showTabMenu: widgetCollection.showTabMenu,
-                themeLink: theme.link ? theme.link : null,
-                themeStyle: theme.style ? theme.style : null,
+                theme: theme ? theme : null,
                 bannerLink: banner.link ? banner.link : null,
                 filter: {
                     filterType: key[widgetCollection.filter.filterType],

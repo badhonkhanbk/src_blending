@@ -21,15 +21,15 @@ __decorate([
     __metadata("design:type", String)
 ], Theme.prototype, "themeName", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Theme.prototype, "description", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Theme.prototype, "link", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Theme.prototype, "domain", void 0);
 __decorate([
@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Theme.prototype, "viewPorts", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Theme.prototype, "thumbnailImage", void 0);
 __decorate([
@@ -49,7 +49,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Theme.prototype, "updatedAt", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Theme.prototype, "style", void 0);
 Theme = __decorate([
