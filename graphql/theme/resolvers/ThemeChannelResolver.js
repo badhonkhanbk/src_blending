@@ -18,6 +18,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const themeChannel_1 = __importDefault(require("../../../models/themeChannel"));
 const ThemeChannel_1 = __importDefault(require("../schemas/ThemeChannel"));
+/**
+ * Adds a theme channel.
+ *
+ * @param {String} name - The name of the theme channel.
+ * @param {String} description - The description of the theme channel.
+ * @return {String} - A message indicating that the theme channel has been created.
+ */
 let ThemeChannelResolver = class ThemeChannelResolver {
     async addThemeChannel(name, description) {
         await themeChannel_1.default.create({
@@ -26,6 +33,11 @@ let ThemeChannelResolver = class ThemeChannelResolver {
         });
         return 'theme channel created';
     }
+    /**
+     * Retrieves all theme channels.
+     *
+     * @return {Promise<Array<Object>>} Returns a promise that resolves to an array of theme channel objects.
+     */
     async getAllThemeChannels() {
         return await themeChannel_1.default.find();
     }

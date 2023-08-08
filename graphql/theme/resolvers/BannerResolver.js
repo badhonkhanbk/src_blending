@@ -24,10 +24,22 @@ const newModel_1 = __importDefault(require("../../../models/newModel"));
 const Widget_1 = __importDefault(require("../../../models/Widget"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 let BannerResolver = class BannerResolver {
+    /**
+   * Creates a new banner.
+   *
+   * @param {BannerInput} data - The data for the new banner.
+   * @return {Promise<string>} The ID of the newly created banner.
+   */
     async createNewBanner(data) {
         let theme = await banner_1.default.create(data);
         return theme._id;
     }
+    /**
+   * Edits a banner.
+   *
+   * @param {EditBanner} data - the data needed to edit the banner
+   * @return {Promise<string>} - a promise that resolves to a success message
+   */
     async editABanner(data) {
         let theme = await banner_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         //@ts-ignore
@@ -35,6 +47,12 @@ let BannerResolver = class BannerResolver {
         theme.save();
         return 'successfully edited';
     }
+    /**
+   * Removes a banner from the database.
+   *
+   * @param {String} bannerId - The ID of the banner to be removed.
+   * @return {Promise<string | AppError>} A promise that resolves to a success message if the banner is removed successfully, or an AppError if the banner is in use in a widget or widget collection.
+   */
     async removeABanner(bannerId) {
         let widget = await Widget_1.default.findOne({
             bannerId: bannerId,
@@ -53,10 +71,22 @@ let BannerResolver = class BannerResolver {
         await banner_1.default.findByIdAndDelete(bannerId);
         return 'theme removed successfully';
     }
+    /**
+   * Retrieves a single banner by its ID.
+   *
+   * @param {String} bannerId - The ID of the banner.
+   * @return {Promise<BannerModel>} The banner with the specified ID.
+   */
     async getASingleBanner(themeId) {
         let theme = await banner_1.default.findOne({ _id: themeId });
         return theme;
     }
+    /**
+   * Retrieves all banners based on the provided domain.
+   *
+   * @param {String} domain - The domain used to filter the banners. Can be nullable.
+   * @return {Array} An array of banners sorted by createdAt in descending order.
+   */
     async getAllBanners(domain) {
         if (!domain) {
             let banners = await banner_1.default.find().sort({ createdAt: -1 });
@@ -69,10 +99,20 @@ let BannerResolver = class BannerResolver {
             return banners;
         }
     }
+    /**
+   * Removes all banners from the system.
+   *
+   * @return {Promise<string>} A promise that resolves to 'done' when all banners have been removed.
+   */
     async removeAllBanners() {
         await banner_1.default.deleteMany();
         return 'done';
     }
+    /**
+   * Removes all banners from the system.
+   *
+   * @return {Promise<string>} A promise that resolves to 'done' when all banners have been removed.
+   */
     async getBannerCount() {
         console.log(JSON.stringify(newModel_1.default.obj));
         return 'done';

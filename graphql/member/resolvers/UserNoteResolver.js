@@ -26,6 +26,12 @@ const UserNote_1 = __importDefault(require("../schemas/UserNote"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const RemoveNote_1 = __importDefault(require("./input-type/RemoveNote"));
 let UserNotesResolver = class UserNotesResolver {
+    /**
+     * Creates a new note.
+     *
+     * @param {CreateUserNote} data - the data for creating a new note
+     * @return {Promise<UserNote[]>} an array of notes
+     */
     async createNewNote(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -63,6 +69,12 @@ let UserNotesResolver = class UserNotesResolver {
         });
         return Notes;
     }
+    /**
+     * Edit a user's note.
+     *
+     * @param {EditUserNote} data - The data of the note to be edited.
+     * @return {Promise<Array<UserNote>>} - A promise that resolves to an array of user notes.
+     */
     async editMyNote(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -77,6 +89,12 @@ let UserNotesResolver = class UserNotesResolver {
         });
         return notes;
     }
+    /**
+     * Remove a user's note.
+     *
+     * @param {RemoveNote} data - The data object containing userId, noteId, and recipeId.
+     * @return {Promise<UserNote[]>} - An array of user notes.
+     */
     async removeMyNote(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -97,6 +115,12 @@ let UserNotesResolver = class UserNotesResolver {
         });
         return notes;
     }
+    /**
+   * Retrieves all the notes belonging to a specific user.
+   *
+   * @param {String} userId - The ID of the user whose notes are to be retrieved.
+   * @return {Array} An array of user notes.
+   */
     async getAllMyNotes(userId) {
         let user = await memberModel_1.default.findOne({ _id: userId });
         if (!user) {
@@ -107,7 +131,14 @@ let UserNotesResolver = class UserNotesResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [UserNote_1.default]),
+    (0, type_graphql_1.Mutation)(() => [UserNote_1.default])
+    /**
+     * Creates a new note.
+     *
+     * @param {CreateUserNote} data - the data for creating a new note
+     * @return {Promise<UserNote[]>} an array of notes
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewNote_1.default]),
@@ -121,21 +152,42 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserNotesResolver.prototype, "getMyNotesForARecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [UserNote_1.default]),
+    (0, type_graphql_1.Mutation)(() => [UserNote_1.default])
+    /**
+     * Edit a user's note.
+     *
+     * @param {EditUserNote} data - The data of the note to be edited.
+     * @return {Promise<Array<UserNote>>} - A promise that resolves to an array of user notes.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditUserNote_1.default]),
     __metadata("design:returntype", Promise)
 ], UserNotesResolver.prototype, "editMyNote", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [UserNote_1.default]),
+    (0, type_graphql_1.Mutation)(() => [UserNote_1.default])
+    /**
+     * Remove a user's note.
+     *
+     * @param {RemoveNote} data - The data object containing userId, noteId, and recipeId.
+     * @return {Promise<UserNote[]>} - An array of user notes.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [RemoveNote_1.default]),
     __metadata("design:returntype", Promise)
 ], UserNotesResolver.prototype, "removeMyNote", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [UserNote_1.default]),
+    (0, type_graphql_1.Query)(() => [UserNote_1.default])
+    /**
+   * Retrieves all the notes belonging to a specific user.
+   *
+   * @param {String} userId - The ID of the user whose notes are to be retrieved.
+   * @return {Array} An array of user notes.
+   */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

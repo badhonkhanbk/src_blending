@@ -30,12 +30,23 @@ const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient")
 const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
 const WikiLinks_1 = __importDefault(require("../../wiki/schemas/WikiLinks"));
 let GeneralBlogResolver = class GeneralBlogResolver {
+    /**
+     * A function that updates the bookmark list of all general blog models.
+     *
+     * @return {string} The string 'Done' indicating the completion of the update.
+     */
     async temo() {
         await generalBlog_1.default.updateMany({}, {
             bookmarkList: [],
         });
         return 'Done';
     }
+    /**
+     * Adds a new general blog to the database.
+     *
+     * @param {CreateNewGeneralBlog} data - The data of the new general blog.
+     * @returns {Promise<any>} The newly created general blog.
+     */
     async addGeneralBlog(data) {
         let blog = await generalBlog_1.default.findOne({ slug: data.slug });
         if (blog) {
@@ -53,6 +64,12 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         newBlog = await generalBlog_1.default.create(data);
         return newBlog;
     }
+    /**
+     * Edits a general blog.
+     *
+     * @param {EditGeneralBlog} data - the data for editing the blog
+     * @return {Promise<string>} - a promise that resolves to a success message
+     */
     async editAGeneralBlog(data) {
         if (data.editableObject.slug) {
             let blog = await generalBlog_1.default.findOne({
@@ -77,6 +94,13 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         await generalBlog_1.default.findOneAndUpdate({ _id: data.editId }, modifiedData);
         return 'Successfully edited general blog';
     }
+    /**
+     * Retrieves a general blog by its ID and the current date.
+     *
+     * @param {ID} blogId - The ID of the blog.
+     * @param {string} currentDate - The current date.
+     * @return {any} The fetched blog.
+     */
     async getAgeneralBlog(blogId, currentDate) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         await generalBlog_1.default.updateMany({
@@ -90,6 +114,13 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             .populate('createdBy');
         return blog;
     }
+    /**
+     * Retrieves a general blog by its slug.
+     *
+     * @param {string} slug - The slug of the blog.
+     * @param {string} memberId - The ID of the member. (nullable)
+     * @return {any} The retrieved blog object.
+     */
     async getAgeneralBlogBySlug(slug, memberId) {
         let blog = await generalBlog_1.default.findOne({ slug: slug })
             .populate('brand')
@@ -111,6 +142,14 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         }
         return blog;
     }
+    /**
+     * Retrieves all general blog articles based on the specified filters.
+     *
+     * @param {string} currentDate - The current date in ISO format (YYYY-MM-DD).
+     * @param {String} brand - The brand to filter by (optional).
+     * @param {String} category - The category to filter by (optional).
+     * @return {Array} An array of blog articles that match the filters.
+     */
     async getAllGeneralBlog(currentDate, brand, category) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         await generalBlog_1.default.updateMany({
@@ -131,6 +170,13 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             .populate('createdBy');
         return blogs;
     }
+    /**
+     * Retrieves all general blogs for a client.
+     *
+     * @param {string} currentDate - The current date in string format.
+     * @param {String} memberId - The ID of the member.
+     * @return {any[]} An array of general blog objects.
+     */
     async getAllGeneralBlogForClient(currentDate, memberId) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         await generalBlog_1.default.updateMany({
@@ -160,10 +206,23 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         }
         return returnBlogs;
     }
+    /**
+     * Deletes a general blog.
+     *
+     * @param {string} blogId - The ID of the blog to be deleted.
+     * @return {Promise<string>} - A promise that resolves to a success message.
+     */
     async deleteAGeneralBlog(blogId) {
         await generalBlog_1.default.findOneAndDelete({ _id: blogId });
         return 'Successfully deleted general blog';
     }
+    /**
+     * Retrieves the wiki links for a given blog.
+     *
+     * @param {String} blogId - The ID of the blog (optional)
+     * @param {Boolean} links - Whether to include links or not (optional)
+     * @return {Object} - An object containing the retrieved links and bookmarks
+     */
     async getWikiLinksForBlog(blogId, links) {
         let blendNutrients = [];
         let blendIngredients = [];
@@ -197,6 +256,15 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             globalBookmarks: globalBookmarks,
         };
     }
+    /**
+     * Manipulates book marks for a blog.
+     *
+     * @param {String} blogId - the ID of the blog
+     * @param {String} link - the link of the bookmark
+     * @param {String} customBookmarkName - the name of the custom bookmark
+     * @param {Boolean} removeCustomBookmark - whether to remove the custom bookmark (optional)
+     * @return {Object} an object containing the blog bookmarks and global bookmarks
+     */
     async manipulateBookMarksForBlog(blogId, link, customBookmarkName, removeCustomBookmark) {
         let blog = await generalBlog_1.default.findOne({ _id: blogId }).select('bookmarkList');
         // if (!(type === 'Nutrient') || !(type === 'Ingredient')) {801930
@@ -250,27 +318,55 @@ let GeneralBlogResolver = class GeneralBlogResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * A function that updates the bookmark list of all general blog models.
+     *
+     * @return {string} The string 'Done' indicating the completion of the update.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "temo", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => GeneralBlog_1.default),
+    (0, type_graphql_1.Mutation)(() => GeneralBlog_1.default)
+    /**
+     * Adds a new general blog to the database.
+     *
+     * @param {CreateNewGeneralBlog} data - The data of the new general blog.
+     * @returns {Promise<any>} The newly created general blog.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewGeneralBlog_1.default]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "addGeneralBlog", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Edits a general blog.
+     *
+     * @param {EditGeneralBlog} data - the data for editing the blog
+     * @return {Promise<string>} - a promise that resolves to a success message
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditGeneralBlog_1.default]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "editAGeneralBlog", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => GeneralBlog_1.default),
+    (0, type_graphql_1.Query)(() => GeneralBlog_1.default)
+    /**
+     * Retrieves a general blog by its ID and the current date.
+     *
+     * @param {ID} blogId - The ID of the blog.
+     * @param {string} currentDate - The current date.
+     * @return {any} The fetched blog.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('blogId', (type) => type_graphql_1.ID)),
     __param(1, (0, type_graphql_1.Arg)('currentDate')),
     __metadata("design:type", Function),
@@ -278,7 +374,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAgeneralBlog", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => GeneralBlog_1.default),
+    (0, type_graphql_1.Query)(() => GeneralBlog_1.default)
+    /**
+     * Retrieves a general blog by its slug.
+     *
+     * @param {string} slug - The slug of the blog.
+     * @param {string} memberId - The ID of the member. (nullable)
+     * @return {any} The retrieved blog object.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('slug')),
     __param(1, (0, type_graphql_1.Arg)('memberId', (type) => type_graphql_1.ID, { nullable: true })),
     __metadata("design:type", Function),
@@ -286,7 +390,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAgeneralBlogBySlug", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [GeneralBlog_1.default]),
+    (0, type_graphql_1.Query)(() => [GeneralBlog_1.default])
+    /**
+     * Retrieves all general blog articles based on the specified filters.
+     *
+     * @param {string} currentDate - The current date in ISO format (YYYY-MM-DD).
+     * @param {String} brand - The brand to filter by (optional).
+     * @param {String} category - The category to filter by (optional).
+     * @return {Array} An array of blog articles that match the filters.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('currentDate')),
     __param(1, (0, type_graphql_1.Arg)('brand', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('category', { nullable: true })),
@@ -296,7 +409,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAllGeneralBlog", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [GeneralBlog_1.default]),
+    (0, type_graphql_1.Query)(() => [GeneralBlog_1.default])
+    /**
+     * Retrieves all general blogs for a client.
+     *
+     * @param {string} currentDate - The current date in string format.
+     * @param {String} memberId - The ID of the member.
+     * @return {any[]} An array of general blog objects.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('currentDate')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
@@ -304,14 +425,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAllGeneralBlogForClient", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Deletes a general blog.
+     *
+     * @param {string} blogId - The ID of the blog to be deleted.
+     * @return {Promise<string>} - A promise that resolves to a success message.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('blogId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "deleteAGeneralBlog", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WikiLinks_1.default),
+    (0, type_graphql_1.Query)(() => WikiLinks_1.default)
+    /**
+     * Retrieves the wiki links for a given blog.
+     *
+     * @param {String} blogId - The ID of the blog (optional)
+     * @param {Boolean} links - Whether to include links or not (optional)
+     * @return {Object} - An object containing the retrieved links and bookmarks
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('blogId', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('links', { nullable: true })),
     __metadata("design:type", Function),
@@ -320,7 +456,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getWikiLinksForBlog", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => BlogBookMarkAndExternalGlobalLink_1.default),
+    (0, type_graphql_1.Mutation)(() => BlogBookMarkAndExternalGlobalLink_1.default)
+    /**
+     * Manipulates book marks for a blog.
+     *
+     * @param {String} blogId - the ID of the blog
+     * @param {String} link - the link of the bookmark
+     * @param {String} customBookmarkName - the name of the custom bookmark
+     * @param {Boolean} removeCustomBookmark - whether to remove the custom bookmark (optional)
+     * @return {Object} an object containing the blog bookmarks and global bookmarks
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('blogId')),
     __param(1, (0, type_graphql_1.Arg)('link')),
     __param(2, (0, type_graphql_1.Arg)('customBookmarkName')),

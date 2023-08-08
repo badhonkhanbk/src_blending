@@ -21,10 +21,22 @@ const Theme_1 = __importDefault(require("../schemas/Theme"));
 const EditTheme_1 = __importDefault(require("./input-type/EditTheme"));
 const themeInput_1 = __importDefault(require("./input-type/themeInput"));
 let ThemeResolver = class ThemeResolver {
+    /**
+   * Creates a new theme.
+   *
+   * @param {ThemeInput} data - The data for the new theme.
+   * @return {Promise<string>} The ID of the newly created theme.
+   */
     async createNewTheme(data) {
         let theme = await theme_1.default.create(data);
         return theme._id;
     }
+    /**
+   * Edits a theme.
+   *
+   * @param {EditTheme} data - the data to edit the theme
+   * @return {string} - a message indicating if the edit was successful
+   */
     async editATheme(data) {
         let theme = await theme_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         //@ts-ignore
@@ -36,10 +48,22 @@ let ThemeResolver = class ThemeResolver {
         await theme_1.default.findByIdAndDelete(themeId);
         return 'theme removed successfully';
     }
+    /**
+   * Retrieves a single theme by its ID.
+   *
+   * @param {String} themeId - The ID of the theme to retrieve.
+   * @return {Promise} The retrieved theme.
+   */
     async getASingleTheme(themeId) {
         let theme = await theme_1.default.findOne({ _id: themeId });
         return theme;
     }
+    /**
+   * Retrieves all themes based on the provided domain.
+   *
+   * @param {String} domain - The domain to filter themes by. Can be nullable.
+   * @return {Promise<Theme[]>} An array of themes that match the provided domain.
+   */
     async getAllThemes(domain) {
         if (!domain) {
             let themes = await theme_1.default.find().sort({ createdAt: -1 });
@@ -52,6 +76,11 @@ let ThemeResolver = class ThemeResolver {
             return themes;
         }
     }
+    /**
+   * Remove all themes from the database.
+   *
+   * @return {Promise<string>} A promise that resolves to 'done' when all themes are removed.
+   */
     async removeAllThemes() {
         await theme_1.default.deleteMany();
         return 'done';

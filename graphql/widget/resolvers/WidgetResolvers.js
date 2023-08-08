@@ -36,6 +36,7 @@ const SingleWidgetCollection_1 = __importDefault(require("../schemas/SingleWidge
 const mongoose_1 = __importDefault(require("mongoose"));
 const wiki_1 = __importDefault(require("../../../models/wiki"));
 const Plan_1 = __importDefault(require("../../../models/Plan"));
+const generalBlog_1 = __importDefault(require("../../../models/generalBlog"));
 var key;
 (function (key) {
     key["Ingredient"] = "foodCategories";
@@ -44,11 +45,23 @@ var key;
     // WIKI = 'Wiki',
 })(key || (key = {}));
 let WigdetResolver = class WigdetResolver {
+    /**
+     * Adds a new widget.
+     *
+     * @param {AddWidgetInput} data - The data for the new widget.
+     * @return {Promise<string>} The ID of the newly created widget.
+     */
     async addNewWidget(data) {
         let widget = await Widget_1.default.create(data);
         return widget._id;
     }
-    // change
+    /**
+     * Adds a new widget collection.
+     *
+     * @param {String} widgetId - The ID of the widget.
+     * @param {WidgetCollectionInput} widgetCollection - The widget collection data.
+     * @return {any} The newly created widget collection data.
+     */
     async addNewWidgetCollection(widgetId, widgetCollection) {
         let data = widgetCollection;
         data._id = new mongoose_1.default.mongo.ObjectId();
@@ -68,6 +81,13 @@ let WigdetResolver = class WigdetResolver {
         data.theme = await theme_2.default.findOne({ _id: widgetCollection.theme });
         return data;
     }
+    /**
+     * Remove a widget collection.
+     *
+     * @param {String} widgetId - the ID of the widget
+     * @param {String} widgetCollectionId - the ID of the widget collection
+     * @return {Promise<string>} - a promise that resolves to a string indicating the success of the removal
+     */
     async removeAWidgetCollection(widgetId, widgetCollectionId) {
         await Widget_1.default.findOneAndUpdate({ _id: widgetId }, {
             $pull: {
@@ -78,6 +98,13 @@ let WigdetResolver = class WigdetResolver {
         return 'widget collection removed successfully';
     }
     //change
+    /**
+     * Edits a widget collection.
+     *
+     * @param {String} widgetId - The ID of the widget.
+     * @param {CreateEditWidgetCollection} widgetCollection - The widget collection to edit.
+     * @return {any} The edited widget collection data.
+     */
     async editAWidgetCollection(widgetId, widgetCollection) {
         await Widget_1.default.findOneAndUpdate({ _id: widgetId }, {
             $pull: {
@@ -103,22 +130,52 @@ let WigdetResolver = class WigdetResolver {
         data.theme = await theme_2.default.findOne({ _id: widgetCollection.theme });
         return data;
     }
+    /**
+     * Removes a widget from the database.
+     *
+     * @param {String} widgetId - The ID of the widget to be removed.
+     * @return {String} A message indicating the success of the operation.
+     */
     async removeAWidget(widgetId) {
         await Widget_1.default.findOneAndRemove({ _id: widgetId });
         return 'widget removed successfully';
     }
+    /**
+     * Retrieves all widgets from the database.
+     *
+     * @return {Promise<WidgetModel[]>} The array of widgets.
+     */
     async getAllWidgets() {
         let widgets = await Widget_1.default.find();
         return widgets;
     }
+    /**
+     * Retrieves all widget collections for a given widget ID.
+     *
+     * @param {String} widgetId - The ID of the widget.
+     * @return {Array} An array of widget collections.
+     */
     async getAllWidgetCollection(widgetId) {
         let widget = await Widget_1.default.findOne({ _id: widgetId });
         return widget.widgetCollections;
     }
+    /**
+     * Retrieves a single widget by its ID.
+     *
+     * @param {String} widgetId - The ID of the widget to retrieve.
+     * @return {Promise<WidgetModel>} The widget with the specified ID.
+     */
     async getASingleWidget(widgetId) {
         let widget = await Widget_1.default.findOne({ _id: widgetId }).populate('widgetCollections.theme widgetCollections.bannerId slug widgetCollections.collectionData');
         return widget;
     }
+    /**
+     * Retrieves a single widget collection.
+     *
+     * @param {String} widgetId - The ID of the widget.
+     * @param {String} widgetCollectionId - The ID of the widget collection.
+     * @return {Object} The widget collection matching the provided IDs.
+     */
     async getASingleWidgetCollection(widgetId, widgetCollectionId) {
         let widget = await Widget_1.default.findOne({ _id: widgetId }).populate('widgetCollections.collectionData');
         return widget.widgetCollections.find(
@@ -135,11 +192,24 @@ let WigdetResolver = class WigdetResolver {
         await Widget_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'Widget edited successfully.';
     }
+    /**
+     * Retrieves the widget type based on the given slug.
+     *
+     * @param {String} slug - The slug of the widget.
+     * @return {Promise<type>} The widget type.
+     */
     async getWidgetTypeBySlug(slug) {
         let widget = await Widget_1.default.findOne({ slug: slug }).select('widgetType');
         return widget.widgetType;
     }
     //grid
+    /**
+     * Retrieves widget collections based on the provided widget slug and current date.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {string} currentDate - The current date (optional).
+     * @return {Promise<any>} Returns a Promise that resolves to the widget collections.
+     */
     async getWidgetCollections(widgetSlug, currentDate) {
         let widget = await Widget_1.default.findOne({
             slug: widgetSlug,
@@ -179,6 +249,13 @@ let WigdetResolver = class WigdetResolver {
         return widget;
     }
     //
+    /**
+     * Retrieves an entity collection based on the provided widget slug and collection slug.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} collectionSlug - The slug of the collection.
+     * @return {Promise<any>} The entity collection.
+     */
     async getEntityCollection(widgetSlug, collectionSlug) {
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
@@ -434,6 +511,13 @@ let WigdetResolver = class WigdetResolver {
         }
     }
     //Grid
+    /**
+     * Retrieves a recipe collection based on the provided widget and collection slugs.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} collectionSlug - The slug of the collection.
+     * @return {Object} The retrieved recipe collection.
+     */
     async getRecipeCollection(widgetSlug, collectionSlug) {
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
@@ -553,6 +637,13 @@ let WigdetResolver = class WigdetResolver {
         }
     }
     //Grid
+    /**
+     * Retrieves a widget collection from the database based on the provided widgetSlug and collectionSlug.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} collectionSlug - The slug of the collection.
+     * @return {Object} The retrieved widget collection.
+     */
     async getWikiCollection(widgetSlug, collectionSlug) {
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
@@ -631,6 +722,13 @@ let WigdetResolver = class WigdetResolver {
         }
     }
     //Grid
+    /**
+     * Retrieves a plan collection based on the provided widget and collection slugs.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} collectionSlug - The slug of the collection.
+     * @return {any} The retrieved plan collection.
+     */
     async getPlanCollection(widgetSlug, collectionSlug) {
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
@@ -728,6 +826,13 @@ let WigdetResolver = class WigdetResolver {
             return new AppError_1.default('This collection is only for Plans', 403);
         }
     }
+    /**
+     * Retrieves an entity widget.
+     *
+     * @param {String} widgetSlug - the slug of the widget
+     * @param {string} currentDate - the current date (nullable)
+     * @return {any} the entity widget
+     */
     async getEntityWidget(widgetSlug, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
@@ -1062,6 +1167,13 @@ let WigdetResolver = class WigdetResolver {
         });
         return returnWidget;
     }
+    /**
+     * Retrieves a recipe widget based on the given widget slug and current date.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {string} currentDate - The current date (optional).
+     * @return {any} The recipe widget object.
+     */
     async getRecipeWidget(widgetSlug, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
@@ -1226,6 +1338,13 @@ let WigdetResolver = class WigdetResolver {
             return returnWidget;
         }
     }
+    /**
+     * Retrieves a wiki widget.
+     *
+     * @param {String} widgetSlug - the slug of the widget
+     * @param {string} currentDate - the current date (optional)
+     * @return {any} the retrieved widget
+     */
     async getWikiWidget(widgetSlug, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
@@ -1346,6 +1465,13 @@ let WigdetResolver = class WigdetResolver {
         });
         return returnWidget;
     }
+    /**
+     * Retrieves a plan widget based on the widget slug and current date.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {string} currentDate - The current date (optional).
+     * @return {any} The retrieved plan widget.
+     */
     async getPlanWidget(widgetSlug, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
@@ -1490,6 +1616,12 @@ let WigdetResolver = class WigdetResolver {
         });
         return returnWidget;
     }
+    /**
+     * Retrieves widgets for a specific client based on the slug.
+     *
+     * @param {String} slug - The slug of the client.
+     * @return {Object} returnWidget - The widget object for the client.
+     */
     async getWidgetsForClient(slug) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: slug })
@@ -1632,6 +1764,7 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: recipes,
                         Plan: [],
                         Wiki: [],
+                        GeneralBlog: []
                     },
                 });
             }
@@ -1710,6 +1843,7 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: [],
                         Plan: [],
                         Wiki: wikis,
+                        GeneralBlog: []
                     },
                 });
             }
@@ -1807,6 +1941,87 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: [],
                         Plan: plans,
                         Wiki: [],
+                        GeneralBlog: []
+                    },
+                });
+            }
+            else if (collectionType === 'GeneralBlog') {
+                let orderBy = {};
+                let widgetCollection = widget.widgetCollections[i];
+                if (!widgetCollection.orderBy) {
+                    widgetCollection.orderBy = 'PUBLISHED_DATE';
+                }
+                if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                    orderBy = { publishDate: 1 };
+                }
+                else if (widgetCollection.orderBy === 'POPULARITY') {
+                    orderBy = { createdAt: -1 };
+                }
+                else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                    orderBy = { title: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                let generalBlogs;
+                // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                //   //@ts-ignore
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.label;
+                //     }
+                //   );
+                // } else if (widget.widgetCollections[i].filter.filterType === 'Type') {
+                //   values = widget.widgetCollections[i].filter.values.map(
+                //     //@ts-ignore
+                //     (v) => {
+                //       return v.value;
+                //     }
+                //   );
+                // }
+                generalBlogs = await generalBlog_1.default.find({
+                    _id: {
+                        //@ts-ignore
+                        $in: widgetCollection.collectionData.children,
+                    },
+                })
+                    .populate('brand')
+                    .populate('createdBy')
+                    .sort(orderBy)
+                    .lean();
+                let theme = await theme_1.default.findOne({
+                    _id: widget.widgetCollections[i].theme,
+                }).select('link style _id');
+                let banner = await banner_1.default.findOne({
+                    _id: widget.widgetCollections[i].bannerId,
+                }).select('link');
+                if (!banner) {
+                    banner = {
+                        link: null,
+                    };
+                }
+                returnWidget.widgetCollections.push({
+                    //@ts-ignore
+                    _id: widget.widgetCollections[i]._id,
+                    displayName: widget.widgetCollections[i].displayName,
+                    icon: widget.widgetCollections[i].icon,
+                    slug: widget.widgetCollections[i].slug,
+                    banner: widget.widgetCollections[i].banner,
+                    showTabMenu: widget.widgetCollections[i].showTabMenu,
+                    theme: theme ? theme : null,
+                    bannerLink: banner.link ? banner.link : null,
+                    filter: {
+                        filterType: key[widget.widgetCollections[i].filter
+                            .filterType],
+                        values: widget.widgetCollections[i].filter.values,
+                    },
+                    data: {
+                        collectionType: collectionType,
+                        Recipe: [],
+                        Plan: [],
+                        Wiki: [],
+                        GeneralBlog: generalBlogs,
                     },
                 });
             }
@@ -1926,7 +2141,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "removeAWidgetCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => SingleWidgetCollection_1.default),
+    (0, type_graphql_1.Mutation)(() => SingleWidgetCollection_1.default)
+    /**
+     * Edits a widget collection.
+     *
+     * @param {String} widgetId - The ID of the widget.
+     * @param {CreateEditWidgetCollection} widgetCollection - The widget collection to edit.
+     * @return {any} The edited widget collection data.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetId')),
     __param(1, (0, type_graphql_1.Arg)('widgetCollection')),
     __metadata("design:type", Function),
@@ -1935,34 +2158,69 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "editAWidgetCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Removes a widget from the database.
+     *
+     * @param {String} widgetId - The ID of the widget to be removed.
+     * @return {String} A message indicating the success of the operation.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "removeAWidget", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Widget_2.default]),
+    (0, type_graphql_1.Query)(() => [Widget_2.default])
+    /**
+     * Retrieves all widgets from the database.
+     *
+     * @return {Promise<WidgetModel[]>} The array of widgets.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getAllWidgets", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [WidgetCollection_2.default]),
+    (0, type_graphql_1.Query)(() => [WidgetCollection_2.default])
+    /**
+     * Retrieves all widget collections for a given widget ID.
+     *
+     * @param {String} widgetId - The ID of the widget.
+     * @return {Array} An array of widget collections.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getAllWidgetCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => Widget_2.default),
+    (0, type_graphql_1.Query)(() => Widget_2.default)
+    /**
+     * Retrieves a single widget by its ID.
+     *
+     * @param {String} widgetId - The ID of the widget to retrieve.
+     * @return {Promise<WidgetModel>} The widget with the specified ID.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getASingleWidget", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetCollection_2.default),
+    (0, type_graphql_1.Query)(() => WidgetCollection_2.default)
+    /**
+     * Retrieves a single widget collection.
+     *
+     * @param {String} widgetId - The ID of the widget.
+     * @param {String} widgetCollectionId - The ID of the widget collection.
+     * @return {Object} The widget collection matching the provided IDs.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetId')),
     __param(1, (0, type_graphql_1.Arg)('widgetCollectionId')),
     __metadata("design:type", Function),
@@ -1985,14 +2243,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "editAWidget", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Retrieves the widget type based on the given slug.
+     *
+     * @param {String} slug - The slug of the widget.
+     * @return {Promise<type>} The widget type.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getWidgetTypeBySlug", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetForClient_1.default)
+    /**
+     * Retrieves widget collections based on the provided widget slug and current date.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {string} currentDate - The current date (optional).
+     * @return {Promise<any>} Returns a Promise that resolves to the widget collections.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
@@ -2000,7 +2273,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getWidgetCollections", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default)
+    /**
+     * Retrieves an entity collection based on the provided widget slug and collection slug.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} collectionSlug - The slug of the collection.
+     * @return {Promise<any>} The entity collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('collectionSlug')),
     __metadata("design:type", Function),
@@ -2009,7 +2290,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getEntityCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default)
+    /**
+     * Retrieves a recipe collection based on the provided widget and collection slugs.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} collectionSlug - The slug of the collection.
+     * @return {Object} The retrieved recipe collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('collectionSlug')),
     __metadata("design:type", Function),
@@ -2018,7 +2307,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getRecipeCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default)
+    /**
+     * Retrieves a widget collection from the database based on the provided widgetSlug and collectionSlug.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} collectionSlug - The slug of the collection.
+     * @return {Object} The retrieved widget collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('collectionSlug')),
     __metadata("design:type", Function),
@@ -2027,7 +2324,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getWikiCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetCollectionForClient_1.default)
+    /**
+     * Retrieves a plan collection based on the provided widget and collection slugs.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {String} collectionSlug - The slug of the collection.
+     * @return {any} The retrieved plan collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('collectionSlug')),
     __metadata("design:type", Function),
@@ -2036,7 +2341,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getPlanCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetForClient_1.default)
+    /**
+     * Retrieves an entity widget.
+     *
+     * @param {String} widgetSlug - the slug of the widget
+     * @param {string} currentDate - the current date (nullable)
+     * @return {any} the entity widget
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
@@ -2044,7 +2357,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getEntityWidget", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetForClient_1.default)
+    /**
+     * Retrieves a recipe widget based on the given widget slug and current date.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {string} currentDate - The current date (optional).
+     * @return {any} The recipe widget object.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
@@ -2052,7 +2373,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getRecipeWidget", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetForClient_1.default)
+    /**
+     * Retrieves a wiki widget.
+     *
+     * @param {String} widgetSlug - the slug of the widget
+     * @param {string} currentDate - the current date (optional)
+     * @return {any} the retrieved widget
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
@@ -2060,7 +2389,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getWikiWidget", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetForClient_1.default)
+    /**
+     * Retrieves a plan widget based on the widget slug and current date.
+     *
+     * @param {String} widgetSlug - The slug of the widget.
+     * @param {string} currentDate - The current date (optional).
+     * @return {any} The retrieved plan widget.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
     __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
@@ -2068,7 +2405,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getPlanWidget", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => WidgetForClient_1.default),
+    (0, type_graphql_1.Query)(() => WidgetForClient_1.default)
+    /**
+     * Retrieves widgets for a specific client based on the slug.
+     *
+     * @param {String} slug - The slug of the client.
+     * @return {Object} returnWidget - The widget object for the client.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

@@ -27,6 +27,12 @@ const blogComment_1 = __importDefault(require("../../../models/blogComment"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const EditBlogCollection_1 = __importDefault(require("./inputType/BlogCollection/EditBlogCollection"));
 let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
+    /**
+     * Retrieves all the blog collections for a given member ID.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<Object>} An object containing the list of blog collections and the default collection.
+     */
     async getAllBlogCollections(memberId) {
         let collections = await generalBlogCollection_1.default.find({
             memberId: memberId,
@@ -62,6 +68,13 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
             };
         }
     }
+    /**
+     * Adds a blog to the last modified blog collection of a member.
+     *
+     * @param {String} memberId - The ID of the member
+     * @param {String} blogId - The ID of the blog
+     * @return {Object} The updated blog collection
+     */
     async addToLastModifiedBlogCollection(memberId, blogId) {
         let member = await memberModel_1.default.findOne({
             _id: memberId,
@@ -96,6 +109,14 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
         let newBlogCollection = await generalBlogCollection_1.default.findOneAndUpdate({ _id: blogCollection._id }, { collectionDataCount: blogCollection.blogs.length }, { new: true });
         return newBlogCollection;
     }
+    /**
+     * Adds or removes a blog to/from a blog collection.
+     *
+     * @param {Array<String>} collectionIds - An array of collection IDs.
+     * @param {String} memberId - The ID of the member.
+     * @param {String} blogId - The ID of the blog.
+     * @return {Object} An object containing the blog collections and the default collection.
+     */
     async addOrRemoveToBlogCollection(collectionIds, memberId, blogId) {
         let collections = await generalBlogCollection_1.default.find({
             memberId: memberId,
@@ -160,6 +181,12 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
         let newBlogCollection = await generalBlogCollection_1.default.create(data);
         return newBlogCollection;
     }
+    /**
+     * Edit a blog collection.
+     *
+     * @param {EditBlogCollection} data - The data for editing the blog collection.
+     * @return {Promise<BlogCollection>} - The updated blog collection.
+     */
     async editABlogCollection(data) {
         let blogCollection = await generalBlogCollection_1.default.findOneAndUpdate({
             _id: data.editId,
@@ -169,6 +196,13 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
         });
         return blogCollection;
     }
+    /**
+     * Delete a blog collection.
+     *
+     * @param {String} collectionId - The ID of the collection to be deleted.
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the updated blog collections and the default collection.
+     */
     async deleteBlogCollection(collectionId, memberId) {
         let blogCollection = await generalBlogCollection_1.default.findOne({
             _id: collectionId,
@@ -207,6 +241,15 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
             defaultCollection: defaultCollection,
         };
     }
+    /**
+     * Retrieves all blogs for a specific collection.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @param {String} slug - The slug of the collection.
+     * @param {number} limit - The maximum number of blogs to retrieve. (nullable)
+     * @param {number} page - The page number of the blogs to retrieve. (nullable)
+     * @return {Object} - An object containing the blogs, collection info, and total number of blogs.
+     */
     async getAllBlogsForACollection(memberId, slug, limit, page) {
         if (!limit) {
             limit = 12;
@@ -254,7 +297,14 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => BlogCollectionsWithDefaultCollection_1.default),
+    (0, type_graphql_1.Query)(() => BlogCollectionsWithDefaultCollection_1.default)
+    /**
+     * Retrieves all the blog collections for a given member ID.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<Object>} An object containing the list of blog collections and the default collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -270,7 +320,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogCollectionResolver.prototype, "addToLastModifiedBlogCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => BlogCollectionsWithDefaultCollection_1.default),
+    (0, type_graphql_1.Mutation)(() => BlogCollectionsWithDefaultCollection_1.default)
+    /**
+     * Adds or removes a blog to/from a blog collection.
+     *
+     * @param {Array<String>} collectionIds - An array of collection IDs.
+     * @param {String} memberId - The ID of the member.
+     * @param {String} blogId - The ID of the blog.
+     * @return {Object} An object containing the blog collections and the default collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('collectionIds', (type) => [String])),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __param(2, (0, type_graphql_1.Arg)('blogId')),
@@ -287,14 +346,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogCollectionResolver.prototype, "addNewBlogCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => BlogCollection_1.default),
+    (0, type_graphql_1.Mutation)(() => BlogCollection_1.default)
+    /**
+     * Edit a blog collection.
+     *
+     * @param {EditBlogCollection} data - The data for editing the blog collection.
+     * @return {Promise<BlogCollection>} - The updated blog collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditBlogCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogCollectionResolver.prototype, "editABlogCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => BlogCollectionsWithDefaultCollection_1.default),
+    (0, type_graphql_1.Mutation)(() => BlogCollectionsWithDefaultCollection_1.default)
+    /**
+     * Delete a blog collection.
+     *
+     * @param {String} collectionId - The ID of the collection to be deleted.
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the updated blog collections and the default collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('collectionId')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
@@ -303,7 +377,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogCollectionResolver.prototype, "deleteBlogCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => GeneralBlogCollectionWithPagination_1.default),
+    (0, type_graphql_1.Query)(() => GeneralBlogCollectionWithPagination_1.default)
+    /**
+     * Retrieves all blogs for a specific collection.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @param {String} slug - The slug of the collection.
+     * @param {number} limit - The maximum number of blogs to retrieve. (nullable)
+     * @param {number} page - The page number of the blogs to retrieve. (nullable)
+     * @return {Object} - An object containing the blogs, collection info, and total number of blogs.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('memberId')),
     __param(1, (0, type_graphql_1.Arg)('slug')),
     __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),

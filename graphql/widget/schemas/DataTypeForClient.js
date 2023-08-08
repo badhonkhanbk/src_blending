@@ -16,6 +16,7 @@ const type_graphql_1 = require("type-graphql");
 const Recipe_1 = __importDefault(require("../../recipe/schemas/Recipe"));
 const Wikilist_1 = __importDefault(require("../../wiki/schemas/Wikilist"));
 const Plan_1 = __importDefault(require("../../planner/schemas/PlanSchema/Plan"));
+const GeneralBlog_1 = __importDefault(require("../../generalBlog/schema/GeneralBlog"));
 let DataType = class DataType {
 };
 __decorate([
@@ -34,6 +35,10 @@ __decorate([
     (0, type_graphql_1.Field)(() => [Plan_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], DataType.prototype, "Plan", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [GeneralBlog_1.default], { nullable: true }),
+    __metadata("design:type", GeneralBlog_1.default)
+], DataType.prototype, "GeneralBlog", void 0);
 DataType = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], DataType);

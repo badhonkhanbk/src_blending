@@ -22,14 +22,22 @@ const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const ReturnDailyGoal_1 = __importDefault(require("../schemas/ReturnDailyGoal"));
 let DailyGoalResolver = class DailyGoalResolver {
     async updateDailyGoals(data) {
-        //@ts-ignore
-        let macros = data.goals.filter((goal) => goal.showPercentage);
+        //@ts-ignore - Ignore the TypeScript error for now
+        let macros = data.goals.filter((goal) => goal.showPercentage); // Filter the goals array to only include goals that have the showPercentage property
+        // Update the MemberModel document that matches the memberId with the macroInfo field set to the filtered macros
         await memberModel_1.default.findOneAndUpdate({ _id: data.memberId }, {
             macroInfo: macros,
         });
+        // Update the DailyGoalModel document that matches the memberId with the goals, calories, and bmi fields set to the corresponding values from the data parameter
         await DailyGoal_1.default.findOneAndUpdate({ memberId: data.memberId }, { goals: data.goals, calories: data.calories, bmi: data.bmi });
-        return 'success';
+        return 'success'; // Return 'success' as the result of the mutation
     }
+    /**
+     * Retrieves the daily goals for a given member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} The daily goals for the member.
+     */
     async getDailyGoals(memberId) {
         let dailyGoal = await DailyGoal_1.default.findOne({ memberId });
         let returnDailyGoal = {};
@@ -56,7 +64,7 @@ let DailyGoalResolver = class DailyGoalResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) // client
+    (0, type_graphql_1.Mutation)(() => String) // Declare that this function is a GraphQL mutation and will return a string
     ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
@@ -64,7 +72,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DailyGoalResolver.prototype, "updateDailyGoals", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => ReturnDailyGoal_1.default),
+    (0, type_graphql_1.Query)(() => ReturnDailyGoal_1.default)
+    /**
+     * Retrieves the daily goals for a given member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} The daily goals for the member.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

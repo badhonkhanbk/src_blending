@@ -732,6 +732,16 @@ let MemberResolver = class MemberResolver {
         let users = await memberModel_1.default.find().populate('configuration');
         return users;
     }
+    /**
+     * Retrieves all users for a client.
+     *
+     * @return {Promise<Array>} An array of user objects with properties:
+     *                          - firstName: string
+     *                          - lastName: string
+     *                          - image: string
+     *                          - displayName: string
+     *                          - email: string
+     */
     async getAllusersForClient() {
         let users = await memberModel_1.default.find().select('firstName lastName image displayName email');
         return users;
@@ -959,7 +969,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "getAllusers", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Member_1.default]),
+    (0, type_graphql_1.Query)(() => [Member_1.default])
+    /**
+     * Retrieves all users for a client.
+     *
+     * @return {Promise<Array>} An array of user objects with properties:
+     *                          - firstName: string
+     *                          - lastName: string
+     *                          - image: string
+     *                          - displayName: string
+     *                          - email: string
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

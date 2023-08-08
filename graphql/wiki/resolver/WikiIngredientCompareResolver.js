@@ -23,6 +23,13 @@ const wikiComment_1 = __importDefault(require("../../../models/wikiComment"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const CompareIngredient_1 = __importDefault(require("../schemas/CompareIngredient"));
 let WikiIngredientsCompareResolver = class WikiIngredientsCompareResolver {
+    /**
+   * Add or remove an ingredient to/from the wiki compare list for a user.
+   *
+   * @param {String} userId - The ID of the user.
+   * @param {String} ingredientId - The ID of the ingredient.
+   * @return {String} The result message indicating success or failure.
+   */
     async addOrRemoveToWikiCompareList(userId, ingredientId) {
         let user = await memberModel_1.default.findOne({ _id: userId });
         if (!user) {
@@ -66,6 +73,13 @@ let WikiIngredientsCompareResolver = class WikiIngredientsCompareResolver {
         });
         return 'Successfully added';
     }
+    /**
+   * Removes an ingredient from the user's wiki compare list.
+   *
+   * @param {String} userId - The ID of the user.
+   * @param {String} ingredientId - The ID of the ingredient to be removed.
+   * @return {Promise<string>} The result of the operation.
+   */
     async removeFromWikiCompareList(userId, ingredientId) {
         let user = await memberModel_1.default.findOne({ _id: userId });
         if (!user) {
@@ -96,6 +110,13 @@ let WikiIngredientsCompareResolver = class WikiIngredientsCompareResolver {
         });
         return 'Success';
     }
+    /**
+   * Changes the compare list of a user in the wiki.
+   *
+   * @param {String} userId - the ID of the user
+   * @param {string[]} ingredients - an array of ingredients
+   * @return {Promise<string>} - a promise that resolves to 'Success'
+   */
     async changeWikiCompareList(userId, ingredients) {
         let user = await memberModel_1.default.findOne({ _id: userId });
         if (!user) {
@@ -112,6 +133,12 @@ let WikiIngredientsCompareResolver = class WikiIngredientsCompareResolver {
         });
         return 'Success';
     }
+    /**
+   * Empty the wiki compare list for a given user.
+   *
+   * @param {String} userId - The ID of the user.
+   * @return {String} Returns 'Success' if the operation is successful.
+   */
     async emptyWikiCompareList(userId) {
         let user = await memberModel_1.default.findOne({ _id: userId });
         await UserIngredientCompareList_1.default.deleteMany({ userId: userId });
@@ -120,6 +147,12 @@ let WikiIngredientsCompareResolver = class WikiIngredientsCompareResolver {
         });
         return 'Success';
     }
+    /**
+   * Retrieves the compare list from the UserIngredientsCompareModel for the specified user.
+   *
+   * @param {String} userId - The ID of the user
+   * @return {Array} An array containing the retrieved compare list
+   */
     async getWikiCompareList(userId) {
         let compareList = await UserIngredientCompareList_1.default.findOne({
             userId: userId,
@@ -134,20 +167,20 @@ let WikiIngredientsCompareResolver = class WikiIngredientsCompareResolver {
                 _id: compareList.ingredients[i]._id,
                 //@ts-ignore
                 wikiTitle: compareList.ingredients[i].wikiTitle
-                    //@ts-ignore
-                    ? compareList.ingredients[i].wikiTitle
-                    //@ts-ignore
-                    : compareList.ingredients[i].ingredientName,
+                    ? //@ts-ignore
+                        compareList.ingredients[i].wikiTitle
+                    : //@ts-ignore
+                        compareList.ingredients[i].ingredientName,
                 //@ts-ignore
                 wikiDescription: compareList.ingredients[i].wikiDescription
-                    //@ts-ignore
-                    ? compareList.ingredients[i].wikiDescription
+                    ? //@ts-ignore
+                        compareList.ingredients[i].wikiDescription
                     : ' ',
                 type: 'Ingredient',
                 //@ts-ignore
                 category: compareList.ingredients[i].category
-                    //@ts-ignore
-                    ? compareList.ingredients[i].category
+                    ? //@ts-ignore
+                        compareList.ingredients[i].category
                     : '',
                 //@ts-ignore
                 status: compareList.ingredients[i].blendStatus,

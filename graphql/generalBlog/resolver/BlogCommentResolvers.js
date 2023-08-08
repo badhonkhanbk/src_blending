@@ -23,6 +23,12 @@ const EditBlogComment_1 = __importDefault(require("./inputType/EditBlogComment")
 const BlogComment_1 = __importDefault(require("../schema/BlogComment"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 let BlogCommentsResolver = class BlogCommentsResolver {
+    /**
+     * Creates a new blog comment.
+     *
+     * @param {CreateNewBlogComment} data - The data for creating the new blog comment.
+     * @return {Object} The newly created blog comment with the member ID.
+     */
     async createBlogComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
         if (!user) {
@@ -35,6 +41,12 @@ let BlogCommentsResolver = class BlogCommentsResolver {
             memberId: user,
         };
     }
+    /**
+     * Edits a blog comment.
+     *
+     * @param {EditBlogComment} data - The data for editing the blog comment.
+     * @return {object} The edited blog comment and the member associated with it.
+     */
     async editBlogComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
         let blogComment = await blogComment_1.default.findOne({ _id: data.editId });
@@ -57,6 +69,12 @@ let BlogCommentsResolver = class BlogCommentsResolver {
             memberId: user,
         };
     }
+    /**
+     * Retrieves all comments for a specific blog.
+     *
+     * @param {String} blogId - The ID of the blog.
+     * @return {Promise<Array<Object>>} An array of comments for the specified blog.
+     */
     async getAllCommentsForABlog(blogId) {
         let comments = await blogComment_1.default.find({
             blogId,
@@ -67,6 +85,13 @@ let BlogCommentsResolver = class BlogCommentsResolver {
         });
         return comments;
     }
+    /**
+     * Removes a blog comment.
+     *
+     * @param {String} commentId - The ID of the comment to be removed.
+     * @param {String} memberId - The ID of the member.
+     * @return {String} - The result of the operation ('success' if successful).
+     */
     async removeABlogComment(commentId, memberId) {
         let blogComment = await blogComment_1.default.findOne({ _id: commentId });
         if (!blogComment) {
@@ -80,28 +105,57 @@ let BlogCommentsResolver = class BlogCommentsResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => BlogComment_1.default),
+    (0, type_graphql_1.Mutation)(() => BlogComment_1.default)
+    /**
+     * Creates a new blog comment.
+     *
+     * @param {CreateNewBlogComment} data - The data for creating the new blog comment.
+     * @return {Object} The newly created blog comment with the member ID.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewBlogComment_1.default]),
     __metadata("design:returntype", Promise)
 ], BlogCommentsResolver.prototype, "createBlogComment", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => BlogComment_1.default),
+    (0, type_graphql_1.Mutation)(() => BlogComment_1.default)
+    /**
+     * Edits a blog comment.
+     *
+     * @param {EditBlogComment} data - The data for editing the blog comment.
+     * @return {object} The edited blog comment and the member associated with it.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditBlogComment_1.default]),
     __metadata("design:returntype", Promise)
 ], BlogCommentsResolver.prototype, "editBlogComment", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [BlogComment_1.default]),
+    (0, type_graphql_1.Query)(() => [BlogComment_1.default])
+    /**
+     * Retrieves all comments for a specific blog.
+     *
+     * @param {String} blogId - The ID of the blog.
+     * @return {Promise<Array<Object>>} An array of comments for the specified blog.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('blogId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BlogCommentsResolver.prototype, "getAllCommentsForABlog", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Removes a blog comment.
+     *
+     * @param {String} commentId - The ID of the comment to be removed.
+     * @param {String} memberId - The ID of the member.
+     * @return {String} - The result of the operation ('success' if successful).
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('commentId')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),

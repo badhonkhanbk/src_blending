@@ -46,14 +46,30 @@ const DateDocPostId_1 = __importDefault(require("../schemas/DateDocPostId"));
 const ChallngeInfo_1 = __importDefault(require("../schemas/ChallngeInfo"));
 const InviteInfoSharedWithAndTopIngredients_1 = __importDefault(require("../schemas/InviteInfoSharedWithAndTopIngredients"));
 let ChallengePostResolver = class ChallengePostResolver {
+    /**
+     * Asynchronously inserts data into the database.
+     *
+     * @return {Promise<string>} A promise that resolves with the string 'done' when the data is successfully inserted.
+     */
     async ins() {
         await InviteForChallenge_1.default.deleteMany();
         return 'done';
     }
+    /**
+     * Updates challenge 889.
+     *
+     * @return {Promise<string>} A string indicating the completion of the update.
+     */
     async updateChallenge889() {
         await ChallengePost_2.default.deleteMany({});
         return 'done';
     }
+    /**
+     * Retrieves the ingredients from a recipe.
+     *
+     * @param {string} recipeId - The ID of the recipe.
+     * @return {Promise<Array>} The list of ingredients.
+     */
     async getIngredientsFromARecipe(recipeId) {
         let recipe = await recipeModel_1.default.findOne({ _id: recipeId }).populate({
             path: 'defaultVersion',
@@ -67,6 +83,13 @@ let ChallengePostResolver = class ChallengePostResolver {
         //@ts-ignore
         return recipe.defaultVersion.ingredients;
     }
+    /**
+     * Adds a unique object to the given array.
+     *
+     * @param {any[]} array - The array to add the object to.
+     * @param {any} data - The object to add.
+     * @return {any[]} The updated array.
+     */
     async addUniqueObj(array, data) {
         let index = -1;
         for (let i = 0; i < array.length; i++) {
@@ -82,6 +105,12 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         return array;
     }
+    /**
+     * Create a challenge post.
+     *
+     * @param {CreateChallengePost} data - the data for creating a challenge post
+     * @return {Promise} a Promise that resolves to an object containing the created challenge post and related information
+     */
     async createChallengePost(data) {
         if (!data.memberId || !data.assignDate) {
             return new AppError_1.default('Please provide memberId and assignDate', 400);
@@ -204,6 +233,16 @@ let ChallengePostResolver = class ChallengePostResolver {
         let challengeInfo = await this.getChallengeInfo(data.memberId, false, '', String(challenge._id));
         return { challenge: doc, challengeInfo: challengeInfo };
     }
+    /**
+     * Invites a user to a challenge.
+     *
+     * @param {String} challengeId - The ID of the challenge.
+     * @param {String} invitedBy - The ID of the user who is inviting.
+     * @param {[String]} invitedWith - An array of user IDs who are invited.
+     * @param {Boolean} canInviteWithOthers - Whether the user can invite others.
+     * @param {string} currentDate - The current date (optional).
+     * @return {String} - The ID of the created invite challenge.
+     */
     async inviteToChallenge(challengeId, invitedBy, invitedWith, canInviteWithOthers, currentDate) {
         let ISOCurrentDate = new Date(currentDate);
         let challenge = await challenge_1.default.findOne({ _id: challengeId });
@@ -285,6 +324,13 @@ let ChallengePostResolver = class ChallengePostResolver {
             return invite._id;
         }
     }
+    /**
+     * Retrieves information about an invite challenge.
+     *
+     * @param {String} inviteId - The ID of the invite.
+     * @param {String} memberId - The ID of the member. (optional)
+     * @return {Object} An object containing the invite, sharedWith, topIngredients, isOwner, hasAccepted, and hasInvited.
+     */
     async getInviteChallengeInfo(inviteId, memberId) {
         let isOwner = '';
         let hasAccepted = '';
@@ -357,6 +403,13 @@ let ChallengePostResolver = class ChallengePostResolver {
             hasInvited: hasInvited === '' ? null : hasInvited,
         };
     }
+    /**
+     * Accepts a challenge invitation.
+     *
+     * @param {String} inviteId - The ID of the invitation.
+     * @param {String} memberId - The ID of the member.
+     * @return {String} The ID of the challenge.
+     */
     async acceptChallenge(inviteId, memberId) {
         let invite = await InviteForChallenge_1.default.findOne({ _id: inviteId });
         if (!invite) {
@@ -465,6 +518,12 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         return invite.challengeId;
     }
+    /**
+     * Upgrade the top ingredient for a given challenge.
+     *
+     * @param {String} challengeId - the ID of the challenge
+     * @return {Promise<string>} - a promise that resolves to a string indicating the completion status
+     */
     async upgradeTopIngredient(challengeId) {
         let challenge = await challenge_1.default.findOne({
             _id: challengeId,
@@ -512,6 +571,13 @@ let ChallengePostResolver = class ChallengePostResolver {
         });
         return 'done';
     }
+    /**
+     * Retrieves all challenge posts by date and member ID.
+     *
+     * @param {Date} date - The date to search for challenge posts.
+     * @param {String} memberId - The ID of the member.
+     * @return {Array} An array of challenge post objects.
+     */
     async getAllChallengePostByDate(date, memberId) {
         let challengePostDoc = await ChallengePost_2.default.findOne({
             assignDate: date,
@@ -1588,33 +1654,70 @@ let ChallengePostResolver = class ChallengePostResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Asynchronously inserts data into the database.
+     *
+     * @return {Promise<string>} A promise that resolves with the string 'done' when the data is successfully inserted.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "ins", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Updates challenge 889.
+     *
+     * @return {Promise<string>} A string indicating the completion of the update.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "updateChallenge889", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [IngredientData_1.default]),
+    (0, type_graphql_1.Query)(() => [IngredientData_1.default])
+    /**
+     * Retrieves the ingredients from a recipe.
+     *
+     * @param {string} recipeId - The ID of the recipe.
+     * @return {Promise<Array>} The list of ingredients.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('recipeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getIngredientsFromARecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => ChsllengeAndSingleDoc_1.default),
+    (0, type_graphql_1.Mutation)(() => ChsllengeAndSingleDoc_1.default)
+    /**
+     * Create a challenge post.
+     *
+     * @param {CreateChallengePost} data - the data for creating a challenge post
+     * @return {Promise} a Promise that resolves to an object containing the created challenge post and related information
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateChallengePost_1.default]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "createChallengePost", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Invites a user to a challenge.
+     *
+     * @param {String} challengeId - The ID of the challenge.
+     * @param {String} invitedBy - The ID of the user who is inviting.
+     * @param {[String]} invitedWith - An array of user IDs who are invited.
+     * @param {Boolean} canInviteWithOthers - Whether the user can invite others.
+     * @param {string} currentDate - The current date (optional).
+     * @return {String} - The ID of the created invite challenge.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('challengeId')),
     __param(1, (0, type_graphql_1.Arg)('invitedBy')),
     __param(2, (0, type_graphql_1.Arg)('invitedWith', (type) => [String])),
@@ -1626,7 +1729,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "inviteToChallenge", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => InviteInfoSharedWithAndTopIngredients_1.default),
+    (0, type_graphql_1.Query)(() => InviteInfoSharedWithAndTopIngredients_1.default)
+    /**
+     * Retrieves information about an invite challenge.
+     *
+     * @param {String} inviteId - The ID of the invite.
+     * @param {String} memberId - The ID of the member. (optional)
+     * @return {Object} An object containing the invite, sharedWith, topIngredients, isOwner, hasAccepted, and hasInvited.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('inviteId')),
     __param(1, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
     __metadata("design:type", Function),
@@ -1635,7 +1746,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "getInviteChallengeInfo", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Accepts a challenge invitation.
+     *
+     * @param {String} inviteId - The ID of the invitation.
+     * @param {String} memberId - The ID of the member.
+     * @return {String} The ID of the challenge.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('inviteId')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
@@ -1644,14 +1763,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "acceptChallenge", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Upgrade the top ingredient for a given challenge.
+     *
+     * @param {String} challengeId - the ID of the challenge
+     * @return {Promise<string>} - a promise that resolves to a string indicating the completion status
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('challengeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "upgradeTopIngredient", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [ChallengePost_1.default]),
+    (0, type_graphql_1.Query)(() => [ChallengePost_1.default])
+    /**
+     * Retrieves all challenge posts by date and member ID.
+     *
+     * @param {Date} date - The date to search for challenge posts.
+     * @param {String} memberId - The ID of the member.
+     * @return {Array} An array of challenge post objects.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('date')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),

@@ -42,6 +42,12 @@ let allUnits = {
     Liter: { unit: 'L', unitName: 'Liter' },
 };
 let UserDailyResolver = class UserDailyResolver {
+    /**
+     * Creates a new daily record.
+     *
+     * @param {CreateNewDaily} data - The data for the new daily record.
+     * @return {string} The ID of the newly created daily record.
+     */
     async createNewDaily(data) {
         //ADMIN
         let userDaily = await Daily_1.default.findOne({
@@ -148,19 +154,39 @@ let UserDailyResolver = class UserDailyResolver {
         });
         return 'success';
     }
+    /**
+     * Remove a daily entry by ID.
+     *
+     * @param {string} dailyId - The ID of the daily entry to remove.
+     * @returns {Promise<string>} - A promise that resolves to 'success' if the entry is successfully removed.
+     * @throws {AppError} - Throws an error if the daily entry is not found.
+     */
     async removeADaily(dailyId) {
+        // Find the daily entry by ID
         let daily = await Daily_1.default.findOne({ _id: dailyId });
+        // If the daily entry is not found, throw an error
         if (!daily) {
-            return new AppError_1.default('Daily not found', 404);
+            throw new AppError_1.default('Daily not found', 404);
         }
+        // Delete the daily entry
         await Daily_1.default.findOneAndDelete({ _id: dailyId });
+        // Return 'success' if the entry is successfully removed
         return 'success';
     }
+    /**
+     * Removes a range from a daily entry.
+     * @param {string} dailyId - The ID of the daily entry.
+     * @param {string} rangeId - The ID of the range to be removed.
+     * @returns {string} - A success message.
+     */
     async removeARangeFromDaily(dailyId, rangeId) {
+        // Find the daily entry
         let daily = await Daily_1.default.findOne({ _id: dailyId });
+        // Return error if daily entry is not found
         if (!daily) {
             return new AppError_1.default('Daily not found', 404);
         }
+        // Update the daily entry by removing the specified range
         await Daily_1.default.findOneAndUpdate({ _id: dailyId }, {
             $pull: {
                 ranges: { _id: rangeId },
@@ -168,18 +194,39 @@ let UserDailyResolver = class UserDailyResolver {
         });
         return 'success';
     }
+    /**
+     * Retrieves the daily information for a user by their ID.
+     * @param userId - The ID of the user.
+     * @returns The daily information for the user.
+     */
     async getDailyByUserId(userId) {
+        // Find the user by their ID
         let user = await memberModel_1.default.findOne({ _id: userId });
+        // If the user is not found, return an error
         if (!user) {
             return new AppError_1.default('User not found', 404);
         }
+        // Find the user's configuration
         let config = await memberConfiguiration_1.default.findOne({
             _id: user.configuration,
         });
+        // Get the daily information based on the user's configuration
         let daily = await this.getDaily(config.age.months, Number(config.age.quantity), config.activity, config.gender, Number(config.weightInKilograms), Number(config.heightInCentimeters), userId);
-        // console.log(daily);
+        // Return the daily information
         return daily;
     }
+    /**
+     * Retrieves the daily information for a user based on various parameters.
+     *
+     * @param {Boolean} isAgeInMonth - indicates if the age is in months
+     * @param {Number} ageInNumber - the age of the user
+     * @param {String} activity - the level of activity of the user
+     * @param {String} gender - the gender of the user
+     * @param {Number} weightInKG - the weight of the user in kilograms
+     * @param {Number} heightInCM - the height of the user in centimeters
+     * @param {String} userId - the ID of the user
+     * @return {Object} the daily information for the user
+     */
     async getDaily(isAgeInMonth, ageInNumber, activity, gender, weightInKG, heightInCM, userId) {
         if (isAgeInMonth) {
             ageInNumber = Number(ageInNumber) / 12;
@@ -200,6 +247,14 @@ let UserDailyResolver = class UserDailyResolver {
         };
         return returnData;
     }
+    /**
+     * Retrieves the daily nutrition information based on the specified parameters.
+     *
+     * @param {Number} ageInNumber - The age of the user in number format.
+     * @param {Number} calories - The number of calories consumed by the user.
+     * @param {String} userId - The ID of the user.
+     * @return {Object} - An object containing the daily nutrition information categorized as Energy, Minerals, and Vitamins.
+     */
     async getDailyNutrition(ageInNumber, calories, userId) {
         let Energy = [];
         let Minerals = [];
@@ -279,6 +334,15 @@ let UserDailyResolver = class UserDailyResolver {
         }
         return { Energy, Minerals, Vitamins };
     }
+    /**
+     * Retrieves data based on the given ranges.
+     *
+     * @param {String} ranges - The ranges for retrieving data.
+     * @param {Number} ageInNumber - The age in number for filtering data.
+     * @param {Number} calories - The number of calories for calculating data.
+     * @param {String} unit - The unit of measurement for the data.
+     * @return {Object} The retrieved data.
+     */
     async getDataFromRanges(ranges, ageInNumber, calories, unit) {
         let convertedRanges = JSON.parse(String(ranges));
         let value = {};
@@ -337,11 +401,31 @@ let UserDailyResolver = class UserDailyResolver {
         }
         return value;
     }
+    /**
+     * Calculates the BMI (Body Mass Index) based on weight in kilograms and height in centimeters.
+     * @param weightInKilograms The weight of the person in kilograms.
+     * @param heightInCentimeters The height of the person in centimeters.
+     * @returns The calculated BMI.
+     */
     async bmiCalculation(weightInKilograms, heightInCentimeters) {
+        // Convert height in centimeters to meters
         let heightInMeters = Number(heightInCentimeters) * 0.01;
+        // Calculate BMI using weight in kilograms and height in meters
         let bmi = Number(weightInKilograms) / (heightInMeters * heightInMeters);
+        // Return the calculated BMI
         return bmi;
     }
+    /**
+     * Calculates the daily calorie intake based on various factors.
+     *
+     * @param {String} activity - The activity level of the person.
+     * @param {Number} ageInYears - The age of the person in years.
+     * @param {Number} bmi - The body mass index (BMI) of the person.
+     * @param {String} gender - The gender of the person.
+     * @param {Number} weightInKG - The weight of the person in kilograms.
+     * @param {Number} heightInCM - The height of the person in centimeters.
+     * @return {Number} The total number of calories needed per day.
+     */
     async getDailyCalorie(activity, ageInYears, bmi, gender, weightInKG, heightInCM) {
         let heightInMeters = Number(heightInCM) * 0.01;
         let totalCaloriesNeeded;
@@ -581,6 +665,13 @@ let UserDailyResolver = class UserDailyResolver {
         }
         return obj;
     }
+    /**
+     * Retrieves the child xxx for a given parent and returns the data.
+     *
+     * @param {any} parent - The parent object.
+     * @param {any[]} returnNutrients - An array of return nutrients.
+     * @return {Promise<any>} The child xxx data.
+     */
     async getChildxxx(parent, returnNutrients) {
         let obj = {};
         let childs = await blendNutrient_1.default.find({ parent: parent })
@@ -615,7 +706,14 @@ let UserDailyResolver = class UserDailyResolver {
     async getShowPercentageDaily() { }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Creates a new daily record.
+     *
+     * @param {CreateNewDaily} data - The data for the new daily record.
+     * @return {string} The ID of the newly created daily record.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewDaily_1.default]),
@@ -682,7 +780,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserDailyResolver.prototype, "editARange", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String) //admin
+    (0, type_graphql_1.Mutation)(() => String) // admin
     ,
     __param(0, (0, type_graphql_1.Arg)('dailyId')),
     __metadata("design:type", Function),
@@ -700,8 +798,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserDailyResolver.prototype, "removeARangeFromDaily", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => GetDaily_1.default) //client
-    ,
+    (0, type_graphql_1.Query)(() => GetDaily_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -748,7 +845,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserDailyResolver.prototype, "getDataFromRanges", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => Number),
+    (0, type_graphql_1.Query)(() => Number)
+    /**
+     * Calculates the BMI (Body Mass Index) based on weight in kilograms and height in centimeters.
+     * @param weightInKilograms The weight of the person in kilograms.
+     * @param heightInCentimeters The height of the person in centimeters.
+     * @returns The calculated BMI.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('weightInKG')),
     __param(1, (0, type_graphql_1.Arg)('heightInCM')),
     __metadata("design:type", Function),
@@ -757,7 +861,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserDailyResolver.prototype, "bmiCalculation", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => Number),
+    (0, type_graphql_1.Query)(() => Number)
+    /**
+     * Calculates the daily calorie intake based on various factors.
+     *
+     * @param {String} activity - The activity level of the person.
+     * @param {Number} ageInYears - The age of the person in years.
+     * @param {Number} bmi - The body mass index (BMI) of the person.
+     * @param {String} gender - The gender of the person.
+     * @param {Number} weightInKG - The weight of the person in kilograms.
+     * @param {Number} heightInCM - The height of the person in centimeters.
+     * @return {Number} The total number of calories needed per day.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('activity')),
     __param(1, (0, type_graphql_1.Arg)('ageInYears')),
     __param(2, (0, type_graphql_1.Arg)('bmi')),

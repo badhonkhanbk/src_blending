@@ -25,6 +25,12 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const PopulatedWikiComment_1 = __importDefault(require("../schemas/PopulatedWikiComment"));
 const EditWikiComment_1 = __importDefault(require("./input-type/EditWikiComment"));
 let WikiCommentsResolver = class WikiCommentsResolver {
+    /**
+   * Creates a wiki comment.
+   *
+   * @param {CreateWikiComment} data - the data for creating the wiki comment
+   * @return {any | AppError} the created wiki comment or an error if the user, ingredient, nutrient, or type is not found
+   */
     async createWikiComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -55,6 +61,12 @@ let WikiCommentsResolver = class WikiCommentsResolver {
             userId: user,
         };
     }
+    /**
+   * Edits a wiki comment.
+   *
+   * @param {EditWikiComment} data - the data for editing the comment
+   * @return {Promise<Object>} the edited comment with the user ID
+   */
     async editWikiComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         let wikiComment = await wikiComment_1.default.findOne({
@@ -74,6 +86,13 @@ let WikiCommentsResolver = class WikiCommentsResolver {
             userId: user,
         };
     }
+    /**
+   * Retrieves all wiki comments for a given wiki entity.
+   *
+   * @param {String} entityId - The ID of the wiki entity.
+   * @param {String} userId - The ID of the user.
+   * @return {Array} An array of wiki comments.
+   */
     async getAllWikiCommentsForAWikiEntity(entityId, userId) {
         let comments = await wikiComment_1.default.find({
             entityId,
@@ -87,6 +106,13 @@ let WikiCommentsResolver = class WikiCommentsResolver {
         });
         return comments;
     }
+    /**
+   * Removes a wiki comment.
+   *
+   * @param {String} commentId - The ID of the comment to be removed.
+   * @param {String} userId - The ID of the user who made the comment.
+   * @return {String} The result message indicating the success of the operation.
+   */
     async removeAWikiComment(commentId, userId) {
         let comment = await wikiComment_1.default.findOne({
             _id: commentId,

@@ -45,6 +45,14 @@ const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe
 const slugify_1 = __importDefault(require("slugify"));
 const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
 let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
+    /**
+     * Retrieves the most recent recipes for a specific user.
+     *
+     * @param {number} page - The page number of the recipes to retrieve. Default is 1.
+     * @param {number} limit - The maximum number of recipes to retrieve. Default is 10.
+     * @param {String} userId - The ID of the user whose recipes are being retrieved.
+     * @return {Object} - An object containing the user's recent recipes and related information.
+     */
     async getMyRecentRecipes(page, limit, userId) {
         if (!page) {
             page = 1;
@@ -105,6 +113,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             accepted: true,
         };
     }
+    /**
+     * Create a new user recipe with a collection.
+     *
+     * @param {NewUserRecipeInput} data - The data for the new user recipe.
+     * @return {Promise<string>} - A promise that resolves to a string indicating the success of the operation.
+     */
     async createNewUserRecipeWithCollection(data) {
         let user = await memberModel_1.default.findOne({ email: data.userEmail });
         if (!user) {
@@ -134,6 +148,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { lastModifiedCollection: collection._id });
         return 'successfull';
     }
+    /**
+     * Checks if a recipe exists in a collection.
+     *
+     * @param {AddExistingRecipeInput} data - The input data containing the recipe details.
+     * @return {boolean} - Returns true if the recipe is found in any collection, otherwise false.
+     */
     async checkForRecipeExistenceInCollection(data) {
         let user = await memberModel_1.default.findOne({ email: data.userEmail }).populate({
             path: 'collections',
@@ -199,6 +219,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     //   );
     //   return 'successfull';
     // }
+    /**
+     * Retrieves the last modified collection for a given user.
+     *
+     * @param {String} userEmail - The email of the user.
+     * @return {Collection} The last modified collection for the user, or the default collection if the user has no last modified collection.
+     */
     async getLastModifieldCollection(userEmail) {
         let user = await memberModel_1.default.findOne({ email: userEmail })
             .populate('defaultCollection')
@@ -211,6 +237,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             ? user.lastModifiedCollection
             : user.defaultCollection;
     }
+    /**
+     * Adds the provided data to the last modified collection.
+     *
+     * @param {AddToLastModifiedCollection} data - The data to be added.
+     * @return {Promise<any>} The updated collection.
+     */
     async addTolastModifiedCollection(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -303,6 +335,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         // });
         return collection;
     }
+    /**
+     * Retrieves all recipes from a collection for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Array} An array of recipes from the collection.
+     */
     async getAllRecipesFromCollection(
     // @Arg('userEmail', { nullable: true }) userEmail: String,
     userId) {
@@ -399,6 +437,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         }
         return returnRecipe;
     }
+    /**
+     * Adds a recipe to a user's collection.
+     *
+     * @param {ChangeRecipeCollectionInput} data - the data object containing the recipe and user information
+     * @return {Promise<any>} - the updated user's collections
+     */
     async addRecipeToAUserCollection(data) {
         let user = await memberModel_1.default.findOne({ email: data.userEmail }).populate('collections');
         if (!user) {
@@ -441,6 +485,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         });
         return member.collections;
     }
+    /**
+     * Remove a recipe from a collection.
+     *
+     * @param {ChangeRecipeCollectionInput} data - The data for the recipe and the user email.
+     * @return {Promise<CollectionModel[]>} The updated collections of the user.
+     */
     async removeRecipeFromAColection(data) {
         let user = await memberModel_1.default.findOne({ email: data.userEmail }).populate('collections');
         if (!user) {
@@ -471,6 +521,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         });
         return member.collections;
     }
+    /**
+     * Deletes a collection.
+     *
+     * @param {RemoveACollectionInput} data - the input data for deleting a collection
+     * @return {Promise<any>} - the updated collections after deletion
+     */
     async deleteCollection(data) {
         let userDefaultCollection = await userCollection_1.default.findOne({
             userId: data.userId,
@@ -561,6 +617,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         }
         return user.collections;
     }
+    /**
+     * Edits a collection.
+     *
+     * @param {EditCollectionInput} data - The data needed to edit the collection.
+     * @return {Promise<string | AppError>} - A promise that resolves to a string if the edit is successful, or an instance of AppError if there is an error.
+     */
     async editACollection(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -591,10 +653,21 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         });
         return 'successfull';
     }
+    /**
+     * Change the collection by finding and updating a document in the UserCollectoionModel collection.
+     *
+     * @return {string} The string 'successful' indicating that the operation was successful.
+     */
     async changeCollection() {
         await userCollection_1.default.findOneAndUpdate({ _id: '61d7e644bb6b9a32a588fcf5' }, { $set: { recipes: [] } });
         return 'successful';
     }
+    /**
+     * Add or remove a recipe from a collection.
+     *
+     * @param {AddOrRemoveRecipeFromCollectionInput} data - The input data containing the recipe and collection information.
+     * @return {Promise<any>} - A promise that resolves to the updated collections of the user.
+     */
     async addOrRemoveRecipeFromCollection(data) {
         if (!data.isCollectionData) {
             data.isCollectionData = false;
@@ -679,6 +752,12 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
         });
         return member.collections;
     }
+    /**
+     * Retrieves the collections that have been shared with the current user.
+     *
+     * @param {string} userId - The ID of the user.
+     * @return {Promise<any[]>} An array of collection data.
+     */
     async getSharedWithMeCollections(userId) {
         let collectionData = [];
         let shares = await share_1.default.find({
@@ -1090,7 +1169,16 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => Collection_3.default),
+    (0, type_graphql_1.Query)(() => Collection_3.default)
+    /**
+     * Retrieves the most recent recipes for a specific user.
+     *
+     * @param {number} page - The page number of the recipes to retrieve. Default is 1.
+     * @param {number} limit - The maximum number of recipes to retrieve. Default is 10.
+     * @param {String} userId - The ID of the user whose recipes are being retrieved.
+     * @return {Object} - An object containing the user's recent recipes and related information.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('userId')),
@@ -1099,83 +1187,166 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "getMyRecentRecipes", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Create a new user recipe with a collection.
+     *
+     * @param {NewUserRecipeInput} data - The data for the new user recipe.
+     * @return {Promise<string>} - A promise that resolves to a string indicating the success of the operation.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [NewUserRecipeInput_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "createNewUserRecipeWithCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => Boolean),
+    (0, type_graphql_1.Query)(() => Boolean)
+    /**
+     * Checks if a recipe exists in a collection.
+     *
+     * @param {AddExistingRecipeInput} data - The input data containing the recipe details.
+     * @return {boolean} - Returns true if the recipe is found in any collection, otherwise false.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AddExistingRecipeInput_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "checkForRecipeExistenceInCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => Collection_1.default),
+    (0, type_graphql_1.Query)(() => Collection_1.default)
+    /**
+     * Retrieves the last modified collection for a given user.
+     *
+     * @param {String} userEmail - The email of the user.
+     * @return {Collection} The last modified collection for the user, or the default collection if the user has no last modified collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userEmail')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "getLastModifieldCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Collection_2.default),
+    (0, type_graphql_1.Mutation)(() => Collection_2.default)
+    /**
+     * Adds the provided data to the last modified collection.
+     *
+     * @param {AddToLastModifiedCollection} data - The data to be added.
+     * @return {Promise<any>} The updated collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AddToLastModifiedCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "addTolastModifiedCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Recipe_1.default]),
+    (0, type_graphql_1.Query)(() => [Recipe_1.default])
+    /**
+     * Retrieves all recipes from a collection for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Array} An array of recipes from the collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "getAllRecipesFromCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [Collection_2.default]),
+    (0, type_graphql_1.Mutation)(() => [Collection_2.default])
+    /**
+     * Adds a recipe to a user's collection.
+     *
+     * @param {ChangeRecipeCollectionInput} data - the data object containing the recipe and user information
+     * @return {Promise<any>} - the updated user's collections
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [ChangeRecipeCollectionInput_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "addRecipeToAUserCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [Collection_2.default]),
+    (0, type_graphql_1.Mutation)(() => [Collection_2.default])
+    /**
+     * Remove a recipe from a collection.
+     *
+     * @param {ChangeRecipeCollectionInput} data - The data for the recipe and the user email.
+     * @return {Promise<CollectionModel[]>} The updated collections of the user.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [ChangeRecipeCollectionInput_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "removeRecipeFromAColection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [Collection_2.default]),
+    (0, type_graphql_1.Mutation)(() => [Collection_2.default])
+    /**
+     * Deletes a collection.
+     *
+     * @param {RemoveACollectionInput} data - the input data for deleting a collection
+     * @return {Promise<any>} - the updated collections after deletion
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [RemoveACollectionInput_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "deleteCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Edits a collection.
+     *
+     * @param {EditCollectionInput} data - The data needed to edit the collection.
+     * @return {Promise<string | AppError>} - A promise that resolves to a string if the edit is successful, or an instance of AppError if there is an error.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "editACollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Change the collection by finding and updating a document in the UserCollectoionModel collection.
+     *
+     * @return {string} The string 'successful' indicating that the operation was successful.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "changeCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => [Collection_1.default]),
+    (0, type_graphql_1.Mutation)(() => [Collection_1.default])
+    /**
+     * Add or remove a recipe from a collection.
+     *
+     * @param {AddOrRemoveRecipeFromCollectionInput} data - The input data containing the recipe and collection information.
+     * @return {Promise<any>} - A promise that resolves to the updated collections of the user.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AddOrRemoveRecipeFromCollectionInput_1.default]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "addOrRemoveRecipeFromCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Collection_3.default]),
+    (0, type_graphql_1.Query)(() => [Collection_3.default])
+    /**
+     * Retrieves the collections that have been shared with the current user.
+     *
+     * @param {string} userId - The ID of the user.
+     * @return {Promise<any[]>} An array of collection data.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
