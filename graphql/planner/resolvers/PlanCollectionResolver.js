@@ -28,6 +28,12 @@ const PlanWithTotal_1 = __importDefault(require("../schemas/PlanSchema/PlanWithT
 const attachCommentsCountWithPlan_1 = __importDefault(require("./utils/attachCommentsCountWithPlan"));
 const checkThePlanIsInCollectionOrNot_1 = __importDefault(require("./utils/checkThePlanIsInCollectionOrNot"));
 let PlanCollectionResolver = class PlanCollectionResolver {
+    /**
+     * Retrieves all plan collections for a given member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the plan collections and the default collection.
+     */
     async getAllPlanCollection(memberId) {
         let collections = await planCollection_1.default.find({
             memberId: memberId,
@@ -151,6 +157,12 @@ let PlanCollectionResolver = class PlanCollectionResolver {
             defaultCollection: defaultCollection,
         };
     }
+    /**
+     * Adds a new plan collection.
+     *
+     * @param {AddNewPlanCollection} data - The data for the new plan collection.
+     * @return {Promise<PlanCollection>} The newly created plan collection.
+     */
     async addNewPlanCollection(data) {
         let previousPlanCollection = await planCollection_1.default.findOne({
             memberId: data.memberId,
@@ -162,6 +174,12 @@ let PlanCollectionResolver = class PlanCollectionResolver {
         let newPlanCollection = await planCollection_1.default.create(data);
         return newPlanCollection;
     }
+    /**
+     * Edit a plan collection.
+     *
+     * @param {EditPlanCollection} data - the data for editing the plan collection
+     * @return {PlanCollection | null} the updated plan collection, or null if not found
+     */
     async editAPlanCollection(data) {
         let planCollection = await planCollection_1.default.findOneAndUpdate({
             _id: data.editId,
@@ -171,6 +189,13 @@ let PlanCollectionResolver = class PlanCollectionResolver {
         });
         return planCollection;
     }
+    /**
+     * Deletes a plan collection.
+     *
+     * @param {String} collectionId - the ID of the collection to be deleted
+     * @param {String} memberId - the ID of the member associated with the collection
+     * @return {Object} an object containing the remaining plan collections and the default collection
+     */
     async deletePlanCollection(collectionId, memberId) {
         let planCollection = await planCollection_1.default.findOne({
             _id: collectionId,
@@ -209,6 +234,15 @@ let PlanCollectionResolver = class PlanCollectionResolver {
             defaultCollection: defaultCollection,
         };
     }
+    /**
+     * Retrieves all plans for a collection.
+     *
+     * @param {number} page - The page number to retrieve (optional).
+     * @param {number} limit - The maximum number of plans to retrieve (optional).
+     * @param {String} memberId - The ID of the member (optional).
+     * @param {String} slug - The slug of the plan collection (optional).
+     * @return {Object} An object containing an array of plans and the total number of plans.
+     */
     async getAllPlansForACollection(page, limit, memberId, slug) {
         if (!page) {
             page = 1;
@@ -259,7 +293,14 @@ let PlanCollectionResolver = class PlanCollectionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => PlanCollectionWithDefaultCollection_1.default),
+    (0, type_graphql_1.Query)(() => PlanCollectionWithDefaultCollection_1.default)
+    /**
+     * Retrieves all plan collections for a given member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the plan collections and the default collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -285,21 +326,43 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanCollectionResolver.prototype, "addOrRemovePlanCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => PlanCollection_1.default),
+    (0, type_graphql_1.Mutation)(() => PlanCollection_1.default)
+    /**
+     * Adds a new plan collection.
+     *
+     * @param {AddNewPlanCollection} data - The data for the new plan collection.
+     * @return {Promise<PlanCollection>} The newly created plan collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AddNewPlanCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], PlanCollectionResolver.prototype, "addNewPlanCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => PlanCollection_1.default),
+    (0, type_graphql_1.Mutation)(() => PlanCollection_1.default)
+    /**
+     * Edit a plan collection.
+     *
+     * @param {EditPlanCollection} data - the data for editing the plan collection
+     * @return {PlanCollection | null} the updated plan collection, or null if not found
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditPlanCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], PlanCollectionResolver.prototype, "editAPlanCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => PlanCollectionWithDefaultCollection_1.default),
+    (0, type_graphql_1.Mutation)(() => PlanCollectionWithDefaultCollection_1.default)
+    /**
+     * Deletes a plan collection.
+     *
+     * @param {String} collectionId - the ID of the collection to be deleted
+     * @param {String} memberId - the ID of the member associated with the collection
+     * @return {Object} an object containing the remaining plan collections and the default collection
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('collectionId')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
@@ -308,7 +371,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanCollectionResolver.prototype, "deletePlanCollection", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default)
+    /**
+     * Retrieves all plans for a collection.
+     *
+     * @param {number} page - The page number to retrieve (optional).
+     * @param {number} limit - The maximum number of plans to retrieve (optional).
+     * @param {String} memberId - The ID of the member (optional).
+     * @param {String} slug - The slug of the plan collection (optional).
+     * @return {Object} An object containing an array of plans and the total number of plans.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('memberId', { nullable: true })),

@@ -32,6 +32,12 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const EditedVersion_1 = __importDefault(require("../schemas/EditedVersion"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
 let RecipeVersionResolver = class RecipeVersionResolver {
+    /**
+     * Edits a version of a recipe.
+     *
+     * @param {EditVersion} data - the data for editing the version
+     * @return {Promise<any>} the result of editing the version
+     */
     async editAVersionOfRecipe(data) {
         let recipe = await recipeModel_1.default.findOne({ _id: data.recipeId }).select('userId adminId originalVersion');
         if (!recipe) {
@@ -272,6 +278,12 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         });
         return recipeVersion;
     }
+    /**
+     * Retrieves a recipe version based on the provided version ID.
+     *
+     * @param {string} versionId - The ID of the version to retrieve.
+     * @return {Promise<RecipeVersionModel>} - The retrieved recipe version.
+     */
     async getARecipeVersion(versionId) {
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
             _id: versionId,
@@ -281,6 +293,15 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         });
         return recipeVersion;
     }
+    /**
+     * Removes a recipe version.
+     *
+     * @param {String} versionId - the ID of the version to remove
+     * @param {String} recipeId - the ID of the recipe
+     * @param {String} userId - the ID of the user
+     * @param {Boolean} isTurnedOn - indicates if the version is turned on
+     * @return {String} the result message ('Success' if successful)
+     */
     async removeARecipeVersion(versionId, recipeId, userId, isTurnedOn) {
         let userRecipe = await UserRecipeProfile_1.default.findOne({
             userId,
@@ -560,6 +581,16 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             versionsCount: versionsCount,
         };
     }
+    /**
+     * Updates the turnedOnOrOffVersion of a user's recipe profile.
+     *
+     * @param {String} userId - the ID of the user
+     * @param {String} recipeId - the ID of the recipe
+     * @param {String} versionId - the ID of the version
+     * @param {Boolean} turnedOn - indicates whether the version should be turned on or off
+     * @param {Boolean} isDefault - indicates whether the version should be set as the default version (optional)
+     * @returns {String} Success if the operation is successful
+     */
     async turnedOnOrOffVersion(userId, recipeId, versionId, turnedOn, isDefault) {
         let newUpdatedRecipe = {};
         if (isDefault) {
@@ -640,6 +671,11 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         }
         return 'Success';
     }
+    /**
+     * Removes all versions of recipes.
+     *
+     * @return {Promise<string>} - A promise that resolves to the string 'done' when all versions of recipes are removed.
+     */
     async removeAllVersion() {
         let recipes = await recipeModel_1.default.find();
         for (let i = 0; i < recipes.length; i++) {
@@ -651,6 +687,13 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         }
         return 'done';
     }
+    /**
+     * Retrieves all versions of a recipe for a given recipe ID and user ID.
+     *
+     * @param {string} recipeId - The ID of the recipe.
+     * @param {String} userId - The ID of the user.
+     * @return {Object} An object containing information about the recipe versions, including the user profile recipe, notes, whether it has been added to compare, user collections, and the count of versions.
+     */
     async getAllVersions(recipeId, userId) {
         let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
             userId: userId,
@@ -785,7 +828,14 @@ let RecipeVersionResolver = class RecipeVersionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => EditedVersion_1.default),
+    (0, type_graphql_1.Mutation)(() => EditedVersion_1.default)
+    /**
+     * Edits a version of a recipe.
+     *
+     * @param {EditVersion} data - the data for editing the version
+     * @return {Promise<any>} the result of editing the version
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditVersion_1.default]),
@@ -800,14 +850,31 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "addVersion", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => RecipeVersion_1.default),
+    (0, type_graphql_1.Query)(() => RecipeVersion_1.default)
+    /**
+     * Retrieves a recipe version based on the provided version ID.
+     *
+     * @param {string} versionId - The ID of the version to retrieve.
+     * @return {Promise<RecipeVersionModel>} - The retrieved recipe version.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('versionId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "getARecipeVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Removes a recipe version.
+     *
+     * @param {String} versionId - the ID of the version to remove
+     * @param {String} recipeId - the ID of the recipe
+     * @param {String} userId - the ID of the user
+     * @param {Boolean} isTurnedOn - indicates if the version is turned on
+     * @return {String} the result message ('Success' if successful)
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('versionId')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __param(2, (0, type_graphql_1.Arg)('userId')),
@@ -831,7 +898,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "changeDefaultVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Updates the turnedOnOrOffVersion of a user's recipe profile.
+     *
+     * @param {String} userId - the ID of the user
+     * @param {String} recipeId - the ID of the recipe
+     * @param {String} versionId - the ID of the version
+     * @param {Boolean} turnedOn - indicates whether the version should be turned on or off
+     * @param {Boolean} isDefault - indicates whether the version should be set as the default version (optional)
+     * @returns {String} Success if the operation is successful
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __param(2, (0, type_graphql_1.Arg)('versionId')),
@@ -846,13 +924,27 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "turnedOnOrOffVersion", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Removes all versions of recipes.
+     *
+     * @return {Promise<string>} - A promise that resolves to the string 'done' when all versions of recipes are removed.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], RecipeVersionResolver.prototype, "removeAllVersion", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => ProfileRecipeDesc_1.default),
+    (0, type_graphql_1.Query)(() => ProfileRecipeDesc_1.default)
+    /**
+     * Retrieves all versions of a recipe for a given recipe ID and user ID.
+     *
+     * @param {string} recipeId - The ID of the recipe.
+     * @param {String} userId - The ID of the user.
+     * @return {Object} An object containing information about the recipe versions, including the user profile recipe, notes, whether it has been added to compare, user collections, and the count of versions.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('recipeId')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),

@@ -8,6 +8,12 @@ const Plan_1 = __importDefault(require("../../../../models/Plan"));
 const RecipeVersionModel_1 = __importDefault(require("../../../../models/RecipeVersionModel"));
 const recipeModel_1 = __importDefault(require("../../../../models/recipeModel"));
 const getNutrientsAndGiGl_1 = __importDefault(require("./getNutrientsAndGiGl"));
+/**
+ * Updates the plan facts for a given plan ID.
+ *
+ * @param {String} planId - The ID of the plan to update the facts for.
+ * @return {Promise<void>} A promise that resolves when the plan facts are updated.
+ */
 async function updatePlanFacts(planId) {
     let plan = await Plan_1.default.findOne({
         _id: planId,
@@ -136,6 +142,12 @@ async function updatePlanFacts(planId) {
     return 'done';
 }
 exports.default = updatePlanFacts;
+/**
+ * Formats the given nutrient data.
+ *
+ * @param {any} data - The data to be formatted.
+ * @return {object} - The formatted nutrient data.
+ */
 async function getFormatedNutrient(data) {
     // console.log('Data', data);
     return {
@@ -144,6 +156,14 @@ async function getFormatedNutrient(data) {
         parent: data.blendNutrientRefference.parent,
     };
 }
+/**
+ * Retrieves the nutrient information for each child in the given array and updates the corresponding nutrient type in the plan document with the formatted data.
+ *
+ * @param {any[]} childs - An array of child objects containing nutrient information.
+ * @param {string} planId - The ID of the plan document to update.
+ * @param {string} type - The type of nutrient ('energy', 'mineral', or 'vitamin') to update in the plan document.
+ * @return {Promise<void>} A Promise that resolves once the update operations are complete.
+ */
 async function getChildsNutrient(childs, planId, type) {
     let childsKey = Object.keys(childs);
     for (let i = 0; i < childsKey.length; i++) {

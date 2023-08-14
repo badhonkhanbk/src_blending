@@ -5,6 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const recipeModel_1 = __importDefault(require("../../../../models/recipeModel"));
 const UserRecipeProfile_1 = __importDefault(require("../../../../models/UserRecipeProfile"));
+/**
+ * Retrieves all global recipes and creates user recipe profiles.
+ *
+ * @param {String} userId - The ID of the user.
+ * @return {Promise<void>} A promise that resolves when all profiles have been created.
+ */
 async function bringAllGlobalRecipes(userId) {
     let recipes = await recipeModel_1.default.find({
         global: true,

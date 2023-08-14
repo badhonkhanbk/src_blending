@@ -6,6 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // import RecipeFactModel from '../../../../models/RecipeFacts';
 const RecipeVersionModel_1 = __importDefault(require("../../../../models/RecipeVersionModel"));
 const getNutrientsAndGiGl_1 = __importDefault(require("./getNutrientsAndGiGl"));
+/**
+ * Updates the version facts for a recipe version.
+ *
+ * @param {string} recipeVersionId - The ID of the recipe version to update.
+ * @return {Promise<void>} A Promise that resolves when the update is complete.
+ */
 async function updateVersionFacts(recipeVersionId) {
     let version = await RecipeVersionModel_1.default.findOne({
         _id: recipeVersionId,
@@ -114,6 +120,12 @@ async function updateVersionFacts(recipeVersionId) {
     return 'done';
 }
 exports.default = updateVersionFacts;
+/**
+ * Formats the given nutrient data.
+ *
+ * @param {any} data - The nutrient data to be formatted.
+ * @return {object} - The formatted nutrient data.
+ */
 async function getFormatedNutrient(data) {
     // console.log('Data', data);
     return {
@@ -122,6 +134,14 @@ async function getFormatedNutrient(data) {
         parent: data.blendNutrientRefference.parent,
     };
 }
+/**
+ * Retrieves the nutrient information for each child in the given array of child objects and updates the recipe version with the formatted nutrient data.
+ *
+ * @param {any[]} childs - An array of child objects.
+ * @param {string} versionId - The ID of the recipe version.
+ * @param {string} type - The type of nutrient ('energy', 'mineral', or 'vitamin').
+ * @return {Promise<void>} A Promise that resolves when the nutrient information has been updated for all child objects.
+ */
 async function getChildsNutrient(childs, versionId, type) {
     let childsKey = Object.keys(childs);
     for (let i = 0; i < childsKey.length; i++) {

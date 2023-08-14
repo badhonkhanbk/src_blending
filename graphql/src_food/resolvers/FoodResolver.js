@@ -35,6 +35,12 @@ const ReurnIngredientBasedOnDefaultPortion_1 = __importDefault(require("../schem
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const fs_1 = __importDefault(require("fs"));
 let FoodResolver = class FoodResolver {
+    /**
+     * Retrieves all the ingredients based on the provided filter.
+     *
+     * @param {StructureIngredientsData} filter - The filter to apply when retrieving the ingredients.
+     * @return {Promise<{ingredients: any, totalIngredientsCount: number}>} An object containing the retrieved ingredients and the total count of ingredients.
+     */
     async getAllTheIngredients(filter) {
         let totalIngredients = await ingredient_1.default.countDocuments({});
         if (filter.page === undefined) {
@@ -102,6 +108,11 @@ let FoodResolver = class FoodResolver {
             totalIngredientsCount: totalIngredients,
         };
     }
+    /**
+     * Converts ingredient descriptions to names.
+     *
+     * @return {Promise<string>} Returns 'Done' when the conversion is complete.
+     */
     async ingredientDesToName() {
         let foods = await ingredient_1.default.find().select('_id description');
         for (let i = 0; i < foods.length; i++) {
@@ -111,6 +122,11 @@ let FoodResolver = class FoodResolver {
         }
         return 'Done';
     }
+    /**
+     * Retrieves a list of all unique nutrients.
+     *
+     * @return {Promise<any[]>} An array of unique nutrients.
+     */
     async getALlUniqueNutrientList() {
         let nutrients = await uniqueNutrient_1.default.find({}).sort({
             nutrient: 1,
@@ -125,10 +141,22 @@ let FoodResolver = class FoodResolver {
         }
         return nutrients;
     }
+    /**
+     * Creates a new ingredient.
+     *
+     * @param {CreateIngredient} data - The data for creating the ingredient.
+     * @return {Promise<Ingredient>} The newly created ingredient.
+     */
     async createNewIngredient(data) {
         let ingredient = await ingredient_1.default.create(data);
         return ingredient;
     }
+    /**
+     * Retrieves a single ingredient from the FoodSrcModel collection.
+     *
+     * @param {String} ingredientId - The ID of the ingredient
+     * @return {Promise<Object>} The retrieved ingredient object
+     */
     async getASingleIngredient(ingredientId) {
         let ingredient = await ingredient_1.default.findOne({
             _id: ingredientId,
@@ -138,6 +166,12 @@ let FoodResolver = class FoodResolver {
         });
         return ingredient;
     }
+    /**
+     * Retrieves a unique nutrient based on its ID.
+     *
+     * @param {String} nutrientId - The ID of the nutrient to retrieve.
+     * @return {Promise<UniqueNutrientModel>} The retrieved nutrient.
+     */
     async getAUniqueNutrient(nutrientId) {
         let nutrient = await uniqueNutrient_1.default.findOne({
             _id: nutrientId,
@@ -148,6 +182,12 @@ let FoodResolver = class FoodResolver {
         await uniqueNutrient_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'Successfully Edited';
     }
+    /**
+     * Edit a source ingredient.
+     *
+     * @param {Object} data - The data object containing the ingredient to be edited.
+     * @return {Promise<string>} A promise that resolves to a success message when the ingredient is successfully edited.
+     */
     async EditSrcIngredient(data) {
         let food = await ingredient_1.default.findOne({ _id: data.editId });
         if (!food) {
@@ -196,6 +236,11 @@ let FoodResolver = class FoodResolver {
         }
         return 'Successfully Edited';
     }
+    /**
+     * Stores all unique nutrients.
+     *
+     * @return {Promise<string>} - A promise that resolves to the string 'done' when all unique nutrients are stored.
+     */
     async storeAllUniqueNutrient() {
         let nutrients = fs_1.default.readFileSync('./temp/nutrients.json', 'utf-8');
         nutrients = JSON.parse(nutrients);
@@ -222,6 +267,17 @@ let FoodResolver = class FoodResolver {
         }
         return 'done';
     }
+    /**
+     * Asynchronously reads the contents of the './newData/finalFood8.json' file,
+     * parses the JSON data, and performs a series of operations on the parsed data.
+     * For each element in the 'foods' array, it checks if a document with the same
+     * 'refDatabaseId' exists in the 'FoodSrcModel' collection. If it doesn't exist,
+     * it creates a new document with properties extracted from the 'foods' array
+     * element and saves it to the collection. The function returns the string 'done'
+     * after all operations are completed.
+     *
+     * @return {string} - The string 'done' indicating the completion of the function.
+     */
     async databaseShifting() {
         let foods = fs_1.default.readFileSync('./newData/finalFood8.json', 'utf-8');
         foods = JSON.parse(foods);
@@ -285,6 +341,12 @@ let FoodResolver = class FoodResolver {
     //   await FoodSrcModel.deleteMany({});
     //   return 'done';
     // }
+    /**
+     * Searches for ingredients based on a search term.
+     *
+     * @param {String} searchTerm - The term to search for.
+     * @return {Promise} - A promise that resolves to an array of ingredients.
+     */
     async SearchIngredients(searchTerm) {
         let ingredients = await ingredient_1.default.find({
             ingredientName: { $regex: searchTerm, $options: 'i' },
@@ -337,6 +399,12 @@ let FoodResolver = class FoodResolver {
     //   }
     //   return ingredients;
     // }
+    /**
+     * Retrieves ingredient information based on the default portion.
+     *
+     * @param {String} ingredientId - The ID of the ingredient.
+     * @return {any} The ingredient information based on the default portion.
+     */
     async getIngredientInfoBasedOnDefaultPortion(ingredientId) {
         let ingredient = await ingredient_1.default.findOne({
             _id: ingredientId,
@@ -516,6 +584,12 @@ let FoodResolver = class FoodResolver {
         }
         return mappedReturnData;
     }
+    /**
+     * Removes an ingredient from the database and adds it to the recycle collection.
+     *
+     * @param {String} ingredientId - the ID of the ingredient to be removed
+     * @return {String} - a message indicating the operation is done
+     */
     async removeIngredient(ingredientId) {
         let ingredient = await ingredient_1.default.findOne({ _id: ingredientId });
         if (!ingredient) {
@@ -532,6 +606,12 @@ let FoodResolver = class FoodResolver {
         await ingredient_1.default.findOneAndDelete({ _id: ingredientId });
         return 'done';
     }
+    /**
+     * Updates the source ingredient with the given page number.
+     *
+     * @param {Number} page - The page number to update the source ingredient.
+     * @return {Promise} A promise that resolves to 'done' when the update is completed.
+     */
     async updateSrcIngredient(page) {
         let skip = (+page - 1) * 500;
         let data = await ingredient_1.default.find().skip(skip).limit(500);
@@ -546,6 +626,11 @@ let FoodResolver = class FoodResolver {
         }
         return 'done';
     }
+    /**
+     * Updates the data for non-blend ingredients.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the update is complete.
+     */
     async updateNotBlendIngredientData() {
         let blendIngredients = await blendIngredient_1.default.find()
             .skip(300)
@@ -567,6 +652,13 @@ let FoodResolver = class FoodResolver {
         }
         return 'done';
     }
+    /**
+     * Retrieves all unique portions from the FoodSrcModel collection.
+     *
+     * @return {Promise<string>} The function returns a promise that resolves
+     * with the string 'done' when all unique portions have been retrieved and
+     * written to the file.
+     */
     async getAllUniquePortions() {
         let allPortions = await ingredient_1.default.find();
         let portions = [];
@@ -582,40 +674,80 @@ let FoodResolver = class FoodResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => ReturnIngredients_1.default),
+    (0, type_graphql_1.Query)(() => ReturnIngredients_1.default)
+    /**
+     * Retrieves all the ingredients based on the provided filter.
+     *
+     * @param {StructureIngredientsData} filter - The filter to apply when retrieving the ingredients.
+     * @return {Promise<{ingredients: any, totalIngredientsCount: number}>} An object containing the retrieved ingredients and the total count of ingredients.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('filter')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [StructureIngredientsData_1.default]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getAllTheIngredients", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Converts ingredient descriptions to names.
+     *
+     * @return {Promise<string>} Returns 'Done' when the conversion is complete.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "ingredientDesToName", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [UniqueNutrient_1.default]),
+    (0, type_graphql_1.Query)(() => [UniqueNutrient_1.default])
+    /**
+     * Retrieves a list of all unique nutrients.
+     *
+     * @return {Promise<any[]>} An array of unique nutrients.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getALlUniqueNutrientList", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Ingredient_1.default),
+    (0, type_graphql_1.Mutation)(() => Ingredient_1.default)
+    /**
+     * Creates a new ingredient.
+     *
+     * @param {CreateIngredient} data - The data for creating the ingredient.
+     * @return {Promise<Ingredient>} The newly created ingredient.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [createIngredient_1.default]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "createNewIngredient", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => Ingredient_1.default),
+    (0, type_graphql_1.Query)(() => Ingredient_1.default)
+    /**
+     * Retrieves a single ingredient from the FoodSrcModel collection.
+     *
+     * @param {String} ingredientId - The ID of the ingredient
+     * @return {Promise<Object>} The retrieved ingredient object
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getASingleIngredient", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => UniqueNutrient_1.default),
+    (0, type_graphql_1.Query)(() => UniqueNutrient_1.default)
+    /**
+     * Retrieves a unique nutrient based on its ID.
+     *
+     * @param {String} nutrientId - The ID of the nutrient to retrieve.
+     * @return {Promise<UniqueNutrientModel>} The retrieved nutrient.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('nutrientId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -629,33 +761,72 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "editUniqueNutrient", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Edit a source ingredient.
+     *
+     * @param {Object} data - The data object containing the ingredient to be edited.
+     * @return {Promise<string>} A promise that resolves to a success message when the ingredient is successfully edited.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditBlendIngredient_1.default]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "EditSrcIngredient", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Stores all unique nutrients.
+     *
+     * @return {Promise<string>} - A promise that resolves to the string 'done' when all unique nutrients are stored.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "storeAllUniqueNutrient", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Asynchronously reads the contents of the './newData/finalFood8.json' file,
+     * parses the JSON data, and performs a series of operations on the parsed data.
+     * For each element in the 'foods' array, it checks if a document with the same
+     * 'refDatabaseId' exists in the 'FoodSrcModel' collection. If it doesn't exist,
+     * it creates a new document with properties extracted from the 'foods' array
+     * element and saves it to the collection. The function returns the string 'done'
+     * after all operations are completed.
+     *
+     * @return {string} - The string 'done' indicating the completion of the function.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "databaseShifting", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Ingredient_1.default]),
+    (0, type_graphql_1.Query)(() => [Ingredient_1.default])
+    /**
+     * Searches for ingredients based on a search term.
+     *
+     * @param {String} searchTerm - The term to search for.
+     * @return {Promise} - A promise that resolves to an array of ingredients.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('searchTerm')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "SearchIngredients", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => ReurnIngredientBasedOnDefaultPortion_1.default),
+    (0, type_graphql_1.Query)(() => ReurnIngredientBasedOnDefaultPortion_1.default)
+    /**
+     * Retrieves ingredient information based on the default portion.
+     *
+     * @param {String} ingredientId - The ID of the ingredient.
+     * @return {any} The ingredient information based on the default portion.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -670,27 +841,55 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getNutritionBasedOnRecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Removes an ingredient from the database and adds it to the recycle collection.
+     *
+     * @param {String} ingredientId - the ID of the ingredient to be removed
+     * @return {String} - a message indicating the operation is done
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "removeIngredient", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Updates the source ingredient with the given page number.
+     *
+     * @param {Number} page - The page number to update the source ingredient.
+     * @return {Promise} A promise that resolves to 'done' when the update is completed.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "updateSrcIngredient", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Updates the data for non-blend ingredients.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the update is complete.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "updateNotBlendIngredientData", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Retrieves all unique portions from the FoodSrcModel collection.
+     *
+     * @return {Promise<string>} The function returns a promise that resolves
+     * with the string 'done' when all unique portions have been retrieved and
+     * written to the file.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

@@ -25,6 +25,13 @@ const userCollection_1 = __importDefault(require("../../../models/userCollection
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const mongoose_1 = __importDefault(require("mongoose"));
 let shareCollectionResolver = class shareCollectionResolver {
+    /**
+     * Shares a global collection.
+     *
+     * @param {String} sharedBy - The ID of the user who is sharing the collection.
+     * @param {String} collectionId - The ID of the collection being shared.
+     * @return {String} The ID of the shared global collection.
+     */
     async shareGlobalCollection(sharedBy, collectionId) {
         let globalShareCollection;
         globalShareCollection = await collectionShareGlobal_1.default.findOne({
@@ -39,6 +46,12 @@ let shareCollectionResolver = class shareCollectionResolver {
         }
         return globalShareCollection._id;
     }
+    /**
+     * Creates a share collection link.
+     *
+     * @param {CreateShareCollectionLink} data - The data object containing the necessary information for creating the share collection link.
+     * @return {Promise<string>} - The ID of the created collection.
+     */
     async createShareCollectionLink(data) {
         if (data.shareTo.length <= 0) {
             let ownCollection = await userCollection_1.default.findOne({
@@ -117,6 +130,12 @@ let shareCollectionResolver = class shareCollectionResolver {
         }
         return data.collectionId;
     }
+    /**
+     * Creates a new collection and shares it with the specified users.
+     *
+     * @param {CreateNewCollectionAndShare} data - The data for creating a new collection and sharing it.
+     * @return {Promise<string>} - The id of the created collection.
+     */
     async createCollectionAndShare(data) {
         let newCollection = data.newCollectionData;
         if (!data.newCollectionData.slug) {
@@ -159,6 +178,15 @@ let shareCollectionResolver = class shareCollectionResolver {
         }
         return collection._id;
     }
+    /**
+     * Retrieves the personalized name based on the given parameters.
+     *
+     * @param {string} name - The name to personalize.
+     * @param {string} userId - The ID of the user.
+     * @param {number} count - The count value.
+     * @param {String} collectionId - The ID of the collection.
+     * @returns {Promise<any>} A promise that resolves to the personalized name.
+     */
     async getPersonalizedName2(name, userId, count, collectionId) {
         let collection;
         if (count === 0) {
@@ -184,6 +212,14 @@ let shareCollectionResolver = class shareCollectionResolver {
             return name + ' (' + count + ')';
         }
     }
+    /**
+     * Retrieves a personalized name based on the given parameters.
+     *
+     * @param {string} name - The name to personalize.
+     * @param {string} userId - The user ID associated with the name.
+     * @param {number} count - The count of the personalized name.
+     * @return {Promise<any>} A promise that resolves to an object containing the personalized name and count.
+     */
     async getPersonalizedName(name, userId, count) {
         let collection;
         if (count === 0) {
@@ -211,7 +247,15 @@ let shareCollectionResolver = class shareCollectionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Shares a global collection.
+     *
+     * @param {String} sharedBy - The ID of the user who is sharing the collection.
+     * @param {String} collectionId - The ID of the collection being shared.
+     * @return {String} The ID of the shared global collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('sharedBy', (type) => type_graphql_1.ID)),
     __param(1, (0, type_graphql_1.Arg)('collectionId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
@@ -220,14 +264,28 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], shareCollectionResolver.prototype, "shareGlobalCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Creates a share collection link.
+     *
+     * @param {CreateShareCollectionLink} data - The data object containing the necessary information for creating the share collection link.
+     * @return {Promise<string>} - The ID of the created collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateShareCollectionLink_1.default]),
     __metadata("design:returntype", Promise)
 ], shareCollectionResolver.prototype, "createShareCollectionLink", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Creates a new collection and shares it with the specified users.
+     *
+     * @param {CreateNewCollectionAndShare} data - The data for creating a new collection and sharing it.
+     * @return {Promise<string>} - The id of the created collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateCollectionAndShare_1.default]),

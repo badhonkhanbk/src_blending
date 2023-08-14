@@ -38,14 +38,14 @@ const BookmarkAndExternalGlobalLInk_1 = __importDefault(require("../schemas/Book
 const usedBookmark_1 = __importDefault(require("../../../models/usedBookmark"));
 let WikiResolver = class WikiResolver {
     /**
-   * Retrieves a list of nutrient information from the wiki.
-   *
-   * @param {String} userId - The ID of the user (optional)
-   * @param {number} limit - The maximum number of results to return (optional)
-   * @param {number} page - The page number to retrieve (optional)
-   * @param {String[]} ids - An array of nutrient IDs to retrieve (optional)
-   * @return {Object} An object containing the total number of nutrients and an array of nutrient data
-   */
+     * Retrieves a list of nutrient information from the wiki.
+     *
+     * @param {String} userId - The ID of the user (optional)
+     * @param {number} limit - The maximum number of results to return (optional)
+     * @param {number} page - The page number to retrieve (optional)
+     * @param {String[]} ids - An array of nutrient IDs to retrieve (optional)
+     * @return {Object} An object containing the total number of nutrients and an array of nutrient data
+     */
     async getNutrientWikiList(userId, limit, page, ids) {
         if (!limit) {
             limit = 20;
@@ -170,14 +170,14 @@ let WikiResolver = class WikiResolver {
         };
     }
     /**
-   * Retrieves a list of ingredient information from the wiki.
-   *
-   * @param {String} userId - The ID of the user (optional).
-   * @param {number} limit - The maximum number of ingredients to retrieve (optional).
-   * @param {number} page - The page number of the results (optional).
-   * @param {String[]} ids - An array of ingredient IDs to retrieve (optional).
-   * @return {Object} An object containing the total number of ingredients and the list of ingredient data.
-   */
+     * Retrieves a list of ingredient information from the wiki.
+     *
+     * @param {String} userId - The ID of the user (optional).
+     * @param {number} limit - The maximum number of ingredients to retrieve (optional).
+     * @param {number} page - The page number of the results (optional).
+     * @param {String[]} ids - An array of ingredient IDs to retrieve (optional).
+     * @return {Object} An object containing the total number of ingredients and the list of ingredient data.
+     */
     async getIngredientWikiList(userId, limit, page, ids) {
         if (!limit) {
             limit = 20;
@@ -312,11 +312,11 @@ let WikiResolver = class WikiResolver {
         };
     }
     /**
-   * Retrieves a list of wiki items for a given user.
-   *
-   * @param {String} userId - The ID of the user. Nullable.
-   * @return {Array} - An array of wiki items.
-   */
+     * Retrieves a list of wiki items for a given user.
+     *
+     * @param {String} userId - The ID of the user. Nullable.
+     * @return {Array} - An array of wiki items.
+     */
     async getWikiList(userId) {
         let returnData = [];
         let blendNutrients = await blendNutrient_1.default.find({
@@ -747,11 +747,11 @@ let WikiResolver = class WikiResolver {
         return wikiData;
     }
     /**
-   * Edit the ingredient wiki.
-   *
-   * @param {EditIngredientAndNutrientInWiki} data - the data for editing the ingredient and nutrient in the wiki
-   * @return {Promise<string>} - a promise that resolves to the string 'success'
-   */
+     * Edit the ingredient wiki.
+     *
+     * @param {EditIngredientAndNutrientInWiki} data - the data for editing the ingredient and nutrient in the wiki
+     * @return {Promise<string>} - a promise that resolves to the string 'success'
+     */
     async editIngredientWiki(data) {
         await blendIngredient_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'success';
@@ -765,11 +765,11 @@ let WikiResolver = class WikiResolver {
         return 'success';
     }
     /**
-   * Edits the nutrient wiki.
-   *
-   * @param {EditIngredientAndNutrientInWiki} data - the data to edit the nutrient wiki
-   * @return {Promise<string>} - a promise that resolves to 'success' if the edit is successful
-   */
+     * Edits the nutrient wiki.
+     *
+     * @param {EditIngredientAndNutrientInWiki} data - the data to edit the nutrient wiki
+     * @return {Promise<string>} - a promise that resolves to 'success' if the edit is successful
+     */
     async editNutrientWiki(data) {
         let newData = data;
         if (newData.editableObject.isPublished) {
@@ -783,11 +783,11 @@ let WikiResolver = class WikiResolver {
         return 'success';
     }
     /**
-   * Asynchronously converts the given data to grams.
-   *
-   * @param {GramConversion} data - the data to be converted
-   * @return {Number} the converted value in grams
-   */
+     * Asynchronously converts the given data to grams.
+     *
+     * @param {GramConversion} data - the data to be converted
+     * @return {Number} the converted value in grams
+     */
     async convertToGram(data) {
         // [ 'kJ', 'G', 'MG', 'UG', 'IU' ]
         let gram;
@@ -817,11 +817,11 @@ let WikiResolver = class WikiResolver {
         }
     }
     /**
-   * Convert a value in grams to a specified unit of measurement.
-   *
-   * @param {GramConversion} data - The data object containing the amount and unit of measurement.
-   * @return {Number} The converted value in the specified unit of measurement.
-   */
+     * Convert a value in grams to a specified unit of measurement.
+     *
+     * @param {GramConversion} data - The data object containing the amount and unit of measurement.
+     * @return {Number} The converted value in the specified unit of measurement.
+     */
     async convertGramToUnit(data) {
         // [ 'kJ', 'G', 'MG', 'UG', 'IU' ]
         let gram;
@@ -847,11 +847,11 @@ let WikiResolver = class WikiResolver {
         }
     }
     /**
-   * Retrieves the default portion measurement weight for a given ingredient.
-   *
-   * @param {String} ingredientId - The ID of the ingredient
-   * @return {Number} The default portion measurement weight
-   */
+     * Retrieves the default portion measurement weight for a given ingredient.
+     *
+     * @param {String} ingredientId - The ID of the ingredient
+     * @return {Number} The default portion measurement weight
+     */
     async getDefaultPortion(ingredientId) {
         let ingredient = await blendIngredient_1.default.findOne({
             _id: ingredientId,
@@ -865,10 +865,10 @@ let WikiResolver = class WikiResolver {
         return Number(defaultPortion.meausermentWeight);
     }
     /**
-   * Retrieves the description of the entire function and returns it as a JSON string.
-   *
-   * @return {string} The description of the entire function as a JSON string.
-   */
+     * Retrieves the description of the entire function and returns it as a JSON string.
+     *
+     * @return {string} The description of the entire function as a JSON string.
+     */
     async bodyTeswwt() {
         let description = await blendIngredient_1.default.find({}).select('wikiCoverImages wikiFeatureImage wikiTitle wikiDescription bodies seoTitle seoSlug seoCanonicalURL seoSiteMapPriority seoKeywords seoMetaDescription sourceName isPublished');
         return JSON.stringify(description);
@@ -945,12 +945,12 @@ let WikiResolver = class WikiResolver {
         return JSON.stringify(obj);
     }
     /**
-   * Retrieves a child object from the database based on the given parent object and an array of nutrients to return.
-   *
-   * @param {any} parent - The parent object to search for child objects.
-   * @param {any[]} returnNutrients - An array of nutrients to return.
-   * @return {Promise<any>} - The retrieved child object.
-   */
+     * Retrieves a child object from the database based on the given parent object and an array of nutrients to return.
+     *
+     * @param {any} parent - The parent object to search for child objects.
+     * @param {any[]} returnNutrients - An array of nutrients to return.
+     * @return {Promise<any>} - The retrieved child object.
+     */
     async getChild(parent, returnNutrients) {
         let obj = {};
         let childs = await blendNutrient_1.default.find({ parent: parent })
@@ -982,12 +982,12 @@ let WikiResolver = class WikiResolver {
         return obj;
     }
     /**
-   * Retrieves the top-level child nutrients for a given category.
-   *
-   * @param {any} category - The category for which to retrieve the top-level child nutrients.
-   * @param {any[]} returnNutrients - An array of return nutrients.
-   * @return {Promise<any>} An object containing the top-level child nutrients.
-   */
+     * Retrieves the top-level child nutrients for a given category.
+     *
+     * @param {any} category - The category for which to retrieve the top-level child nutrients.
+     * @param {any[]} returnNutrients - An array of return nutrients.
+     * @return {Promise<any>} An object containing the top-level child nutrients.
+     */
     async getTopLevelChilds(category, returnNutrients) {
         let obj = {};
         let childs = await blendNutrient_1.default.find({
@@ -1022,13 +1022,13 @@ let WikiResolver = class WikiResolver {
         return obj;
     }
     /**
-   * Retrieves the wiki links for a given entity ID and type.
-   *
-   * @param {String} entityId - The ID of the entity.
-   * @param {String} type - The type of the entity.
-   * @param {Boolean} links - Optional parameter to specify if links should be retrieved.
-   * @return {Object} An object containing the retrieved links and bookmarks.
-   */
+     * Retrieves the wiki links for a given entity ID and type.
+     *
+     * @param {String} entityId - The ID of the entity.
+     * @param {String} type - The type of the entity.
+     * @param {Boolean} links - Optional parameter to specify if links should be retrieved.
+     * @return {Object} An object containing the retrieved links and bookmarks.
+     */
     async getWikiLinks(entityId, type, links) {
         let blendNutrients = [];
         let blendIngredients = [];
@@ -1076,10 +1076,10 @@ let WikiResolver = class WikiResolver {
         };
     }
     /**
-   * Generates wiki entries for blend ingredients and blend nutrients.
-   *
-   * @return {Promise<string>} - A string indicating the function has completed.
-   */
+     * Generates wiki entries for blend ingredients and blend nutrients.
+     *
+     * @return {Promise<string>} - A string indicating the function has completed.
+     */
     async makeWikis() {
         let blendIngredients = await blendIngredient_1.default.find().select('wikiTitle _id ingredientName wikiDescription category blendStatus createdAt portions featuredImage description isPublished');
         for (let i = 0; i < blendIngredients.length; i++) {
@@ -1126,32 +1126,30 @@ let WikiResolver = class WikiResolver {
         return 'hello';
     }
     /**
-   * Generates a wiki for each ingredient in the blendNutrients collection.
-   *
-   * @return {Promise<string>} A string indicating the completion status of the operation.
-   */
+     * Generates a wiki for each ingredient in the blendNutrients collection.
+     *
+     * @return {Promise<string>} A string indicating the completion status of the operation.
+     */
     async makeOtherIngredientWiki() {
-        let blendNutrients = await blendNutrient_1.default.find()
-            .lean()
-            .select('-uniqueNutrientId -related_sources -parent -bodies -wikiCoverImages');
-        for (let i = 0; i < blendNutrients.length; i++) {
-            let wiki = await wiki_1.default.findOne({ _id: blendNutrients[i]._id }).select('_id');
+        let blendIngredients = await blendIngredient_1.default.find().select('wikiTitle _id ingredientName wikiDescription category blendStatus createdAt portions featuredImage description isPublished');
+        for (let i = 0; i < blendIngredients.length; i++) {
+            let wiki = await wiki_1.default.findOne({ _id: blendIngredients[i]._id }).select('_id');
             if (!wiki) {
                 let data = {
-                    _id: blendNutrients[i]._id,
-                    onModel: 'BlendNutrient',
-                    wikiTitle: blendNutrients[i].wikiTitle
-                        ? blendNutrients[i].wikiTitle
-                        : blendNutrients[i].nutrientName,
-                    wikiDescription: blendNutrients[i].wikiDescription
-                        ? blendNutrients[i].wikiDescription
+                    _id: blendIngredients[i]._id,
+                    onModel: 'BlendIngredient',
+                    wikiTitle: blendIngredients[i].wikiTitle
+                        ? blendIngredients[i].wikiTitle
+                        : blendIngredients[i].ingredientName,
+                    wikiDescription: blendIngredients[i].wikiDescription
+                        ? blendIngredients[i].wikiDescription
                         : ' ',
-                    type: 'Nutrient',
-                    status: blendNutrients[i].status,
-                    description: '',
-                    image: '',
+                    type: 'Ingredient',
+                    status: blendIngredients[i].blendStatus,
+                    image: blendIngredients[i].featuredImage,
+                    description: blendIngredients[i].description,
                     publishedBy: 'g. braun',
-                    isPublished: blendNutrients[i].isPublished,
+                    isPublished: blendIngredients[i].isPublished,
                 };
                 await wiki_1.default.create(data);
             }
@@ -1159,16 +1157,16 @@ let WikiResolver = class WikiResolver {
         return 'done';
     }
     /**
-   * Manipulates bookmarks for a wiki.
-   *
-   * @param {String} wikiId - The ID of the wiki.
-   * @param {String} bookmarkId - The ID of the bookmark (optional).
-   * @param {String} link - The link for the bookmark.
-   * @param {String} type - The type of the bookmark.
-   * @param {String} customBookmarkName - The custom name for the bookmark (optional).
-   * @param {Boolean} removeCustomBookmark - Indicates whether to remove the custom bookmark (optional).
-   * @return {Object} The updated bookmark list and the global bookmarks.
-   */
+     * Manipulates bookmarks for a wiki.
+     *
+     * @param {String} wikiId - The ID of the wiki.
+     * @param {String} bookmarkId - The ID of the bookmark (optional).
+     * @param {String} link - The link for the bookmark.
+     * @param {String} type - The type of the bookmark.
+     * @param {String} customBookmarkName - The custom name for the bookmark (optional).
+     * @param {Boolean} removeCustomBookmark - Indicates whether to remove the custom bookmark (optional).
+     * @return {Object} The updated bookmark list and the global bookmarks.
+     */
     async manipulateBookMarks(wikiId, bookmarkId, // no need
     link, type, // no need
     customBookmarkName, removeCustomBookmark) {
@@ -1392,12 +1390,12 @@ let WikiResolver = class WikiResolver {
         }
     }
     /**
-   * Performs a specific action with a bookmark.
-   *
-   * @param {String} bookmarkId - The ID of the bookmark to be used.
-   * @param {Boolean} use - Indicates whether the bookmark should be used or not.
-   * @return {String} - Returns 'done' if the action is successfully performed.
-   */
+     * Performs a specific action with a bookmark.
+     *
+     * @param {String} bookmarkId - The ID of the bookmark to be used.
+     * @param {Boolean} use - Indicates whether the bookmark should be used or not.
+     * @return {String} - Returns 'done' if the action is successfully performed.
+     */
     async useABookmark(bookmarkId, use) {
         let usedBookmark = await usedBookmark_1.default.findOne({ entityId: bookmarkId });
         if (!usedBookmark) {
@@ -1429,10 +1427,10 @@ let WikiResolver = class WikiResolver {
         return 'done';
     }
     /**
-   * Creates a bookmark for blend nutrients.
-   *
-   * @return {Promise<string>} A string indicating the completion status of the function.
-   */
+     * Creates a bookmark for blend nutrients.
+     *
+     * @return {Promise<string>} A string indicating the completion status of the function.
+     */
     async createBookMark() {
         let blendNutrientBookmarks = await blendNutrient_1.default.find({
             isBookmarked: true,
@@ -1450,10 +1448,10 @@ let WikiResolver = class WikiResolver {
         return 'done';
     }
     /**
-   * Asynchronously creates a bookmark for blend ingredients.
-   *
-   * @return {string} The result message indicating the completion of the operation.
-   */
+     * Asynchronously creates a bookmark for blend ingredients.
+     *
+     * @return {string} The result message indicating the completion of the operation.
+     */
     async createBookMark2() {
         let blendIngredientBookmarks = await blendNutrient_1.default.find({
             isBookmarked: true,
@@ -1468,10 +1466,10 @@ let WikiResolver = class WikiResolver {
         return 'done';
     }
     /**
-   * Retrieves the theme widget data.
-   *
-   * @return {Promise<string>} A promise that resolves to the string 'done' when the function completes.
-   */
+     * Retrieves the theme widget data.
+     *
+     * @return {Promise<string>} A promise that resolves to the string 'done' when the function completes.
+     */
     async getThemeWidgetData() {
         // let blendNutrients = await BlendNutrientModel.find().select('_id');
         // let doubleWiki = [];

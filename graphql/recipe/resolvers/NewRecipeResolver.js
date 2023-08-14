@@ -38,6 +38,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let temporaryCompareList = await (0, checkTemporaryCompareList_1.default)('5f9b3b3b1c9d440000f3b0b0');
         return '';
     }
+    /**
+     * Retrieves the discover recipes for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Promise} The discovered recipes.
+     */
     async getDiscoverRecipes(userId) {
         let checkIfNew = await UserRecipeProfile_1.default.find({
             userId: userId,
@@ -99,9 +105,23 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
     //   }
     //   return await makeGlobalRecipe(share, userId.toString());
     // }
+    /**
+     * Retrieves a single recipe based on the provided recipe ID, user ID, and token.
+     *
+     * @param {String} recipeId - The ID of the recipe to retrieve. Can be nullable.
+     * @param {String} userId - The ID of the user making the request.
+     * @param {String} token - The token used for authentication. Can be nullable.
+     * @return {Promise} Returns a promise that resolves to the retrieved recipe.
+     */
     async getARecipe2(recipeId, userId, token) {
         return await (0, GetASingleRecipe_1.default)(recipeId, userId, token);
     }
+    /**
+     * Retrieves the compare list for a given user.
+     *
+     * @param {string} userId - The ID of the user.
+     * @return {Array} An array containing the compare list.
+     */
     async getCompareList2(userId) {
         let checkIfNew = await UserRecipeProfile_1.default.find({
             userId: userId,
@@ -288,6 +308,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
+    /**
+     * Retrieves all the latest recipes for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Promise} The latest recipes for the user.
+     */
     async getAllLatestRecipes2(userId) {
         // let checkIfNew = await UserRecipeProfileModel.find({
         //   userId: userId,
@@ -355,14 +381,30 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "removeNow", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => String),
+    (0, type_graphql_1.Query)((type) => String)
+    /**
+     * Retrieves the discover recipes for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Promise} The discovered recipes.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getDiscoverRecipes", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => ProfileRecipeDesc_1.default),
+    (0, type_graphql_1.Query)((type) => ProfileRecipeDesc_1.default)
+    /**
+     * Retrieves a single recipe based on the provided recipe ID, user ID, and token.
+     *
+     * @param {String} recipeId - The ID of the recipe to retrieve. Can be nullable.
+     * @param {String} userId - The ID of the user making the request.
+     * @param {String} token - The token used for authentication. Can be nullable.
+     * @return {Promise} Returns a promise that resolves to the retrieved recipe.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('recipeId', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __param(2, (0, type_graphql_1.Arg)('token', { nullable: true })),
@@ -373,7 +415,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getARecipe2", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [ProfileRecipe_1.default]),
+    (0, type_graphql_1.Query)(() => [ProfileRecipe_1.default])
+    /**
+     * Retrieves the compare list for a given user.
+     *
+     * @param {string} userId - The ID of the user.
+     * @return {Array} An array containing the compare list.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -396,7 +445,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllpopularRecipes2", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default]),
+    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default])
+    /**
+     * Retrieves all the latest recipes for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Promise} The latest recipes for the user.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

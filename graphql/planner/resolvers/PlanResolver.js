@@ -37,6 +37,12 @@ const PlanRating_1 = __importDefault(require("../../../models/PlanRating"));
 const updatePlanFacts_1 = __importDefault(require("../../recipe/resolvers/util/updatePlanFacts"));
 const FilterPlan_1 = __importDefault(require("./input-type/planInput/FilterPlan"));
 let PlanResolver = class PlanResolver {
+    /**
+     * Creates a new plan.
+     *
+     * @param {CreateNewPlan} input - the input data for creating the plan
+     * @return {Promise<string>} - a promise that resolves to a string indicating the plan creation status
+     */
     async createAPlan(input) {
         let myPlan = input;
         if (input.startDateString) {
@@ -51,6 +57,12 @@ let PlanResolver = class PlanResolver {
         await (0, updatePlanFacts_1.default)(String(plan._id));
         return 'Plan created';
     }
+    /**
+     * Updates a plan.
+     *
+     * @param {EditPlan} input - the input for updating the plan
+     * @return {Promise<string>} - a promise that resolves to a string indicating the result of the update
+     */
     async updateAPlan(input) {
         let plan = await Plan_1.default.findOne({ _id: input.editId }).select('memberId');
         if (String(plan.memberId) !== input.memberId) {
@@ -76,10 +88,24 @@ let PlanResolver = class PlanResolver {
         await (0, updatePlanFacts_1.default)(String(plan._id));
         return 'Plan updated';
     }
+    /**
+     * Retrieves the plans associated with a specific member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<Array>} An array of plans associated with the member.
+     */
     async getMyPlans(memberId) {
         let plans = await Plan_1.default.find({ memberId: memberId }).populate('planData.recipes');
         return plans;
     }
+    /**
+     * Retrieves a plan based on the provided planId, token, and memberId.
+     *
+     * @param {String} planId - The ID of the plan to retrieve.
+     * @param {String} token - (Optional) The token associated with the plan.
+     * @param {String} memberId - (Optional) The ID of the member associated with the plan.
+     * @return {Object} An object containing the retrieved plan, top ingredients, recipe categories percentage, and macro makeup.
+     */
     async getAPlan(planId, token, memberId) {
         let plan = await Plan_1.default.findOne({
             _id: planId,
@@ -167,6 +193,12 @@ let PlanResolver = class PlanResolver {
             macroMakeup: await this.averageCarbsProteinFatsForAPlanner(planId),
         };
     }
+    /**
+     * Calculates the average amount of carbs, protein, and fats for a given planner.
+     *
+     * @param {String} planId - The ID of the planner.
+     * @return {Object} - An object containing the average values of carbs, protein, and fats.
+     */
     async averageCarbsProteinFatsForAPlanner(planId) {
         let returnData = {};
         let plan = await Plan_1.default.findOne({
@@ -258,6 +290,13 @@ let PlanResolver = class PlanResolver {
     //   console.log(sortedCategories);
     //   return sortedCategories;
     // }
+    /**
+     * Deletes a plan.
+     *
+     * @param {String} planId - the ID of the plan to delete
+     * @param {String} memberId - the ID of the member
+     * @return {String} the result of the deletion
+     */
     async deletePlan(planId, memberId) {
         let plan = await Plan_1.default.findOne({ _id: planId }).select('memberId');
         if (String(plan.memberId) !== memberId) {
@@ -268,6 +307,15 @@ let PlanResolver = class PlanResolver {
         });
         return 'Plan deleted';
     }
+    /**
+     * Retrieves all global plans based on the provided parameters.
+     *
+     * @param {number} page - The page number for pagination (optional).
+     * @param {number} limit - The number of plans to retrieve per page (optional).
+     * @param {String} searchTerm - The search term to filter plans by.
+     * @param {String} memberId - The member ID for additional filtering (optional).
+     * @return {Object} An object containing the retrieved plans and the total number of global plans.
+     */
     async getAllGlobalPlans(page, limit, searchTerm, memberId) {
         let plans = [];
         if (page && limit) {
@@ -348,6 +396,14 @@ let PlanResolver = class PlanResolver {
             totalPlans: await Plan_1.default.countDocuments({ isGlobal: true }),
         };
     }
+    /**
+     * Retrieves all recent plans.
+     *
+     * @param {number} page - The page number (nullable).
+     * @param {number} limit - The maximum number of plans to retrieve (nullable).
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the plans and the total number of plans.
+     */
     async getAllRecentPlans(page, limit, memberId) {
         if (!page || page < 1) {
             page = 1;
@@ -401,6 +457,13 @@ let PlanResolver = class PlanResolver {
             totalPlans: await Plan_1.default.countDocuments({ isGlobal: true }),
         };
     }
+    /**
+     * Searches for plans based on a search term and member ID.
+     *
+     * @param {String} searchTerm - The search term to match against the plan name.
+     * @param {String} memberId - The ID of the member.
+     * @return {Array} An array of plans with additional data.
+     */
     async searchPlans(searchTerm, memberId) {
         let plans = await Plan_1.default.find({
             planName: { $regex: searchTerm, $options: 'i' },
@@ -447,6 +510,14 @@ let PlanResolver = class PlanResolver {
         }
         return planWithCollectionAndComments;
     }
+    /**
+     * Retrieves all recommended plans.
+     *
+     * @param {number} page - (optional) The page number to retrieve.
+     * @param {number} limit - (optional) The maximum number of plans to retrieve.
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the retrieved plans and the total number of plans.
+     */
     async getAllRecommendedPlans(page, limit, memberId) {
         if (!page || page < 1) {
             page = 1;
@@ -500,6 +571,14 @@ let PlanResolver = class PlanResolver {
             totalPlans: await Plan_1.default.countDocuments({ isGlobal: true }),
         };
     }
+    /**
+     * Retrieves all popular plans.
+     *
+     * @param {number} page - The page number to retrieve plans from. (nullable)
+     * @param {number} limit - The maximum number of plans to retrieve. (nullable)
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the retrieved plans and the total number of plans.
+     */
     async getAllPopularPlans(page, limit, memberId) {
         if (!page || page < 1) {
             page = 1;
@@ -554,6 +633,15 @@ let PlanResolver = class PlanResolver {
         };
     }
     //planName: { $regex: searchTerm, $options: 'i' },
+    /**
+     * Filters the plans based on the provided criteria.
+     *
+     * @param {FilterPlan} data - the data to filter the plans with
+     * @param {String} userId - the ID of the user
+     * @param {number} [page] - the page number (optional)
+     * @param {number} [limit] - the maximum number of plans to return (optional)
+     * @return {Object} - an object containing the filtered plans and the total number of plans
+     */
     async filterPlans(data, userId, page, limit) {
         console.log(data.collectionsIds);
         let isSearchTerm = data.searchTerm === '' || data.searchTerm === null;
@@ -800,6 +888,13 @@ let PlanResolver = class PlanResolver {
                 : 0,
         };
     }
+    /**
+     * Share a plan with a member.
+     *
+     * @param {String} planId - The ID of the plan to share.
+     * @param {String} memberId - The ID of the member to share the plan with.
+     * @return {String} The ID of the plan share.
+     */
     async sharePlan(planId, memberId) {
         let planShare = await planShare_1.default.findOne({
             planId: planId,
@@ -814,6 +909,12 @@ let PlanResolver = class PlanResolver {
         }
         return planShare._id;
     }
+    /**
+     * Retrieves plan share information.
+     *
+     * @param {string} planShareId - The ID of the plan share.
+     * @return {Promise<object>} - The plan share information, including the plan, recipe count, invited by member, and recipes.
+     */
     async getPlanShareInfo(planShareId) {
         let planShare = await planShare_1.default.findOne({
             _id: planShareId,
@@ -862,6 +963,12 @@ let PlanResolver = class PlanResolver {
             recipes: recipes,
         };
     }
+    /**
+     * Asynchronously fixes plans.
+     *
+     * @param {void} - no parameters needed
+     * @return {Promise<string>} - a promise that resolves to the string 'done'
+     */
     async fixPlans() {
         let plans = await Plan_1.default.find();
         for (let i = 0; i < plans.length; i++) {
@@ -872,28 +979,58 @@ let PlanResolver = class PlanResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Creates a new plan.
+     *
+     * @param {CreateNewPlan} input - the input data for creating the plan
+     * @return {Promise<string>} - a promise that resolves to a string indicating the plan creation status
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewPlan_1.default]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "createAPlan", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Updates a plan.
+     *
+     * @param {EditPlan} input - the input for updating the plan
+     * @return {Promise<string>} - a promise that resolves to a string indicating the result of the update
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditPlan_1.default]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "updateAPlan", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Plan_2.default]),
+    (0, type_graphql_1.Query)(() => [Plan_2.default])
+    /**
+     * Retrieves the plans associated with a specific member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<Array>} An array of plans associated with the member.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getMyPlans", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlanIngredientAndCategory_1.default),
+    (0, type_graphql_1.Query)(() => PlanIngredientAndCategory_1.default)
+    /**
+     * Retrieves a plan based on the provided planId, token, and memberId.
+     *
+     * @param {String} planId - The ID of the plan to retrieve.
+     * @param {String} token - (Optional) The token associated with the plan.
+     * @param {String} memberId - (Optional) The ID of the member associated with the plan.
+     * @return {Object} An object containing the retrieved plan, top ingredients, recipe categories percentage, and macro makeup.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('planId')),
     __param(1, (0, type_graphql_1.Arg)('token', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
@@ -904,14 +1041,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAPlan", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Calculates the average amount of carbs, protein, and fats for a given planner.
+     *
+     * @param {String} planId - The ID of the planner.
+     * @return {Object} - An object containing the average values of carbs, protein, and fats.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('planId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "averageCarbsProteinFatsForAPlanner", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Deletes a plan.
+     *
+     * @param {String} planId - the ID of the plan to delete
+     * @param {String} memberId - the ID of the member
+     * @return {String} the result of the deletion
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('planId')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
@@ -920,7 +1072,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "deletePlan", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default)
+    /**
+     * Retrieves all global plans based on the provided parameters.
+     *
+     * @param {number} page - The page number for pagination (optional).
+     * @param {number} limit - The number of plans to retrieve per page (optional).
+     * @param {String} searchTerm - The search term to filter plans by.
+     * @param {String} memberId - The member ID for additional filtering (optional).
+     * @return {Object} An object containing the retrieved plans and the total number of global plans.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('searchTerm')),
@@ -931,7 +1093,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllGlobalPlans", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default)
+    /**
+     * Retrieves all recent plans.
+     *
+     * @param {number} page - The page number (nullable).
+     * @param {number} limit - The maximum number of plans to retrieve (nullable).
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the plans and the total number of plans.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('memberId')),
@@ -940,7 +1111,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllRecentPlans", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Plan_2.default]),
+    (0, type_graphql_1.Query)(() => [Plan_2.default])
+    /**
+     * Searches for plans based on a search term and member ID.
+     *
+     * @param {String} searchTerm - The search term to match against the plan name.
+     * @param {String} memberId - The ID of the member.
+     * @return {Array} An array of plans with additional data.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('searchTerm')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
@@ -949,7 +1128,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "searchPlans", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default)
+    /**
+     * Retrieves all recommended plans.
+     *
+     * @param {number} page - (optional) The page number to retrieve.
+     * @param {number} limit - (optional) The maximum number of plans to retrieve.
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the retrieved plans and the total number of plans.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('memberId')),
@@ -958,7 +1146,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllRecommendedPlans", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default)
+    /**
+     * Retrieves all popular plans.
+     *
+     * @param {number} page - The page number to retrieve plans from. (nullable)
+     * @param {number} limit - The maximum number of plans to retrieve. (nullable)
+     * @param {String} memberId - The ID of the member.
+     * @return {Object} An object containing the retrieved plans and the total number of plans.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('memberId')),
@@ -967,7 +1164,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllPopularPlans", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default),
+    (0, type_graphql_1.Query)(() => PlanWithTotal_1.default)
+    /**
+     * Filters the plans based on the provided criteria.
+     *
+     * @param {FilterPlan} data - the data to filter the plans with
+     * @param {String} userId - the ID of the user
+     * @param {number} [page] - the page number (optional)
+     * @param {number} [limit] - the maximum number of plans to return (optional)
+     * @return {Object} - an object containing the filtered plans and the total number of plans
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
@@ -978,7 +1185,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "filterPlans", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Share a plan with a member.
+     *
+     * @param {String} planId - The ID of the plan to share.
+     * @param {String} memberId - The ID of the member to share the plan with.
+     * @return {String} The ID of the plan share.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('planId')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),
@@ -987,14 +1202,28 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "sharePlan", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlansAndRecipes_1.default),
+    (0, type_graphql_1.Query)(() => PlansAndRecipes_1.default)
+    /**
+     * Retrieves plan share information.
+     *
+     * @param {string} planShareId - The ID of the plan share.
+     * @return {Promise<object>} - The plan share information, including the plan, recipe count, invited by member, and recipes.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('planShareId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getPlanShareInfo", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Asynchronously fixes plans.
+     *
+     * @param {void} - no parameters needed
+     * @return {Promise<string>} - a promise that resolves to the string 'done'
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

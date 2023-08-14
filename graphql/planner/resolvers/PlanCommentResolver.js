@@ -23,6 +23,12 @@ const EditPlanComment_1 = __importDefault(require("./input-type/PlanComment/Edit
 const PlanComment_1 = __importDefault(require("../schemas/planComment/PlanComment"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 let PlanCommentsResolver = class PlanCommentsResolver {
+    /**
+     * Creates a new plan comment.
+     *
+     * @param {CreateNewPlanComment} data - The data for creating the new plan comment.
+     * @return {Promise<object>} The newly created plan comment.
+     */
     async createPlanComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
         if (!user) {
@@ -35,6 +41,12 @@ let PlanCommentsResolver = class PlanCommentsResolver {
             memberId: user,
         };
     }
+    /**
+     * Edits a plan comment.
+     *
+     * @param {EditPlanComment} data - the data for editing the plan comment
+     * @return {Promise<object>} the edited plan comment and the member ID of the user
+     */
     async editPlanComment(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
         let blogComment = await planComment_1.default.findOne({ _id: data.editId });
@@ -58,6 +70,12 @@ let PlanCommentsResolver = class PlanCommentsResolver {
             memberId: user,
         };
     }
+    /**
+     * Retrieves all comments for a specific plan.
+     *
+     * @param {String} planId - The ID of the plan.
+     * @return {Array} An array of comments for the plan.
+     */
     async getAllCommentsForAPlan(planId) {
         let comments = await planComment_1.default.find({
             planId,
@@ -68,6 +86,13 @@ let PlanCommentsResolver = class PlanCommentsResolver {
         });
         return comments;
     }
+    /**
+     * Removes a plan comment.
+     *
+     * @param {String} commentId - The ID of the comment to be removed.
+     * @param {String} memberId - The ID of the member who owns the comment.
+     * @return {String} The result of the comment removal operation.
+     */
     async removeAPlanComment(commentId, memberId) {
         let blogComment = await planComment_1.default.findOne({ _id: commentId });
         if (!blogComment) {
@@ -81,28 +106,57 @@ let PlanCommentsResolver = class PlanCommentsResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => PlanComment_1.default),
+    (0, type_graphql_1.Mutation)(() => PlanComment_1.default)
+    /**
+     * Creates a new plan comment.
+     *
+     * @param {CreateNewPlanComment} data - The data for creating the new plan comment.
+     * @return {Promise<object>} The newly created plan comment.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewPlanComment_1.default]),
     __metadata("design:returntype", Promise)
 ], PlanCommentsResolver.prototype, "createPlanComment", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => PlanComment_1.default),
+    (0, type_graphql_1.Mutation)(() => PlanComment_1.default)
+    /**
+     * Edits a plan comment.
+     *
+     * @param {EditPlanComment} data - the data for editing the plan comment
+     * @return {Promise<object>} the edited plan comment and the member ID of the user
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditPlanComment_1.default]),
     __metadata("design:returntype", Promise)
 ], PlanCommentsResolver.prototype, "editPlanComment", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [PlanComment_1.default]),
+    (0, type_graphql_1.Query)(() => [PlanComment_1.default])
+    /**
+     * Retrieves all comments for a specific plan.
+     *
+     * @param {String} planId - The ID of the plan.
+     * @return {Array} An array of comments for the plan.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('planId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PlanCommentsResolver.prototype, "getAllCommentsForAPlan", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Removes a plan comment.
+     *
+     * @param {String} commentId - The ID of the comment to be removed.
+     * @param {String} memberId - The ID of the member who owns the comment.
+     * @return {String} The result of the comment removal operation.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('commentId')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
     __metadata("design:type", Function),

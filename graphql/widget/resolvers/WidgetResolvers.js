@@ -106,21 +106,18 @@ let WigdetResolver = class WigdetResolver {
      * @return {any} The edited widget collection data.
      */
     async editAWidgetCollection(widgetId, widgetCollection) {
-        await Widget_1.default.findOneAndUpdate({ _id: widgetId }, {
-            $pull: {
-                widgetCollections: { _id: widgetCollection._id },
-            },
-        }, { new: true });
         let data = widgetCollection;
         if (data.isPublished) {
             data.publishedAt = Date.now();
         }
-        // if (widgetCollection.isPublished) {
-        //   data.publishedAt = Date.now();
-        // }
-        await Widget_1.default.findOneAndUpdate({ _id: widgetId }, {
-            $push: { widgetCollections: data },
-        });
+        let obj = {};
+        let keys = Object.keys(data);
+        for (let i = 0; i < keys.length; i++) {
+            obj[`widgetCollections.$.${keys[i]}`] = data[keys[i]];
+        }
+        delete obj._id;
+        console.log(obj);
+        await Widget_1.default.findOneAndUpdate({ _id: widgetId, 'widgetCollections._id': widgetCollection._id }, obj, { new: true });
         data.bannerId = await banner_2.default.findOne({
             _id: widgetCollection.bannerId,
         });
@@ -1764,7 +1761,7 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: recipes,
                         Plan: [],
                         Wiki: [],
-                        GeneralBlog: []
+                        GeneralBlog: [],
                     },
                 });
             }
@@ -1843,7 +1840,7 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: [],
                         Plan: [],
                         Wiki: wikis,
-                        GeneralBlog: []
+                        GeneralBlog: [],
                     },
                 });
             }
@@ -1941,7 +1938,7 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: [],
                         Plan: plans,
                         Wiki: [],
-                        GeneralBlog: []
+                        GeneralBlog: [],
                     },
                 });
             }

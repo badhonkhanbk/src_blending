@@ -27,6 +27,13 @@ const addIngredientFromSrc_1 = __importDefault(require("./util/addIngredientFrom
 const QAAdminWithPagination_1 = __importDefault(require("../schemas/QAAdminWithPagination"));
 const mongoose_1 = __importDefault(require("mongoose"));
 let QAResolver = class QAResolver {
+    /**
+     * Retrieves all QA data with pagination.
+     *
+     * @param {number} page - The page number to retrieve.
+     * @param {number} limit - The number of items per page.
+     * @returns {Object} An object containing QAData and totalData.
+     */
     async getAllQAData(page, limit) {
         if (!page || page < 1) {
             page = 1;
@@ -52,6 +59,14 @@ let QAResolver = class QAResolver {
             totalData: totalData,
         };
     }
+    /**
+     * Add a new best match to the Q&A.
+     *
+     * @param {String} ingredientId - The ID of the ingredient to add.
+     * @param {String} qaId - The ID of the Q&A.
+     * @param {Boolean} isBlend - Whether the ingredient is a blend or not.
+     * @return {Object} The added best match.
+     */
     async addToQABestMatches(ingredientId, qaId, isBlend) {
         let qa = await QANotFound_1.default.findOne({ _id: qaId }).select('name');
         if (!qa) {
@@ -125,6 +140,14 @@ let QAResolver = class QAResolver {
             };
         }
     }
+    /**
+     * Remove an ingredient from the best matches in the QA collection.
+     *
+     * @param {String} ingredientId - The ID of the ingredient to be removed.
+     * @param {String} qaId - The ID of the QA document.
+     * @param {Boolean} isBlend - Indicates whether the ingredient is a blend or not.
+     * @return {AppError|String} - The success message or an error if the ingredient or QA document is not found.
+     */
     async removeFromQABestMatches(ingredientId, qaId, isBlend) {
         let qa = await QANotFound_1.default.findOne({ _id: qaId }).select('name');
         if (!qa) {
@@ -200,6 +223,14 @@ let QAResolver = class QAResolver {
             onModel: 'BlendIngredient',
         };
     }
+    /**
+     * Selects an ingredient for a QA.
+     *
+     * @param {String} ingredientId - The ID of the ingredient.
+     * @param {String} qaId - The ID of the QA.
+     * @param {Boolean} isBlend - Indicates whether the ingredient is a blend.
+     * @return {Promise<any>} The QA data with matched ingredients and best match.
+     */
     async selectIngredientForAnQa(ingredientId, qaId, isBlend) {
         let qa = await QANotFound_1.default.findOne({ _id: qaId }).select('name');
         if (!qa) {
@@ -279,6 +310,13 @@ let QAResolver = class QAResolver {
         });
         return QAData;
     }
+    /**
+     * Calculates the similarity between two arrays.
+     *
+     * @param {any[]} a - The first array.
+     * @param {any[]} b - The second array.
+     * @return {number} The similarity between the two arrays as a percentage.
+     */
     async similar(a, b) {
         var equivalency = 0;
         var minLength = a.length > b.length ? b.length : a.length;
@@ -297,7 +335,15 @@ let QAResolver = class QAResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => QAAdminWithPagination_1.default),
+    (0, type_graphql_1.Query)(() => QAAdminWithPagination_1.default)
+    /**
+     * Retrieves all QA data with pagination.
+     *
+     * @param {number} page - The page number to retrieve.
+     * @param {number} limit - The number of items per page.
+     * @returns {Object} An object containing QAData and totalData.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
@@ -305,7 +351,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAResolver.prototype, "getAllQAData", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => QAIngredientAndPercentage_1.default),
+    (0, type_graphql_1.Mutation)(() => QAIngredientAndPercentage_1.default)
+    /**
+     * Add a new best match to the Q&A.
+     *
+     * @param {String} ingredientId - The ID of the ingredient to add.
+     * @param {String} qaId - The ID of the Q&A.
+     * @param {Boolean} isBlend - Whether the ingredient is a blend or not.
+     * @return {Object} The added best match.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __param(1, (0, type_graphql_1.Arg)('qaId')),
     __param(2, (0, type_graphql_1.Arg)('isBlend')),
@@ -316,7 +371,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAResolver.prototype, "addToQABestMatches", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Remove an ingredient from the best matches in the QA collection.
+     *
+     * @param {String} ingredientId - The ID of the ingredient to be removed.
+     * @param {String} qaId - The ID of the QA document.
+     * @param {Boolean} isBlend - Indicates whether the ingredient is a blend or not.
+     * @return {AppError|String} - The success message or an error if the ingredient or QA document is not found.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __param(1, (0, type_graphql_1.Arg)('qaId')),
     __param(2, (0, type_graphql_1.Arg)('isBlend')),
@@ -337,7 +401,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAResolver.prototype, "addNewBlendIngredientWithQAId", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => QAForAdmin_1.default),
+    (0, type_graphql_1.Mutation)(() => QAForAdmin_1.default)
+    /**
+     * Selects an ingredient for a QA.
+     *
+     * @param {String} ingredientId - The ID of the ingredient.
+     * @param {String} qaId - The ID of the QA.
+     * @param {Boolean} isBlend - Indicates whether the ingredient is a blend.
+     * @return {Promise<any>} The QA data with matched ingredients and best match.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __param(1, (0, type_graphql_1.Arg)('qaId')),
     __param(2, (0, type_graphql_1.Arg)('isBlend')),

@@ -59,6 +59,11 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             .sort({ ingredientName: 1 });
         return blendIngredients;
     }
+    /**
+     * Retrieves all class one ingredients from the database.
+     *
+     * @return {Promise<Array<any>>} An array of class one ingredients.
+     */
     async getAllClassOneIngredients() {
         let blendIngredients = await blendIngredient_1.default.find({
             classType: 'Class - 1',
@@ -193,10 +198,23 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         await blendIngredient_1.default.findOneAndRemove({ _id: id });
         return 'BlendIngredient removed';
     }
+    /**
+     * Adds a new BlendIngredient to the database.
+     *
+     * @param data - The data for the new BlendIngredient.
+     * @returns A message indicating that the BlendIngredient has been added.
+     */
     async addNewBlendIngredient(data) {
         await blendIngredient_1.default.create(data);
         return 'BlendIngredient added';
     }
+    /**
+     * Adds a new blend ingredient from a source by its ID.
+     * This function is only accessible by admin users.
+     *
+     * @param srcId - The ID of the source ingredient.
+     * @returns The data of the added ingredient.
+     */
     async addNewBlendIngredientFromSrc(srcId) {
         let returnData = await (0, addIngredientFromSrc_1.default)(srcId);
         return returnData;
@@ -293,6 +311,12 @@ let BlendIngredientResolver = class BlendIngredientResolver {
     //   },
     // ],
     //FIXME:
+    /**
+     * Retrieves blend ingredient information based on the default portion.
+     *
+     * @param {string} ingredientId - The ID of the ingredient
+     * @return {Promise<any>} - The retrieved blend ingredient information
+     */
     async getBlendIngredientInfoBasedOnDefaultPortion(ingredientId) {
         let ingredient = await blendIngredient_1.default.findOne({
             _id: ingredientId,
@@ -1477,7 +1501,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getAllBlendIngredients", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [ReturnBlendIngredient_1.default]),
+    (0, type_graphql_1.Query)(() => [ReturnBlendIngredient_1.default])
+    /**
+     * Retrieves all class one ingredients from the database.
+     *
+     * @return {Promise<Array<any>>} An array of class one ingredients.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -1531,8 +1561,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "addNewBlendIngredient", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => ReturnBlendIngredient_1.default) //admin
-    ,
+    (0, type_graphql_1.Mutation)(() => ReturnBlendIngredient_1.default),
     __param(0, (0, type_graphql_1.Arg)('srcId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -1547,7 +1576,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "filterIngredientByCategoryAndClass", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => ReturnBlendIngredientBasedOnDefaultPortion_1.default),
+    (0, type_graphql_1.Query)(() => ReturnBlendIngredientBasedOnDefaultPortion_1.default)
+    /**
+     * Retrieves blend ingredient information based on the default portion.
+     *
+     * @param {string} ingredientId - The ID of the ingredient
+     * @return {Promise<any>} - The retrieved blend ingredient information
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

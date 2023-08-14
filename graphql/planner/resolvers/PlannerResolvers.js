@@ -47,6 +47,12 @@ var MergeOrReplace;
     description: 'The basic directions', // this one is optional
 });
 let PlannerResolver = class PlannerResolver {
+    /**
+     * Creates a planner based on the provided data.
+     *
+     * @param {CreatePlanner} data - The data used to create the planner.
+     * @return {Promise<Planner>} - A promise that resolves to the created planner.
+     */
     async createPlanner(data) {
         let isoDate = new Date(data.assignDate).toISOString();
         console.log(isoDate);
@@ -81,6 +87,12 @@ let PlannerResolver = class PlannerResolver {
     //   });
     //   return newPlanner;
     // }
+    /**
+     * Move planner.
+     *
+     * @param {MovePlanner} data - The data for moving the planner.
+     * @return {Promise<any>} The moved planner.
+     */
     async movePlanner(data) {
         let isoDate = new Date(data.assignDate).toISOString();
         let planner = await Planner_1.default.findOne({ _id: data.plannerId });
@@ -107,6 +119,13 @@ let PlannerResolver = class PlannerResolver {
         }
         return returnPlanner;
     }
+    /**
+     * Deletes a planner and removes a recipe from it.
+     *
+     * @param {String} plannerId - The ID of the planner to delete.
+     * @param {String} recipeId - The ID of the recipe to remove from the planner.
+     * @return {String} The result message indicating the status of the operation.
+     */
     async deletePlanner(plannerId, recipeId) {
         let planner = await Planner_1.default.findOneAndUpdate({ _id: plannerId }, { $pull: { recipes: recipeId } }, { new: true }).select('recipes');
         if (planner.recipes.length === 0) {
@@ -116,6 +135,14 @@ let PlannerResolver = class PlannerResolver {
         //NOTE:
         return 'Planner recipe removed';
     }
+    /**
+     * Retrieves a planner based on the specified start and end dates, and user ID.
+     *
+     * @param {string} startDate - The start date of the planner.
+     * @param {string} endDate - The end date of the planner.
+     * @param {String} userId - The ID of the user.
+     * @return {Promise<Object>} - The planner, top ingredients, and recipe categories percentage.
+     */
     async getPlannerByDates(startDate, endDate, userId) {
         let startDateISO = new Date(startDate);
         let endDateISO = new Date(endDate);
@@ -223,10 +250,25 @@ let PlannerResolver = class PlannerResolver {
             recipeCategoriesPercentage: categoryPercentages,
         };
     }
+    /**
+     * Calculates the difference in days between two dates.
+     *
+     * @param {any} date1 - The first date.
+     * @param {any} date2 - The second date.
+     * @return {number} The difference in days.
+     */
     async getDifferenceInDays(date1, date2) {
         const diffInMs = Math.abs(date2 - date1);
         return diffInMs / (1000 * 60 * 60 * 24);
     }
+    /**
+     * Clears the planner for a given date range and user.
+     *
+     * @param {string} startDate - The start date of the date range.
+     * @param {string} endDate - The end date of the date range.
+     * @param {String} userId - The ID of the user.
+     * @return {Promise<string>} A message indicating that the planner was successfully cleared.
+     */
     async clearPlannerByDates(startDate, endDate, userId) {
         let startDateISO = new Date(startDate).toISOString();
         let endDateISO = new Date(endDate).toISOString();
@@ -239,6 +281,12 @@ let PlannerResolver = class PlannerResolver {
         });
         return 'successfully cleared';
     }
+    /**
+     * Retrieves all planners associated with a specific user ID.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Promise} A promise that resolves to an array of planner objects.
+     */
     async getAllPlannersByUserId(userId) {
         return Planner_1.default.find({ memberId: userId })
             .sort({ assignDate: -1 })
@@ -374,6 +422,14 @@ let PlannerResolver = class PlannerResolver {
             }),
         };
     }
+    /**
+     * Retrieves a list of planners for a given user within a specified date range.
+     *
+     * @param {String} userId - The ID of the user.
+     * @param {string} startDate - The start date of the date range in ISO format.
+     * @param {string} endDate - The end date of the date range in ISO format.
+     * @return {Promise<{ recipes: any[]; totalRecipe: number }>} An object containing the list of recipes and the total number of recipes.
+     */
     async getQuedPlanner(userId, 
     // @Arg('limit') limit: number,
     // @Arg('page') page: number,
@@ -482,6 +538,13 @@ let PlannerResolver = class PlannerResolver {
             }),
         };
     }
+    /**
+     * Adds a recipe from the planner to the grocery list for a specific member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @param {String} recipeId - The ID of the recipe.
+     * @return {Promise<string>} A string indicating the result of the operation.
+     */
     async addToGroceryFromPlanner(memberId, recipeId) {
         let recipe = await UserRecipeProfile_1.default.findOne({
             recipeId: recipeId,
@@ -529,6 +592,16 @@ let PlannerResolver = class PlannerResolver {
         await (0, checkGroceryList_1.default)(data, GroceryList_1.default, groceryList);
         return 'successfully added to grocery';
     }
+    /**
+     * Merges or replaces the planner data for a specific date range and member.
+     *
+     * @param {string} startDate - The start date of the date range.
+     * @param {String} endDate - The end date of the date range (nullable).
+     * @param {String} memberId - The ID of the member.
+     * @param {String} planId - The ID of the plan.
+     * @param {MergeOrReplace} mergeOrReplace - The mode for merging or replacing the planner data.
+     * @return {Promise<string>} A promise that resolves to 'done' when the operation is complete.
+     */
     async mergeOrReplacePlanner(startDate, endDate, memberId, planId, mergeOrReplace) {
         let tempDay = new Date(startDate);
         let plan = await Plan_1.default.findOne({
@@ -549,6 +622,14 @@ let PlannerResolver = class PlannerResolver {
         }
         return 'done';
     }
+    /**
+     * Merges the given plan data to the planner for a specific member.
+     *
+     * @param {any[]} planData - An array of plan data to be merged.
+     * @param {Date} tempDate - The temporary date for merging.
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<string>} A Promise that resolves to 'done' when the merging is complete.
+     */
     async mergeToPlanner(planData, tempDate, memberId) {
         for (let i = 0; i < 7; i++) {
             let planner = await Planner_1.default.findOne({
@@ -579,6 +660,14 @@ let PlannerResolver = class PlannerResolver {
         }
         return 'done';
     }
+    /**
+     * Replaces the planner data with new data.
+     *
+     * @param {any[]} planData - An array of planner data.
+     * @param {Date} tempDate - The temporary date.
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<string>} A promise that resolves to 'done' when the operation is complete.
+     */
     async replaceToPlanner(planData, tempDate, memberId) {
         for (let i = 0; i < 7; i++) {
             let planner = await Planner_1.default.findOne({
@@ -606,6 +695,13 @@ let PlannerResolver = class PlannerResolver {
         }
         return 'done';
     }
+    /**
+     * Check for existence in the user profile recipes.
+     *
+     * @param {any[]} recipes - The array of recipes to check.
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<string>} The result of the function.
+     */
     async checkForExistenceInTheUserProfileRecipes(recipes, memberId) {
         for (let i = 0; i < recipes.length; i++) {
             let userRecipe = await UserRecipeProfile_1.default.findOne({
@@ -630,6 +726,11 @@ let PlannerResolver = class PlannerResolver {
         }
         return 'done';
     }
+    /**
+     * Fix the error ingredients in all recipe versions.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the fix is completed.
+     */
     async fixV() {
         await RecipeVersionModel_1.default.updateMany({
             errorIngredients: null,
@@ -640,21 +741,43 @@ let PlannerResolver = class PlannerResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Planner_2.default),
+    (0, type_graphql_1.Mutation)(() => Planner_2.default)
+    /**
+     * Creates a planner based on the provided data.
+     *
+     * @param {CreatePlanner} data - The data used to create the planner.
+     * @return {Promise<Planner>} - A promise that resolves to the created planner.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreatePlanner_1.default]),
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "createPlanner", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Planner_2.default),
+    (0, type_graphql_1.Mutation)(() => Planner_2.default)
+    /**
+     * Move planner.
+     *
+     * @param {MovePlanner} data - The data for moving the planner.
+     * @return {Promise<any>} The moved planner.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [MovePlanner_1.default]),
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "movePlanner", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Deletes a planner and removes a recipe from it.
+     *
+     * @param {String} plannerId - The ID of the planner to delete.
+     * @param {String} recipeId - The ID of the recipe to remove from the planner.
+     * @return {String} The result message indicating the status of the operation.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('plannerId')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __metadata("design:type", Function),
@@ -663,7 +786,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "deletePlanner", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlannersIngredientAndCategoryPercentage_1.default),
+    (0, type_graphql_1.Query)(() => PlannersIngredientAndCategoryPercentage_1.default)
+    /**
+     * Retrieves a planner based on the specified start and end dates, and user ID.
+     *
+     * @param {string} startDate - The start date of the planner.
+     * @param {string} endDate - The end date of the planner.
+     * @param {String} userId - The ID of the user.
+     * @return {Promise<Object>} - The planner, top ingredients, and recipe categories percentage.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('startDate')),
     __param(1, (0, type_graphql_1.Arg)('endDate')),
     __param(2, (0, type_graphql_1.Arg)('userId')),
@@ -672,7 +804,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "getPlannerByDates", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Clears the planner for a given date range and user.
+     *
+     * @param {string} startDate - The start date of the date range.
+     * @param {string} endDate - The end date of the date range.
+     * @param {String} userId - The ID of the user.
+     * @return {Promise<string>} A message indicating that the planner was successfully cleared.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('startDate')),
     __param(1, (0, type_graphql_1.Arg)('endDate')),
     __param(2, (0, type_graphql_1.Arg)('userId')),
@@ -681,7 +822,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "clearPlannerByDates", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [PlannerWithRecipes_1.default]),
+    (0, type_graphql_1.Query)(() => [PlannerWithRecipes_1.default])
+    /**
+     * Retrieves all planners associated with a specific user ID.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Promise} A promise that resolves to an array of planner objects.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -700,7 +848,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "getAllRecipesForPlanner", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => PlannerRecipe_1.default),
+    (0, type_graphql_1.Query)(() => PlannerRecipe_1.default)
+    /**
+     * Retrieves a list of planners for a given user within a specified date range.
+     *
+     * @param {String} userId - The ID of the user.
+     * @param {string} startDate - The start date of the date range in ISO format.
+     * @param {string} endDate - The end date of the date range in ISO format.
+     * @return {Promise<{ recipes: any[]; totalRecipe: number }>} An object containing the list of recipes and the total number of recipes.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __param(1, (0, type_graphql_1.Arg)('startDate')),
     __param(2, (0, type_graphql_1.Arg)('endDate')),
@@ -709,7 +866,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "getQuedPlanner", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Adds a recipe from the planner to the grocery list for a specific member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @param {String} recipeId - The ID of the recipe.
+     * @return {Promise<string>} A string indicating the result of the operation.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('memberId')),
     __param(1, (0, type_graphql_1.Arg)('recipeId')),
     __metadata("design:type", Function),
@@ -718,7 +883,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "addToGroceryFromPlanner", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Merges or replaces the planner data for a specific date range and member.
+     *
+     * @param {string} startDate - The start date of the date range.
+     * @param {String} endDate - The end date of the date range (nullable).
+     * @param {String} memberId - The ID of the member.
+     * @param {String} planId - The ID of the plan.
+     * @param {MergeOrReplace} mergeOrReplace - The mode for merging or replacing the planner data.
+     * @return {Promise<string>} A promise that resolves to 'done' when the operation is complete.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('startDate')),
     __param(1, (0, type_graphql_1.Arg)('endDate', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('memberId')),
@@ -731,7 +907,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "mergeOrReplacePlanner", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Fix the error ingredients in all recipe versions.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the fix is completed.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

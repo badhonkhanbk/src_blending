@@ -150,7 +150,7 @@ let GeneralBlogResolver = class GeneralBlogResolver {
      * @param {String} category - The category to filter by (optional).
      * @return {Array} An array of blog articles that match the filters.
      */
-    async getAllGeneralBlog(currentDate, brand, category) {
+    async getAllGeneralBlog(currentDate, brand, category, withPublished) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         await generalBlog_1.default.updateMany({
             publishDate: {
@@ -164,6 +164,9 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         }
         if (category) {
             find.category = category;
+        }
+        if (withPublished) {
+            find.isPublished = true;
         }
         let blogs = await generalBlog_1.default.find(find)
             .populate('brand')
@@ -403,9 +406,11 @@ __decorate([
     __param(0, (0, type_graphql_1.Arg)('currentDate')),
     __param(1, (0, type_graphql_1.Arg)('brand', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('category', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('withPublished', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String,
-        String]),
+        String,
+        Boolean]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAllGeneralBlog", null);
 __decorate([

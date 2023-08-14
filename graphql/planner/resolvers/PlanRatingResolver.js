@@ -23,6 +23,12 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const CreatePlanRating_1 = __importDefault(require("./input-type/PlanRating/CreatePlanRating"));
 const ReturnRatingInfo_1 = __importDefault(require("../../member/schemas/ReturnRatingInfo"));
 let PlanRatingResolver = class PlanRatingResolver {
+    /**
+     * Update the rating of a plan.
+     *
+     * @param {CreateNewPlanRating} data - The data for updating the plan rating.
+     * @return {Object} - An object containing the updated rating information.
+     */
     async updatePlanRating(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
         if (!user) {
@@ -66,7 +72,14 @@ let PlanRatingResolver = class PlanRatingResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => ReturnRatingInfo_1.default),
+    (0, type_graphql_1.Mutation)(() => ReturnRatingInfo_1.default)
+    /**
+     * Update the rating of a plan.
+     *
+     * @param {CreateNewPlanRating} data - The data for updating the plan rating.
+     * @return {Object} - An object containing the updated rating information.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data', { validate: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreatePlanRating_1.default]),

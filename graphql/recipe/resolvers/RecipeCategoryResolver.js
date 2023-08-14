@@ -21,12 +21,23 @@ const EditRecipeCategory_1 = __importDefault(require("./input-type/EditRecipeCat
 const RecipeCategory_1 = __importDefault(require("../schemas/RecipeCategory"));
 const recipeCategory_1 = __importDefault(require("../../../models/recipeCategory"));
 let RecipeCategoryResolver = class RecipeCategoryResolver {
+    /**
+     * Retrieves all categories from the database.
+     *
+     * @return {Promise<RecipeCategory[]>} An array of recipe categories.
+     */
     async getAllCategories() {
         let recipeCategories = await recipeCategory_1.default.find().sort({
             order: 1,
         });
         return recipeCategories;
     }
+    /**
+     * Retrieves a single category based on the provided recipe category name.
+     *
+     * @param {string} recipeCategoryName - The name of the recipe category.
+     * @return {Promise<RecipeCategory | null>} The retrieved recipe category.
+     */
     async getASingleCategory(recipeCategoryName) {
         console.log('hello');
         let recipeCategory = await recipeCategory_1.default.findOne({
@@ -34,6 +45,12 @@ let RecipeCategoryResolver = class RecipeCategoryResolver {
         });
         return recipeCategory;
     }
+    /**
+     * Orders the recipe category.
+     *
+     * @param {Array<string>} data - An array of strings representing the data to be ordered.
+     * @return {string} - A string indicating the success of the ordering process.
+     */
     async orderingRecipeCategory(data) {
         for (let i = 0; i < data.length; i++) {
             await recipeCategory_1.default.findByIdAndUpdate(data[i], {
@@ -42,6 +59,12 @@ let RecipeCategoryResolver = class RecipeCategoryResolver {
         }
         return 'Recipe Category Ordered';
     }
+    /**
+     * Create a recipe category.
+     *
+     * @param {CreateRecipeCategory} data - The data for creating the recipe category.
+     * @return {Promise<string>} - A success message indicating that the recipe category was created.
+     */
     async createRecipeCategory(data) {
         let categories = await recipeCategory_1.default.find().select('_id');
         let newData = data;
@@ -49,14 +72,31 @@ let RecipeCategoryResolver = class RecipeCategoryResolver {
         let newRecipeCategory = await recipeCategory_1.default.create(newData);
         return 'recipeCategrory Created Successfull';
     }
+    /**
+     * Delete a recipe category.
+     *
+     * @param {string} recipeCategoryId - The ID of the recipe category to be deleted.
+     * @return {Promise<string>} - A promise that resolves to the message "Recipe Category Deleted" upon successful deletion.
+     */
     async deleteRecipeCategory(recipeCategoryId) {
         await recipeCategory_1.default.findByIdAndDelete(recipeCategoryId);
         return 'Recipe Category Deleted';
     }
+    /**
+     * Updates a recipe category.
+     *
+     * @param {EditRecipeCategory} data - The data to update the recipe category.
+     * @return {Promise<string>} A promise that resolves to a string indicating the success of the update.
+     */
     async updateRecipeCategory(data) {
         let recipeCategory = await recipeCategory_1.default.findByIdAndUpdate(data.editId, data.editableObject);
         return 'Recipe Category Updated';
     }
+    /**
+     * Sets the order of the recipe categories.
+     *
+     * @return {string} The message indicating that the order has been set.
+     */
     async setOrder() {
         let recipeCategories = await recipeCategory_1.default.find();
         for (let i = 0; i < recipeCategories.length; i++) {
@@ -68,48 +108,95 @@ let RecipeCategoryResolver = class RecipeCategoryResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)((type) => [RecipeCategory_1.default]),
+    (0, type_graphql_1.Query)((type) => [RecipeCategory_1.default])
+    /**
+     * Retrieves all categories from the database.
+     *
+     * @return {Promise<RecipeCategory[]>} An array of recipe categories.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], RecipeCategoryResolver.prototype, "getAllCategories", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => RecipeCategory_1.default),
+    (0, type_graphql_1.Query)((type) => RecipeCategory_1.default)
+    /**
+     * Retrieves a single category based on the provided recipe category name.
+     *
+     * @param {string} recipeCategoryName - The name of the recipe category.
+     * @return {Promise<RecipeCategory | null>} The retrieved recipe category.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('recipeCategoryName')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeCategoryResolver.prototype, "getASingleCategory", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
+    (0, type_graphql_1.Mutation)((type) => String)
+    /**
+     * Orders the recipe category.
+     *
+     * @param {Array<string>} data - An array of strings representing the data to be ordered.
+     * @return {string} - A string indicating the success of the ordering process.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data', (type) => [String])),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
 ], RecipeCategoryResolver.prototype, "orderingRecipeCategory", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
+    (0, type_graphql_1.Mutation)((type) => String)
+    /**
+     * Create a recipe category.
+     *
+     * @param {CreateRecipeCategory} data - The data for creating the recipe category.
+     * @return {Promise<string>} - A success message indicating that the recipe category was created.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateRecipeCategory_1.default]),
     __metadata("design:returntype", Promise)
 ], RecipeCategoryResolver.prototype, "createRecipeCategory", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
+    (0, type_graphql_1.Mutation)((type) => String)
+    /**
+     * Delete a recipe category.
+     *
+     * @param {string} recipeCategoryId - The ID of the recipe category to be deleted.
+     * @return {Promise<string>} - A promise that resolves to the message "Recipe Category Deleted" upon successful deletion.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('recipeCategoryId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeCategoryResolver.prototype, "deleteRecipeCategory", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
+    (0, type_graphql_1.Mutation)((type) => String)
+    /**
+     * Updates a recipe category.
+     *
+     * @param {EditRecipeCategory} data - The data to update the recipe category.
+     * @return {Promise<string>} A promise that resolves to a string indicating the success of the update.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditRecipeCategory_1.default]),
     __metadata("design:returntype", Promise)
 ], RecipeCategoryResolver.prototype, "updateRecipeCategory", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
+    (0, type_graphql_1.Mutation)((type) => String)
+    /**
+     * Sets the order of the recipe categories.
+     *
+     * @return {string} The message indicating that the order has been set.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

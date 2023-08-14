@@ -6,6 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const memberModel_1 = __importDefault(require("../../../../models/memberModel"));
 const Compare_1 = __importDefault(require("../../../../models/Compare"));
 const userNote_1 = __importDefault(require("../../../../models/userNote"));
+/**
+ * Retrieves notes, compares, and user collections for a given user.
+ *
+ * @param {String} userId - The ID of the user.
+ * @param {any[]} userProfileRecipes - An array of user profile recipes.
+ * @return {any[]} An array of return recipes.
+ */
 async function getNotesCompareAndUserCollection(userId, userProfileRecipes) {
     let returnRecipe = [];
     let collectionRecipes = [];

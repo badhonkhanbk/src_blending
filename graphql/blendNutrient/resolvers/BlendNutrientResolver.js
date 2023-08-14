@@ -272,6 +272,13 @@ let BlendNutrientResolver = class BlendNutrientResolver {
         un._id, data.blendNutrientIdForMaping);
         return 'BlendNutrient Created Successfull';
     }
+    /**
+     * Makes the blend nutrients not blend nutrients.
+     *
+     * @param {String} uniqueNutrientReferrence - The unique nutrient reference.
+     * @param {String} blendNutrientId - The blend nutrient ID.
+     * @return {void} No return value.
+     */
     async makeBlendNutrientsToNotBlendNutrients(uniqueNutrientReferrence, blendNutrientId) {
         let singleMap = await mapToBlend_1.default.findOne({
             srcUniqueNutrientId: uniqueNutrientReferrence,
@@ -300,6 +307,12 @@ let BlendNutrientResolver = class BlendNutrientResolver {
         });
         return;
     }
+    /**
+     * A function that makes the not blend nutrient to blend nutrient.
+     *
+     * @param {String} uniqueNutrientReferrence - The unique nutrient reference.
+     * @param {String} blendNutrientRefference - The blend nutrient reference.
+     */
     async makeNotBlendNutrientToBlendNutrient(uniqueNutrientReferrence, blendNutrientRefference) {
         let blendIngredints = await blendIngredient_1.default.find({
             'notBlendNutrients.uniqueNutrientRefference': uniqueNutrientReferrence,
@@ -423,6 +436,14 @@ let BlendNutrientResolver = class BlendNutrientResolver {
             }
         }
     }
+    /**
+     * Asynchronously makes a bookmark.
+     *
+     * @param {any[]} bookmarkIds - An array of bookmark IDs.
+     * @param {string} parent - The parent ID.
+     * @param {boolean} marked - Indicates if the bookmark should be marked.
+     * @param {string} NutrientId - The Nutrient ID.
+     */
     async makeBookmark(bookmarkIds, parent, marked, NutrientId) {
         if (marked) {
             await blendNutrient_1.default.updateMany({ _id: { $in: bookmarkIds } }, { isBookmarked: marked });
@@ -479,6 +500,13 @@ let BlendNutrientResolver = class BlendNutrientResolver {
             }
         }
     }
+    /**
+     * Finds the immediate parent in the nutrient list and removes the nutrient with the given ID.
+     *
+     * @param {string} immediateParent - The ID of the immediate parent.
+     * @param {string} nutrientId - The ID of the nutrient to be removed.
+     * @return {Promise<string>} - The ID of the immediate parent after removing the nutrient.
+     */
     async findParentAndRemoveFromTheNutrientList(immediateParent, nutrientId) {
         let blendNutrient = await blendNutrient_1.default.findOne({
             _id: immediateParent,
@@ -498,6 +526,12 @@ let BlendNutrientResolver = class BlendNutrientResolver {
             blendNutrient.parent, nutrientId);
         }
     }
+    /**
+     * Retrieves blend nutrients based on category.
+     *
+     * @param {string} nutrientCategoryId - The ID of the nutrient category.
+     * @return {Promise<BlendNutrientModel[]>} An array of blend nutrients.
+     */
     async getBlendNutrientsBasedOnCategoey(nutrientCategoryId) {
         let blendNutrients = await blendNutrient_1.default.find({
             category: nutrientCategoryId,
@@ -561,7 +595,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendNutrientResolver.prototype, "showChildren", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [BlendNutrientData_1.default]),
+    (0, type_graphql_1.Query)(() => [BlendNutrientData_1.default])
+    /**
+     * Retrieves blend nutrients based on category.
+     *
+     * @param {string} nutrientCategoryId - The ID of the nutrient category.
+     * @return {Promise<BlendNutrientModel[]>} An array of blend nutrients.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('nutrientCategoryId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

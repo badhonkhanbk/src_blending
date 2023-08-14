@@ -54,6 +54,11 @@ const GetASingleRecipe_1 = __importDefault(require("./util/GetASingleRecipe"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
 const Collection_1 = __importDefault(require("../../member/schemas/Collection"));
 let RecipeResolver = class RecipeResolver {
+    /**
+     * Asynchronously executes the tya function.
+     *
+     * @return {Promise<string>} A string indicating the completion of the function.
+     */
     async tya() {
         let recipeVersions = await RecipeVersionModel_1.default.find({
             gigl: null,
@@ -64,6 +69,12 @@ let RecipeResolver = class RecipeResolver {
         }
         return 'done';
     }
+    /**
+     * Retrieves the compare list for a given user.
+     *
+     * @param {string} userId - The ID of the user.
+     * @return {Array} An array of recipes in the compare list, with additional information.
+     */
     async getCompareList(userId) {
         const compareList = await Compare_1.default.find({ userId: userId }).populate({
             path: 'recipeId',
@@ -260,6 +271,12 @@ let RecipeResolver = class RecipeResolver {
         return returnRecipe;
     }
     //CHECK:
+    /**
+     * Retrieves all recipes and their associated data.
+     *
+     * @param {String} userId - The ID of the user. Nullable.
+     * @return {Array} An array of recipe objects.
+     */
     async getAllRecipes(userId) {
         if (userId) {
             const recipes = await recipeModel_1.default.find({})
@@ -525,6 +542,15 @@ let RecipeResolver = class RecipeResolver {
         }
         return returnRecipe;
     }
+    /**
+     * Search recipes based on the provided search term, user ID, page number, and limit.
+     *
+     * @param {String} searchTerm - The term to search for recipes.
+     * @param {String} userId - The ID of the user.
+     * @param {number} page - The page number for pagination (optional).
+     * @param {number} limit - The maximum number of recipes to return per page (optional).
+     * @return {Object} An object containing an array of recipes and the total number of recipes found.
+     */
     async searchRecipes(searchTerm, userId, page, limit) {
         if (searchTerm.trim() === '') {
             return {
@@ -597,6 +623,12 @@ let RecipeResolver = class RecipeResolver {
             totalRecipes: userProfileRecipesTotalCount,
         };
     }
+    /**
+     * Retrieves all the latest recipes for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Array} An array of recipes.
+     */
     async getAllLatestRecipes(userId) {
         const recipes = await recipeModel_1.default.find({
             global: true,
@@ -681,6 +713,14 @@ let RecipeResolver = class RecipeResolver {
         }
         return returnRecipe;
     }
+    /**
+     * Retrieves a recipe based on the provided recipeId, userId, and token.
+     *
+     * @param {String} recipeId - The ID of the recipe to retrieve.
+     * @param {String} userId - The ID of the user.
+     * @param {String} token - The token for authentication (optional).
+     * @return {Object} The retrieved recipe and additional data.
+     */
     async getARecipe(recipeId, userId, token) {
         if (token) {
             if (!userId) {
@@ -781,6 +821,12 @@ let RecipeResolver = class RecipeResolver {
             userCollections: collectionData,
         };
     }
+    /**
+     * Retrieves a recipe for an admin based on the provided recipe ID.
+     *
+     * @param {String} recipeId - The ID of the recipe to retrieve.
+     * @return {Promise<Recipe>} The retrieved recipe.
+     */
     async getARecipeForAdmin(recipeId) {
         const recipe = await recipeModel_1.default.findById(recipeId)
             .populate({
@@ -791,6 +837,13 @@ let RecipeResolver = class RecipeResolver {
             .populate('recipeBlendCategory');
         return recipe;
     }
+    /**
+     * Edits a recipe.
+     *
+     * @param {EditARecipe} data - the data of the recipe to be edited
+     * @param {String} userId - the ID of the user editing the recipe
+     * @return {String} - a message indicating the success or failure of the operation
+     */
     async editARecipe(data, userId) {
         let recipe = await recipeModel_1.default.findOne({ _id: data.editId });
         if (String(recipe.userId) === userId) {
@@ -802,6 +855,13 @@ let RecipeResolver = class RecipeResolver {
             return new AppError_1.default('You are not authorized to edit this recipe', 401);
         }
     }
+    /**
+     * Deletes a recipe from the database.
+     *
+     * @param {string} recipeId - The ID of the recipe to be deleted.
+     * @param {string} userId - The ID of the user who is deleting the recipe.
+     * @return {string} A message indicating the result of the deletion.
+     */
     async deleteARecipe(recipeId, userId) {
         let user = await memberModel_1.default.findOne({ _id: userId }).populate('collections');
         if (!user) {
@@ -878,6 +938,13 @@ let RecipeResolver = class RecipeResolver {
         let recipe = await recipeModel_1.default.create(newData);
         return 'recipe added successfully';
     }
+    /**
+     * Adds a recipe from a user.
+     *
+     * @param {CreateRecipe} data - the recipe data
+     * @param {Boolean} isAddToTemporaryCompareList - whether to add the recipe to the temporary compare list
+     * @return {Promise} - a promise that resolves to the added recipe
+     */
     async addRecipeFromUser(data, isAddToTemporaryCompareList) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -1779,13 +1846,26 @@ let RecipeResolver = class RecipeResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)((type) => String),
+    (0, type_graphql_1.Query)((type) => String)
+    /**
+     * Asynchronously executes the tya function.
+     *
+     * @return {Promise<string>} A string indicating the completion of the function.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "tya", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Recipe_1.default]),
+    (0, type_graphql_1.Query)(() => [Recipe_1.default])
+    /**
+     * Retrieves the compare list for a given user.
+     *
+     * @param {string} userId - The ID of the user.
+     * @return {Array} An array of recipes in the compare list, with additional information.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -1800,7 +1880,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getAllRecipesByBlendCategory", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [Recipe_1.default]),
+    (0, type_graphql_1.Query)((type) => [Recipe_1.default])
+    /**
+     * Retrieves all recipes and their associated data.
+     *
+     * @param {String} userId - The ID of the user. Nullable.
+     * @return {Array} An array of recipe objects.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -1823,7 +1910,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getAllpopularRecipes", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => RecipesWithPagination_1.default),
+    (0, type_graphql_1.Query)(() => RecipesWithPagination_1.default)
+    /**
+     * Search recipes based on the provided search term, user ID, page number, and limit.
+     *
+     * @param {String} searchTerm - The term to search for recipes.
+     * @param {String} userId - The ID of the user.
+     * @param {number} page - The page number for pagination (optional).
+     * @param {number} limit - The maximum number of recipes to return per page (optional).
+     * @return {Object} An object containing an array of recipes and the total number of recipes found.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('searchTerm')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
@@ -1834,14 +1931,30 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "searchRecipes", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [Recipe_1.default]),
+    (0, type_graphql_1.Query)((type) => [Recipe_1.default])
+    /**
+     * Retrieves all the latest recipes for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Array} An array of recipes.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getAllLatestRecipes", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => Recipe_1.default),
+    (0, type_graphql_1.Query)((type) => Recipe_1.default)
+    /**
+     * Retrieves a recipe based on the provided recipeId, userId, and token.
+     *
+     * @param {String} recipeId - The ID of the recipe to retrieve.
+     * @param {String} userId - The ID of the user.
+     * @param {String} token - The token for authentication (optional).
+     * @return {Object} The retrieved recipe and additional data.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('recipeId', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __param(2, (0, type_graphql_1.Arg)('token', { nullable: true })),
@@ -1852,14 +1965,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getARecipe", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => SimpleRecipe_1.default),
+    (0, type_graphql_1.Query)((type) => SimpleRecipe_1.default)
+    /**
+     * Retrieves a recipe for an admin based on the provided recipe ID.
+     *
+     * @param {String} recipeId - The ID of the recipe to retrieve.
+     * @return {Promise<Recipe>} The retrieved recipe.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('recipeId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "getARecipeForAdmin", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
+    (0, type_graphql_1.Mutation)((type) => String)
+    /**
+     * Edits a recipe.
+     *
+     * @param {EditARecipe} data - the data of the recipe to be edited
+     * @param {String} userId - the ID of the user editing the recipe
+     * @return {String} - a message indicating the success or failure of the operation
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
@@ -1868,7 +1996,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "editARecipe", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
+    (0, type_graphql_1.Mutation)((type) => String)
+    /**
+     * Deletes a recipe from the database.
+     *
+     * @param {string} recipeId - The ID of the recipe to be deleted.
+     * @param {string} userId - The ID of the user who is deleting the recipe.
+     * @return {string} A message indicating the result of the deletion.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('recipeId')),
     __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
@@ -1884,7 +2020,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "addRecipeFromAdmin", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => ProfileRecipeDesc_1.default),
+    (0, type_graphql_1.Mutation)((type) => ProfileRecipeDesc_1.default)
+    /**
+     * Adds a recipe from a user.
+     *
+     * @param {CreateRecipe} data - the recipe data
+     * @param {Boolean} isAddToTemporaryCompareList - whether to add the recipe to the temporary compare list
+     * @return {Promise} - a promise that resolves to the added recipe
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __param(1, (0, type_graphql_1.Arg)('isAddToTemporaryCompareList')),
     __metadata("design:type", Function),

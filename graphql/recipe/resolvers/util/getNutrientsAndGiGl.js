@@ -7,6 +7,12 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const blendIngredient_1 = __importDefault(require("../../../../models/blendIngredient"));
 const blendNutrient_1 = __importDefault(require("../../../../models/blendNutrient"));
 const blendNutrientCategory_1 = __importDefault(require("../../../../models/blendNutrientCategory"));
+/**
+ * Retrieves the list of nutrients and GI/GL values based on the provided ingredients information.
+ *
+ * @param {BlendIngredientInfo[]} ingredientsInfo - The information about the blend ingredients.
+ * @return {Promise<{ nutrients: any; giGl: any; }>} - The Promise that resolves to an object containing the list of nutrients and the GI/GL values.
+ */
 async function getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
     let nutrientList = await getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
     // console.log(nutrientList);
