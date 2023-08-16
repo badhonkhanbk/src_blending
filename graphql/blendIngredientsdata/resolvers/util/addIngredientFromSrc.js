@@ -7,6 +7,12 @@ const AppError_1 = __importDefault(require("../../../../utils/AppError"));
 const ingredient_1 = __importDefault(require("../../../../models/ingredient"));
 const blendIngredient_1 = __importDefault(require("../../../../models/blendIngredient"));
 const mapToBlend_1 = __importDefault(require("../../../../models/mapToBlend"));
+/**
+ * Adds an ingredient from a source by its ID.
+ *
+ * @param {String} srcId - The ID of the source food.
+ * @return {Promise<any>} - The newly created blend ingredient.
+ */
 async function addIngredientFromSrc(srcId) {
     let srcFood = await ingredient_1.default.findOne({ _id: srcId });
     if (!srcFood) {

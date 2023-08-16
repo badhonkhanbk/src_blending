@@ -170,6 +170,12 @@ let GeneralBlogCollectionResolver = class GeneralBlogCollectionResolver {
             defaultCollection: defaultCollection,
         };
     }
+    /**
+     * Adds a new blog collection.
+     *
+     * @param {AddNewBlogCollection} data - The data for the new blog collection.
+     * @return {Promise<BlogCollection>} The newly created blog collection.
+     */
     async addNewBlogCollection(data) {
         let previousCollection = await generalBlogCollection_1.default.findOne({
             memberId: data.memberId,
@@ -339,7 +345,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogCollectionResolver.prototype, "addOrRemoveToBlogCollection", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => BlogCollection_1.default),
+    (0, type_graphql_1.Mutation)(() => BlogCollection_1.default)
+    /**
+     * Adds a new blog collection.
+     *
+     * @param {AddNewBlogCollection} data - The data for the new blog collection.
+     * @return {Promise<BlogCollection>} The newly created blog collection.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AddNewBlogCollection_1.default]),

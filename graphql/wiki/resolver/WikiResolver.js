@@ -1133,7 +1133,9 @@ let WikiResolver = class WikiResolver {
     async makeOtherIngredientWiki() {
         let blendIngredients = await blendIngredient_1.default.find().select('wikiTitle _id ingredientName wikiDescription category blendStatus createdAt portions featuredImage description isPublished');
         for (let i = 0; i < blendIngredients.length; i++) {
-            let wiki = await wiki_1.default.findOne({ _id: blendIngredients[i]._id }).select('_id');
+            let wiki = await wiki_1.default.findOne({
+                _id: blendIngredients[i]._id,
+            }).select('_id');
             if (!wiki) {
                 let data = {
                     _id: blendIngredients[i]._id,

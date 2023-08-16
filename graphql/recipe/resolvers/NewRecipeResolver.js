@@ -365,6 +365,11 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
+    /**
+     * A description of the entire function.
+     *
+     * @return {Promise<void>} description of return value
+     */
     async shanto() {
         await recipeModel_1.default.updateMany({
             recipeBlendCategory: null,
@@ -459,7 +464,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllLatestRecipes2", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => String),
+    (0, type_graphql_1.Query)((type) => String)
+    /**
+     * A description of the entire function.
+     *
+     * @return {Promise<void>} description of return value
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

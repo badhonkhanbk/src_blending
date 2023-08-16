@@ -58,11 +58,11 @@ const makeShareRecipe_1 = __importDefault(require("../../share/util/makeShareRec
 // };
 let MemberResolver = class MemberResolver {
     /**
-   * Retrieves all simple collections for a given user.
-   *
-   * @param {String} userId - The ID of the user.
-   * @return {Array} An array of collection data, including the ID and name of each collection.
-   */
+     * Retrieves all simple collections for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Array} An array of collection data, including the ID and name of each collection.
+     */
     async getAllSimpleCollections(userId) {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
@@ -78,11 +78,11 @@ let MemberResolver = class MemberResolver {
         return collections;
     }
     /**
-   * Retrieves all collections with recipes for a given user.
-   *
-   * @param {String} userId - The ID of the user.
-   * @return {Array} An array of collections with recipes.
-   */
+     * Retrieves all collections with recipes for a given user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Array} An array of collections with recipes.
+     */
     async getAllCollectionsWithRecipes(userId) {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
@@ -254,12 +254,12 @@ let MemberResolver = class MemberResolver {
         return collections;
     }
     /**
-   * Retrieves the recipes from the user's profile based on the given recipe IDs and user ID.
-   *
-   * @param {Array} recipeIds - An array of recipe IDs
-   * @param {String} userId - The ID of the user
-   * @return {Promise} A promise that resolves to the retrieved recipes
-   */
+     * Retrieves the recipes from the user's profile based on the given recipe IDs and user ID.
+     *
+     * @param {Array} recipeIds - An array of recipe IDs
+     * @param {String} userId - The ID of the user
+     * @return {Promise} A promise that resolves to the retrieved recipes
+     */
     async getProfileRecipes(recipeIds, userId) {
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
@@ -302,11 +302,11 @@ let MemberResolver = class MemberResolver {
         return returnRecipe;
     }
     /**
-   * Retrieves the user's collections and themes.
-   *
-   * @param {String} userId - The ID of the user.
-   * @return {Object} - An object containing the user's collections.
-   */
+     * Retrieves the user's collections and themes.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Object} - An object containing the user's collections.
+     */
     async getUserCollectionsAndThemes(userId) {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
@@ -381,14 +381,14 @@ let MemberResolver = class MemberResolver {
         };
     }
     /**
-   * Retrieves and returns a shared collection based on the provided token.
-   *
-   * @param {String} userId - The ID of the user making the request.
-   * @param {String} token - The token associated with the shared collection.
-   * @param {number} [page] - The page number of the shared collection (default: 1).
-   * @param {number} [limit] - The maximum number of recipes to return per page (default: 10).
-   * @return {Object} - An object containing the details of the shared collection and its recipes.
-   */
+     * Retrieves and returns a shared collection based on the provided token.
+     *
+     * @param {String} userId - The ID of the user making the request.
+     * @param {String} token - The token associated with the shared collection.
+     * @param {number} [page] - The page number of the shared collection (default: 1).
+     * @param {number} [limit] - The maximum number of recipes to return per page (default: 10).
+     * @return {Object} - An object containing the details of the shared collection and its recipes.
+     */
     async viewSharedCollection(userId, token, page, limit) {
         if (!page || page <= 0) {
             page = 1;
@@ -429,17 +429,17 @@ let MemberResolver = class MemberResolver {
         };
     }
     /**
-   * Retrieves a single collection based on the provided parameters.
-   *
-   * @param {String} slug - The slug of the collection.
-   * @param {String} userId - The ID of the user.
-   * @param {String} collectionId - The ID of the collection (nullable).
-   * @param {String} token - The token associated with the collection (nullable).
-   * @param {String} singleRecipeCollectionId - The ID of the single recipe collection (nullable).
-   * @param {number} page - The page number (nullable).
-   * @param {number} limit - The maximum number of items to retrieve (nullable).
-   * @return {Object} The retrieved collection.
-   */
+     * Retrieves a single collection based on the provided parameters.
+     *
+     * @param {String} slug - The slug of the collection.
+     * @param {String} userId - The ID of the user.
+     * @param {String} collectionId - The ID of the collection (nullable).
+     * @param {String} token - The token associated with the collection (nullable).
+     * @param {String} singleRecipeCollectionId - The ID of the single recipe collection (nullable).
+     * @param {number} page - The page number (nullable).
+     * @param {number} limit - The maximum number of items to retrieve (nullable).
+     * @return {Object} The retrieved collection.
+     */
     async getASingleCollection(slug, userId, collectionId, token, singleRecipeCollectionId, page, limit) {
         let searchId;
         let query = {};
@@ -544,11 +544,11 @@ let MemberResolver = class MemberResolver {
         };
     }
     /**
-   * Creates a new user.
-   *
-   * @param {NewUserInput} data - the data for the new user
-   * @return {Promise<any>} the newly created user
-   */
+     * Creates a new user.
+     *
+     * @param {NewUserInput} data - the data for the new user
+     * @return {Promise<any>} the newly created user
+     */
     async createNewUser(data) {
         let user = await memberModel_1.default.findOne({ email: data.email }).select('_id');
         if (!user) {
@@ -610,11 +610,11 @@ let MemberResolver = class MemberResolver {
         return returnUser;
     }
     /**
-   * Retrieves a single user by their email address.
-   *
-   * @param {String} email - The email address of the user.
-   * @return {Promise} A promise that resolves to the user object.
-   */
+     * Retrieves a single user by their email address.
+     *
+     * @param {String} email - The email address of the user.
+     * @return {Promise} A promise that resolves to the user object.
+     */
     async getASingleUserByEmail(email) {
         let user = await memberModel_1.default.findOne({ email })
             .populate('configuration')
@@ -632,11 +632,11 @@ let MemberResolver = class MemberResolver {
         return user;
     }
     /**
-   * Retrieves a single user by their ID.
-   *
-   * @param {String} id - The ID of the user to retrieve.
-   * @return {Promise<User>} The retrieved user object.
-   */
+     * Retrieves a single user by their ID.
+     *
+     * @param {String} id - The ID of the user to retrieve.
+     * @return {Promise<User>} The retrieved user object.
+     */
     async getASingleUserById(id) {
         let user = await memberModel_1.default.findOne({ _id: id })
             .populate('configuration')
@@ -650,11 +650,11 @@ let MemberResolver = class MemberResolver {
         return user;
     }
     /**
-   * Creates a new collection.
-   *
-   * @param {CreateNewCollection} data - the data for creating the collection
-   * @return {Promise<any>} returns the newly created collection
-   */
+     * Creates a new collection.
+     *
+     * @param {CreateNewCollection} data - the data for creating the collection
+     * @return {Promise<any>} returns the newly created collection
+     */
     async createNewCollection(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId }).populate('collections');
         if (!user)
@@ -686,11 +686,11 @@ let MemberResolver = class MemberResolver {
     }
     async createCollectionAndShare(data) { }
     /**
-   * Adds a new collection with data.
-   *
-   * @param {CreateNewCollection} data - the data for the new collection
-   * @return {Promise<any>} the newly created collection
-   */
+     * Adds a new collection with data.
+     *
+     * @param {CreateNewCollection} data - the data for the new collection
+     * @return {Promise<any>} the newly created collection
+     */
     async addNewCollectionWithData(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId }).populate('collections');
         if (!user)
@@ -724,10 +724,10 @@ let MemberResolver = class MemberResolver {
         return collection;
     }
     /**
-   * Retrieves all users from the database.
-   *
-   * @return {Promise<MemberModel[]>} An array of user objects.
-   */
+     * Retrieves all users from the database.
+     *
+     * @return {Promise<MemberModel[]>} An array of user objects.
+     */
     async getAllusers() {
         let users = await memberModel_1.default.find().populate('configuration');
         return users;
@@ -747,73 +747,73 @@ let MemberResolver = class MemberResolver {
         return users;
     }
     /**
-   * Removes a user by their ID.
-   *
-   * @param {String} userId - The ID of the user to be removed.
-   * @return {Promise<String>} - A promise that resolves to a string indicating the removal was successful.
-   */
+     * Removes a user by their ID.
+     *
+     * @param {String} userId - The ID of the user to be removed.
+     * @return {Promise<String>} - A promise that resolves to a string indicating the removal was successful.
+     */
     async removeAUserById(userId) {
         await memberModel_1.default.findByIdAndRemove(userId);
         return 'successfully Removed';
     }
     /**
-   * Removes a user by email.
-   *
-   * @param {String} email - The email of the user to remove.
-   * @return {String} A string indicating that the user was successfully removed.
-   */
+     * Removes a user by email.
+     *
+     * @param {String} email - The email of the user to remove.
+     * @return {String} A string indicating that the user was successfully removed.
+     */
     async removeAUserByemail(email) {
         await memberModel_1.default.findOneAndRemove({ email: email });
         return 'successfully Removed';
     }
     /**
-   * Retrieves a single user by their ID.
-   *
-   * @param {String} userId - The ID of the user.
-   * @return {Promise<User>} The user object.
-   */
+     * Retrieves a single user by their ID.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Promise<User>} The user object.
+     */
     async getSingleUSerById(userId) {
         let user = await memberModel_1.default.findById(userId).populate('configuration');
         return user;
     }
     /**
-   * Edit a user by their email address.
-   *
-   * @param {EditUser} data - The data for editing the user.
-   * @return {Promise<string>} - A promise that resolves to 'Success' if the user was successfully edited.
-   */
+     * Edit a user by their email address.
+     *
+     * @param {EditUser} data - The data for editing the user.
+     * @return {Promise<string>} - A promise that resolves to 'Success' if the user was successfully edited.
+     */
     async editUserByEmail(data) {
         await memberModel_1.default.findOneAndUpdate({ email: data.editId }, data.editableObject);
         return 'Success';
     }
     /**
-   * Edits a user by their ID.
-   *
-   * @param {EditUser} data - The data to edit the user with.
-   * @return {Promise<string>} Returns a promise that resolves to a string indicating success.
-   */
+     * Edits a user by their ID.
+     *
+     * @param {EditUser} data - The data to edit the user with.
+     * @return {Promise<string>} Returns a promise that resolves to a string indicating success.
+     */
     async editUserById(data) {
         await memberModel_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'Success';
     }
     /**
-   * Changes the compare mechanism for a given recipe and user.
-   *
-   * @param {String} recipeId - The ID of the recipe.
-   * @param {String} userId - The ID of the user.
-   * @return {Promise} A promise that resolves with the result of the change compare mechanism operation.
-   */
+     * Changes the compare mechanism for a given recipe and user.
+     *
+     * @param {String} recipeId - The ID of the recipe.
+     * @param {String} userId - The ID of the user.
+     * @return {Promise} A promise that resolves with the result of the change compare mechanism operation.
+     */
     async changeCompare(recipeId, userId
     // @Arg('versionId') versionId: String
     ) {
         return await (0, changeCompare_1.default)(recipeId, userId);
     }
     /**
-   * Empty the compare list for a user.
-   *
-   * @param {String} userId - The ID of the user.
-   * @return {Promise<string>} A string indicating the success of the operation.
-   */
+     * Empty the compare list for a user.
+     *
+     * @param {String} userId - The ID of the user.
+     * @return {Promise<string>} A string indicating the success of the operation.
+     */
     async emptyCompareList(userId) {
         let user = await memberModel_1.default.findOne({ _id: userId });
         await memberModel_1.default.findOneAndUpdate({ _id: userId }, { $set: { compareList: [], compareLength: 0 } });
@@ -821,10 +821,10 @@ let MemberResolver = class MemberResolver {
         return 'Success';
     }
     /**
-   * Retrieves all users from the MemberModel and updates their collections.
-   *
-   * @return {number} The number 1.
-   */
+     * Retrieves all users from the MemberModel and updates their collections.
+     *
+     * @return {number} The number 1.
+     */
     async yyyy() {
         let users = await memberModel_1.default.find().select('collections');
         for (let i = 0; i < users.length; i++) {
@@ -839,11 +839,11 @@ let MemberResolver = class MemberResolver {
         return 1;
     }
     /**
-   * Retrieves a single recipe collection for a given user.
-   *
-   * @param {string} userId - The ID of the user.
-   * @return {Object} - The single recipe collection.
-   */
+     * Retrieves a single recipe collection for a given user.
+     *
+     * @param {string} userId - The ID of the user.
+     * @return {Object} - The single recipe collection.
+     */
     async getSingleRecipeCollection(userId) {
         let shares = await share_1.default.find({
             shareTo: {

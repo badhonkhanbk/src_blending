@@ -827,6 +827,12 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             recipeId: recipeId,
         };
     }
+    /**
+     * Retrieves the list of nutrients and GI/GL values based on the given ingredients information.
+     *
+     * @param {BlendIngredientInfo[]} ingredientsInfo - An array of BlendIngredientInfo objects representing the ingredients information.
+     * @return {Promise<{ nutrients: any[]; giGl: any[]; }>} A Promise that resolves to an object containing the list of nutrients and GI/GL values.
+     */
     async getNutrientsListAndGiGlByIngredients(ingredientsInfo) {
         let nutrientList = await this.getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
         let giGl = await this.getGlAndNetCarbs2(ingredientsInfo);
@@ -835,6 +841,13 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             giGl: giGl,
         };
     }
+    /**
+     * Retrieves the list of nutrients and GI/GL values for a given list of ingredients
+     * to be used for the scrapping panel.
+     *
+     * @param {BlendIngredientInfo[]} ingredientsInfo - The information about the blend ingredients.
+     * @return {Promise<{nutrients: type, giGl: type}>} - The list of nutrients and GI/GL values.
+     */
     async getNutrientsListAndGiGlByIngredientsForScrappingPanel(ingredientsInfo) {
         let nutrientList = await this.getBlendNutritionForScrappingPanel(ingredientsInfo);
         let giGl = await this.getGlAndNetCarbs2(ingredientsInfo);
@@ -990,6 +1003,13 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         return JSON.stringify(obj);
     }
+    /**
+     * Retrieves the child nutrients of a given parent nutrient.
+     *
+     * @param {any} parent - The parent nutrient.
+     * @param {any[]} returnNutrients - The array of nutrients to return.
+     * @return {Promise<any>} A promise that resolves to the child nutrients.
+     */
     async getChild(parent, returnNutrients) {
         let obj = {};
         let childs = await blendNutrient_1.default.find({ parent: parent })
@@ -1022,6 +1042,13 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         return obj;
     }
+    /**
+     * Retrieves the top-level child nutrients for a given category.
+     *
+     * @param {any} category - The category to retrieve the top-level child nutrients for.
+     * @param {any[]} returnNutrients - An array of nutrients to return.
+     * @return {Promise<any>} An object containing the top-level child nutrients.
+     */
     async getTopLevelChilds(category, returnNutrients) {
         let obj = {};
         let childs = await blendNutrient_1.default.find({
@@ -1063,6 +1090,12 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         return obj;
     }
+    /**
+     * Retrieves all ingredients data based on nutrition.
+     *
+     * @param {GetIngredientsFromNutrition} data - The data containing the nutrition ID and category.
+     * @return {any} An array of ingredients sorted by their value in descending order.
+     */
     async getAllIngredientsDataBasedOnNutrition(data) {
         let nutrient = await blendNutrient_1.default.findOne({
             _id: data.nutritionID,
@@ -1140,6 +1173,11 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         });
         return result;
     }
+    /**
+     * Asynchronously changes the blend nutrients.
+     *
+     * @return {Promise<string>} The result of the function.
+     */
     async changeBlendNutrients() {
         let blendIngredients = await blendIngredient_1.default.find();
         for (let i = 1; i < blendIngredients.length; i++) {
@@ -1168,6 +1206,11 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         return 'done';
     }
+    /**
+     * Change the blend nutrients.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the blend nutrients are successfully changed.
+     */
     async changeBlendNutrients23() {
         let blendNutrients = await blendNutrient_1.default.find({});
         for (let i = 0; i < blendNutrients.length; i++) {
@@ -1184,6 +1227,11 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         return 'done';
     }
+    /**
+     * Asynchronously changes the water value.
+     *
+     * @return {string} The string 'done' indicating the function has finished.
+     */
     async changeWaterValue() {
         let blendIngredients = await blendIngredient_1.default.find({});
         for (let i = 1; i < blendIngredients.length; i++) {
@@ -1209,6 +1257,13 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         return 'done';
     }
+    /**
+     * This function changes the value of GI (Glycemic Index) for a given ingredient and returns the GL (Glycemic Load) based on the new GI.
+     *
+     * @param {String} ingredientId - The ID of the ingredient for which the GI needs to be changed.
+     * @param {Number} GI - The new value of the GI.
+     * @return {Object} - An object containing the total GI (Glycemic Index), net carbs, and total GL (Glycemic Load) based on the new GI.
+     */
     async changeGIandGetGL(ingredientId, GI) {
         let ingredient = await blendIngredient_1.default.findOne({
             _id: ingredientId,
@@ -1229,6 +1284,12 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 value: Number(+defaultPortion.meausermentWeight),
             },
         ];
+        /**
+         * Retrieves the blend nutrition based on the provided blend ingredient information.
+         *
+         * @param {BlendIngredientInfo[]} ingredientsInfo - The blend ingredient information.
+         * @return {ReturnType} The blend nutrition based on the provided blend ingredient information.
+         */
         let AuthUser = (ingredientsInfo) => {
             return this.getBlendNutritionBasedOnRecipexxx(ingredientsInfo);
         };
@@ -1249,6 +1310,12 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             totalGL: totalGL,
         };
     }
+    /**
+     * Calculates the Gl and Net Carbs for the given versionId.
+     *
+     * @param {string} versionId - The ID of the recipe version
+     * @return {object} - An object containing the totalGi, netCarbs, and totalGL
+     */
     async getGlAndNetCarbs(versionId) {
         let recipeVersion = await RecipeVersionModel_1.default.findOne({
             _id: versionId,
@@ -1328,6 +1395,12 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             totalGL: totalGL,
         };
     }
+    /**
+     * Retrieves the glycemic load and net carbs for a given set of ingredients.
+     *
+     * @param {BlendIngredientInfo[]} ingredientsInfo - An array of BlendIngredientInfo objects representing the ingredients.
+     * @return {Object} An object containing the total glycemic load (totalGi), net carbs (netCarbs), and total glycemic load (totalGL).
+     */
     async getGlAndNetCarbs2(ingredientsInfo) {
         let res = [];
         let overAllGi = 0;
@@ -1668,14 +1741,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "searchInScrappedRecipeFromUser", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => NutrientsWithGiGl_1.default),
+    (0, type_graphql_1.Query)(() => NutrientsWithGiGl_1.default)
+    /**
+     * Retrieves the list of nutrients and GI/GL values based on the given ingredients information.
+     *
+     * @param {BlendIngredientInfo[]} ingredientsInfo - An array of BlendIngredientInfo objects representing the ingredients information.
+     * @return {Promise<{ nutrients: any[]; giGl: any[]; }>} A Promise that resolves to an object containing the list of nutrients and GI/GL values.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getNutrientsListAndGiGlByIngredients", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => NutrientListAndGiGlForScrapper_1.default),
+    (0, type_graphql_1.Query)(() => NutrientListAndGiGlForScrapper_1.default)
+    /**
+     * Retrieves the list of nutrients and GI/GL values for a given list of ingredients
+     * to be used for the scrapping panel.
+     *
+     * @param {BlendIngredientInfo[]} ingredientsInfo - The information about the blend ingredients.
+     * @return {Promise<{nutrients: type, giGl: type}>} - The list of nutrients and GI/GL values.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
@@ -1698,32 +1786,65 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getBlendNutritionBasedOnRecipexxx", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [IngredientForWiki_1.default]),
+    (0, type_graphql_1.Query)(() => [IngredientForWiki_1.default])
+    /**
+     * Retrieves all ingredients data based on nutrition.
+     *
+     * @param {GetIngredientsFromNutrition} data - The data containing the nutrition ID and category.
+     * @return {any} An array of ingredients sorted by their value in descending order.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [GetIngredientsFromNutrition_1.default]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getAllIngredientsDataBasedOnNutrition", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Asynchronously changes the blend nutrients.
+     *
+     * @return {Promise<string>} The result of the function.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "changeBlendNutrients", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Change the blend nutrients.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the blend nutrients are successfully changed.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "changeBlendNutrients23", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Asynchronously changes the water value.
+     *
+     * @return {string} The string 'done' indicating the function has finished.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "changeWaterValue", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => GIGl_1.default),
+    (0, type_graphql_1.Mutation)(() => GIGl_1.default)
+    /**
+     * This function changes the value of GI (Glycemic Index) for a given ingredient and returns the GL (Glycemic Load) based on the new GI.
+     *
+     * @param {String} ingredientId - The ID of the ingredient for which the GI needs to be changed.
+     * @param {Number} GI - The new value of the GI.
+     * @return {Object} - An object containing the total GI (Glycemic Index), net carbs, and total GL (Glycemic Load) based on the new GI.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientId')),
     __param(1, (0, type_graphql_1.Arg)('GI')),
     __metadata("design:type", Function),
@@ -1732,14 +1853,28 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "changeGIandGetGL", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => GIGl_1.default),
+    (0, type_graphql_1.Query)((type) => GIGl_1.default)
+    /**
+     * Calculates the Gl and Net Carbs for the given versionId.
+     *
+     * @param {string} versionId - The ID of the recipe version
+     * @return {object} - An object containing the totalGi, netCarbs, and totalGL
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('versionId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "getGlAndNetCarbs", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => GIGl_1.default),
+    (0, type_graphql_1.Query)((type) => GIGl_1.default)
+    /**
+     * Retrieves the glycemic load and net carbs for a given set of ingredients.
+     *
+     * @param {BlendIngredientInfo[]} ingredientsInfo - An array of BlendIngredientInfo objects representing the ingredients.
+     * @return {Object} An object containing the total glycemic load (totalGi), net carbs (netCarbs), and total glycemic load (totalGL).
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('ingredientsInfo', (type) => [BlendIngredientInfo_1.default])),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),

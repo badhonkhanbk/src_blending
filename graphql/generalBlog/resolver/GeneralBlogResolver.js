@@ -103,12 +103,15 @@ let GeneralBlogResolver = class GeneralBlogResolver {
      */
     async getAgeneralBlog(blogId, currentDate) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
-        await generalBlog_1.default.updateMany({
-            publishDate: {
-                $lte: today,
-            },
-            isPublished: false,
-        }, { isPublished: true });
+        // await GeneralBlogModel.updateMany(
+        //   {
+        //     publishDate: {
+        //       $lte: today,
+        //     },
+        //     isPublished: false,
+        //   },
+        //   { isPublished: true }
+        // );
         let blog = await generalBlog_1.default.findOne({ _id: blogId })
             .populate('brand')
             .populate('createdBy');
@@ -152,12 +155,15 @@ let GeneralBlogResolver = class GeneralBlogResolver {
      */
     async getAllGeneralBlog(currentDate, brand, category, withPublished) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
-        await generalBlog_1.default.updateMany({
-            publishDate: {
-                $lte: today,
-            },
-            isPublished: false,
-        }, { isPublished: true });
+        // await GeneralBlogModel.updateMany(
+        //   {
+        //     publishDate: {
+        //       $lte: today,
+        //     },
+        //     isPublished: false,
+        //   },
+        //   { isPublished: true }
+        // );
         let find = {};
         if (brand) {
             find.brand = brand;
@@ -166,6 +172,7 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             find.category = category;
         }
         if (withPublished) {
+            find.publishDate = { $lte: today };
             find.isPublished = true;
         }
         let blogs = await generalBlog_1.default.find(find)
