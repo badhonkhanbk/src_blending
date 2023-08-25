@@ -20,16 +20,22 @@ async function bringAllGlobalRecipes(userId) {
         isPublished: true,
     });
     for (let i = 0; i < recipes.length; i++) {
-        await UserRecipeProfile_1.default.create({
+        let userRecipe = await UserRecipeProfile_1.default.findOne({
             recipeId: recipes[i]._id,
             userId: userId,
-            isMatch: recipes[i].isMatch,
-            allRecipes: false,
-            myRecipes: false,
-            turnedOffVersions: recipes[i].turnedOffVersion,
-            turnedOnVersions: recipes[i].turnedOnVersions,
-            defaultVersion: recipes[i].defaultVersion,
         });
+        if (!userRecipe) {
+            await UserRecipeProfile_1.default.create({
+                recipeId: recipes[i]._id,
+                userId: userId,
+                isMatch: recipes[i].isMatch,
+                allRecipes: false,
+                myRecipes: false,
+                turnedOffVersions: recipes[i].turnedOffVersion,
+                turnedOnVersions: recipes[i].turnedOnVersions,
+                defaultVersion: recipes[i].defaultVersion,
+            });
+        }
     }
 }
 exports.default = bringAllGlobalRecipes;

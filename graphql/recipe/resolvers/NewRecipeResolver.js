@@ -16,6 +16,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+//import RecipeModel from '../../../models/recipe';
+// import NewRecipeModel from '../../../models/recipeModel'
+const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
@@ -34,6 +37,25 @@ const GetASingleRecipe_1 = __importDefault(require("./util/GetASingleRecipe"));
 //* @returns
 //*
 let RecipeCorrectionResolver = class RecipeCorrectionResolver {
+    async bringAllAdminRecipe() {
+        // await RecipeModel.updateMany(
+        //   {
+        //     adminId: { $ne: null },
+        //   },
+        //   {
+        //     global: true,
+        //     userId: null,
+        //     addedByAdmin: true,
+        //     discovery: true,
+        //     isPublished: true,
+        //   }
+        // );
+        let users = await memberModel_1.default.find().select('_id');
+        for (let i = 0; i < users.length; i++) {
+            await (0, getAllGlobalRecipes_1.default)(String(users[i]._id));
+        }
+        return 'done';
+    }
     async removeNow() {
         let temporaryCompareList = await (0, checkTemporaryCompareList_1.default)('5f9b3b3b1c9d440000f3b0b0');
         return '';
@@ -252,6 +274,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             ],
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
+            .skip(100)
             .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         // console.log(returnRecipe[0].recipeId);
@@ -303,7 +326,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             ],
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
-            .skip(10)
+            .skip(80)
             .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
@@ -360,8 +383,8 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             ],
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
-            .skip(8)
-            .limit(10);
+            .skip(60)
+            .limit(20);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
@@ -379,6 +402,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         return '';
     }
 };
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeCorrectionResolver.prototype, "bringAllAdminRecipe", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),
