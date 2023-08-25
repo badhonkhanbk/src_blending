@@ -16,6 +16,8 @@ async function updateVersionFacts(recipeVersionId) {
     let version = await RecipeVersionModel_1.default.findOne({
         _id: recipeVersionId,
     });
+    // console.log(version._id);
+    // console.log(version.ingredients);
     if (version.ingredients.length === 0) {
         await RecipeVersionModel_1.default.findOneAndUpdate({ _id: version._id }, {
             calorie: {
@@ -44,7 +46,9 @@ async function updateVersionFacts(recipeVersionId) {
     let versionFact = await RecipeVersionModel_1.default.findOne({
         _id: version._id,
     });
+    console.log(ingredientInfos);
     let data = await (0, getNutrientsAndGiGl_1.default)(ingredientInfos);
+    console.log('jobab', data.giGl);
     // console.log('xxxx', data);
     let nutrients = JSON.parse(data.nutrients);
     let giGl = data.giGl;

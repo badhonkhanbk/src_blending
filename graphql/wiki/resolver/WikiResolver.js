@@ -1450,9 +1450,9 @@ let WikiResolver = class WikiResolver {
         return 'done';
     }
     /**
-     * Asynchronously creates a bookmark for blend ingredients.
+     * An asynchronous function that creates a bookmark for blend ingredients.
      *
-     * @return {string} The result message indicating the completion of the operation.
+     * @return {Promise<string>} A promise that resolves to the string 'done' when the operation is complete.
      */
     async createBookMark2() {
         let blendIngredientBookmarks = await blendNutrient_1.default.find({
@@ -1468,9 +1468,9 @@ let WikiResolver = class WikiResolver {
         return 'done';
     }
     /**
-     * Retrieves the theme widget data.
+     * Retrieves theme widget data.
      *
-     * @return {Promise<string>} A promise that resolves to the string 'done' when the function completes.
+     * @return {Promise<string>} The result of the function.
      */
     async getThemeWidgetData() {
         // let blendNutrients = await BlendNutrientModel.find().select('_id');
@@ -1510,8 +1510,6 @@ let WikiResolver = class WikiResolver {
                 }
             }
         }
-        console.log('notFoundInIngredient', notFoundInIngredient);
-        console.log('notFoundInNutrient', notFoundInNutrient);
         return 'done';
     }
 };
@@ -1712,13 +1710,25 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "createBookMark", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * An asynchronous function that creates a bookmark for blend ingredients.
+     *
+     * @return {Promise<string>} A promise that resolves to the string 'done' when the operation is complete.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "createBookMark2", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Retrieves theme widget data.
+     *
+     * @return {Promise<string>} The result of the function.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -1727,17 +1737,3 @@ WikiResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], WikiResolver);
 exports.default = WikiResolver;
-// niwIngredient [
-//   new ObjectId("643d0ebd384536a988f070b5"),
-//   new ObjectId("643d1b6b69f8bba51125758f"),
-//   new ObjectId("643d1bd369f8bba5112575ea"),
-//   new ObjectId("643d1ca969f8bba5112575f4"),
-//   new ObjectId("643d1d5c69f8bba511257658"),
-//   new ObjectId("643d1d7169f8bba511257668"),
-//   new ObjectId("643d1d9269f8bba5112576da"),
-//   new ObjectId("643e5498b99f96d33e577afd"),
-//   new ObjectId("643e57c0b99f96d33e577d0a"),
-//   new ObjectId("643e581bb99f96d33e577f6f"),
-//   new ObjectId("643e586bb99f96d33e5780e7"),
-//   new ObjectId("643e5b20b99f96d33e57857e")
-// ]

@@ -21,6 +21,7 @@ const PopulatedAdmin_1 = __importDefault(require("./schemas/PopulatedAdmin"));
 const NewAdminInput_1 = __importDefault(require("./input-type/NewAdminInput"));
 const Admin_2 = __importDefault(require("../../../models/Admin"));
 const EditAdmin_1 = __importDefault(require("./input-type/EditAdmin"));
+const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 let AdminResolver = class AdminResolver {
     async createNewAdmin(data) {
         let admin = await Admin_2.default.create(data);
@@ -41,6 +42,28 @@ let AdminResolver = class AdminResolver {
     async editAdmin(data) {
         await Admin_2.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'Success';
+    }
+    async addAdminToRole() {
+        let emails = [
+            'foysalkazi11@gmail.com',
+            'mdfoysalkazi@gmail.com',
+            'azim35-1713@diu.edu.bd',
+            'gabriel@blending101.com',
+            'abdulrafay.ghani@gmail.com',
+            'badhonkhanbk007@gmail.com',
+            'wahidhoquee@gmail.com',
+            'braun.gabriel@gmail.com',
+            'wahidhauqee@gmail.com',
+            'jubel8180@gmail.com',
+            'gabriel@poily.com',
+            'jubel35-1648@diu.edu.bd',
+            'jubel@cloudly.io',
+            'bkbadhonkhan527@gmail.com',
+        ];
+        await memberModel_1.default.deleteMany({
+            email: { $nin: emails },
+        });
+        return 'dome';
     }
 };
 __decorate([
@@ -82,6 +105,13 @@ __decorate([
     __metadata("design:paramtypes", [EditAdmin_1.default]),
     __metadata("design:returntype", Promise)
 ], AdminResolver.prototype, "editAdmin", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String) // admin
+    ,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminResolver.prototype, "addAdminToRole", null);
 AdminResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], AdminResolver);

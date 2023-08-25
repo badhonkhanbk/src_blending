@@ -873,6 +873,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                     memberId: memberId,
                     isActive: true,
                 });
+                console.log('c', challenge);
                 if (!challenge) {
                     let inviteChallengeId = await this.checkIfChallengeIsInvitedWithMe(memberId);
                     if (inviteChallengeId) {
@@ -965,6 +966,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         let challengeInfoDate = startDate ? startDate : '';
         let challengeInfo = await this.getChallengeInfo(memberId, viewOnly, challengeInfoDate, challenge._id);
+        console.log('ci', challengeInfo);
         return { challenge: challengeDocs, challengeInfo: challengeInfo };
     }
     async getChallengeGallery(memberId) {

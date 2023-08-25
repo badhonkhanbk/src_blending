@@ -643,7 +643,7 @@ let PlanResolver = class PlanResolver {
      * @return {Object} - an object containing the filtered plans and the total number of plans
      */
     async filterPlans(data, userId, page, limit) {
-        console.log(data.collectionsIds);
+        // console.log(data.collectionsIds);
         let isSearchTerm = data.searchTerm === '' || data.searchTerm === null;
         if (
         //@ts-ignore
@@ -694,7 +694,7 @@ let PlanResolver = class PlanResolver {
             if (allRecipeIds.length !== 0) {
                 let recipeIdsSet = new Set(allRecipeIds);
                 let uniqueRecipeArray = Array.from(recipeIdsSet);
-                console.log(uniqueRecipeArray);
+                // console.log(uniqueRecipeArray);
                 find._id = {
                     $in: uniqueRecipeArray,
                 };
@@ -708,7 +708,7 @@ let PlanResolver = class PlanResolver {
         if (!isSearchTerm) {
             find.planName = { $regex: data.searchTerm, $options: 'i' };
         }
-        console.log('d', find);
+        // console.log('d', find);
         let findKeys = Object.keys(find);
         // console.log('f', find);
         if (findKeys.length > 0) {
@@ -835,7 +835,7 @@ let PlanResolver = class PlanResolver {
             planIds = planFacts.map((plan) => plan._id);
             // recipeIds = [];
         }
-        console.log('pid', planIds);
+        // console.log('pid', planIds);
         let plans = await Plan_1.default.find({
             _id: {
                 $in: planIds,
@@ -972,7 +972,7 @@ let PlanResolver = class PlanResolver {
     async fixPlans() {
         let plans = await Plan_1.default.find();
         for (let i = 0; i < plans.length; i++) {
-            console.log(i);
+            // console.log(i);
             await (0, updatePlanFacts_1.default)(String(plans[i]._id));
         }
         return 'done';

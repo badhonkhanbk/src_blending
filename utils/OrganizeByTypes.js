@@ -18,6 +18,14 @@ async function organizeByDateAndType(challengePosts, type, today, endDate) {
     return returnData;
 }
 exports.default = organizeByDateAndType;
+/**
+ * Generates weekly statistics based on challenge posts.
+ *
+ * @param {any[]} challengePosts - An array of challenge posts.
+ * @param {Date} today - The current date.
+ * @param {Date} endDate - The end date for the weekly statistics.
+ * @return {any[]} An array of weekly statistics.
+ */
 function getWeeklyStats(challengePosts, today, endDate) {
     let tempDayString = endDate.toISOString().slice(0, 10);
     let returnData = [];
@@ -36,6 +44,14 @@ function getWeeklyStats(challengePosts, today, endDate) {
     }
     return returnData;
 }
+/**
+ * Retrieves the monthly statistics for challenge posts within a given time frame.
+ *
+ * @param {any[]} challengePosts - An array of challenge posts.
+ * @param {Date} today - The current date.
+ * @param {Date} endDate - The end date of the time frame.
+ * @return {any[]} An array containing the monthly statistics for each day within the time frame.
+ */
 function getMonthlyStats(challengePosts, today, endDate) {
     let tempDayString = endDate.toISOString().slice(0, 10);
     let returnData = [];
@@ -54,6 +70,14 @@ function getMonthlyStats(challengePosts, today, endDate) {
     }
     return returnData;
 }
+/**
+ * Calculates the yearly statistics based on the challenge posts.
+ *
+ * @param {any[]} challengePosts - The array of challenge posts.
+ * @param {Date} today - The current date.
+ * @param {Date} endDate - The end date of the statistics.
+ * @return {any[]} An array of objects containing the statistics for each month.
+ */
 function getYearlyStats(challengePosts, today, endDate) {
     let returnData = [];
     for (let i = 0; i <= today.getMonth(); i++) {
@@ -102,9 +126,24 @@ function getYearlyStats(challengePosts, today, endDate) {
     }
     return returnData;
 }
+/**
+ * Returns the last date of the month for the given year and month.
+ *
+ * @param {number} y - The year.
+ * @param {number} m - The month (0-11).
+ * @return {number} The last date of the month.
+ */
 function getLastDate(y, m) {
     return new Date(y, m + 1, 0).getDate();
 }
+/**
+ * Generates year-to-date statistics based on challenge posts.
+ *
+ * @param {Array} challengePosts - An array of challenge post objects.
+ * @param {Date} today - The current date.
+ * @param {Date} endDate - The end date of the year.
+ * @return {Array} An array of objects representing the year-to-date statistics.
+ */
 function getYearToDateStats(challengePosts, today, endDate) {
     let returnData = [];
     let firstDate = endDate;

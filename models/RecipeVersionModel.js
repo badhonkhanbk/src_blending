@@ -37,6 +37,14 @@ const recipeVersionSchema = new mongoose_1.Schema({
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'User',
     },
+    createdByAdmin: {
+        type: Boolean,
+        default: false,
+    },
+    adminId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'Admin',
+    },
     calorie: {
         value: Number,
         blendNutrientRefference: {

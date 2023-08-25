@@ -87,6 +87,7 @@ const recipeSchema = new mongoose_1.Schema({
     defaultVersion: { type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeVersion' },
     editedAt: Date,
     isMatch: { type: Boolean, default: true },
+    tempAdmin: Boolean,
 });
 const Recipe = (0, mongoose_1.model)('Recipe', recipeSchema);
 exports.default = Recipe;
