@@ -71,7 +71,7 @@ __decorate([
     __metadata("design:type", String)
 ], WidgetCollection.prototype, "orderBy", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], WidgetCollection.prototype, "theme", void 0);
 __decorate([

@@ -30,12 +30,7 @@ const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
 const checkTemporaryCompareList_1 = __importDefault(require("./util/checkTemporaryCompareList"));
 const GetASingleRecipe_1 = __importDefault(require("./util/GetASingleRecipe"));
-// import RecipeFact from '../../../models/RecipeFacts';
-//**
-//*
-//* @param recipeId
-//* @returns
-//*
+const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
 let RecipeCorrectionResolver = class RecipeCorrectionResolver {
     async bringAllAdminRecipe() {
         // await RecipeModel.updateMany(
@@ -152,7 +147,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             await (0, getAllGlobalRecipes_1.default)(userId);
         }
         let compareList = await Compare_1.default.find({ userId: userId });
-        console.log(compareList);
+        // console.log(compareList);
         // let temporaryCompareList: any[] =
         //   await TemporaryCompareCollectionModel.find({
         //     userId: userId,
@@ -212,7 +207,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 path: 'createdBy',
                 select: '_id image firstName lastName email',
             });
-            console.log(compareVersion);
+            // console.log(compareVersion);
             let compareRecipe = {
                 recipeId: userProfileRecipe.recipeId,
                 defaultVersion: compareVersion,
@@ -228,13 +223,15 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         console.log(userProfileRecipes);
         return returnRecipe;
     }
-    async getAllrecomendedRecipes2(userId) {
-        // let checkIfNew = await UserRecipeProfileModel.find({
-        //   userId: userId,
-        // }).select('_id');
-        // if (checkIfNew.length === 0) {
-        //   await bringAllGlobalRecipes(userId);
-        // }
+    async getAllrecomendedRecipes2(userId, page, limit) {
+        if (!limit) {
+            limit = 12;
+        }
+        if (!page) {
+            page = 1;
+        }
+        let skip = limit * (page - 1);
+        skip += 60;
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })
@@ -274,19 +271,26 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             ],
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
-            .skip(100)
-            .limit(20);
+            .limit(limit)
+            .skip(skip)
+            .lean();
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         // console.log(returnRecipe[0].recipeId);
-        return returnRecipe;
+        return {
+            recipes: returnRecipe,
+            totalRecipes: (await UserRecipeProfile_1.default.countDocuments({ userId: userId })) -
+                (limit + 40),
+        };
     }
-    async getAllpopularRecipes2(userId) {
-        // let checkIfNew = await UserRecipeProfileModel.find({
-        //   userId: userId,
-        // }).select('_id');
-        // if (checkIfNew.length === 0) {
-        //   await bringAllGlobalRecipes(userId);
-        // }
+    async getAllpopularRecipes2(userId, page, limit) {
+        if (!limit) {
+            limit = 12;
+        }
+        if (!page) {
+            page = 1;
+        }
+        let skip = limit * (page - 1);
+        skip += 60;
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })
@@ -326,10 +330,15 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             ],
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
-            .skip(80)
-            .limit(20);
+            .limit(limit)
+            .skip(skip)
+            .lean();
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
-        return returnRecipe;
+        return {
+            recipes: returnRecipe,
+            totalRecipes: (await UserRecipeProfile_1.default.countDocuments({ userId: userId })) -
+                (limit + 60),
+        };
     }
     /**
      * Retrieves all the latest recipes for a given user.
@@ -337,13 +346,15 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
      * @param {String} userId - The ID of the user.
      * @return {Promise} The latest recipes for the user.
      */
-    async getAllLatestRecipes2(userId) {
-        // let checkIfNew = await UserRecipeProfileModel.find({
-        //   userId: userId,
-        // }).select('_id');
-        // if (checkIfNew.length === 0) {
-        //   await bringAllGlobalRecipes(userId);
-        // }
+    async getAllLatestRecipes2(userId, page, limit) {
+        if (!limit) {
+            limit = 12;
+        }
+        if (!page) {
+            page = 1;
+        }
+        let skip = limit * (page - 1);
+        skip += 80;
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })
@@ -383,10 +394,16 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             ],
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
-            .skip(60)
-            .limit(20);
+            .limit(limit)
+            .skip(skip)
+            .lean();
+        // console.log(userProfileRecipes);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
-        return returnRecipe;
+        return {
+            recipes: returnRecipe,
+            totalRecipes: (await UserRecipeProfile_1.default.countDocuments({ userId: userId })) -
+                (limit + 80),
+        };
     }
     /**
      * A description of the entire function.
@@ -463,23 +480,27 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getCompareList2", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default]) // done
+    (0, type_graphql_1.Query)((type) => RecipesWithPagination_1.default) // done
     ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllrecomendedRecipes2", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default]) // done
+    (0, type_graphql_1.Query)((type) => RecipesWithPagination_1.default) // done
     ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllpopularRecipes2", null);
 __decorate([
-    (0, type_graphql_1.Query)((type) => [ProfileRecipe_1.default])
+    (0, type_graphql_1.Query)((type) => RecipesWithPagination_1.default)
     /**
      * Retrieves all the latest recipes for a given user.
      *
@@ -488,8 +509,10 @@ __decorate([
      */
     ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllLatestRecipes2", null);
 __decorate([
