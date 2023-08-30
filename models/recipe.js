@@ -17,7 +17,11 @@ const recipeSchema = new mongoose_1.Schema({
     recipeYield: String,
     recipeCuisines: [String],
     author: [String],
-    recipeBlendCategory: { type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeCategory' },
+    recipeBlendCategory: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'RecipeCategory',
+        default: '61cafd4d668ec5e10720a943',
+    },
     brand: { type: mongoose_1.Schema.Types.ObjectId, ref: 'RecipeBrand' },
     foodCategories: [String],
     //NOTE:

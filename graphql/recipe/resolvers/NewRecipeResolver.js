@@ -405,6 +405,83 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 (limit + 80),
         };
     }
+    async getAllRelatedCategoryRecipes(userId, blendCategory, page, limit) {
+        if (!limit) {
+            limit = 6;
+        }
+        if (!page) {
+            page = 1;
+        }
+        let skip = limit * (page - 1);
+        let recipes = await recipeModel_1.default.find({
+            recipeBlendCategory: blendCategory,
+            global: true,
+            userId: null,
+            addedByAdmin: true,
+            discovery: true,
+            isPublished: true,
+        })
+            .select('_id')
+            .lean();
+        let recipeIds = recipes.map((recipe) => recipe._id);
+        // console.log(recipeIds);
+        let userProfileRecipes = await UserRecipeProfile_1.default.find({
+            userId: userId,
+            recipeId: {
+                $in: recipeIds,
+            },
+        })
+            .populate({
+            path: 'recipeId',
+            model: 'RecipeModel',
+            populate: [
+                {
+                    path: 'recipeBlendCategory',
+                    model: 'RecipeCategory',
+                },
+                {
+                    path: 'brand',
+                    model: 'RecipeBrand',
+                },
+                {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'firstName lastName image displayName email',
+                },
+            ],
+            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
+        })
+            .populate({
+            path: 'defaultVersion',
+            model: 'RecipeVersion',
+            populate: [
+                {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName selectedImage',
+                },
+                {
+                    path: 'createdBy',
+                    select: '_id displayName firstName lastName image email',
+                },
+            ],
+            select: 'postfixTitle selectedImage calorie gigl errorIngredients',
+        })
+            .limit(limit)
+            .skip(skip)
+            .lean();
+        let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
+        // console.log(returnRecipe[0].recipeId);
+        return {
+            recipes: returnRecipe,
+            totalRecipes: await UserRecipeProfile_1.default.countDocuments({
+                userId: userId,
+                recipeId: {
+                    $in: recipeIds,
+                },
+            }),
+        };
+    }
     /**
      * A description of the entire function.
      *
@@ -414,7 +491,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         await recipeModel_1.default.updateMany({
             recipeBlendCategory: null,
         }, {
-            recipeBlendCategory: '61cafc34e1f3e015e7936587',
+            recipeBlendCategory: '61cafd4d668ec5e10720a943',
         });
         return '';
     }
@@ -515,6 +592,18 @@ __decorate([
     __metadata("design:paramtypes", [String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllLatestRecipes2", null);
+__decorate([
+    (0, type_graphql_1.Query)((type) => RecipesWithPagination_1.default) // done
+    ,
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('blendCategory')),
+    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], RecipeCorrectionResolver.prototype, "getAllRelatedCategoryRecipes", null);
 __decorate([
     (0, type_graphql_1.Query)((type) => String)
     /**
