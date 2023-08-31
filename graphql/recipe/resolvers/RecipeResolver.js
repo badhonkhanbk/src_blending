@@ -67,6 +67,7 @@ const shareChallengeGlobal_1 = __importDefault(require("../../../models/shareCha
 const share_1 = __importDefault(require("../../../models/share"));
 const comment_1 = __importDefault(require("../../../models/comment"));
 const adminCollection_1 = __importDefault(require("../../../models/adminCollection"));
+const comment_2 = __importDefault(require("../../../models/comment"));
 let RecipeResolver = class RecipeResolver {
     /**
      * Asynchronously executes the tya function.
@@ -1193,16 +1194,15 @@ let RecipeResolver = class RecipeResolver {
         return await (0, GetASingleRecipe_1.default)(String(returnUserRecipe._id), String(data.userId), null);
     }
     async janoyar() {
-        let userRecipes = await UserRecipeProfile_1.default.find();
-        for (let i = 0; i < userRecipes.length; i++) {
-            if (!userRecipes[i].personalRating) {
-                await UserRecipeProfile_1.default.findOneAndUpdate({
-                    _id: userRecipes[i]._id,
-                }, {
-                    personalRating: 0,
-                });
-            }
-        }
+        await recipeModel_1.default.updateMany({}, {
+            commentsCount: 0,
+            numberOfRating: 0,
+            totalRating: 0,
+            totalViews: 0,
+            averageRating: 0,
+        });
+        await planComment_1.default.deleteMany();
+        await comment_2.default.deleteMany();
         return 'done';
     }
     // @Mutation((type) => String)
@@ -1924,6 +1924,7 @@ let RecipeResolver = class RecipeResolver {
         await adminCollection_1.default.updateMany({}, {
             children: [],
         });
+        await planComment_1.default.deleteMany();
         await userNote_1.default.deleteMany();
         let recipes = await recipeModel_1.default.find({
             adminId: null,

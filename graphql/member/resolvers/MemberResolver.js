@@ -556,6 +556,7 @@ let MemberResolver = class MemberResolver {
                 model: 'BlendIngredient',
             },
         })
+            .lean()
             .limit(limit)
             .skip(limit * (page - 1));
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
