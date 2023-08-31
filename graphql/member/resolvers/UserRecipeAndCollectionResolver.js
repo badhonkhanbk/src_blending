@@ -96,6 +96,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             .sort({
             lastSeen: -1,
         })
+            .lean()
             .limit(limit)
             .skip((page - 1) * limit);
         let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
@@ -394,7 +395,8 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 select: '_id displayName image firstName lastName email',
             })
                 .populate('brand')
-                .populate('recipeBlendCategory');
+                .populate('recipeBlendCategory')
+                .lean();
             recipes = recipes.concat(Collectionrecipes);
             //@ts-ignore
             let items = memberCollections[0].collections[i].recipes.map(
