@@ -231,7 +231,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             page = 1;
         }
         let skip = limit * (page - 1);
-        skip += 60;
+        skip += 20;
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })
@@ -273,13 +273,13 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         })
             .limit(limit)
             .skip(skip)
+            .sort({ createdAt: 1 })
             .lean();
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         // console.log(returnRecipe[0].recipeId);
         return {
             recipes: returnRecipe,
-            totalRecipes: (await UserRecipeProfile_1.default.countDocuments({ userId: userId })) -
-                (limit + 40),
+            totalRecipes: (await UserRecipeProfile_1.default.countDocuments({ userId: userId })) - 20,
         };
     }
     async getAllpopularRecipes2(userId, page, limit) {
@@ -290,7 +290,6 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             page = 1;
         }
         let skip = limit * (page - 1);
-        skip += 60;
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })
@@ -336,8 +335,9 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return {
             recipes: returnRecipe,
-            totalRecipes: (await UserRecipeProfile_1.default.countDocuments({ userId: userId })) -
-                (limit + 60),
+            totalRecipes: await UserRecipeProfile_1.default.countDocuments({
+                userId: userId,
+            }),
         };
     }
     /**
@@ -354,7 +354,6 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             page = 1;
         }
         let skip = limit * (page - 1);
-        skip += 80;
         let userProfileRecipes = await UserRecipeProfile_1.default.find({
             userId: userId,
         })
@@ -396,13 +395,15 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         })
             .limit(limit)
             .skip(skip)
+            .sort({ createdAt: -1 })
             .lean();
         // console.log(userProfileRecipes);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return {
             recipes: returnRecipe,
-            totalRecipes: (await UserRecipeProfile_1.default.countDocuments({ userId: userId })) -
-                (limit + 80),
+            totalRecipes: await UserRecipeProfile_1.default.countDocuments({
+                userId: userId,
+            }),
         };
     }
     async getAllRelatedCategoryRecipes(userId, blendCategory, page, limit) {

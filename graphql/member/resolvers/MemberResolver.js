@@ -29,6 +29,7 @@ const collectionShareGlobal_1 = __importDefault(require("../../../models/collect
 const memberConfiguiration_1 = __importDefault(require("../../../models/memberConfiguiration"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const DailyGoal_1 = __importDefault(require("../../../models/DailyGoal"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
 const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
@@ -888,6 +889,14 @@ let MemberResolver = class MemberResolver {
             accepted: true,
         };
     }
+    async temporaryRecipeCategoryUpdate(recipeId, blendCategory) {
+        await recipeModel_1.default.findOneAndUpdate({
+            _id: recipeId,
+        }, {
+            recipeBlendCategory: blendCategory,
+        });
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => [SimpleCollection_1.default]),
@@ -1062,6 +1071,15 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "yyyy", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('recipeId')),
+    __param(1, (0, type_graphql_1.Arg)('blendCategory')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], MemberResolver.prototype, "temporaryRecipeCategoryUpdate", null);
 MemberResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], MemberResolver);
