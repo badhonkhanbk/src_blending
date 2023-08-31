@@ -53,6 +53,20 @@ const changeCompare_1 = __importDefault(require("../../member/resolvers/util/cha
 const GetASingleRecipe_1 = __importDefault(require("./util/GetASingleRecipe"));
 const ProfileRecipeDesc_1 = __importDefault(require("../schemas/ProfileRecipeDesc"));
 const Collection_1 = __importDefault(require("../../member/schemas/Collection"));
+const planCollection_2 = __importDefault(require("../../../models/planCollection"));
+const challenge_1 = __importDefault(require("../../../models/challenge"));
+const ChallengePost_1 = __importDefault(require("../../../models/ChallengePost"));
+const InviteForChallenge_1 = __importDefault(require("../../../models/InviteForChallenge"));
+const planComment_1 = __importDefault(require("../../../models/planComment"));
+const Planner_2 = __importDefault(require("../../../models/Planner"));
+const PlanRating_1 = __importDefault(require("../../../models/PlanRating"));
+const Plan_2 = __importDefault(require("../../../models/Plan"));
+const planShare_1 = __importDefault(require("../../../models/planShare"));
+const collectionShare_1 = __importDefault(require("../../../models/collectionShare"));
+const shareChallengeGlobal_1 = __importDefault(require("../../../models/shareChallengeGlobal"));
+const share_1 = __importDefault(require("../../../models/share"));
+const comment_1 = __importDefault(require("../../../models/comment"));
+const adminCollection_1 = __importDefault(require("../../../models/adminCollection"));
 let RecipeResolver = class RecipeResolver {
     /**
      * Asynchronously executes the tya function.
@@ -1844,6 +1858,105 @@ let RecipeResolver = class RecipeResolver {
         }
         return true;
     }
+    async resetApplication() {
+        let users = await memberModel_1.default.find();
+        for (let i = 0; i < users.length; i++) {
+            let defaultCollection = await userCollection_1.default.findOne({
+                userId: users[i]._id,
+                name: 'My Favorite',
+            }).select('_id');
+            if (!defaultCollection) {
+                continue;
+            }
+            let defaultPlanCollection = await planCollection_2.default.findOne({
+                userId: users[i]._id,
+                name: 'My Favorite',
+            }).select('_id');
+            if (!defaultPlanCollection) {
+                continue;
+            }
+            else {
+                await planCollection_2.default.findOneAndUpdate({
+                    _id: defaultPlanCollection._id,
+                }, {
+                    isDefault: true,
+                });
+                await planCollection_2.default.findOneAndUpdate({
+                    $ne: {
+                        _id: defaultPlanCollection._id,
+                    },
+                }, {
+                    isDefault: false,
+                });
+            }
+            await memberModel_1.default.updateOne({ _id: users[i]._id }, {
+                $set: {
+                    defaultCollection: defaultCollection._id,
+                    lastModifiedBlogCollection: defaultCollection._id,
+                    compareList: [],
+                    compareLength: 0,
+                    defaultChallengeId: null,
+                    lastModifiedPlanCollection: defaultPlanCollection._id,
+                },
+            });
+        }
+        await userCollection_1.default.updateMany({}, {
+            recipes: [],
+            shareTo: [],
+        });
+        await planCollection_2.default.updateMany({}, {
+            plans: [],
+            collectionCount: 0,
+        });
+        await challenge_1.default.deleteMany();
+        await ChallengePost_1.default.deleteMany();
+        await Compare_1.default.deleteMany();
+        await InviteForChallenge_1.default.deleteMany();
+        await planComment_1.default.deleteMany();
+        await Planner_2.default.deleteMany();
+        await PlanRating_1.default.deleteMany();
+        await Plan_2.default.deleteMany();
+        await planShare_1.default.deleteMany();
+        await collectionShare_1.default.deleteMany();
+        await shareChallengeGlobal_1.default.deleteMany();
+        await share_1.default.deleteMany();
+        await comment_1.default.deleteMany();
+        await adminCollection_1.default.updateMany({}, {
+            children: [],
+        });
+        await userNote_1.default.deleteMany();
+        let recipes = await recipeModel_1.default.find({
+            adminId: null,
+            addedByAdmin: true,
+        });
+        for (let i = 0; i < recipes.length; i++) {
+            await RecipeVersionModel_1.default.deleteMany({ recipeId: recipes[i]._id });
+            await UserRecipeProfile_1.default.deleteMany({
+                recipeId: recipes[i]._id,
+            });
+        }
+        await recipeModel_1.default.deleteMany({
+            adminId: null,
+            addedByAdmin: true,
+        });
+        let userRecipes = await recipeModel_1.default.find({
+            userId: {
+                $ne: null,
+            },
+        });
+        for (let i = 0; i < userRecipes.length; i++) {
+            await RecipeVersionModel_1.default.deleteMany({ recipeId: userRecipes[i]._id });
+            await UserRecipeProfile_1.default.deleteMany({
+                recipeId: userRecipes[i]._id,
+            });
+        }
+        await recipeModel_1.default.deleteMany({
+            userId: {
+                $ne: null,
+            },
+        });
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)((type) => String)
@@ -2120,6 +2233,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "juio", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RecipeResolver.prototype, "resetApplication", null);
 RecipeResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], RecipeResolver);
