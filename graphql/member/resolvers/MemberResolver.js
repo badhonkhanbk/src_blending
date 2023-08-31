@@ -128,7 +128,7 @@ let MemberResolver = class MemberResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .limit(5)
             .sort({
@@ -219,7 +219,7 @@ let MemberResolver = class MemberResolver {
                 model: 'BlendIngredient',
                 select: 'ingredientName selectedImage',
             },
-            select: 'postfixTitle',
+            select: 'postfixTitle selectedImage',
         })
             .lean()
             .limit(5);
@@ -256,7 +256,8 @@ let MemberResolver = class MemberResolver {
             //   })
             //   .select('defaultVersion')
             //   .lean();
-            // console.log('--------------', userProfileRecipe);
+            console.log('--------------', collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
+                ._id);
             if (collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
                 .selectedImage === '' ||
                 collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
@@ -265,8 +266,8 @@ let MemberResolver = class MemberResolver {
                 continue;
             }
             //@ts-ignore
-            let image = userProfileRecipe.defaultVersion.selectedImage;
-            collections[i].image = image;
+            collections[i].image =
+                collections[i].recipes[collections[i].recipes.length - 1].defaultVersion.selectedImage;
         }
         return collections;
     }
