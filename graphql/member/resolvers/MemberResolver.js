@@ -87,6 +87,7 @@ let MemberResolver = class MemberResolver {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
             .select('collections');
+        // console.log(user);
         let otherCollections = await userCollection_1.default.find({
             'shareTo.userId': {
                 $in: [new mongoose_1.default.mongo.ObjectId(user._id)],
@@ -132,21 +133,28 @@ let MemberResolver = class MemberResolver {
             .limit(5)
             .sort({
             lastSeen: -1,
-        });
-        let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
-        collections.push({
-            _id: new mongoose_1.default.mongo.ObjectId(),
-            name: 'Recent Recipes',
-            slug: 'recent-recipes',
-            recipes: returnRecentRecipe,
-            isShared: false,
-            sharedBy: null,
-            personalizedName: '',
-            canContribute: true,
-            canShareWithOther: true,
-        });
+        })
+            .lean();
+        // console.log('r', userProfileRecentRecipes, 'k');
+        if (userProfileRecentRecipes.length > 0) {
+            let returnRecentRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecentRecipes);
+            collections.push({
+                _id: new mongoose_1.default.mongo.ObjectId(),
+                name: 'Recent Recipes',
+                slug: 'recent-recipes',
+                recipes: returnRecentRecipe,
+                isShared: false,
+                sharedBy: null,
+                personalizedName: '',
+                canContribute: true,
+                canShareWithOther: true,
+            });
+        }
         for (let i = 0; i < user.collections.length; i++) {
-            let returnRecipe = await this.getProfileRecipes(user.collections[i].recipes, userId);
+            let returnRecipe = [];
+            if (user.collections[i].recipes.length > 0) {
+                returnRecipe = await this.getProfileRecipes(user.collections[i].recipes, userId);
+            }
             collections.push({
                 _id: user.collections[i]._id,
                 //@ts-ignore
@@ -213,8 +221,12 @@ let MemberResolver = class MemberResolver {
             },
             select: 'postfixTitle',
         })
+            .lean()
             .limit(5);
-        let returnMyRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileMyRecipes);
+        let returnMyRecipe = [];
+        if (userProfileMyRecipes.length > 0) {
+            returnMyRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileMyRecipes);
+        }
         collections.push({
             _id: new mongoose_1.default.mongo.ObjectId(),
             name: 'My Recipes',
@@ -226,24 +238,29 @@ let MemberResolver = class MemberResolver {
             canContribute: true,
             canShareWithOther: true,
         });
+        // console.log('pie,', collections);
         for (let i = 0; i < collections.length; i++) {
             if (collections[i].recipes.length - 1 === -1) {
                 // if there are no recipes in the collection
                 collections[i].image = null;
                 continue;
             }
-            let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
-                userId: userId,
-                recipeId: collections[i].recipes[collections[i].recipes.length - 1].recipeId
-                    ._id,
-            })
-                .populate({
-                path: 'defaultVersion',
-                model: 'RecipeVersion',
-                select: 'selectedImage',
-            })
-                .select('defaultVersion');
-            if (userProfileRecipe.defaultVersion.selectedImage === '') {
+            // let userProfileRecipe: any = await UserRecipeProfileModel.findOne({
+            //   userId: userId,
+            //   recipeId: collections[i].recipes[collections[i].recipes.length - 1]._id,
+            // })
+            //   .populate({
+            //     path: 'defaultVersion',
+            //     model: 'RecipeVersion',
+            //     select: 'selectedImage',
+            //   })
+            //   .select('defaultVersion')
+            //   .lean();
+            // console.log('--------------', userProfileRecipe);
+            if (collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
+                .selectedImage === '' ||
+                collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
+                    .selectedImage === undefined) {
                 collections[i].image = null;
                 continue;
             }
