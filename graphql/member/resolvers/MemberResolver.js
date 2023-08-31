@@ -132,9 +132,6 @@ let MemberResolver = class MemberResolver {
             select: 'postfixTitle selectedImage',
         })
             .limit(5)
-            .sort({
-            lastSeen: -1,
-        })
             .lean();
         // console.log('r', userProfileRecentRecipes, 'k');
         if (userProfileRecentRecipes.length > 0) {
@@ -257,8 +254,12 @@ let MemberResolver = class MemberResolver {
             //   })
             //   .select('defaultVersion')
             //   .lean();
-            console.log('--------------', collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
-                ._id);
+            // console.log(collections[i].name);
+            // console.log(
+            //   '--------------',
+            //   collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
+            // );
+            // console.log('this');
             if (collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
                 .selectedImage === '' ||
                 collections[i].recipes[collections[i].recipes.length - 1].defaultVersion
@@ -316,6 +317,7 @@ let MemberResolver = class MemberResolver {
             },
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
+            .lean()
             .limit(5);
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
@@ -386,7 +388,13 @@ let MemberResolver = class MemberResolver {
                 select: 'selectedImage',
             })
                 .select('defaultVersion');
-            console.log('nimta', userProfileRecipe, collections[i].recipes[collections[i].recipes.length - 1]._id, 'ssss', collections[i]._id);
+            // console.log(
+            //   'nimta',
+            //   userProfileRecipe,
+            //   collections[i].recipes[collections[i].recipes.length - 1]._id,
+            //   'ssss',
+            //   collections[i]._id
+            // );
             if (userProfileRecipe.defaultVersion.selectedImage === '') {
                 collections[i].image = null;
                 continue;
@@ -432,9 +440,9 @@ let MemberResolver = class MemberResolver {
             : start + limit;
         let returnRecipe = [];
         for (let i = start; i < end; i++) {
-            console.log(i);
+            // console.log(i);
             returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId._id)));
-            console.log(returnRecipe[i].recipeId._id);
+            // console.log(returnRecipe[i].recipeId._id);
         }
         return {
             _id: shareCollection._id,
