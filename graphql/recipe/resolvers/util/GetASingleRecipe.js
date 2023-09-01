@@ -152,7 +152,7 @@ async function default_1(recipeId, userId, token) {
     });
     return {
         //@ts-ignore
-        ...userProfileRecipe._doc,
+        ...userProfileRecipe,
         notes: userNotes.length,
         addedToCompare: addedToCompare,
         userCollections: collectionData,
