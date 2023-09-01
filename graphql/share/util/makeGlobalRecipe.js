@@ -40,7 +40,8 @@ async function default_1(share, userId) {
             ],
         },
     ])
-        .select('mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId');
+        .select('mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId')
+        .lean();
     let defaultVersion = await RecipeVersionModel_1.default.findOne({
         _id: share.shareData.version,
     }).populate([

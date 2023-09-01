@@ -387,7 +387,8 @@ let MemberResolver = class MemberResolver {
                 model: 'RecipeVersion',
                 select: 'selectedImage',
             })
-                .select('defaultVersion');
+                .select('defaultVersion')
+                .lean();
             // console.log(
             //   'nimta',
             //   userProfileRecipe,

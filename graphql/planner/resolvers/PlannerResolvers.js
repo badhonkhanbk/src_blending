@@ -37,6 +37,7 @@ const PlannersIngredientAndCategoryPercentage_1 = __importDefault(require("../sc
 const getNotesCompareAndUserCollectionsForPlanner_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollectionsForPlanner"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const checkGroceryList_1 = __importDefault(require("../../grocery/util/checkGroceryList"));
+const PlannerInsights_1 = __importDefault(require("../schemas/PlannerInsights"));
 var MergeOrReplace;
 (function (MergeOrReplace) {
     MergeOrReplace["MERGE"] = "MERGE";
@@ -248,6 +249,90 @@ let PlannerResolver = class PlannerResolver {
             planners,
             topIngredients: ingredientsStats,
             recipeCategoriesPercentage: categoryPercentages,
+        };
+    }
+    async getPlannerInsights(userId, recipeIds) {
+        let user = await memberModel_1.default.findOne({ _id: userId })
+            .populate({
+            path: 'macroInfo.blendNutrientId',
+            select: 'nutrientName',
+        })
+            .select('macroInfo');
+        if (!user) {
+            return new AppError_1.default('user not Found', 404);
+        }
+        let macroInfo = user.macroInfo.map((mi) => {
+            return {
+                //@ts-ignore
+                nutrientName: mi.blendNutrientId.nutrientName,
+                percentage: mi.percentage,
+            };
+        });
+        let recipeCategories = [];
+        let ingredients = [];
+        const recipeCounts = {};
+        recipeIds.forEach(function (recipeId) {
+            recipeCounts[recipeId.toString()] =
+                (recipeCounts[recipeId.toString()] || 0) + 1;
+        });
+        console.log(recipeCounts);
+        let uniqueIds = Object.keys(recipeCounts);
+        for (let i = 0; i < uniqueIds.length; i++) {
+            let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
+                userId: userId,
+                recipeId: uniqueIds[i],
+            })
+                .populate({
+                path: 'recipeId',
+                model: 'RecipeModel',
+                populate: [
+                    {
+                        path: 'recipeBlendCategory',
+                        model: 'RecipeCategory',
+                    },
+                ],
+            })
+                .populate({
+                path: 'defaultVersion',
+                model: 'RecipeVersion',
+                populate: {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName selectedImage featuredImage',
+                },
+            })
+                .lean();
+            if (!userProfileRecipe) {
+                continue;
+            }
+            recipeCategories.push({
+                //@ts-ignore
+                _id: userProfileRecipe.recipeId.recipeBlendCategory._id,
+                //@ts-ignore
+                name: userProfileRecipe.recipeId.recipeBlendCategory.name,
+            });
+            for (let k = 0; 
+            //@ts-ignore
+            k < userProfileRecipe.defaultVersion.ingredients.length; k++) {
+                ingredients.push({
+                    //@ts-ignore
+                    _id: userProfileRecipe.defaultVersion.ingredients[k].ingredientId._id,
+                    //@ts-ignore
+                    name: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                        .ingredientName,
+                    featuredImage: 
+                    //@ts-ignore
+                    userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                        .featuredImage,
+                });
+            }
+        }
+        let categoryPercentages = await (0, getRecipeCategoryPercentage_1.default)(recipeCategories);
+        let ingredientsStats = await (0, getIngredientStats_1.default)(ingredients);
+        return {
+            topIngredients: ingredientsStats,
+            recipeCategoriesPercentage: categoryPercentages,
+            macroInfo,
         };
     }
     /**
@@ -549,14 +634,16 @@ let PlannerResolver = class PlannerResolver {
         let recipe = await UserRecipeProfile_1.default.findOne({
             recipeId: recipeId,
             userId: memberId,
-        }).populate({
+        })
+            .populate({
             path: 'defaultVersion',
             model: 'RecipeVersion',
             populate: {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
             },
-        });
+        })
+            .lean();
         let member = await memberModel_1.default.findOne({ _id: memberId });
         if (!recipe || !member) {
             return new AppError_1.default('Recipe or member not found', 404);
@@ -803,6 +890,14 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "getPlannerByDates", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => PlannerInsights_1.default),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('recipeIds', (type) => [String])),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:returntype", Promise)
+], PlannerResolver.prototype, "getPlannerInsights", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String)
     /**

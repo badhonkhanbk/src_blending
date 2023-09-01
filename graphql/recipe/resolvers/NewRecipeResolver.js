@@ -98,7 +98,8 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient selectedImage',
             },
-        });
+        })
+            .lean();
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
@@ -176,7 +177,8 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
                 userId: userId,
                 recipeId: compareList[i].recipeId,
-            }).populate({
+            })
+                .populate({
                 path: 'recipeId',
                 model: 'RecipeModel',
                 populate: [
@@ -195,7 +197,8 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                     },
                 ],
                 select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId',
-            });
+            })
+                .lean();
             let compareVersion = await RecipeVersionModel_1.default.findOne({
                 _id: compareList[i].versionId,
             })

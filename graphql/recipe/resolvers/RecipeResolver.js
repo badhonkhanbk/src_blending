@@ -624,6 +624,7 @@ let RecipeResolver = class RecipeResolver {
             },
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
+            .lean()
             .limit(limit)
             .skip(limit * (page - 1));
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -1434,6 +1435,7 @@ let RecipeResolver = class RecipeResolver {
             },
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
+            .lean()
             .limit(limit)
             .skip(limit * (page - 1));
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
@@ -1728,6 +1730,7 @@ let RecipeResolver = class RecipeResolver {
             },
             select: 'postfixTitle selectedImage calorie gigl errorIngredients',
         })
+            .lean()
             .limit(limit)
             .skip(limit * (page - 1));
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);

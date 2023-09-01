@@ -95,7 +95,8 @@ async function default_1(recipeId, userId, token) {
         path: 'turnedOffVersions',
         model: 'RecipeVersion',
         select: '_id postfixTitle description createdAt updatedAt isDefault isOriginal',
-    });
+    })
+        .lean();
     let collectionRecipes = [];
     let memberCollections = await memberModel_1.default.find({ _id: userId })
         .populate({

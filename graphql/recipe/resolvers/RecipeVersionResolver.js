@@ -525,7 +525,8 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 path: 'ingredients.ingredientId',
                 model: 'BlendIngredient',
             },
-        });
+        })
+            .lean();
         let collectionRecipes = [];
         let memberCollections = await memberModel_1.default.find({ _id: userId })
             .populate({
@@ -755,7 +756,8 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 model: 'BlendIngredient',
             },
             select: '-mineral -energy -vitamin',
-        });
+        })
+            .lean();
         let collectionRecipes = [];
         let memberCollections = await memberModel_1.default.find({ _id: userId })
             .populate({
