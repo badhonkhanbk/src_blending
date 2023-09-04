@@ -251,7 +251,12 @@ let PlannerResolver = class PlannerResolver {
             recipeCategoriesPercentage: categoryPercentages,
         };
     }
-    async getPlannerInsights(userId, recipeIds) {
+    async getPlannerInsights(userId, recipeIds, numberOfDays) {
+        let macroMakeUp = {
+            carbs: 0,
+            protein: 0,
+            fats: 0,
+        };
         let user = await memberModel_1.default.findOne({ _id: userId })
             .populate({
             path: 'macroInfo.blendNutrientId',
@@ -305,34 +310,70 @@ let PlannerResolver = class PlannerResolver {
             if (!userProfileRecipe) {
                 continue;
             }
-            recipeCategories.push({
-                //@ts-ignore
-                _id: userProfileRecipe.recipeId.recipeBlendCategory._id,
-                //@ts-ignore
-                name: userProfileRecipe.recipeId.recipeBlendCategory.name,
-            });
+            let recipeCount = recipeCounts[uniqueIds[i]];
+            for (let recipeCountS = 0; recipeCountS < recipeCount; recipeCountS++) {
+                recipeCategories.push({
+                    //@ts-ignore
+                    _id: userProfileRecipe.recipeId.recipeBlendCategory._id,
+                    //@ts-ignore
+                    name: userProfileRecipe.recipeId.recipeBlendCategory.name,
+                });
+            }
             for (let k = 0; 
             //@ts-ignore
             k < userProfileRecipe.defaultVersion.ingredients.length; k++) {
-                ingredients.push({
-                    //@ts-ignore
-                    _id: userProfileRecipe.defaultVersion.ingredients[k].ingredientId._id,
-                    //@ts-ignore
-                    name: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
-                        .ingredientName,
-                    featuredImage: 
-                    //@ts-ignore
-                    userProfileRecipe.defaultVersion.ingredients[k].ingredientId
-                        .featuredImage,
-                });
+                for (let recipeCountS = 0; recipeCountS < recipeCount; recipeCountS++) {
+                    ingredients.push({
+                        //@ts-ignore
+                        _id: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                            ._id,
+                        //@ts-ignore
+                        name: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                            .ingredientName,
+                        featuredImage: 
+                        //@ts-ignore
+                        userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                            .featuredImage,
+                    });
+                }
             }
+            let protein = userProfileRecipe.defaultVersion.energy.filter((item) => String(item.blendNutrientRefference) === '620b4607b82695d67f28e196')[0];
+            if (!protein) {
+                macroMakeUp.protein += 0;
+            }
+            else {
+                macroMakeUp.protein += protein.value * recipeCount;
+            }
+            let fats = userProfileRecipe.defaultVersion.energy.filter((item) => String(item.blendNutrientRefference) === '620b4607b82695d67f28e199')[0];
+            if (!fats) {
+                macroMakeUp.fats += 0;
+            }
+            else {
+                macroMakeUp.fats += fats.value * recipeCount;
+            }
+            let carbs = userProfileRecipe.defaultVersion.energy.filter((item) => String(item.blendNutrientRefference) === '620b4608b82695d67f28e19c')[0];
+            if (!carbs) {
+                macroMakeUp.carbs += 0;
+            }
+            else {
+                macroMakeUp.carbs += carbs.value * recipeCount;
+            }
+        }
+        if (macroMakeUp.protein !== 0) {
+            macroMakeUp.protein = macroMakeUp.protein / numberOfDays;
+        }
+        if (macroMakeUp.fats !== 0) {
+            macroMakeUp.fats = macroMakeUp.fats / numberOfDays;
+        }
+        if (macroMakeUp.carbs !== 0) {
+            macroMakeUp.carbs = macroMakeUp.carbs / numberOfDays;
         }
         let categoryPercentages = await (0, getRecipeCategoryPercentage_1.default)(recipeCategories);
         let ingredientsStats = await (0, getIngredientStats_1.default)(ingredients);
         return {
             topIngredients: ingredientsStats,
             recipeCategoriesPercentage: categoryPercentages,
-            macroInfo,
+            macroMakeup: macroMakeUp,
         };
     }
     /**
@@ -894,8 +935,9 @@ __decorate([
     (0, type_graphql_1.Query)(() => PlannerInsights_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __param(1, (0, type_graphql_1.Arg)('recipeIds', (type) => [String])),
+    __param(2, (0, type_graphql_1.Arg)('numberOfDays')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:paramtypes", [String, Array, Number]),
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "getPlannerInsights", null);
 __decorate([

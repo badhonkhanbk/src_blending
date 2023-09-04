@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const CategoryPercentage_1 = __importDefault(require("./PlanSchema/CategoryPercentage"));
 const TopIngredient_1 = __importDefault(require("./PlanSchema/TopIngredient"));
-const MacroInfo_1 = __importDefault(require("./MacroInfo"));
+const MacroMakeup_1 = __importDefault(require("./PlanSchema/MacroMakeup"));
 let PlannerInsights = class PlannerInsights {
 };
 __decorate([
@@ -27,9 +27,9 @@ __decorate([
     __metadata("design:type", Array)
 ], PlannerInsights.prototype, "recipeCategoriesPercentage", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [MacroInfo_1.default], { nullable: true }),
-    __metadata("design:type", Array)
-], PlannerInsights.prototype, "macroInfo", void 0);
+    (0, type_graphql_1.Field)((type) => MacroMakeup_1.default, { nullable: true }),
+    __metadata("design:type", MacroMakeup_1.default)
+], PlannerInsights.prototype, "macroMakeup", void 0);
 PlannerInsights = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], PlannerInsights);
