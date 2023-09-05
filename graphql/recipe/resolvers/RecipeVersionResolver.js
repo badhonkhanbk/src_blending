@@ -807,7 +807,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
         }
         return {
             //@ts-ignore
-            ...userProfileRecipe._doc,
+            ...userProfileRecipe,
             notes: userNotes.length,
             addedToCompare: addedToCompare,
             userCollections: collectionData,
