@@ -17,7 +17,6 @@ const RecipeCategory_1 = __importDefault(require("./RecipeCategory"));
 const Brand_1 = __importDefault(require("./Brand"));
 const ImageType_1 = __importDefault(require("./ImageType"));
 const IngredientData_1 = __importDefault(require("./IngredientData"));
-const SimpleVersion_1 = __importDefault(require("./SimpleVersion"));
 const RecipeVersion_1 = __importDefault(require("./RecipeVersion"));
 const MemberProfileForRecipe_1 = __importDefault(require("./MemberProfileForRecipe"));
 let Recipe = class Recipe {
@@ -180,10 +179,6 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
     __metadata("design:type", Array)
 ], Recipe.prototype, "collections", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => [SimpleVersion_1.default], { nullable: true }),
-    __metadata("design:type", Array)
-], Recipe.prototype, "recipeVersion", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => RecipeVersion_1.default, { nullable: true }),
     __metadata("design:type", RecipeVersion_1.default)

@@ -31,6 +31,8 @@ const temporaryCompareCollection_1 = __importDefault(require("../../../models/te
 const checkTemporaryCompareList_1 = __importDefault(require("./util/checkTemporaryCompareList"));
 const GetASingleRecipe_1 = __importDefault(require("./util/GetASingleRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
+const getAdminRecipeDetails_1 = __importDefault(require("./util/getAdminRecipeDetails"));
+const MainRecipesWithPagination_1 = __importDefault(require("../schemas/MainRecipesWithPagination"));
 let RecipeCorrectionResolver = class RecipeCorrectionResolver {
     async bringAllAdminRecipe() {
         // await RecipeModel.updateMany(
@@ -486,6 +488,48 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             }),
         };
     }
+    async getAllRecipesForAdmin(page, limit) {
+        if (!limit) {
+            limit = 12;
+        }
+        if (!page) {
+            page = 1;
+        }
+        let skip = limit * (page - 1);
+        let userProfileRecipes = await recipeModel_1.default.find({})
+            .populate({
+            path: 'recipeBlendCategory',
+            model: 'RecipeCategory',
+        })
+            .populate({
+            path: 'userId',
+            model: 'User',
+            select: 'firstName lastName image displayName email',
+        })
+            .populate({
+            path: 'defaultVersion',
+            populate: [
+                {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                },
+                {
+                    path: 'createdBy',
+                    select: '_id displayName firstName lastName image email',
+                },
+            ],
+        })
+            .select('mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId')
+            .limit(limit)
+            .skip(skip)
+            .sort({ createdAt: 1 })
+            .lean();
+        let returnRecipe = await (0, getAdminRecipeDetails_1.default)(userProfileRecipes);
+        return {
+            recipes: returnRecipe,
+            totalRecipes: await recipeModel_1.default.countDocuments(),
+        };
+    }
     /**
      * A description of the entire function.
      *
@@ -608,6 +652,15 @@ __decorate([
         String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], RecipeCorrectionResolver.prototype, "getAllRelatedCategoryRecipes", null);
+__decorate([
+    (0, type_graphql_1.Query)((type) => MainRecipesWithPagination_1.default) // done
+    ,
+    __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:returntype", Promise)
+], RecipeCorrectionResolver.prototype, "getAllRecipesForAdmin", null);
 __decorate([
     (0, type_graphql_1.Query)((type) => String)
     /**

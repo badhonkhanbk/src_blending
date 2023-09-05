@@ -36,6 +36,7 @@ const planCollection_1 = __importDefault(require("../../../models/planCollection
 const PlanRating_1 = __importDefault(require("../../../models/PlanRating"));
 const updatePlanFacts_1 = __importDefault(require("../../recipe/resolvers/util/updatePlanFacts"));
 const FilterPlan_1 = __importDefault(require("./input-type/planInput/FilterPlan"));
+const addToGroceryFromRecipe_1 = __importDefault(require("./utils/addToGroceryFromRecipe"));
 let PlanResolver = class PlanResolver {
     /**
      * Creates a new plan.
@@ -570,6 +571,18 @@ let PlanResolver = class PlanResolver {
             plans: planWithCollectionAndComments,
             totalPlans: await Plan_1.default.countDocuments({ isGlobal: true }),
         };
+    }
+    async addGroceryByPlanId(memberId, planId) {
+        let plan = await Plan_1.default.findOne({ _id: planId }).select('planData');
+        if (!plan) {
+            return new AppError_1.default('plan not found', 404);
+        }
+        for (let i = 0; i < plan.planData.length; i++) {
+            for (let j = 0; j < plan.planData[i].recipes.length; j++) {
+                (0, addToGroceryFromRecipe_1.default)(String(plan.planData[i].recipes[j]), memberId);
+            }
+        }
+        return 'done';
     }
     /**
      * Retrieves all popular plans.
@@ -1145,6 +1158,15 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAllRecommendedPlans", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('memberId')),
+    __param(1, (0, type_graphql_1.Arg)('planId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], PlanResolver.prototype, "addGroceryByPlanId", null);
 __decorate([
     (0, type_graphql_1.Query)(() => PlanWithTotal_1.default)
     /**

@@ -187,6 +187,10 @@ __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], SimpleRecipe.prototype, "commentsCount", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], SimpleRecipe.prototype, "versionCount", void 0);
 SimpleRecipe = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], SimpleRecipe);

@@ -109,6 +109,10 @@ const recipeModelSchema = new mongoose_1.Schema({
     createdAt: { type: Date, default: Date.now },
     editedAt: Date,
     isMatch: { type: Boolean, default: true },
+    versionCount: {
+        type: Number,
+        default: 1,
+    },
 });
 const RecipeModel = (0, mongoose_1.model)('RecipeModel', recipeModelSchema);
 exports.default = RecipeModel;
