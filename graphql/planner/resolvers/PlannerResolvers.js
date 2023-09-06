@@ -423,6 +423,7 @@ let PlannerResolver = class PlannerResolver {
             macroMakeup: macroMakeUp,
             calorie: res[0].value,
             netCarbs: res2.netCarbs,
+            rxScore: 0
         };
     }
     /**

@@ -195,6 +195,101 @@ let PlanResolver = class PlanResolver {
         };
     }
     /**
+     * Retrieves a plan based on the provided planId, token, and memberId.
+     *
+     * @param {String} planId - The ID of the plan to retrieve.
+     * @param {String} token - (Optional) The token associated with the plan.
+     * @param {String} memberId - (Optional) The ID of the member associated with the plan.
+     * @return {Object} An object containing the retrieved plan, top ingredients, recipe categories percentage, and macro makeup.
+     */
+    async getAPlan2(planId, token, memberId) {
+        let plan = await Plan_1.default.findOne({
+            _id: planId,
+        }).populate({
+            path: 'planData.recipes',
+            populate: [
+                {
+                    path: 'defaultVersion',
+                    populate: {
+                        path: 'ingredients.ingredientId',
+                        model: 'BlendIngredient',
+                        select: 'ingredientName featuredImage',
+                    },
+                    // select: 'postfixTitle ingredients',
+                },
+                {
+                    path: 'brand',
+                },
+                {
+                    path: 'recipeBlendCategory',
+                },
+            ],
+        });
+        let recipeCategories = [];
+        let ingredients = [];
+        for (let i = 0; i < plan.planData.length; i++) {
+            if (plan.planData[i].recipes.length > 0) {
+                for (let j = 0; j < plan.planData[i].recipes.length; j++) {
+                    recipeCategories.push({
+                        //@ts-ignore
+                        _id: plan.planData[i].recipes[j].recipeBlendCategory
+                            ? plan.planData[i].recipes[j].recipeBlendCategory._id
+                            : null,
+                        //@ts-ignore
+                        name: plan.planData[i].recipes[j].recipeBlendCategory.name,
+                    });
+                    //defaultVersion
+                    //ingredients
+                    for (let k = 0; 
+                    //@ts-ignore
+                    k < plan.planData[i].recipes[j].defaultVersion.ingredients.length; k++) {
+                        ingredients.push({
+                            //@ts-ignore
+                            _id: plan.planData[i].recipes[j].defaultVersion.ingredients[k]
+                                .ingredientId._id,
+                            //@ts-ignore
+                            name: plan.planData[i].recipes[j].defaultVersion.ingredients[k]
+                                .ingredientId.ingredientName,
+                            featuredImage: 
+                            //@ts-ignore
+                            plan.planData[i].recipes[j].defaultVersion.ingredients[k]
+                                .ingredientId.featuredImage,
+                        });
+                    }
+                }
+            }
+        }
+        let categoryPercentages = await (0, getRecipeCategoryPercentage_1.default)(recipeCategories);
+        let ingredientsStats = await (0, getIngredientStats_1.default)(ingredients);
+        if (memberId) {
+            plan.commentsCount = await (0, attachCommentsCountWithPlan_1.default)(plan._id);
+            plan.planCollections = await (0, checkThePlanIsInCollectionOrNot_1.default)(plan._id, memberId);
+            let myPlanRating = await PlanRating_1.default.findOne({
+                memberId: memberId,
+                planId: plan._id,
+            });
+            if (myPlanRating) {
+                plan.myRating = myPlanRating.rating;
+            }
+            else {
+                plan.myRating = 0;
+            }
+            plan.planCollectionsDescription = await planCollection_1.default.find({
+                memberId: memberId,
+                plans: {
+                    $in: planId,
+                },
+            });
+            // console.log(plan.planCollectionDescription);
+        }
+        return {
+            plan: plan,
+            topIngredients: ingredientsStats,
+            recipeCategoriesPercentage: categoryPercentages,
+            macroMakeup: await this.averageCarbsProteinFatsForAPlanner(planId),
+        };
+    }
+    /**
      * Calculates the average amount of carbs, protein, and fats for a given planner.
      *
      * @param {String} planId - The ID of the planner.
@@ -1053,6 +1148,26 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], PlanResolver.prototype, "getAPlan", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => PlanIngredientAndCategory_1.default)
+    /**
+     * Retrieves a plan based on the provided planId, token, and memberId.
+     *
+     * @param {String} planId - The ID of the plan to retrieve.
+     * @param {String} token - (Optional) The token associated with the plan.
+     * @param {String} memberId - (Optional) The ID of the member associated with the plan.
+     * @return {Object} An object containing the retrieved plan, top ingredients, recipe categories percentage, and macro makeup.
+     */
+    ,
+    __param(0, (0, type_graphql_1.Arg)('planId')),
+    __param(1, (0, type_graphql_1.Arg)('token', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('memberId', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        String]),
+    __metadata("design:returntype", Promise)
+], PlanResolver.prototype, "getAPlan2", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String)
     /**
