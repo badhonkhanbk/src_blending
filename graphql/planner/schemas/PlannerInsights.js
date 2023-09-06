@@ -30,6 +30,14 @@ __decorate([
     (0, type_graphql_1.Field)((type) => MacroMakeup_1.default, { nullable: true }),
     __metadata("design:type", MacroMakeup_1.default)
 ], PlannerInsights.prototype, "macroMakeup", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], PlannerInsights.prototype, "calorie", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], PlannerInsights.prototype, "netCarbs", void 0);
 PlannerInsights = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], PlannerInsights);
