@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const blendIngredient_1 = __importDefault(require("../../../../models/blendIngredient"));
 const blendNutrientCategory_1 = __importDefault(require("../../../../models/blendNutrientCategory"));
 const getTopLevelChilds_1 = __importDefault(require("./getTopLevelChilds"));
+const mongoose_1 = __importDefault(require("mongoose"));
 async function getBlendNutritionBasedOnRecipexxx(
 // @Arg('ingredientsInfo', (type) => [BlendIngredientInfo])
 ingredientsInfo) {
@@ -90,7 +91,7 @@ ingredientsInfo) {
     // return JSON.stringify(obj);
     let data = ingredientsInfo;
     // @ts-ignore
-    let hello = data.map((x) => new mongoose.mongo.ObjectId(x.ingredientId));
+    let hello = data.map((x) => new mongoose_1.default.mongo.ObjectId(x.ingredientId));
     let ingredients;
     ingredients = await blendIngredient_1.default.find({
         _id: { $in: hello },
