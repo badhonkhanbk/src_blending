@@ -35,6 +35,18 @@ __decorate([
     (0, type_graphql_1.Field)((type) => MacroMakeup_1.default, { nullable: true }),
     __metadata("design:type", MacroMakeup_1.default)
 ], PlannersIngredientAndCategory.prototype, "macroMakeup", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], PlannersIngredientAndCategory.prototype, "calorie", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], PlannersIngredientAndCategory.prototype, "netCarbs", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], PlannersIngredientAndCategory.prototype, "rxScore", void 0);
 PlannersIngredientAndCategory = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], PlannersIngredientAndCategory);

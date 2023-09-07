@@ -157,6 +157,7 @@ let PlannerResolver = class PlannerResolver {
         let planners = [];
         let recipeCategories = [];
         let ingredients = [];
+        let ingredientInfo = [];
         let tempDay = startDateISO;
         for (let i = 0; i <= Number(days); i++) {
             let planner = await Planner_1.default.findOne({
@@ -205,7 +206,7 @@ let PlannerResolver = class PlannerResolver {
                     },
                 })
                     .lean();
-                // console.log(userProfileRecipes[0]);
+                // console.log(userProfileRecipes.length);
                 let returnRecipe = await (0, getNotesCompareAndUserCollectionsForPlanner_1.default)(userId, userProfileRecipes);
                 planner.ProfileRecipes = returnRecipe;
                 planners.push(planner);
@@ -218,9 +219,11 @@ let PlannerResolver = class PlannerResolver {
                             //@ts-ignore
                             name: userProfileRecipes[j].recipeId.recipeBlendCategory.name,
                         });
+                        // console.log(userProfileRecipes[j]._id);
                         for (let k = 0; 
                         //@ts-ignore
                         k < userProfileRecipes[j].defaultVersion.ingredients.length; k++) {
+                            // console.log(k);
                             ingredients.push({
                                 //@ts-ignore
                                 _id: userProfileRecipes[j].defaultVersion.ingredients[k]
@@ -232,6 +235,13 @@ let PlannerResolver = class PlannerResolver {
                                 //@ts-ignore
                                 userProfileRecipes[j].defaultVersion.ingredients[k]
                                     .ingredientId.featuredImage,
+                            });
+                            // console.log(k);
+                            ingredientInfo.push({
+                                ingredientId: String(userProfileRecipes[j].defaultVersion.ingredients[k]
+                                    .ingredientId._id),
+                                value: userProfileRecipes[j].defaultVersion.ingredients[k]
+                                    .weightInGram,
                             });
                         }
                         let protein = userProfileRecipes[j].defaultVersion.energy.filter((item) => String(item.blendNutrientRefference) ===
@@ -283,12 +293,22 @@ let PlannerResolver = class PlannerResolver {
         if (macroMakeUp.carbs !== 0) {
             macroMakeUp.carbs = macroMakeUp.carbs / days;
         }
+        // console.log(ingredientInfo);
+        // console.log(2);
+        let res2 = await (0, getGlAndNetCarbs2_1.default)(ingredientInfo);
+        // console.log(2);
+        let res = await (0, getSearchedBlendNutrition_1.default)(ingredientInfo, [
+            '620b4606b82695d67f28e193',
+        ]);
         // console.log(planners);
         return {
             planners,
             topIngredients: ingredientsStats,
             recipeCategoriesPercentage: categoryPercentages,
             macroMakeup: macroMakeUp,
+            calorie: res[0].value,
+            netCarbs: res2.netCarbs,
+            rxScore: 0,
         };
     }
     async getPlannerInsights(userId, recipeIds, numberOfDays) {

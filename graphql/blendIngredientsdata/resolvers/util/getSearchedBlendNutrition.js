@@ -32,6 +32,7 @@ async function getSearchedBlendNutrition(ingredientsInfo, mySearch) {
                 (+ingredients[i].blendNutrients[j].value / 100) * +value;
         }
     }
+    // console.log('x');
     let nutrients = [];
     for (let i = 0; i < ingredients.length; i++) {
         let temp = ingredients[i];
