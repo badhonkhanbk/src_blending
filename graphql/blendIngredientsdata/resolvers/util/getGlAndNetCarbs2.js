@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const blendIngredient_1 = __importDefault(require("../../../../models/blendIngredient"));
-const getBlendNutritionBasedOnRecipexxx2_1 = __importDefault(require("./getBlendNutritionBasedOnRecipexxx2"));
 async function getGlAndNetCarbs2(
 // @Arg('ingredientsInfo', (type) => [BlendIngredientInfo])
 ingredientsInfo) {
@@ -13,11 +12,20 @@ ingredientsInfo) {
     // let overAllCarbs = 0;
     // let overAllFiber = 0;
     // for (let i = 0; i < ingredientsInfo.length; i++) {
-    //   let AuthUser = (info: BlendIngredientInfo[]) => {
-    //     return getBlendNutritionBasedOnRecipexxx2(info);
-    //   };
-    //   let data = await AuthUser([ingredientsInfo[i]]);
-    //   // console.log(data);
+    //   // let AuthUser = (info: BlendIngredientInfo[]) => {
+    //   //   return this.getBlendNutritionBasedOnRecipexxx2(info);
+    //   // };
+    //   // let data = await AuthUser([ingredientsInfo[i]]);
+    //   // console.log(ingredientsInfo[i]);
+    //   let data = await getBlendNutritionBasedOnRecipexxx2([ingredientsInfo[i]]);
+    //   let blendIngredient: any = await BlendIngredientModel.findOne({
+    //     _id: ingredientsInfo[i].ingredientId,
+    //   }).select('gi gl netCarbs rxScore');
+    //   // let data = await getSearchedBlendNutrition(
+    //   //   [ingredientsInfo[i]],
+    //   //   ['620b4608b82695d67f28e19c', '620b4609b82695d67f28e19f']
+    //   // );
+    //   // console.log('12', data);
     //   let obj = JSON.parse(data);
     //   // console.log(obj);
     //   let totalCarbs = obj.Energy['total carbs']
@@ -29,9 +37,12 @@ ingredientsInfo) {
     //       ? obj.Energy['total carbs'].childs['dietary fiber'].value
     //       : 0;
     //   }
-    //   let blendIngredient: any = await BlendIngredientModel.findOne({
-    //     _id: ingredientsInfo[i].ingredientId,
-    //   }).select('gi gl netCarbs rxScore');
+    //   console.log('---------');
+    //   console.log(ingredientsInfo[i]);
+    //   console.log(blendIngredient._id);
+    //   console.log(totalCarbs);
+    //   console.log(dietaryFiber);
+    //   console.log('---------');
     //   if (!blendIngredient.gi || blendIngredient.gi === 0) {
     //     blendIngredient.gi = 55;
     //   }
@@ -44,7 +55,7 @@ ingredientsInfo) {
     //     netCarbs: netCarbs,
     //     rxScore: blendIngredient.rxScore ? blendIngredient.rxScore : 20,
     //   });
-    //   console.log('gi', blendIngredient.gi);
+    //   // console.log('gi', blendIngredient.gi);
     //   overAllGi += 55;
     //   overAllCarbs += totalCarbs;
     //   overAllFiber += dietaryFiber;
@@ -79,7 +90,7 @@ ingredientsInfo) {
     //   acc += item.totalPercentage;
     //   return acc;
     // }, 0);
-    // console.log(totalGi);
+    // // console.log(totalGi);
     // let netCarbs = overAllCarbs - overAllFiber;
     // let totalGL = (totalGi * netCarbs) / 100;
     // return {
@@ -97,22 +108,51 @@ ingredientsInfo) {
         // };
         // let data = await AuthUser([ingredientsInfo[i]]);
         // console.log(ingredientsInfo[i]);
-        let data = await (0, getBlendNutritionBasedOnRecipexxx2_1.default)([ingredientsInfo[i]]);
-        // console.log('12', data);
-        let obj = JSON.parse(data);
-        // console.log(obj);
-        let totalCarbs = obj.Energy['total carbs']
-            ? obj.Energy['total carbs'].value
-            : 0;
-        let dietaryFiber = 0;
-        if (totalCarbs !== 0) {
-            dietaryFiber = obj.Energy['total carbs'].childs['dietary fiber']
-                ? obj.Energy['total carbs'].childs['dietary fiber'].value
-                : 0;
-        }
+        // let data = await getBlendNutritionBasedOnRecipexxx2([ingredientsInfo[i]]);
         let blendIngredient = await blendIngredient_1.default.findOne({
             _id: ingredientsInfo[i].ingredientId,
-        }).select('gi gl netCarbs rxScore');
+        }).select('gi gl netCarbs rxScore blendNutrients');
+        let totalCarbsIndex = blendIngredient.blendNutrients.findIndex((blendNutrient) => String(blendNutrient.blendNutrientRefference) ===
+            '620b4608b82695d67f28e19c');
+        let dietaryFiberIndex = blendIngredient.blendNutrients.findIndex((blendNutrient) => String(blendNutrient.blendNutrientRefference) ===
+            '620b4609b82695d67f28e19f');
+        let totalCarbs = totalCarbsIndex !== -1
+            ? (+blendIngredient.blendNutrients[totalCarbsIndex].value / 100) *
+                +ingredientsInfo[i].value
+            : 0;
+        let dietaryFiber = dietaryFiberIndex !== -1
+            ? (+blendIngredient.blendNutrients[dietaryFiberIndex].value / 100) *
+                +ingredientsInfo[i].value
+            : 0;
+        // console.log('---------');
+        // console.log(ingredientsInfo[i]);
+        // console.log(blendIngredient._id);
+        // console.log(+blendIngredient.blendNutrients[totalCarbsIndex].value);
+        // console.log(totalCarbs);
+        // console.log(dietaryFiber);
+        // console.log('---------');
+        // let data = await getSearchedBlendNutrition(
+        //   [ingredientsInfo[i]],
+        //   ['620b4608b82695d67f28e19c', '620b4609b82695d67f28e19f']
+        // );
+        // console.log('12', data);
+        // let obj = JSON.parse(data);
+        // console.log(obj);
+        // let totalCarbs = obj.Energy['total carbs']
+        //   ? obj.Energy['total carbs'].value
+        //   : 0;
+        // let dietaryFiber = 0;
+        // if (totalCarbs !== 0) {
+        //   dietaryFiber = obj.Energy['total carbs'].childs['dietary fiber']
+        //     ? obj.Energy['total carbs'].childs['dietary fiber'].value
+        //     : 0;
+        // }
+        // console.log('---------');
+        // console.log(ingredientsInfo[i]);
+        // console.log(blendIngredient._id);
+        // console.log(totalCarbs);
+        // console.log(dietaryFiber);
+        // console.log('---------');
         if (!blendIngredient.gi || blendIngredient.gi === 0) {
             blendIngredient.gi = 55;
         }

@@ -125,15 +125,18 @@ ingredientsInfo) {
         },
         select: '-bodies -wikiCoverImages -wikiFeatureImage -wikiDescription -wikiTitle -isPublished -related_sources',
     })
+        .select('blendNutrients')
         .sort({ rank: 1 })
         .lean();
     // console.log(ingredients);
     if (ingredients.length === 0) {
         console.log('error');
     }
+    console.log(1);
     ingredients[0].blendNutrients = ingredients[0].blendNutrients.filter(
     //@ts-ignore
     (bn) => bn.blendNutrientRefference);
+    // console.log('x', ingredients[0].blendNutrients[0]);
     for (let i = 0; i < ingredients.length; i++) {
         let value = data.filter(
         // @ts-ignore

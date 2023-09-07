@@ -330,6 +330,7 @@ let PlannerResolver = class PlannerResolver {
                     {
                         path: 'recipeBlendCategory',
                         model: 'RecipeCategory',
+                        select: 'name',
                     },
                 ],
             })
@@ -342,6 +343,7 @@ let PlannerResolver = class PlannerResolver {
                     select: 'ingredientName selectedImage featuredImage',
                 },
             })
+                .select('recipeId defaultVersion')
                 .lean();
             if (!userProfileRecipe) {
                 continue;
@@ -411,19 +413,21 @@ let PlannerResolver = class PlannerResolver {
         }
         let categoryPercentages = await (0, getRecipeCategoryPercentage_1.default)(recipeCategories);
         let ingredientsStats = await (0, getIngredientStats_1.default)(ingredients);
+        console.log(2);
         let res2 = await (0, getGlAndNetCarbs2_1.default)(ingredientInfo);
+        console.log(2);
         let res = await (0, getSearchedBlendNutrition_1.default)(ingredientInfo, [
             '620b4606b82695d67f28e193',
         ]);
-        console.log(res);
-        console.log(res2);
+        // console.log(res);
+        // console.log(res2);
         return {
             topIngredients: ingredientsStats,
             recipeCategoriesPercentage: categoryPercentages,
             macroMakeup: macroMakeUp,
             calorie: res[0].value,
             netCarbs: res2.netCarbs,
-            rxScore: 0
+            rxScore: 0,
         };
     }
     /**
