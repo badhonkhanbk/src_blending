@@ -910,50 +910,55 @@ let RecipeResolver = class RecipeResolver {
         }
         return 'recipe has been removed From your collection';
     }
-    async addRecipeFromAdmin(data) {
-        let newData = data;
-        newData.foodCategories = [];
-        for (let i = 0; i < newData.ingredients.length; i++) {
-            newData.ingredients[i].portions = [];
-            let ingredient = await blendIngredient_1.default.findOne({
-                _id: newData.ingredients[i].ingredientId,
-            });
-            let index = 0;
-            let selectedPortionIndex = 0;
-            for (let j = 0; j < ingredient.portions.length; j++) {
-                if (ingredient.portions[j].default === true) {
-                    index = j;
-                    console.log(index);
-                    break;
-                }
-            }
-            for (let k = 0; k < ingredient.portions.length; k++) {
-                if (ingredient.portions[k].measurement ===
-                    newData.ingredients[i].selectedPortionName) {
-                    selectedPortionIndex = k;
-                }
-                let portion = {
-                    name: ingredient.portions[k].measurement,
-                    quantity: newData.ingredients[i].weightInGram /
-                        +ingredient.portions[k].meausermentWeight,
-                    default: ingredient.portions[k].default,
-                    gram: ingredient.portions[k].meausermentWeight,
-                };
-                newData.ingredients[i].portions.push(portion);
-            }
-            newData.ingredients[i].selectedPortion = {
-                name: ingredient.portions[selectedPortionIndex].measurement,
-                quantity: newData.ingredients[i].weightInGram /
-                    +ingredient.portions[selectedPortionIndex].meausermentWeight,
-                gram: ingredient.portions[selectedPortionIndex].meausermentWeight,
-            };
-            newData.foodCategories.push(ingredient.category);
-        }
-        newData.foodCategories = [...new Set(newData.foodCategories)];
-        newData.global = false;
-        let recipe = await recipeModel_1.default.create(newData);
-        return 'recipe added successfully';
-    }
+    // @Mutation((type) => String) //:NOT USABLE
+    // async addRecipeFromAdmin(@Arg('data') data: CreateRecipe) {
+    //   let newData: any = data;
+    //   newData.foodCategories = [];
+    //   for (let i = 0; i < newData.ingredients.length; i++) {
+    //     newData.ingredients[i].portions = [];
+    //     let ingredient = await BlendIngredientModel.findOne({
+    //       _id: newData.ingredients[i].ingredientId,
+    //     });
+    //     let index = 0;
+    //     let selectedPortionIndex = 0;
+    //     for (let j = 0; j < ingredient.portions.length; j++) {
+    //       if (ingredient.portions[j].default === true) {
+    //         index = j;
+    //         console.log(index);
+    //         break;
+    //       }
+    //     }
+    //     for (let k = 0; k < ingredient.portions.length; k++) {
+    //       if (
+    //         ingredient.portions[k].measurement ===
+    //         newData.ingredients[i].selectedPortionName
+    //       ) {
+    //         selectedPortionIndex = k;
+    //       }
+    //       let portion = {
+    //         name: ingredient.portions[k].measurement,
+    //         quantity:
+    //           newData.ingredients[i].weightInGram /
+    //           +ingredient.portions[k].meausermentWeight,
+    //         default: ingredient.portions[k].default,
+    //         gram: ingredient.portions[k].meausermentWeight,
+    //       };
+    //       newData.ingredients[i].portions.push(portion);
+    //     }
+    //     newData.ingredients[i].selectedPortion = {
+    //       name: ingredient.portions[selectedPortionIndex].measurement,
+    //       quantity:
+    //         newData.ingredients[i].weightInGram /
+    //         +ingredient.portions[selectedPortionIndex].meausermentWeight,
+    //       gram: ingredient.portions[selectedPortionIndex].meausermentWeight,
+    //     };
+    //     newData.foodCategories.push(ingredient.category);
+    //   }
+    //   newData.foodCategories = [...new Set(newData.foodCategories)];
+    //   newData.global = false;
+    //   let recipe = await RecipeModel.create(newData);
+    //   return 'recipe added successfully';
+    // }
     /**
      * Adds a recipe from a user.
      *
@@ -2128,14 +2133,6 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], RecipeResolver.prototype, "deleteARecipe", null);
-__decorate([
-    (0, type_graphql_1.Mutation)((type) => String) //:NOT USABLE
-    ,
-    __param(0, (0, type_graphql_1.Arg)('data')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CreateRecipe_1.default]),
-    __metadata("design:returntype", Promise)
-], RecipeResolver.prototype, "addRecipeFromAdmin", null);
 __decorate([
     (0, type_graphql_1.Mutation)((type) => ProfileRecipeDesc_1.default)
     /**

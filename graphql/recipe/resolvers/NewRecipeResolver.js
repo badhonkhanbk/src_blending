@@ -519,6 +519,14 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
                 },
             ],
         })
+            .populate({
+            path: 'brand',
+            model: 'RecipeBrand',
+        })
+            .populate({
+            path: 'recipeBlendCategory',
+            model: 'RecipeCategory',
+        })
             .select('mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId')
             .limit(limit)
             .skip(skip)

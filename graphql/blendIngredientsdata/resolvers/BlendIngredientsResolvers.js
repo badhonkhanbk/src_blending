@@ -525,6 +525,163 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         // console.log('best', res.data.parsed_data[0].best_match);
         return 'done';
     }
+    async tempEditRecipeByAdmin(data) {
+        let admin = await Admin_1.default.findOne({ _id: data.adminId });
+        if (!admin) {
+            return new AppError_1.default('admin not found', 404);
+        }
+        if (!data.url) {
+            return new AppError_1.default('url not found', 404);
+        }
+        let recipe = await recipeModel_1.default.findOne({
+            url: data.url,
+        });
+        if (recipe) {
+            if (recipe.adminId) {
+                return new AppError_1.default('recipe already saved', 404);
+            }
+            await recipeModel_1.default.findOneAndUpdate({
+                _id: recipe._id,
+            }, {
+                adminId: admin._id,
+                tempAdmin: true,
+            });
+            await RecipeVersionModel_1.default.findOneAndUpdate({
+                _id: recipe.originalVersion,
+            }, {
+                adminId: admin._id,
+                createdByAdmin: true,
+            });
+            if (data.recipeIngredients.length > 0) {
+                let parsingData = await this.searchInScrappedRecipeFromUser(data.recipeIngredients, null, null, null);
+                //@ts-ignore
+                data.ingredients = parsingData.blendIngredients;
+            }
+            return 'done';
+        }
+        if (data.recipeIngredients.length > 0) {
+            let parsingData = await this.searchInScrappedRecipeFromUser(data.recipeIngredients, null, null, null);
+            //@ts-ignore
+            data.ingredients = parsingData.blendIngredients;
+            //@ts-ignore
+            data.errorIngredients = parsingData.errorIngredients;
+        }
+        let newData = data;
+        newData.foodCategories = [];
+        if (newData.ingredients) {
+            for (let i = 0; i < newData.ingredients.length; i++) {
+                newData.ingredients[i].portions = [];
+                let ingredient = await blendIngredient_1.default.findOne({
+                    _id: newData.ingredients[i].ingredientId,
+                });
+                let index = 0;
+                let selectedPortionIndex = 0;
+                for (let j = 0; j < ingredient.portions.length; j++) {
+                    if (ingredient.portions[j].default === true) {
+                        index = j;
+                        console.log(index);
+                        break;
+                    }
+                }
+                for (let k = 0; k < ingredient.portions.length; k++) {
+                    if (ingredient.portions[k].measurement ===
+                        newData.ingredients[i].selectedPortionName) {
+                        selectedPortionIndex = k;
+                    }
+                    let portion = {
+                        name: ingredient.portions[k].measurement,
+                        quantity: newData.ingredients[i].weightInGram /
+                            +ingredient.portions[k].meausermentWeight,
+                        default: ingredient.portions[k].default,
+                        gram: ingredient.portions[k].meausermentWeight,
+                    };
+                    newData.ingredients[i].portions.push(portion);
+                }
+                newData.ingredients[i].selectedPortion = {
+                    name: ingredient.portions[selectedPortionIndex].measurement,
+                    quantity: newData.ingredients[i].weightInGram /
+                        +ingredient.portions[selectedPortionIndex].meausermentWeight,
+                    gram: ingredient.portions[selectedPortionIndex].meausermentWeight,
+                };
+                newData.foodCategories.push(ingredient.category);
+            }
+        }
+        else {
+            newData.ingredients = [];
+        }
+        newData.foodCategories = [...new Set(newData.foodCategories)];
+        newData.global = false;
+        newData.adminId = admin._id;
+        if (newData.url) {
+            const { hostname } = new URL(newData.url);
+            let brandName = '';
+            brandName = hostname.replace('www.', '');
+            brandName = brandName.replace('.com', '');
+            let brand = await brand_1.default.findOne({
+                brandName: brandName,
+            });
+            if (brand) {
+                newData.brand = brand._id;
+            }
+            else {
+                let brandInfo = {
+                    brandUrl: hostname,
+                    slug: (0, slugify_1.default)(brandName),
+                    brandName: brandName,
+                    brandIcon: data.favicon,
+                    brandImage: data.favicon,
+                    canonicalURL: data.seoCanonicalURL,
+                };
+                let newBrand = await brand_1.default.create(brandInfo);
+                newData.brand = newBrand._id;
+            }
+        }
+        newData.tempAdmin = true;
+        let userRecipe = await recipeModel_1.default.create(newData);
+        let recipeVersion = await RecipeVersionModel_1.default.create({
+            recipeId: userRecipe._id,
+            postfixTitle: data.name,
+            selectedImage: data.image[0].image,
+            servingSize: newData.servingSize,
+            description: newData.description,
+            ingredients: newData.ingredients,
+            recipeInstructions: newData.recipeInstructions,
+            createdByAdmin: true,
+            adminId: admin._id,
+            errorIngredients: data.errorIngredients,
+            isDefault: true,
+            isOriginal: true,
+        });
+        //@ts-ignore
+        await (0, updateVersionFacts_1.default)(recipeVersion._id);
+        if (data.errorIngredients) {
+            if (data.errorIngredients.length > 0) {
+                for (let i = 0; i < data.errorIngredients.length; i++) {
+                    await QANotFound_1.default.findOneAndUpdate({
+                        _id: data.errorIngredients[i].qaId,
+                    }, {
+                        $push: { versions: recipeVersion._id },
+                    });
+                }
+            }
+        }
+        await recipeModel_1.default.findOneAndUpdate({
+            _id: userRecipe._id,
+        }, {
+            $push: { recipeVersion: recipeVersion._id },
+            originalVersion: recipeVersion._id,
+            defaultVersion: recipeVersion._id,
+        });
+        return 'added!';
+    }
+    async removeAllAddedByAdminRecipe() {
+        await recipeModel_1.default.findOneAndRemove({
+            adminId: {
+                $ne: null,
+            },
+        });
+        return 'done';
+    }
     async addRecipeFromAdmin(data) {
         let admin = await Admin_1.default.findOne({ _id: data.adminId });
         if (!admin) {
@@ -669,14 +826,15 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         });
         return 'added!';
     }
-    async removeAllAddedByAdminRecipe() {
-        await recipeModel_1.default.findOneAndRemove({
-            adminId: {
-                $ne: null,
-            },
-        });
-        return 'done';
-    }
+    // @Mutation((type) => String)
+    // async removeAllAddedByAdminRecipe() {
+    //   await RecipeModel.findOneAndRemove({
+    //     adminId: {
+    //       $ne: null,
+    //     },
+    //   });
+    //   return 'done';
+    // }
     async searchInScrappedRecipeFromUser(recipeIngredients, url, userId, isClient) {
         let ingredientsShape = {
             recipeIngredients: recipeIngredients,
@@ -724,7 +882,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             });
             notFountIndexes.push(+errorParsedKeys[i]);
         }
-        // console.log(res.data.parsed_data[0].best_match);
+        console.log(res.data.parsed_data);
         for (let i = 0; i < res.data.parsed_data.length; i++) {
             let blendIngredient = null;
             //res.data[0].parsed_data[i].best_match.length
@@ -791,6 +949,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     quantity: res.data.parsed_data[i].QUANTITY,
                     unit: res.data.parsed_data[i].QUANTITY_UNIT,
                     name: res.data.parsed_data[i].INGREDIENT,
+                    originalIngredientName: res.data.parsed_data[i].INGREDIENT,
                     db_name: blendIngredient.ingredientName,
                     comment: res.data.parsed_data[i].COMMENT,
                     portions: blendIngredient.portions,
@@ -1503,13 +1662,20 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateRecipe_1.default]),
     __metadata("design:returntype", Promise)
-], BlendIngredientResolver.prototype, "addRecipeFromAdmin", null);
+], BlendIngredientResolver.prototype, "tempEditRecipeByAdmin", null);
 __decorate([
     (0, type_graphql_1.Mutation)((type) => String),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "removeAllAddedByAdminRecipe", null);
+__decorate([
+    (0, type_graphql_1.Mutation)((type) => String),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CreateRecipe_1.default]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "addRecipeFromAdmin", null);
 __decorate([
     (0, type_graphql_1.Mutation)((type) => NutrientListAndGiGlForScrapper_1.default),
     __param(0, (0, type_graphql_1.Arg)('recipeIngredients', (type) => [String], { nullable: true })),
