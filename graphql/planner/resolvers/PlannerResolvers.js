@@ -42,7 +42,7 @@ const getGlAndNetCarbs2_1 = __importDefault(require("../../blendIngredientsdata/
 var MergeOrReplace;
 (function (MergeOrReplace) {
     MergeOrReplace["MERGE"] = "MERGE";
-    MergeOrReplace["REMOVE"] = "REMOVE";
+    MergeOrReplace["REPLACE"] = "REPLACE";
 })(MergeOrReplace || (MergeOrReplace = {}));
 (0, type_graphql_1.registerEnumType)(MergeOrReplace, {
     name: 'mergerOrRemove',
@@ -805,7 +805,6 @@ let PlannerResolver = class PlannerResolver {
                 });
             }
             else {
-                console.log('hello');
                 await Planner_1.default.create({
                     memberId: memberId,
                     assignDate: tempDate,
@@ -894,6 +893,22 @@ let PlannerResolver = class PlannerResolver {
         }, {
             errorIngredients: [],
         });
+        return 'done';
+    }
+    async n() {
+        let planners = await Planner_1.default.find();
+        for (let i = 0; i < planners.length; i++) {
+            let otherPlanners = await Planner_1.default.find({
+                memberId: planners[i].memberId,
+                formatedDate: planners[i].formatedDate,
+                _id: { $ne: planners[i]._id },
+            }).select('_id');
+            let ids = otherPlanners.map((op) => op._id);
+            planners.length = planners.length - ids.length;
+            await Planner_1.default.deleteMany({
+                _id: { $in: ids },
+            });
+        }
         return 'done';
     }
 };
@@ -1084,6 +1099,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PlannerResolver.prototype, "fixV", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PlannerResolver.prototype, "n", null);
 PlannerResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], PlannerResolver);
