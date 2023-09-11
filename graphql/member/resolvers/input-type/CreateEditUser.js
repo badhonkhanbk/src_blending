@@ -65,7 +65,7 @@ __decorate([
     __metadata("design:type", Date)
 ], CreateEditUser.prototype, "createdAt", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => Date, { nullable: true }),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CreateEditUser.prototype, "blenderManufacturer", void 0);
 CreateEditUser = __decorate([
