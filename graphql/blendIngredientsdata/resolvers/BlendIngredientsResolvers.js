@@ -49,6 +49,7 @@ const addIngredientFromSrc_1 = __importDefault(require("./util/addIngredientFrom
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const CreateRecipe_1 = __importDefault(require("../../recipe/resolvers/input-type/CreateRecipe"));
 const slugify_1 = __importDefault(require("slugify"));
@@ -537,9 +538,9 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             url: data.url,
         });
         if (recipe) {
-            if (recipe.adminId) {
-                return new AppError_1.default('recipe already saved', 404);
-            }
+            // if (recipe.adminId) {
+            //   return new AppError('recipe already saved', 404);
+            // }
             await recipeModel_1.default.findOneAndUpdate({
                 _id: recipe._id,
             }, {
@@ -556,6 +557,54 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 let parsingData = await this.searchInScrappedRecipeFromUser(data.recipeIngredients, null, null, null);
                 //@ts-ignore
                 data.ingredients = parsingData.blendIngredients;
+                //@ts-ignore
+                data.errorIngredients = parsingData.errorIngredients;
+                let newData = data;
+                newData.foodCategories = [];
+                if (newData.ingredients) {
+                    for (let i = 0; i < newData.ingredients.length; i++) {
+                        newData.ingredients[i].portions = [];
+                        let ingredient = await blendIngredient_1.default.findOne({
+                            _id: newData.ingredients[i].ingredientId,
+                        });
+                        let index = 0;
+                        let selectedPortionIndex = 0;
+                        for (let j = 0; j < ingredient.portions.length; j++) {
+                            if (ingredient.portions[j].default === true) {
+                                index = j;
+                                console.log(index);
+                                break;
+                            }
+                        }
+                        for (let k = 0; k < ingredient.portions.length; k++) {
+                            if (ingredient.portions[k].measurement ===
+                                newData.ingredients[i].selectedPortionName) {
+                                selectedPortionIndex = k;
+                            }
+                            let portion = {
+                                name: ingredient.portions[k].measurement,
+                                quantity: newData.ingredients[i].weightInGram /
+                                    +ingredient.portions[k].meausermentWeight,
+                                default: ingredient.portions[k].default,
+                                gram: ingredient.portions[k].meausermentWeight,
+                            };
+                            newData.ingredients[i].portions.push(portion);
+                        }
+                        newData.ingredients[i].selectedPortion = {
+                            name: ingredient.portions[selectedPortionIndex].measurement,
+                            quantity: newData.ingredients[i].weightInGram /
+                                +ingredient.portions[selectedPortionIndex].meausermentWeight,
+                            gram: ingredient.portions[selectedPortionIndex].meausermentWeight,
+                        };
+                    }
+                }
+                else {
+                    newData.ingredients = [];
+                }
+                console.log('x', newData.ingredients);
+                await RecipeVersionModel_1.default.findOneAndUpdate({ _id: recipe.originalVersion }, {
+                    ingredients: newData.ingredients,
+                });
             }
             return 'done';
         }
@@ -950,6 +999,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     unit: res.data.parsed_data[i].QUANTITY_UNIT,
                     name: res.data.parsed_data[i].INGREDIENT,
                     originalIngredientName: res.data.parsed_data[i].INGREDIENT,
+                    quantityString: res.data.parsed_data[i].QUANTITY_STRING,
                     db_name: blendIngredient.ingredientName,
                     comment: res.data.parsed_data[i].COMMENT,
                     portions: blendIngredient.portions,
@@ -1490,7 +1540,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         };
     }
     async addGiToTheIngredients() {
-        await blendIngredient_1.default.updateMany({}, { rxScore: 0 });
+        await memberModel_1.default.updateMany({}, { blenderManufacturer: '' });
         return 'done';
     }
 };

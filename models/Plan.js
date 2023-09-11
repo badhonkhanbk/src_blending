@@ -50,7 +50,7 @@ const PlanSchema = new mongoose_1.Schema({
             value: Number,
             blendNutrientRefference: {
                 type: mongoose_1.Schema.Types.ObjectId,
-                ref: 'BlendIngredient',
+                ref: 'BlendNutrient',
             },
             parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
         },
@@ -60,7 +60,7 @@ const PlanSchema = new mongoose_1.Schema({
             value: Number,
             blendNutrientRefference: {
                 type: mongoose_1.Schema.Types.ObjectId,
-                ref: 'BlendIngredient',
+                ref: 'BlendNutrient',
             },
             parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
         },
@@ -70,7 +70,7 @@ const PlanSchema = new mongoose_1.Schema({
             value: Number,
             blendNutrientRefference: {
                 type: mongoose_1.Schema.Types.ObjectId,
-                ref: 'BlendIngredient',
+                ref: 'BlendNutrient',
             },
             parent: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
         },

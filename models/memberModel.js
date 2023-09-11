@@ -13,6 +13,7 @@ const memberSchema = new mongoose_1.Schema({
     lastName: String,
     displayName: String,
     yourBlender: String,
+    blenderManufacturer: { type: String, default: '' },
     email: {
         type: String,
         required: [true, 'email is required'],

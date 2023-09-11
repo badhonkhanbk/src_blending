@@ -527,11 +527,12 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             path: 'recipeBlendCategory',
             model: 'RecipeCategory',
         })
-            .select('mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId')
+            .select('mainEntityOfPage name defaultVersion image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId collections')
             .limit(limit)
             .skip(skip)
             .sort({ createdAt: 1 })
             .lean();
+        console.log(userProfileRecipes[0].collections);
         let returnRecipe = await (0, getAdminRecipeDetails_1.default)(userProfileRecipes);
         return {
             recipes: returnRecipe,

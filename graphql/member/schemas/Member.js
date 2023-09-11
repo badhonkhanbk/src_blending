@@ -30,6 +30,10 @@ __decorate([
     __metadata("design:type", String)
 ], Member.prototype, "yourBlender", void 0);
 __decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], Member.prototype, "blenderManufacturer", void 0);
+__decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], Member.prototype, "provider", void 0);
