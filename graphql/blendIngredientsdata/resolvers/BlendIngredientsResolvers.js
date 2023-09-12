@@ -49,7 +49,6 @@ const addIngredientFromSrc_1 = __importDefault(require("./util/addIngredientFrom
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
-const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const CreateRecipe_1 = __importDefault(require("../../recipe/resolvers/input-type/CreateRecipe"));
 const slugify_1 = __importDefault(require("slugify"));
@@ -1540,7 +1539,52 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         };
     }
     async addGiToTheIngredients() {
-        await memberModel_1.default.updateMany({}, { blenderManufacturer: '' });
+        // await MemberModel.updateMany({}, { blenderManufacturer: '' });
+        // return 'done';
+        // let versions = await RecipeVersionModel.find();
+        // for (let i = 0; i < versions.length; i++) {
+        //   let ingredients: any = versions[i].ingredients;
+        //   for (let j = 0; j < ingredients.length; j++) {
+        //     if (
+        //       ingredients[j].originalIngredientName &&
+        //       ingredients[j].quantityString
+        //     ) {
+        //       continue;
+        //     }
+        //     let ingredient = await BlendIngredientModel.findOne({
+        //       _id: ingredients[j].ingredientId,
+        //     }).select('ingredientName');
+        //     ingredients[j].originalIngredientName = ingredient.ingredientName;
+        //     ingredients[j].quantityString = ingredients[j].selectedPortion.quantity;
+        //   }
+        //   console.log(i);
+        //   await RecipeVersionModel.findOneAndUpdate(
+        //     { _id: versions[i]._id },
+        //     {
+        //       ingredients: ingredients,
+        //     }
+        //   );
+        // }
+        // return 'done';
+        let recipes = await recipeModel_1.default.find();
+        for (let i = 0; i < recipes.length; i++) {
+            for (let j = 0; j < recipes[i].image.length; j++) {
+                let image = [
+                    {
+                        image: recipes[i].image[0].image,
+                        default: true,
+                    },
+                ];
+                await recipeModel_1.default.findOneAndUpdate({
+                    _id: recipes[i]._id,
+                }, {
+                    image: image,
+                });
+                console.log(i);
+                console.log(image);
+                break;
+            }
+        }
         return 'done';
     }
 };

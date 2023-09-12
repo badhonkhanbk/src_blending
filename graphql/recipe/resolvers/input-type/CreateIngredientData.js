@@ -17,11 +17,19 @@ __decorate([
     __metadata("design:type", String)
 ], CreateIngredientData.prototype, "ingredientId", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], CreateIngredientData.prototype, "originalIngredientName", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], CreateIngredientData.prototype, "quantityString", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], CreateIngredientData.prototype, "selectedPortionName", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", Number)
 ], CreateIngredientData.prototype, "weightInGram", void 0);
 __decorate([

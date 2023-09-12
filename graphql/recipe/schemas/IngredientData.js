@@ -24,6 +24,14 @@ __decorate([
 ], IngredientData.prototype, "ingredientId", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], IngredientData.prototype, "originalIngredientName", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], IngredientData.prototype, "quantityString", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], IngredientData.prototype, "weightInGram", void 0);
 __decorate([
