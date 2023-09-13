@@ -86,6 +86,8 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 }
                 modifiedIngredients.push({
                     ingredientId: ingredients[i].ingredientId,
+                    originalIngredientName: ingredients[i].originalIngredientName,
+                    quantityString: ingredients[i].quantityString,
                     portions: portions,
                     selectedPortion: selectedPortion,
                     weightInGram: ingredients[i].weightInGram,
