@@ -55,6 +55,8 @@ const ChallengePostSchema = new mongoose_1.Schema({
             ingredients: [
                 {
                     ingredientId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'BlendIngredient' },
+                    originalIngredientName: { type: String, default: '' },
+                    quantityString: { type: String, default: '' },
                     selectedPortion: { name: String, quantity: Number, gram: Number },
                     weightInGram: Number,
                     portions: [

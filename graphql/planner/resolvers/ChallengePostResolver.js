@@ -1647,9 +1647,28 @@ let ChallengePostResolver = class ChallengePostResolver {
     async gobletOfFire() {
         let cps = await ChallengePost_2.default.find();
         for (let i = 0; i < cps.length; i++) {
-            if (!cps[i].date) {
-                cps[i].date = (0, FormateDate_1.default)(cps[i].assignDate);
-                await cps[i].save();
+            for (let j = 0; j < cps[i].posts.length; j++) {
+                let ingredients = [];
+                for (let k = 0; k < cps[i].posts[j].ingredients.length; k++) {
+                    ingredients[k] = cps[i].posts[j].ingredients[k];
+                    let bi = await blendIngredient_1.default.findOne({
+                        _id: ingredients[k].ingredientId,
+                    })
+                        .select('ingredientName')
+                        .lean();
+                    ingredients[k].originalIngredientName = bi.ingredientName;
+                    ingredients[k].quantityString = String(ingredients[k].selectedPortion.quantity);
+                }
+                console.log(ingredients);
+                await ChallengePost_2.default.findOneAndUpdate({
+                    _id: cps[i]._id,
+                    //@ts-ignore
+                    'posts._id': cps[i].posts[j]._id,
+                }, {
+                    $set: {
+                        'posts.$.ingredients': ingredients,
+                    },
+                });
             }
         }
         return 'd';
