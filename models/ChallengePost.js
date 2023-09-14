@@ -67,5 +67,6 @@ const ChallengePostSchema = new mongoose_1.Schema({
         },
     ],
 });
+ChallengePostSchema.index({ memberId: 1, assignDate: 1 }, { unique: true });
 const ChallengePost = (0, mongoose_1.model)('challengePost', ChallengePostSchema);
 exports.default = ChallengePost;
