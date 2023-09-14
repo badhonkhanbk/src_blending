@@ -1111,7 +1111,7 @@ let RecipeResolver = class RecipeResolver {
         let recipeVersion = await RecipeVersionModel_1.default.create({
             recipeId: userRecipe._id,
             postfixTitle: data.name,
-            selectedImage: data.image[0].image,
+            selectedImage: data.image[0] ? data.image[0].image : '',
             servingSize: newData.servingSize,
             description: newData.description,
             ingredients: newData.ingredients,
