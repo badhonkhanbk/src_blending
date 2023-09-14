@@ -4,7 +4,7 @@ const mongoose_1 = require("mongoose");
 const ChallengePostSchema = new mongoose_1.Schema({
     memberId: {
         type: mongoose_1.SchemaTypes.ObjectId,
-        ref: 'Member',
+        ref: 'User',
         required: [true, 'Member ID is required'],
     },
     assignDate: { type: Date, required: true },

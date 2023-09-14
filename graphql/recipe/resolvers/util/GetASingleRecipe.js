@@ -68,7 +68,7 @@ async function default_1(recipeId, userId, token) {
                 ],
             },
         ],
-        select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId',
+        select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId totalTime',
     })
         .populate({
         path: 'defaultVersion',
