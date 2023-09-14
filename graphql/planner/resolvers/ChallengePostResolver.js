@@ -418,7 +418,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         let data = invite.invitedWith.filter(
         //@ts-ignore
         (iw) => String(iw.memberId) === memberId)[0];
-        console.log(data);
+        // console.log(data);
         if (!data) {
             return new AppError_1.default('Invalid invite', 400);
         }
@@ -873,7 +873,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                     memberId: memberId,
                     isActive: true,
                 });
-                console.log('c', challenge);
+                // console.log('c', challenge);
                 if (!challenge) {
                     let inviteChallengeId = await this.checkIfChallengeIsInvitedWithMe(memberId);
                     if (inviteChallengeId) {
@@ -966,7 +966,7 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         let challengeInfoDate = startDate ? startDate : '';
         let challengeInfo = await this.getChallengeInfo(memberId, viewOnly, challengeInfoDate, challenge._id);
-        console.log('ci', challengeInfo);
+        // console.log('ci', challengeInfo);
         return { challenge: challengeDocs, challengeInfo: challengeInfo };
     }
     async getChallengeGallery(memberId) {
@@ -1120,10 +1120,17 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         let blendScore = 0;
         if (challengeDocsForRecent.length > 0) {
-            //@ts-ignore
-            let diffTime = Math.abs(today - challenge.startDate);
-            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            blendScore = (100 / diffDays) * challengeDocsForRecent.length;
+            if (today < challenge.startDate) {
+                blendScore = 0;
+            }
+            else {
+                //@ts-ignore
+                let diffTime = Math.abs(today - challenge.startDate);
+                let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                diffDays = diffDays > challenge.days ? challenge.days : diffDays;
+                console.log("diffDays", diffDays);
+                blendScore = (100 / diffDays) * challengeDocsForRecent.length;
+            }
         }
         this.upgradeTopIngredient(challengeId);
         let challengeInfo = {
@@ -1659,7 +1666,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                     ingredients[k].originalIngredientName = bi.ingredientName;
                     ingredients[k].quantityString = String(ingredients[k].selectedPortion.quantity);
                 }
-                console.log(ingredients);
+                // console.log(ingredients);
                 await ChallengePost_2.default.findOneAndUpdate({
                     _id: cps[i]._id,
                     //@ts-ignore
@@ -1688,7 +1695,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                     ingredients[k].originalIngredientName = bi.ingredientName;
                     ingredients[k].quantityString = String(ingredients[k].selectedPortion.quantity);
                 }
-                console.log(ingredients);
+                // console.log(ingredients);
                 await ChallengePost_2.default.findOneAndUpdate({
                     _id: cps[i]._id,
                     //@ts-ignore
