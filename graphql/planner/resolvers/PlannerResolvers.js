@@ -57,7 +57,7 @@ let PlannerResolver = class PlannerResolver {
      */
     async createPlanner(data) {
         let isoDate = new Date(data.assignDate).toISOString();
-        console.log(isoDate);
+        // console.log(isoDate);
         let planner = await Planner_1.default.findOne({
             assignDate: isoDate,
             memberId: data.memberId,
@@ -380,24 +380,94 @@ let PlannerResolver = class PlannerResolver {
             for (let k = 0; 
             //@ts-ignore
             k < userProfileRecipe.defaultVersion.ingredients.length; k++) {
+                // let findIndex = ingredients.findIndex((ingredient) => {
+                //   if (
+                //     String(ingredient._id) ===
+                //     String(
+                //       userProfileRecipe.defaultVersion.ingredients[k].ingredientId._id
+                //     )
+                //   ) {
+                //     return true;
+                //   } else {
+                //     false;
+                //   }
+                // });
+                // console.log('-----------------');
+                // console.log(ingredients);
+                // console.log(
+                //   userProfileRecipe.defaultVersion.ingredients[k].ingredientId._id
+                // );
+                // console.log('fi', findIndex);
+                // console.log('------------------');
+                // if (findIndex === -1) {
+                //   ingredients.push({
+                //     //@ts-ignore
+                //     _id: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                //       ._id,
+                //     //@ts-ignore
+                //     name: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                //       .ingredientName,
+                //     value: userProfileRecipe.defaultVersion.ingredients[k].weightInGram,
+                //     featuredImage:
+                //       //@ts-ignore
+                //       userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                //         .featuredImage,
+                //   });
+                // } else {
+                //   ingredients[findIndex].value =
+                //     ingredients[findIndex].value +
+                //     userProfileRecipe.defaultVersion.ingredients[k].weightInGram;
+                // }
                 for (let recipeCountS = 0; recipeCountS < recipeCount; recipeCountS++) {
-                    ingredients.push({
-                        //@ts-ignore
-                        _id: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
-                            ._id,
-                        //@ts-ignore
-                        name: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
-                            .ingredientName,
-                        value: userProfileRecipe.defaultVersion.ingredients[k].weightInGram,
-                        featuredImage: 
-                        //@ts-ignore
-                        userProfileRecipe.defaultVersion.ingredients[k].ingredientId
-                            .featuredImage,
-                    });
-                    ingredientInfo.push({
-                        ingredientId: String(userProfileRecipe.defaultVersion.ingredients[k].ingredientId._id),
-                        value: userProfileRecipe.defaultVersion.ingredients[k].weightInGram,
-                    });
+                    // ingredients.push({
+                    //   //@ts-ignore
+                    //   _id: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                    //     ._id,
+                    //   //@ts-ignore
+                    //   name: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                    //     .ingredientName,
+                    //   value: userProfileRecipe.defaultVersion.ingredients[k].weightInGram,
+                    //   featuredImage:
+                    //     //@ts-ignore
+                    //     userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                    //       .featuredImage,
+                    // });
+                    // console.log(ingredients);
+                    let findIndex = ingredients.findIndex((ingredient) => String(userProfileRecipe.defaultVersion.ingredients[k].ingredientId._id) === String(ingredient._id));
+                    console.log('fi', findIndex);
+                    if (findIndex === -1) {
+                        ingredients.push({
+                            //@ts-ignore
+                            _id: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                                ._id,
+                            //@ts-ignore
+                            name: userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                                .ingredientName,
+                            value: userProfileRecipe.defaultVersion.ingredients[k].weightInGram,
+                            featuredImage: 
+                            //@ts-ignore
+                            userProfileRecipe.defaultVersion.ingredients[k].ingredientId
+                                .featuredImage,
+                        });
+                        ingredientInfo.push({
+                            ingredientId: String(userProfileRecipe.defaultVersion.ingredients[k].ingredientId._id),
+                            value: userProfileRecipe.defaultVersion.ingredients[k].weightInGram,
+                        });
+                    }
+                    else {
+                        ingredients[findIndex].value =
+                            ingredients[findIndex].value +
+                                userProfileRecipe.defaultVersion.ingredients[k].weightInGram;
+                        ingredientInfo[findIndex].value =
+                            ingredientInfo[findIndex].value +
+                                userProfileRecipe.defaultVersion.ingredients[k].weightInGram;
+                    }
+                    // ingredientInfo.push({
+                    //   ingredientId: String(
+                    //     userProfileRecipe.defaultVersion.ingredients[k].ingredientId._id
+                    //   ),
+                    //   value: userProfileRecipe.defaultVersion.ingredients[k].weightInGram,
+                    // });
                 }
             }
             let protein = userProfileRecipe.defaultVersion.energy.filter((item) => String(item.blendNutrientRefference) === '620b4607b82695d67f28e196')[0];
@@ -422,6 +492,7 @@ let PlannerResolver = class PlannerResolver {
                 macroMakeUp.carbs += carbs.value * recipeCount;
             }
         }
+        // console.log('ingredients', ingredients);
         if (macroMakeUp.protein !== 0) {
             macroMakeUp.protein = macroMakeUp.protein / numberOfDays;
         }
@@ -433,9 +504,9 @@ let PlannerResolver = class PlannerResolver {
         }
         let categoryPercentages = await (0, getRecipeCategoryPercentage_1.default)(recipeCategories);
         let ingredientsStats = await (0, getIngredientStats_1.default)(ingredients);
-        console.log(2);
+        // console.log(2);
         let res2 = await (0, getGlAndNetCarbs2_1.default)(ingredientInfo);
-        console.log(2);
+        // console.log(2);
         let res = await (0, getSearchedBlendNutrition_1.default)(ingredientInfo, [
             '620b4606b82695d67f28e193',
         ]);

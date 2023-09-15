@@ -56,7 +56,7 @@ let PlanResolver = class PlanResolver {
         myPlan.isGlobal = true;
         let plan = await Plan_1.default.create(myPlan);
         await (0, updatePlanFacts_1.default)(String(plan._id));
-        return 'Plan created';
+        return String(plan._id);
     }
     /**
      * Updates a plan.

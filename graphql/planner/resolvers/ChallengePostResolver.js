@@ -1128,7 +1128,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                 let diffTime = Math.abs(today - challenge.startDate);
                 let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
                 diffDays = diffDays > challenge.days ? challenge.days : diffDays;
-                console.log("diffDays", diffDays);
+                console.log('diffDays', diffDays);
                 blendScore = (100 / diffDays) * challengeDocsForRecent.length;
             }
         }

@@ -1009,13 +1009,13 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             }
         }
         // console.log('blends', blends);
-        const parseFraction = (fraction) => {
-            if (fraction === '') {
-                return 0;
-            }
-            const [numerator, denominator] = fraction.split('/').map(Number);
-            return numerator / denominator;
-        };
+        // const parseFraction = (fraction) => {
+        //   if (fraction === '') {
+        //     return 0;
+        //   }
+        //   const [numerator, denominator] = fraction.split('/').map(Number);
+        //   return numerator / denominator;
+        // };
         for (let i = 0; i < blends.length; i++) {
             if (!blends[i].unit) {
                 blends[i].qa = true;

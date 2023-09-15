@@ -31,8 +31,8 @@ const temporaryCompareCollection_1 = __importDefault(require("../../../models/te
 const checkTemporaryCompareList_1 = __importDefault(require("./util/checkTemporaryCompareList"));
 const GetASingleRecipe_1 = __importDefault(require("./util/GetASingleRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
-const getAdminRecipeDetails_1 = __importDefault(require("./util/getAdminRecipeDetails"));
 const MainRecipesWithPagination_1 = __importDefault(require("../schemas/MainRecipesWithPagination"));
+const getAllAdminRecipes_1 = __importDefault(require("./util/getAllAdminRecipes"));
 let RecipeCorrectionResolver = class RecipeCorrectionResolver {
     async bringAllAdminRecipe() {
         // await RecipeModel.updateMany(
@@ -489,53 +489,9 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         };
     }
     async getAllRecipesForAdmin(page, limit) {
-        if (!limit) {
-            limit = 12;
-        }
-        if (!page) {
-            page = 1;
-        }
-        let skip = limit * (page - 1);
-        let userProfileRecipes = await recipeModel_1.default.find({})
-            .populate({
-            path: 'recipeBlendCategory',
-            model: 'RecipeCategory',
-        })
-            .populate({
-            path: 'userId',
-            model: 'User',
-            select: 'firstName lastName image displayName email',
-        })
-            .populate({
-            path: 'defaultVersion',
-            populate: [
-                {
-                    path: 'ingredients.ingredientId',
-                    model: 'BlendIngredient',
-                },
-                {
-                    path: 'createdBy',
-                    select: '_id displayName firstName lastName image email',
-                },
-            ],
-        })
-            .populate({
-            path: 'brand',
-            model: 'RecipeBrand',
-        })
-            .populate({
-            path: 'recipeBlendCategory',
-            model: 'RecipeCategory',
-        })
-            .select('mainEntityOfPage name defaultVersion image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId collections')
-            .limit(limit)
-            .skip(skip)
-            .sort({ createdAt: 1 })
-            .lean();
-        console.log(userProfileRecipes[0].collections);
-        let returnRecipe = await (0, getAdminRecipeDetails_1.default)(userProfileRecipes);
+        let recipes = await (0, getAllAdminRecipes_1.default)(limit, page, []);
         return {
-            recipes: returnRecipe,
+            recipes: recipes,
             totalRecipes: await recipeModel_1.default.countDocuments(),
         };
     }
