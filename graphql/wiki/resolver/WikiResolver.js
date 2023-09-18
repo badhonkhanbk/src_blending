@@ -36,6 +36,7 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const GlobalBookmarkLink_1 = __importDefault(require("../../../models/GlobalBookmarkLink"));
 const BookmarkAndExternalGlobalLInk_1 = __importDefault(require("../schemas/BookmarkAndExternalGlobalLInk"));
 const usedBookmark_1 = __importDefault(require("../../../models/usedBookmark"));
+const FilterWikiInput_1 = __importDefault(require("./input-type/FilterWikiInput"));
 let WikiResolver = class WikiResolver {
     /**
      * Retrieves a list of nutrient information from the wiki.
@@ -1512,6 +1513,41 @@ let WikiResolver = class WikiResolver {
         }
         return 'done';
     }
+    async getWikiList3(userId) {
+        let returnData = [];
+        let wikis = await wiki_1.default.find({ isBookmarked: false, isPublished: true })
+            .populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
+        })
+            .lean()
+            .sort({ wikiTitle: 1 });
+        if (userId) {
+            for (let i = 0; i < wikis.length; i++) {
+                let data = wikis[i];
+                let comments = await wikiComment_1.default.find({
+                    entityId: wikis[i]._id,
+                }).select('_id');
+                let compare = await UserIngredientCompareList_1.default.findOne({
+                    userId: userId,
+                    ingredients: { $in: wikis[i]._id },
+                });
+                if (compare) {
+                    data.hasInCompare = true;
+                }
+                else {
+                    data.hasInCompare = false;
+                }
+                data.commentsCount = comments.length;
+                returnData.push(data);
+            }
+        }
+        else {
+            returnData = wikis;
+        }
+        return returnData;
+    }
+    async filterWiki(data, page, limit, userId) { }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default),
@@ -1733,6 +1769,24 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getThemeWidgetData", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [Wikilist_1.default]) //TODO
+    ,
+    __param(0, (0, type_graphql_1.Arg)('userId', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], WikiResolver.prototype, "getWikiList3", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [FilterWikiInput_1.default, Number, Number, String]),
+    __metadata("design:returntype", Promise)
+], WikiResolver.prototype, "filterWiki", null);
 WikiResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], WikiResolver);

@@ -40,6 +40,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => Date, { nullable: true }),
     __metadata("design:type", Date)
 ], PlanComment.prototype, "updatedAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], PlanComment.prototype, "commentsCount", void 0);
 PlanComment = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], PlanComment);

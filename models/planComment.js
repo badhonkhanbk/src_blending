@@ -6,7 +6,11 @@ const planCommentSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'comment name is required'],
     },
-    planId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'Plan' },
+    planId: {
+        type: mongoose_1.SchemaTypes.ObjectId,
+        ref: 'Plan',
+        required: [true, 'planId is required'],
+    },
     memberId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: Date,
