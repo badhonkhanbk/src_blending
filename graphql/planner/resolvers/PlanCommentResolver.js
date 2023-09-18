@@ -39,7 +39,7 @@ let PlanCommentsResolver = class PlanCommentsResolver {
             //@ts-ignore
             ...newComment._doc,
             commentsCount: await planComment_1.default.countDocuments({
-                _id: data.planId,
+                planId: data.planId,
             }),
             memberId: user,
         };
@@ -105,7 +105,9 @@ let PlanCommentsResolver = class PlanCommentsResolver {
             return new AppError_1.default('You are not the owner of this comment', 400);
         }
         await planComment_1.default.findOneAndDelete({ _id: commentId });
-        return await planComment_1.default.countDocuments({ _id: blogComment.planId });
+        return await planComment_1.default.countDocuments({
+            planId: blogComment.planId,
+        });
     }
 };
 __decorate([
