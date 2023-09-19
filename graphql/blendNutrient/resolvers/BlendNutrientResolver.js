@@ -210,6 +210,7 @@ let BlendNutrientResolver = class BlendNutrientResolver {
                         //@ts-ignore
                         _id: x._id,
                     };
+                    x.valueInNumber = +x.value;
                     return x;
                 }
                 else if (String(x.blendNutrientRefference) === String(blendNutrientId)) {
@@ -221,6 +222,7 @@ let BlendNutrientResolver = class BlendNutrientResolver {
                         //@ts-ignore
                         _id: x._id,
                     };
+                    x.valueInNumber = +x.value;
                     return x;
                 }
                 return x;
@@ -327,6 +329,7 @@ let BlendNutrientResolver = class BlendNutrientResolver {
             if (index) {
                 let value = {
                     value: index.value,
+                    valueInNumber: +index.value,
                     blendNutrientRefference: blendNutrientRefference,
                     uniqueNutrientReferrence: uniqueNutrientReferrence,
                 };

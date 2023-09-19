@@ -78,6 +78,7 @@ async function addIngredientFromSrc(srcId) {
         else {
             let nutrient = {
                 value: srcFood.nutrients[i].value,
+                valueInNumber: +srcFood.nutrients[i].value,
                 blendNutrientRefference: found.blendNutrientId,
                 uniqueNutrientReferrence: srcFood.nutrients[i].uniqueNutrientRefference,
             };

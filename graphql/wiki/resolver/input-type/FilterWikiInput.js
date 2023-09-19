@@ -52,7 +52,7 @@ __decorate([
     __metadata("design:type", Array)
 ], FilterWikiInput.prototype, "wikiType", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [BlendIngredientType]),
+    (0, type_graphql_1.Field)((type) => [BlendIngredientType], { nullable: true }),
     __metadata("design:type", Array)
 ], FilterWikiInput.prototype, "BlendIngredientType", void 0);
 __decorate([
@@ -63,6 +63,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [NutrienFilterForRecipe_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], FilterWikiInput.prototype, "nutrientFilters", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], FilterWikiInput.prototype, "searchTerm", void 0);
 FilterWikiInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], FilterWikiInput);

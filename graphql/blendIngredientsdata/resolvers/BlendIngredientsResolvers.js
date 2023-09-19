@@ -1333,6 +1333,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 if (blendNutrient) {
                     values.push({
                         value: blendIngredients[i].blendNutrients[j].value,
+                        valueInNumber: blendIngredients[i].blendNutrients[j].valueInNumber,
                         blendNutrientRefference: blendNutrient._id,
                         uniqueNutrientReferrence: blendNutrient.uniqueNutrientId,
                         //@ts-ignore
@@ -1566,24 +1567,22 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         //   );
         // }
         // return 'done';
-        let recipes = await recipeModel_1.default.find();
-        for (let i = 0; i < recipes.length; i++) {
-            for (let j = 0; j < recipes[i].image.length; j++) {
-                let image = [
-                    {
-                        image: recipes[i].image[0].image,
-                        default: true,
-                    },
-                ];
-                await recipeModel_1.default.findOneAndUpdate({
-                    _id: recipes[i]._id,
-                }, {
-                    image: image,
+        let ingredients = await blendIngredient_1.default.find().select('_id blendNutrients');
+        for (let i = 0; i < ingredients.length; i++) {
+            let nutrients = [];
+            for (let j = 0; j < ingredients[i].blendNutrients.length; j++) {
+                nutrients.push({
+                    //@ts-ignore
+                    ...ingredients[i]._doc.blendNutrients[j]._doc,
+                    valueInNumber: +ingredients[i].blendNutrients[j].value,
                 });
-                console.log(i);
-                console.log(image);
-                break;
             }
+            console.log(i);
+            await blendIngredient_1.default.findOneAndUpdate({
+                _id: ingredients[i]._id,
+            }, {
+                blendNutrients: nutrients,
+            });
         }
         return 'done';
     }

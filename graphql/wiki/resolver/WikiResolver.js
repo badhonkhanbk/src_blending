@@ -1547,7 +1547,167 @@ let WikiResolver = class WikiResolver {
         }
         return returnData;
     }
-    async filterWiki(data, page, limit, userId) { }
+    async filterWiki(data, page, limit, userId) {
+        if (!limit) {
+            limit = 20;
+        }
+        if (!page) {
+            page = 1;
+        }
+        let filter = {};
+        let filter2 = {};
+        // let combinedFilter: any = {}
+        if (data.wikiType) {
+            filter.type = { $in: data.wikiType };
+        }
+        let ingredientFilter = {};
+        let nutrientFilter = {};
+        let allElements = [];
+        if (data.BlendIngredientType) {
+            ingredientFilter.category = { $in: data.BlendIngredientType };
+        }
+        if (data.nutrientMatrix) {
+            for (let i = 0; i < data.nutrientMatrix.length; i++) {
+                if (data.nutrientMatrix[i].matrixName === 'calorie') {
+                    let calorieValueFilter = {};
+                    if (data.nutrientMatrix[i].lessThan) {
+                        calorieValueFilter = { $lt: data.nutrientMatrix[i].value };
+                    }
+                    else if (data.nutrientMatrix[i].greaterThan) {
+                        calorieValueFilter = { $gt: data.nutrientMatrix[i].value };
+                    }
+                    else if (data.nutrientMatrix[i].beetween) {
+                        calorieValueFilter = {
+                            $gt: data.nutrientMatrix[i].value1,
+                            $lt: data.nutrientMatrix[i].value2,
+                        };
+                    }
+                    // ingredientFilter.blendNutrients = {
+                    //   $elemMatch: {
+                    //     blendNutrientRefference: new mongoose.mongo.ObjectId(
+                    //       '620b4606b82695d67f28e193'
+                    //     ),
+                    //     value: calorieValueFilter,
+                    //   },
+                    // };
+                    allElements.push({
+                        $elemMatch: {
+                            blendNutrientRefference: new mongoose_1.default.mongo.ObjectId('620b4606b82695d67f28e193'),
+                            valueInNumber: calorieValueFilter,
+                        },
+                    });
+                    continue;
+                }
+                let val = '';
+                if (data.nutrientMatrix[i].matrixName === 'netCarbs') {
+                    val = 'netCarbs';
+                    ingredientFilter[val] = {};
+                }
+                else if (data.nutrientMatrix[i].matrixName === 'totalGi') {
+                    val = 'gigl.totalGi';
+                    ingredientFilter[val] = {};
+                }
+                else if (data.nutrientMatrix[i].matrixName === 'totalGl') {
+                    val = 'gigl.totalGl';
+                    ingredientFilter[val] = {};
+                }
+                if (data.nutrientMatrix[i].lessThan) {
+                    ingredientFilter[val] = { $lt: data.nutrientMatrix[i].value };
+                }
+                else if (data.nutrientMatrix[i].greaterThan) {
+                    ingredientFilter[val] = { $gt: data.nutrientMatrix[i].value };
+                }
+                else if (data.nutrientMatrix[i].beetween) {
+                    ingredientFilter[val] = {
+                        $gt: data.nutrientMatrix[i].value1,
+                        $lt: data.nutrientMatrix[i].value2,
+                    };
+                }
+            }
+        }
+        if (data.nutrientFilters) {
+            for (let i = 0; i < data.nutrientFilters.length; i++) {
+                let nutrientFilter = {};
+                if (data.nutrientFilters[i].lessThan) {
+                    nutrientFilter = { $lt: data.nutrientFilters[i].value };
+                }
+                else if (data.nutrientFilters[i].greaterThan) {
+                    nutrientFilter = { $gt: data.nutrientFilters[i].value };
+                }
+                else if (data.nutrientFilters[i].beetween) {
+                    nutrientFilter = {
+                        $gt: data.nutrientFilters[i].value1,
+                        $lt: data.nutrientFilters[i].value2,
+                    };
+                }
+                allElements.push({
+                    $elemMatch: {
+                        blendNutrientRefference: new mongoose_1.default.mongo.ObjectId(data.nutrientFilters[i].nutrientId.toString()),
+                        valueInNumber: nutrientFilter,
+                    },
+                });
+            }
+        }
+        if (allElements.length > 0) {
+            ingredientFilter.blendNutrients = {
+                $all: allElements,
+            };
+        }
+        let keys = Object.keys(ingredientFilter);
+        // console.log(ingredientFilter);
+        // console.log(allElements[0]);
+        // console.log(allElements[1]);
+        if (keys.length > 0) {
+            let ingredients = await blendIngredient_1.default.find(ingredientFilter).select('_id');
+            let ingredientIDs = ingredients.map((ingredient) => ingredient._id);
+            console.log(ingredientIDs);
+            filter2._id = { $in: ingredientIDs };
+        }
+        if (data.searchTerm && data.searchTerm !== '') {
+            filter.wikiTitle = { $regex: data.searchTerm, $options: 'i' };
+        }
+        filter.isPublished = true;
+        filter2.isPublished = true;
+        filter.isBookmarked = false;
+        filter2.isBookmarked = false;
+        let returnData = [];
+        let wikis = await wiki_1.default.find({ $or: [filter, filter2] })
+            .populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
+        })
+            .limit(limit)
+            .skip(limit * (page - 1))
+            .lean()
+            .sort({ wikiTitle: 1 });
+        if (userId) {
+            for (let i = 0; i < wikis.length; i++) {
+                let data = wikis[i];
+                let comments = await wikiComment_1.default.find({
+                    entityId: wikis[i]._id,
+                }).select('_id');
+                let compare = await UserIngredientCompareList_1.default.findOne({
+                    userId: userId,
+                    ingredients: { $in: wikis[i]._id },
+                });
+                if (compare) {
+                    data.hasInCompare = true;
+                }
+                else {
+                    data.hasInCompare = false;
+                }
+                data.commentsCount = comments.length;
+                returnData.push(data);
+            }
+        }
+        else {
+            returnData = wikis;
+        }
+        return {
+            wikiList: returnData,
+            total: await wiki_1.default.countDocuments({ $or: [filter, filter2] }),
+        };
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default),
@@ -1778,7 +1938,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getWikiList3", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
     __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),

@@ -15,6 +15,7 @@ const blendIngredientSchema = new mongoose_1.Schema({
             {
                 value2: { type: String, default: '0' },
                 value: String,
+                valueInNumber: Number,
                 link: { type: String, default: null },
                 disabled: { type: Boolean, default: false },
                 // originalIngredientName: {
