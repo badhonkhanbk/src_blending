@@ -6,6 +6,7 @@ const blendIngredientSchema = new mongoose_1.Schema({
     ingredientName: String,
     aliases: [String],
     category: String,
+    ingredientType: String,
     blendStatus: { type: String, default: 'New' },
     classType: String,
     description: String,

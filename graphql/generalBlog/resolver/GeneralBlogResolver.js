@@ -326,6 +326,10 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             globalBookmarks: externalBookmarks,
         };
     }
+    async manus() {
+        await generalBlog_1.default.updateMany({}, { publisher: 'Poily' });
+        return 1;
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => String)
@@ -490,6 +494,12 @@ __decorate([
         Boolean]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "manipulateBookMarksForBlog", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Number),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GeneralBlogResolver.prototype, "manus", null);
 GeneralBlogResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], GeneralBlogResolver);

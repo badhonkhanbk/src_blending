@@ -38,6 +38,10 @@ __decorate([
     __metadata("design:type", String)
 ], GeneralBlog.prototype, "body", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], GeneralBlog.prototype, "publisher", void 0);
+__decorate([
     (0, type_graphql_1.Field)((type) => [String]),
     __metadata("design:type", Array)
 ], GeneralBlog.prototype, "keywords", void 0);

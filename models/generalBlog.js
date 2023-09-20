@@ -9,6 +9,7 @@ const GeneraBlogSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now,
     },
+    publisher: String,
     keywords: { type: [String], default: [] },
     type: String,
     updatedAt: Date,

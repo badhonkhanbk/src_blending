@@ -210,6 +210,12 @@ let UserDailyResolver = class UserDailyResolver {
         let config = await memberConfiguiration_1.default.findOne({
             _id: user.configuration,
         });
+        if (!config.age || !config.activity || !config.gender) {
+            return new AppError_1.default('config not set properly', 404);
+        }
+        if (config.weightInKilograms || config.heightInCentimeters) {
+            return new AppError_1.default('config not set properly', 404);
+        }
         // Get the daily information based on the user's configuration
         let daily = await this.getDaily(config.age.months, Number(config.age.quantity), config.activity, config.gender, Number(config.weightInKilograms), Number(config.heightInCentimeters), userId);
         // Return the daily information
