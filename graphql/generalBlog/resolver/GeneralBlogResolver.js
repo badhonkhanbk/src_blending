@@ -495,6 +495,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "manipulateBookMarksForBlog", null);
 __decorate([
+    (0, type_graphql_1.Query)(() => [GeneralBlog_1.default]),
     (0, type_graphql_1.Mutation)(() => Number),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
