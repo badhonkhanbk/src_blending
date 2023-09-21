@@ -37,12 +37,23 @@ var BlendIngredientType;
     BlendIngredientType["LIQUID"] = "Liquid";
     BlendIngredientType["TUBE_SQUASH"] = "Tube-Squash";
 })(BlendIngredientType || (BlendIngredientType = {}));
+var NutrientCategoryFilter;
+(function (NutrientCategoryFilter) {
+    NutrientCategoryFilter["MACRO_NUTRIENTS"] = "MacroNutrients";
+    NutrientCategoryFilter["MICRO_NUTRIENTS"] = "MicroNutrients";
+    NutrientCategoryFilter["VITAMIN"] = "Vitamin";
+    NutrientCategoryFilter["MINERAL"] = "Mineral";
+})(NutrientCategoryFilter || (NutrientCategoryFilter = {}));
 (0, type_graphql_2.registerEnumType)(WikiType, {
     name: 'WikiType',
     description: 'The types', // this one is optional
 });
 (0, type_graphql_2.registerEnumType)(BlendIngredientType, {
     name: 'BlendIngredientType',
+    description: 'The types', // this one is optional
+});
+(0, type_graphql_2.registerEnumType)(NutrientCategoryFilter, {
+    name: 'NutrientCategoryFilter',
     description: 'The types', // this one is optional
 });
 let FilterWikiInput = class FilterWikiInput {
@@ -63,6 +74,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [NutrienFilterForRecipe_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], FilterWikiInput.prototype, "nutrientFilters", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [NutrientCategoryFilter], { nullable: true }),
+    __metadata("design:type", Array)
+], FilterWikiInput.prototype, "nutrientCategory", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)

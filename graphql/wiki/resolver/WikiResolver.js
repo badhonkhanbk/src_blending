@@ -792,7 +792,7 @@ let WikiResolver = class WikiResolver {
     async convertToGram(data) {
         // [ 'kJ', 'G', 'MG', 'UG', 'IU' ]
         let gram;
-        console.log('data', data);
+        // console.log('data', data);
         if (data.unit === 'kJ') {
             gram = +data.amount * 238.90295761862;
             return gram;
@@ -826,7 +826,7 @@ let WikiResolver = class WikiResolver {
     async convertGramToUnit(data) {
         // [ 'kJ', 'G', 'MG', 'UG', 'IU' ]
         let gram;
-        console.log('data', data);
+        // console.log('data', data);
         if (data.unit === 'kJ') {
             gram = +data.amount * 238.90295761862;
             return gram;
@@ -1270,7 +1270,7 @@ let WikiResolver = class WikiResolver {
                         nutrientBookmarkList: { _id: found._id },
                     },
                 });
-                console.log('');
+                // console.log('');
                 await wiki_1.default.findOneAndUpdate({ _id: wikiId }, {
                     $push: {
                         nutrientBookmarkList: newData,
@@ -1280,7 +1280,7 @@ let WikiResolver = class WikiResolver {
         }
         else {
             if (!bookmarkId) {
-                console.log('hello');
+                // console.log('hello');
                 let found = wiki.ingredientBookmarkList.filter(
                 //@ts-ignore
                 (bookmark) => bookmark.link === link)[0];
@@ -1654,14 +1654,42 @@ let WikiResolver = class WikiResolver {
             };
         }
         let keys = Object.keys(ingredientFilter);
-        // console.log(ingredientFilter);
-        // console.log(allElements[0]);
-        // console.log(allElements[1]);
+        let wikiIds = [];
         if (keys.length > 0) {
             let ingredients = await blendIngredient_1.default.find(ingredientFilter).select('_id');
             let ingredientIDs = ingredients.map((ingredient) => ingredient._id);
-            console.log(ingredientIDs);
-            filter2._id = { $in: ingredientIDs };
+            // console.log(ingredientIDs);
+            // filter2._id = { $in: ingredientIDs };
+            wikiIds = wikiIds.concat(ingredientIDs);
+        }
+        if (data.nutrientCategory && data.nutrientCategory.length > 0) {
+            let categories = [];
+            for (let i = 0; i < data.nutrientCategory.length; i++) {
+                if (data.nutrientCategory[i] === 'MacroNutrients') {
+                    categories.push('6203a9381c100bd226c13c67');
+                }
+                else if (data.nutrientCategory[i] === 'Mineral') {
+                    categories.push('6203a98a1c100bd226c13c6b');
+                }
+                else if (data.nutrientCategory[i] === 'Vitamin') {
+                    categories.push('6203a98a1c100bd226c13c6b');
+                }
+                else {
+                    categories.push('6203a98a1c100bd226c13c6b');
+                    categories.push('6203a98a1c100bd226c13c6b');
+                }
+            }
+            // console.log('cat', categories);
+            let blendNutrients = await blendNutrient_1.default.find({
+                category: { $in: categories },
+            }).select('_id');
+            let blendNutrientIds = blendNutrients.map((blendNutrient) => blendNutrient._id);
+            // console.log(blendNutrientIds.length);
+            wikiIds = wikiIds.concat(blendNutrientIds);
+        }
+        if (wikiIds.length > 0) {
+            // console.log(wikiIds);
+            filter2._id = { $in: wikiIds };
         }
         if (data.searchTerm && data.searchTerm !== '') {
             filter.wikiTitle = { $regex: data.searchTerm, $options: 'i' };
@@ -1671,7 +1699,9 @@ let WikiResolver = class WikiResolver {
         filter.isBookmarked = false;
         filter2.isBookmarked = false;
         let returnData = [];
-        let wikis = await wiki_1.default.find({ $or: [filter, filter2] })
+        // console.log(1, filter);
+        // console.log(2, filter2);
+        let wikis = await wiki_1.default.find({ $and: [filter, filter2] })
             .populate({
             path: 'author',
             select: 'firstName lastName displayName email profilePicture',
@@ -1705,7 +1735,7 @@ let WikiResolver = class WikiResolver {
         }
         return {
             wikiList: returnData,
-            total: await wiki_1.default.countDocuments({ $or: [filter, filter2] }),
+            total: await wiki_1.default.countDocuments({ $and: [filter, filter2] }),
         };
     }
 };
