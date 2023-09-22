@@ -1428,23 +1428,18 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 value: Number(+defaultPortion.meausermentWeight),
             },
         ];
-        /**
-         * Retrieves the blend nutrition based on the provided blend ingredient information.
-         *
-         * @param {BlendIngredientInfo[]} ingredientsInfo - The blend ingredient information.
-         * @return {ReturnType} The blend nutrition based on the provided blend ingredient information.
-         */
-        let AuthUser = (ingredientsInfo) => {
-            return (0, getBlendNutritionBasedOnRecipexxx_1.default)(ingredientsInfo);
-        };
-        let data = await AuthUser(ingredientsInfo);
+        let data = await (0, getBlendNutritionBasedOnRecipexxx_1.default)(ingredientsInfo);
         let obj = JSON.parse(data);
-        let totalCarbs = obj.Energy['total carbs'].value
+        console.log('OBJ', obj);
+        let totalCarbs = obj.Energy['total carbs']
             ? obj.Energy['total carbs'].value
             : 0;
-        let dietaryFiber = obj.Energy['total carbs'].childs['dietary fiber']
-            ? obj.Energy['total carbs'].childs['dietary fiber'].value
-            : 0;
+        let dietaryFiber = 0;
+        if (obj.Energy['total carbs']) {
+            dietaryFiber = obj.Energy['total carbs'].childs['dietary fiber']
+                ? obj.Energy['total carbs'].childs['dietary fiber'].value
+                : 0;
+        }
         let netCarbs = totalCarbs - dietaryFiber;
         let totalGL = netCarbs * (+GI / 100);
         // console.log(totalGL);
@@ -1491,17 +1486,18 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     value: Number(+defaultPortion.meausermentWeight),
                 },
             ];
-            let AuthUser = (ingredientsInfo) => {
-                return (0, getBlendNutritionBasedOnRecipexxx_1.default)(ingredientsInfo);
-            };
-            let data = await AuthUser(ingredientsInfo);
+            let data = await (0, getBlendNutritionBasedOnRecipexxx_1.default)(ingredientsInfo);
             let obj = JSON.parse(data);
-            let totalCarbs = obj.Energy['total carbs'].value
+            console.log('OBJ', obj);
+            let totalCarbs = obj.Energy['total carbs']
                 ? obj.Energy['total carbs'].value
                 : 0;
-            let dietaryFiber = obj.Energy['total carbs'].childs['dietary fiber']
-                ? obj.Energy['total carbs'].childs['dietary fiber'].value
-                : 0;
+            let dietaryFiber = 0;
+            if (obj.Energy['total carbs']) {
+                dietaryFiber = obj.Energy['total carbs'].childs['dietary fiber']
+                    ? obj.Energy['total carbs'].childs['dietary fiber'].value
+                    : 0;
+            }
             let netCarbs = totalCarbs - dietaryFiber;
             let totalGL = netCarbs * (55 / 100);
             res.push({

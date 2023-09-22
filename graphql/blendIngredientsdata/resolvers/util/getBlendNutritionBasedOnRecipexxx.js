@@ -104,7 +104,7 @@ ingredientsInfo) {
     })
         .sort({ rank: 1 })
         .lean();
-    // console.log(ingredients.length);
+    console.log(ingredients.length);
     for (let i = 0; i < ingredients.length; i++) {
         // console.log(ingredients[i]);
         let value = data.filter(
@@ -118,6 +118,7 @@ ingredientsInfo) {
                 (+ingredients[i].blendNutrients[j].value / 100) * value;
         }
     }
+    console.log(222);
     let nutrients = [];
     for (let i = 0; i < ingredients.length; i++) {
         let temp = ingredients[i];
@@ -152,6 +153,7 @@ ingredientsInfo) {
         }
         return acc;
     }, []);
+    console.log(223);
     let blendNutrientCategories = await blendNutrientCategory_1.default.find()
         .lean()
         .select('_id categoryName');
@@ -159,6 +161,7 @@ ingredientsInfo) {
     for (let i = 0; i < blendNutrientCategories.length; i++) {
         obj[blendNutrientCategories[i].categoryName] = await (0, getTopLevelChilds_1.default)(blendNutrientCategories[i]._id, returnNutrients);
     }
+    console.log('innerObj', obj);
     return JSON.stringify(obj);
 }
 exports.default = getBlendNutritionBasedOnRecipexxx;

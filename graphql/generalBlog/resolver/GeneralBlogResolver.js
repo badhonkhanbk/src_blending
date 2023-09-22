@@ -29,6 +29,8 @@ const BlogBookMarkAndExternalGlobalLink_1 = __importDefault(require("../schema/B
 const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient"));
 const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
 const WikiLinks_1 = __importDefault(require("../../wiki/schemas/WikiLinks"));
+const FilterBlogInput_1 = __importDefault(require("./inputType/FilterBlogInput"));
+const BlogsWithPagination_1 = __importDefault(require("../schema/BlogsWithPagination"));
 let GeneralBlogResolver = class GeneralBlogResolver {
     /**
      * A function that updates the bookmark list of all general blog models.
@@ -187,7 +189,13 @@ let GeneralBlogResolver = class GeneralBlogResolver {
      * @param {String} memberId - The ID of the member.
      * @return {any[]} An array of general blog objects.
      */
-    async getAllGeneralBlogForClient(currentDate, memberId) {
+    async getAllGeneralBlogForClient(currentDate, memberId, page, limit) {
+        if (!limit) {
+            limit = 20;
+        }
+        if (!page) {
+            page = 1;
+        }
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         await generalBlog_1.default.updateMany({
             publishDate: {
@@ -196,8 +204,11 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             isPublished: false,
         }, { isPublished: true });
         let blogs = await generalBlog_1.default.find({ isPublished: true })
+            .lean()
             .populate('brand')
-            .populate('createdBy');
+            .populate('createdBy')
+            .limit(limit)
+            .skip((page - 1) * limit);
         let returnBlogs = [];
         for (let i = 0; i < blogs.length; i++) {
             let blog = blogs[i];
@@ -214,7 +225,10 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             blog.blogCollections = collectionIds;
             returnBlogs.push(blog);
         }
-        return returnBlogs;
+        return {
+            blogs: returnBlogs,
+            totalBlogs: await generalBlog_1.default.countDocuments({ isPublished: true }),
+        };
     }
     /**
      * Deletes a general blog.
@@ -326,8 +340,65 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             globalBookmarks: externalBookmarks,
         };
     }
+    async filterBlog(data, page, limit, memberId, currentDate) {
+        let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+        await generalBlog_1.default.updateMany({
+            publishDate: {
+                $lte: today,
+            },
+            isPublished: false,
+        }, { isPublished: true });
+        if (!limit) {
+            limit = 20;
+        }
+        if (!page) {
+            page = 1;
+        }
+        let filter = {};
+        if (data.publisher && data.publisher.length > 0) {
+            filter.publisher = { $in: data.publisher };
+        }
+        else {
+            filter.publisher = { $in: ['poily', 'blending101', 'plantMilkmakers'] };
+        }
+        if (data.author && data.author.length > 0) {
+            filter.createdBy = { $in: data.author };
+        }
+        if (data.category && data.category.length > 0) {
+            filter.category = { $in: data.category };
+        }
+        filter.isPublished = true;
+        filter.publishDate = { $lte: today };
+        // console.log(filter);
+        let blogs = await generalBlog_1.default.find(filter)
+            .lean()
+            .populate('brand')
+            .populate('createdBy')
+            .limit(limit)
+            .skip((page - 1) * limit);
+        let returnBlogs = [];
+        for (let i = 0; i < blogs.length; i++) {
+            let blog = blogs[i];
+            blog.commentsCount = await blogComment_1.default.countDocuments({
+                blogId: new mongoose_1.default.mongo.ObjectId(blog._id),
+            });
+            let blogCollections = await generalBlogCollection_1.default.find({
+                memberId: memberId,
+                blogs: {
+                    $in: blog._id,
+                },
+            }).select('_id');
+            let collectionIds = blogCollections.map((bc) => bc._id);
+            blog.blogCollections = collectionIds;
+            returnBlogs.push(blog);
+        }
+        return {
+            blogs: returnBlogs,
+            totalBlogs: await generalBlog_1.default.countDocuments(filter),
+        };
+    }
     async manus() {
-        await generalBlog_1.default.updateMany({}, { publisher: 'Poily' });
+        await generalBlog_1.default.updateMany({}, { publisher: 'poily' });
         return 1;
     }
 };
@@ -425,7 +496,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAllGeneralBlog", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [GeneralBlog_1.default])
+    (0, type_graphql_1.Query)(() => BlogsWithPagination_1.default)
     /**
      * Retrieves all general blogs for a client.
      *
@@ -436,8 +507,10 @@ __decorate([
     ,
     __param(0, (0, type_graphql_1.Arg)('currentDate')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
+    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAllGeneralBlogForClient", null);
 __decorate([
@@ -495,7 +568,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "manipulateBookMarksForBlog", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [GeneralBlog_1.default]),
+    (0, type_graphql_1.Query)(() => BlogsWithPagination_1.default),
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __param(1, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('memberId')),
+    __param(4, (0, type_graphql_1.Arg)('currentDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [FilterBlogInput_1.default, Number, Number, String, String]),
+    __metadata("design:returntype", Promise)
+], GeneralBlogResolver.prototype, "filterBlog", null);
+__decorate([
     (0, type_graphql_1.Mutation)(() => Number),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
