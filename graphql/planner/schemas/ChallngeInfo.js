@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const Member_1 = __importDefault(require("../../member/schemas/Member"));
 const SharedWith_1 = __importDefault(require("./SharedWith"));
-const TopIngredient_1 = __importDefault(require("./TopIngredient"));
+const TopIngredient_1 = __importDefault(require("./PlanSchema/TopIngredient"));
 let ChallengeInfo = class ChallengeInfo {
 };
 __decorate([

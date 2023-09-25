@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const CategoryPercentage_1 = __importDefault(require("./CategoryPercentage"));
 const Plan_1 = __importDefault(require("./Plan"));
-const TopIngredient_1 = __importDefault(require("./TopIngredient"));
 const MacroMakeup_1 = __importDefault(require("./MacroMakeup"));
+const TopIngredient_1 = __importDefault(require("./TopIngredient"));
 let PlanIngredientAndCategory = class PlanIngredientAndCategory {
 };
 __decorate([

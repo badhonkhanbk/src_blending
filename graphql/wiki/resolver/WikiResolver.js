@@ -1563,6 +1563,12 @@ let WikiResolver = class WikiResolver {
         let ingredientFilter = {};
         let nutrientFilter = {};
         let allElements = [];
+        if (data.includeWikiIds) {
+            ingredientFilter._id = { $in: data.includeWikiIds };
+        }
+        if (data.excludeWikiIds) {
+            ingredientFilter._id = { $nin: data.excludeWikiIds };
+        }
         if (data.BlendIngredientType) {
             ingredientFilter.category = { $in: data.BlendIngredientType };
         }
@@ -1673,6 +1679,9 @@ let WikiResolver = class WikiResolver {
                 }
                 else if (data.nutrientCategory[i] === 'Vitamin') {
                     categories.push('6203a98a1c100bd226c13c6b');
+                }
+                else if (data.nutrientCategory[i] === 'Calorie') {
+                    categories.push('6203a9061c100bd226c13c65');
                 }
                 else {
                     categories.push('6203a98a1c100bd226c13c6b');

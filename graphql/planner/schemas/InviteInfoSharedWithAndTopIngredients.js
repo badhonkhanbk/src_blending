@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const SharedWith_1 = __importDefault(require("./SharedWith"));
-const TopIngredient_1 = __importDefault(require("./TopIngredient"));
 const inviteInfo_1 = __importDefault(require("./inviteInfo"));
+const TopIngredient_1 = __importDefault(require("./PlanSchema/TopIngredient"));
 let InviteInfoSharedWithAndTopIngredients = class InviteInfoSharedWithAndTopIngredients {
 };
 __decorate([

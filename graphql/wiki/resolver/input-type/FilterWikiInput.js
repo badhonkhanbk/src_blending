@@ -43,6 +43,7 @@ var NutrientCategoryFilter;
     NutrientCategoryFilter["MICRO_NUTRIENTS"] = "MicroNutrients";
     NutrientCategoryFilter["VITAMIN"] = "Vitamin";
     NutrientCategoryFilter["MINERAL"] = "Mineral";
+    NutrientCategoryFilter["CALORIE"] = "Calorie";
 })(NutrientCategoryFilter || (NutrientCategoryFilter = {}));
 (0, type_graphql_2.registerEnumType)(WikiType, {
     name: 'WikiType',
@@ -62,6 +63,14 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [WikiType]),
     __metadata("design:type", Array)
 ], FilterWikiInput.prototype, "wikiType", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
+    __metadata("design:type", Array)
+], FilterWikiInput.prototype, "includeWikiIds", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
+    __metadata("design:type", Array)
+], FilterWikiInput.prototype, "excludeWikiIds", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [BlendIngredientType], { nullable: true }),
     __metadata("design:type", Array)

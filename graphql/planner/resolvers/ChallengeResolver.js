@@ -260,12 +260,20 @@ let ChallengeResolver = class ChallengeResolver {
         if (challenge.sharedWith.length > 1) {
             shareWithData = challenge.sharedWith.sort((m1, m2) => m2.blendScore - m1.blendScore);
         }
-        // this.upgradeTopIngredient(challengeId);
+        let returnTopIngredients = [];
+        for (let i = 0; i < challenge.topIngredients.length; i++) {
+            returnTopIngredients.push({
+                _id: challenge.topIngredients[i]._id,
+                name: challenge.topIngredients[i].ingredientName,
+                count: challenge.topIngredients[i].count,
+                featuredImage: challenge.topIngredients[i].featuredImage,
+            });
+        }
         let data = {
             challengeName: userChallenge.challengeName,
             memberInfo,
             sharedWith: shareWithData,
-            topIngredients: challenge.topIngredients,
+            topIngredients: returnTopIngredients,
         };
         return data;
     }

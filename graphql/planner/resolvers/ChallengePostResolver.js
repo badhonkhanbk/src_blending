@@ -394,10 +394,19 @@ let ChallengePostResolver = class ChallengePostResolver {
         // if (challenge.topIngredients.length === 0) {
         //   this.upgradeTopIngredient(challenge._id);
         // }
+        let returnTopIngredients = [];
+        for (let i = 0; i < challenge.topIngredients.length; i++) {
+            returnTopIngredients.push({
+                _id: challenge.topIngredients[i]._id,
+                name: challenge.topIngredients[i].ingredientName,
+                count: challenge.topIngredients[i].count,
+                featuredImage: challenge.topIngredients[i].featuredImage,
+            });
+        }
         return {
             invite,
             sharedWith: shareWithData,
-            topIngredients: challenge.topIngredients,
+            topIngredients: returnTopIngredients,
             isOwner: isOwner === '' ? null : isOwner,
             hasAccepted: hasAccepted === '' ? null : hasAccepted,
             hasInvited: hasInvited === '' ? null : hasInvited,
@@ -1133,6 +1142,15 @@ let ChallengePostResolver = class ChallengePostResolver {
             }
         }
         this.upgradeTopIngredient(challengeId);
+        let returnTopIngredients = [];
+        for (let i = 0; i < challenge.topIngredients.length; i++) {
+            returnTopIngredients.push({
+                _id: challenge.topIngredients[i]._id,
+                name: challenge.topIngredients[i].ingredientName,
+                count: challenge.topIngredients[i].count,
+                featuredImage: challenge.topIngredients[i].featuredImage,
+            });
+        }
         let challengeInfo = {
             longestStreak: longestStreak,
             currentStreak: myCurrentStreak,
@@ -1151,7 +1169,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                 image: memberInfo.image,
             },
             sharedWith: shareWithData,
-            topIngredients: challenge.topIngredients,
+            topIngredients: returnTopIngredients,
         };
         return challengeInfo;
     }
