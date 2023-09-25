@@ -263,10 +263,10 @@ let ChallengeResolver = class ChallengeResolver {
         let returnTopIngredients = [];
         for (let i = 0; i < challenge.topIngredients.length; i++) {
             returnTopIngredients.push({
-                _id: challenge.topIngredients[i]._id,
-                name: challenge.topIngredients[i].ingredientName,
+                _id: challenge.topIngredients[i].ingredientId._id,
+                name: challenge.topIngredients[i].ingredientId.ingredientName,
                 count: challenge.topIngredients[i].count,
-                featuredImage: challenge.topIngredients[i].featuredImage,
+                featuredImage: challenge.topIngredients[i].ingredientId.featuredImage,
             });
         }
         let data = {

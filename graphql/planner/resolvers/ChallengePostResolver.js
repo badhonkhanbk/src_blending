@@ -397,10 +397,10 @@ let ChallengePostResolver = class ChallengePostResolver {
         let returnTopIngredients = [];
         for (let i = 0; i < challenge.topIngredients.length; i++) {
             returnTopIngredients.push({
-                _id: challenge.topIngredients[i]._id,
-                name: challenge.topIngredients[i].ingredientName,
+                _id: challenge.topIngredients[i].ingredientId._id,
+                name: challenge.topIngredients[i].ingredientId.ingredientName,
                 count: challenge.topIngredients[i].count,
-                featuredImage: challenge.topIngredients[i].featuredImage,
+                featuredImage: challenge.topIngredients[i].ingredientId.featuredImage,
             });
         }
         return {
@@ -1143,12 +1143,13 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         this.upgradeTopIngredient(challengeId);
         let returnTopIngredients = [];
+        // console.log(challenge.topIngredients);
         for (let i = 0; i < challenge.topIngredients.length; i++) {
             returnTopIngredients.push({
-                _id: challenge.topIngredients[i]._id,
-                name: challenge.topIngredients[i].ingredientName,
+                _id: challenge.topIngredients[i].ingredientId._id,
+                name: challenge.topIngredients[i].ingredientId.ingredientName,
                 count: challenge.topIngredients[i].count,
-                featuredImage: challenge.topIngredients[i].featuredImage,
+                featuredImage: challenge.topIngredients[i].ingredientId.featuredImage,
             });
         }
         let challengeInfo = {
