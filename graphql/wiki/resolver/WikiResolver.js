@@ -1545,6 +1545,7 @@ let WikiResolver = class WikiResolver {
         else {
             returnData = wikis;
         }
+        console.log('hello');
         return returnData;
     }
     async filterWiki(data, page, limit, userId) {
@@ -1557,22 +1558,22 @@ let WikiResolver = class WikiResolver {
         let filter = {};
         let filter2 = {};
         // let combinedFilter: any = {}
-        if (data.wikiType) {
+        if (data.wikiType && data.wikiType.length > 0) {
             filter.type = { $in: data.wikiType };
         }
         let ingredientFilter = {};
         let nutrientFilter = {};
         let allElements = [];
-        if (data.includeWikiIds) {
+        if (data.includeWikiIds && data.includeWikiIds.length > 0) {
             ingredientFilter._id = { $in: data.includeWikiIds };
         }
-        if (data.excludeWikiIds) {
+        if (data.excludeWikiIds && data.excludeWikiIds.length > 0) {
             ingredientFilter._id = { $nin: data.excludeWikiIds };
         }
-        if (data.BlendIngredientType) {
+        if (data.BlendIngredientType && data.BlendIngredientType.length > 0) {
             ingredientFilter.category = { $in: data.BlendIngredientType };
         }
-        if (data.nutrientMatrix) {
+        if (data.nutrientMatrix && data.nutrientMatrix.length > 0) {
             for (let i = 0; i < data.nutrientMatrix.length; i++) {
                 if (data.nutrientMatrix[i].matrixName === 'calorie') {
                     let calorieValueFilter = {};
@@ -1631,7 +1632,7 @@ let WikiResolver = class WikiResolver {
                 }
             }
         }
-        if (data.nutrientFilters) {
+        if (data.nutrientFilters && data.nutrientFilters.length > 0) {
             for (let i = 0; i < data.nutrientFilters.length; i++) {
                 let nutrientFilter = {};
                 if (data.nutrientFilters[i].lessThan) {
@@ -1660,6 +1661,7 @@ let WikiResolver = class WikiResolver {
             };
         }
         let keys = Object.keys(ingredientFilter);
+        console.log(ingredientFilter);
         let wikiIds = [];
         if (keys.length > 0) {
             let ingredients = await blendIngredient_1.default.find(ingredientFilter).select('_id');
@@ -1671,21 +1673,22 @@ let WikiResolver = class WikiResolver {
         if (data.nutrientCategory && data.nutrientCategory.length > 0) {
             let categories = [];
             for (let i = 0; i < data.nutrientCategory.length; i++) {
+                console.log(data.nutrientCategory[i]);
                 if (data.nutrientCategory[i] === 'MacroNutrients') {
-                    categories.push('6203a9381c100bd226c13c67');
+                    categories.push(new mongoose_1.default.Types.ObjectId('6203a9381c100bd226c13c67'));
                 }
                 else if (data.nutrientCategory[i] === 'Mineral') {
-                    categories.push('6203a98a1c100bd226c13c6b');
+                    categories.push(new mongoose_1.default.Types.ObjectId('6203a98a1c100bd226c13c6b'));
                 }
                 else if (data.nutrientCategory[i] === 'Vitamin') {
-                    categories.push('6203a98a1c100bd226c13c6b');
+                    categories.push(new mongoose_1.default.Types.ObjectId('6203a96e1c100bd226c13c69'));
                 }
                 else if (data.nutrientCategory[i] === 'Calorie') {
-                    categories.push('6203a9061c100bd226c13c65');
+                    categories.push(new mongoose_1.default.Types.ObjectId('6203a9061c100bd226c13c65'));
                 }
                 else {
-                    categories.push('6203a98a1c100bd226c13c6b');
-                    categories.push('6203a98a1c100bd226c13c6b');
+                    categories.push(new mongoose_1.default.Types.ObjectId('6203a98a1c100bd226c13c6b'));
+                    categories.push(new mongoose_1.default.Types.ObjectId('6203a96e1c100bd226c13c69'));
                 }
             }
             // console.log('cat', categories);
@@ -1693,7 +1696,7 @@ let WikiResolver = class WikiResolver {
                 category: { $in: categories },
             }).select('_id');
             let blendNutrientIds = blendNutrients.map((blendNutrient) => blendNutrient._id);
-            // console.log(blendNutrientIds.length);
+            // console.log(blendNutrientIds);
             wikiIds = wikiIds.concat(blendNutrientIds);
         }
         if (wikiIds.length > 0) {
