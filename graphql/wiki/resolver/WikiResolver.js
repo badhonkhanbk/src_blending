@@ -1721,23 +1721,51 @@ let WikiResolver = class WikiResolver {
             .limit(limit)
             .skip(limit * (page - 1))
             .lean()
+            .select('-bodies')
             .sort({ wikiTitle: 1 });
+        console.log(wikis.length);
         if (userId) {
             for (let i = 0; i < wikis.length; i++) {
                 let data = wikis[i];
+                if (wikis[i].type === 'Ingredient') {
+                    console.log('Ingredient');
+                    let blendIngredient = await blendIngredient_1.default.findOne({
+                        _id: wikis[i]._id,
+                    }).select('portions featuredImage category');
+                    data.image = blendIngredient.featuredImage;
+                    data.category = blendIngredient.category;
+                    data.portions = blendIngredient.portions;
+                    let compare = await UserIngredientCompareList_1.default.findOne({
+                        userId: userId,
+                        ingredients: { $in: wikis[i]._id },
+                    }).select('_id');
+                    if (compare) {
+                        data.hasInCompare = true;
+                    }
+                    else {
+                        data.hasInCompare = false;
+                    }
+                }
+                else if (wikis[i].type === 'Nutrient') {
+                    console.log('nutrient');
+                    let nutrient = await blendNutrient_1.default.findOne({
+                        _id: wikis[i]._id,
+                    }).populate({
+                        path: 'category',
+                        select: 'categoryName',
+                    });
+                    //@ts-ignore
+                    data.category = nutrient.category
+                        ? //@ts-ignore
+                            nutrient.category.categoryName
+                        : '';
+                }
+                else {
+                    console.log(wikis[i].type);
+                }
                 let comments = await wikiComment_1.default.find({
                     entityId: wikis[i]._id,
                 }).select('_id');
-                let compare = await UserIngredientCompareList_1.default.findOne({
-                    userId: userId,
-                    ingredients: { $in: wikis[i]._id },
-                });
-                if (compare) {
-                    data.hasInCompare = true;
-                }
-                else {
-                    data.hasInCompare = false;
-                }
                 data.commentsCount = comments.length;
                 returnData.push(data);
             }
@@ -1745,6 +1773,7 @@ let WikiResolver = class WikiResolver {
         else {
             returnData = wikis;
         }
+        // console.log(returnData);
         return {
             wikiList: returnData,
             total: await wiki_1.default.countDocuments({ $and: [filter, filter2] }),

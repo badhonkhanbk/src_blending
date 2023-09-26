@@ -60,7 +60,7 @@ var NutrientCategoryFilter;
 let FilterWikiInput = class FilterWikiInput {
 };
 __decorate([
-    (0, type_graphql_1.Field)((type) => [WikiType]),
+    (0, type_graphql_1.Field)((type) => [WikiType], { nullable: true }),
     __metadata("design:type", Array)
 ], FilterWikiInput.prototype, "wikiType", void 0);
 __decorate([
