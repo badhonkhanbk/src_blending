@@ -633,6 +633,7 @@ let MemberResolver = class MemberResolver {
             userId: returnUser._id,
         }).select('_id');
         if (checkIfNew.length === 0) {
+            returnUser.isCreated = false;
             //@ts-ignore
             await (0, getAllGlobalRecipes_1.default)(returnUser._id);
         }
