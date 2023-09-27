@@ -1545,7 +1545,7 @@ let WikiResolver = class WikiResolver {
         else {
             returnData = wikis;
         }
-        console.log('hello');
+        // console.log('hello');
         return returnData;
     }
     async filterWiki(data, page, limit, userId) {
@@ -1661,14 +1661,16 @@ let WikiResolver = class WikiResolver {
             };
         }
         let keys = Object.keys(ingredientFilter);
-        console.log(ingredientFilter);
+        // console.log(ingredientFilter);
         let wikiIds = [];
         if (keys.length > 0) {
+            // console.log('x', ingredientFilter);
             let ingredients = await blendIngredient_1.default.find(ingredientFilter).select('_id');
             let ingredientIDs = ingredients.map((ingredient) => ingredient._id);
             // console.log(ingredientIDs);
             // filter2._id = { $in: ingredientIDs };
             wikiIds = wikiIds.concat(ingredientIDs);
+            console.log(wikiIds);
         }
         if (data.nutrientCategory && data.nutrientCategory.length > 0) {
             let categories = [];
@@ -1691,10 +1693,18 @@ let WikiResolver = class WikiResolver {
                     categories.push(new mongoose_1.default.Types.ObjectId('6203a96e1c100bd226c13c69'));
                 }
             }
-            // console.log('cat', categories);
-            let blendNutrients = await blendNutrient_1.default.find({
-                category: { $in: categories },
-            }).select('_id');
+            let blendNutrients = [];
+            if (data.includeWikiIds && data.includeWikiIds.length > 0) {
+                blendNutrients = await blendNutrient_1.default.find({
+                    _id: { $in: data.includeWikiIds },
+                    category: { $in: categories },
+                }).select('_id');
+            }
+            else {
+                blendNutrients = await blendNutrient_1.default.find({
+                    category: { $in: categories },
+                }).select('_id');
+            }
             let blendNutrientIds = blendNutrients.map((blendNutrient) => blendNutrient._id);
             // console.log(blendNutrientIds);
             wikiIds = wikiIds.concat(blendNutrientIds);
@@ -1723,12 +1733,12 @@ let WikiResolver = class WikiResolver {
             .lean()
             .select('-bodies')
             .sort({ wikiTitle: 1 });
-        console.log(wikis.length);
+        // console.log(wikis.length);
         if (userId) {
             for (let i = 0; i < wikis.length; i++) {
                 let data = wikis[i];
                 if (wikis[i].type === 'Ingredient') {
-                    console.log('Ingredient');
+                    // console.log('Ingredient');
                     let blendIngredient = await blendIngredient_1.default.findOne({
                         _id: wikis[i]._id,
                     }).select('portions featuredImage category');
@@ -1747,7 +1757,7 @@ let WikiResolver = class WikiResolver {
                     }
                 }
                 else if (wikis[i].type === 'Nutrient') {
-                    console.log('nutrient');
+                    // console.log('nutrient');
                     let nutrient = await blendNutrient_1.default.findOne({
                         _id: wikis[i]._id,
                     }).populate({
@@ -1761,7 +1771,7 @@ let WikiResolver = class WikiResolver {
                         : '';
                 }
                 else {
-                    console.log(wikis[i].type);
+                    // console.log(wikis[i].type);
                 }
                 let comments = await wikiComment_1.default.find({
                     entityId: wikis[i]._id,
