@@ -16,6 +16,7 @@ const type_graphql_1 = require("type-graphql");
 const BlendPortion_1 = __importDefault(require("../../blendIngredientsdata/schemas/BlendPortion"));
 const Bookmark_1 = __importDefault(require("./Bookmark"));
 const Admin_1 = __importDefault(require("../../admin/resolvers/schemas/Admin"));
+const WikiListWithPagination_1 = __importDefault(require("./WikiListWithPagination"));
 let NutritionFromIngredient = class NutritionFromIngredient {
 };
 __decorate([
@@ -98,6 +99,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => Admin_1.default, { nullable: true }),
     __metadata("design:type", Admin_1.default)
 ], NutritionFromIngredient.prototype, "author", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => WikiListWithPagination_1.default),
+    __metadata("design:type", WikiListWithPagination_1.default)
+], NutritionFromIngredient.prototype, "relatedWikis", void 0);
 NutritionFromIngredient = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], NutritionFromIngredient);

@@ -527,6 +527,7 @@ let WikiResolver = class WikiResolver {
         wiki.hasInCompare = hasInCompare;
         wiki.portions = blendIngredient.portions;
         wiki.category = blendIngredient.category;
+        wiki.relatedWikis = await this.getRelatedWiki('Ingredient', blendIngredient.category, userId);
         return wiki;
     }
     // @Query(() => IngredientFromNutrition)
@@ -755,6 +756,9 @@ let WikiResolver = class WikiResolver {
             ? //@ts-ignore
                 blendNutrient.category.categoryName
             : 'No Category Assigned';
+        console.log(wikiData.type);
+        console.log(blendNutrient.category._id);
+        wikiData.relatedWikis = await this.getRelatedWiki(wikiData.type, String(blendNutrient.category._id), userId);
         return wikiData;
     }
     /**
@@ -1799,13 +1803,7 @@ let WikiResolver = class WikiResolver {
             total: await wiki_1.default.countDocuments({ $and: [filter, filter2] }),
         };
     }
-    async getRelatedWiki(type, category, page, limit, userId) {
-        if (!limit) {
-            limit = 20;
-        }
-        if (!page) {
-            page = 1;
-        }
+    async getRelatedWiki(type, category, userId) {
         let wikiIds = [];
         if (type === 'Ingredient') {
             let blendIngredients = await blendIngredient_1.default.find({
@@ -1824,8 +1822,7 @@ let WikiResolver = class WikiResolver {
             isPublished: true,
             isBookmarked: false,
         })
-            .limit(limit)
-            .skip(limit * (page - 1))
+            .limit(5)
             .lean()
             .select('-bodies')
             .sort({ wikiTitle: 1 });
@@ -1954,7 +1951,7 @@ __decorate([
     (0, type_graphql_1.Query)(() => IngredientsFromNutrition_1.default) //todo
     ,
     __param(0, (0, type_graphql_1.Arg)('data')),
-    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [GetIngredientsFromNutrition_1.default,
         String]),
@@ -2126,12 +2123,11 @@ __decorate([
     (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default),
     __param(0, (0, type_graphql_1.Arg)('type')),
     __param(1, (0, type_graphql_1.Arg)('category')),
-    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('userId')),
+    __param(2, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
-        String, Number, Number, String]),
+        String,
+        String]),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getRelatedWiki", null);
 WikiResolver = __decorate([
