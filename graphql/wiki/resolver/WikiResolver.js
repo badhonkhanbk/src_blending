@@ -37,6 +37,16 @@ const GlobalBookmarkLink_1 = __importDefault(require("../../../models/GlobalBook
 const BookmarkAndExternalGlobalLInk_1 = __importDefault(require("../schemas/BookmarkAndExternalGlobalLInk"));
 const usedBookmark_1 = __importDefault(require("../../../models/usedBookmark"));
 const FilterWikiInput_1 = __importDefault(require("./input-type/FilterWikiInput"));
+var WikiType;
+(function (WikiType) {
+    WikiType["INGREDIENT"] = "Ingredient";
+    WikiType["NUTRIENT"] = "Nutrient";
+    WikiType["HEALTH"] = "Health";
+})(WikiType || (WikiType = {}));
+(0, type_graphql_1.registerEnumType)(WikiType, {
+    name: 'WikiType',
+    description: 'The types', // this one is optional
+});
 let WikiResolver = class WikiResolver {
     /**
      * Retrieves a list of nutrient information from the wiki.
@@ -1789,6 +1799,90 @@ let WikiResolver = class WikiResolver {
             total: await wiki_1.default.countDocuments({ $and: [filter, filter2] }),
         };
     }
+    async getRelatedWiki(type, category, page, limit, userId) {
+        if (!limit) {
+            limit = 20;
+        }
+        if (!page) {
+            page = 1;
+        }
+        let wikiIds = [];
+        if (type === 'Ingredient') {
+            let blendIngredients = await blendIngredient_1.default.find({
+                category: category,
+            }).select('_id');
+            wikiIds = blendIngredients.map((blendIngredient) => blendIngredient._id);
+        }
+        else if (type === 'Nutrient') {
+            let blendNutrients = await blendNutrient_1.default.find({
+                category: category,
+            }).select('_id');
+            wikiIds = blendNutrients.map((blendNutrient) => blendNutrient._id);
+        }
+        let wikis = await wiki_1.default.find({
+            _id: { $in: wikiIds },
+            isPublished: true,
+            isBookmarked: false,
+        })
+            .limit(limit)
+            .skip(limit * (page - 1))
+            .lean()
+            .select('-bodies')
+            .sort({ wikiTitle: 1 });
+        let returnData = [];
+        for (let i = 0; i < wikis.length; i++) {
+            let data = wikis[i];
+            if (wikis[i].type === 'Ingredient') {
+                // console.log('Ingredient');
+                let blendIngredient = await blendIngredient_1.default.findOne({
+                    _id: wikis[i]._id,
+                }).select('portions featuredImage category');
+                data.image = blendIngredient.featuredImage;
+                data.category = blendIngredient.category;
+                data.portions = blendIngredient.portions;
+                let compare = await UserIngredientCompareList_1.default.findOne({
+                    userId: userId,
+                    ingredients: { $in: wikis[i]._id },
+                }).select('_id');
+                if (compare) {
+                    data.hasInCompare = true;
+                }
+                else {
+                    data.hasInCompare = false;
+                }
+            }
+            else if (wikis[i].type === 'Nutrient') {
+                // console.log('nutrient');
+                let nutrient = await blendNutrient_1.default.findOne({
+                    _id: wikis[i]._id,
+                }).populate({
+                    path: 'category',
+                    select: 'categoryName',
+                });
+                //@ts-ignore
+                data.category = nutrient.category
+                    ? //@ts-ignore
+                        nutrient.category.categoryName
+                    : '';
+            }
+            else {
+                // console.log(wikis[i].type);
+            }
+            let comments = await wikiComment_1.default.find({
+                entityId: wikis[i]._id,
+            }).select('_id');
+            data.commentsCount = comments.length;
+            returnData.push(data);
+        }
+        return {
+            wikiList: returnData,
+            total: await wiki_1.default.countDocuments({
+                _id: { $in: wikiIds },
+                isPublished: true,
+                isBookmarked: false,
+            }),
+        };
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default),
@@ -2028,6 +2122,18 @@ __decorate([
     __metadata("design:paramtypes", [FilterWikiInput_1.default, Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "filterWiki", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default),
+    __param(0, (0, type_graphql_1.Arg)('type')),
+    __param(1, (0, type_graphql_1.Arg)('category')),
+    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String, Number, Number, String]),
+    __metadata("design:returntype", Promise)
+], WikiResolver.prototype, "getRelatedWiki", null);
 WikiResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], WikiResolver);
