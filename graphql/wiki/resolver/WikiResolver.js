@@ -527,7 +527,7 @@ let WikiResolver = class WikiResolver {
         wiki.hasInCompare = hasInCompare;
         wiki.portions = blendIngredient.portions;
         wiki.category = blendIngredient.category;
-        wiki.relatedWikis = await this.getRelatedWiki('Ingredient', blendIngredient.category, userId);
+        wiki.relatedWikis = await this.getRelatedWiki('Ingredient', blendIngredient.category, userId, ingredientsInfo[0].ingredientId);
         return wiki;
     }
     // @Query(() => IngredientFromNutrition)
@@ -758,7 +758,7 @@ let WikiResolver = class WikiResolver {
             : 'No Category Assigned';
         console.log(wikiData.type);
         console.log(blendNutrient.category._id);
-        wikiData.relatedWikis = await this.getRelatedWiki(wikiData.type, String(blendNutrient.category._id), userId);
+        wikiData.relatedWikis = await this.getRelatedWiki(wikiData.type, String(blendNutrient.category._id), userId, data.nutritionID);
         return wikiData;
     }
     /**
@@ -1803,16 +1803,18 @@ let WikiResolver = class WikiResolver {
             total: await wiki_1.default.countDocuments({ $and: [filter, filter2] }),
         };
     }
-    async getRelatedWiki(type, category, userId) {
+    async getRelatedWiki(type, category, userId, wikiId) {
         let wikiIds = [];
         if (type === 'Ingredient') {
             let blendIngredients = await blendIngredient_1.default.find({
+                _id: { $ne: wikiId },
                 category: category,
             }).select('_id');
             wikiIds = blendIngredients.map((blendIngredient) => blendIngredient._id);
         }
         else if (type === 'Nutrient') {
             let blendNutrients = await blendNutrient_1.default.find({
+                _id: { $ne: wikiId },
                 category: category,
             }).select('_id');
             wikiIds = blendNutrients.map((blendNutrient) => blendNutrient._id);
@@ -2124,8 +2126,10 @@ __decorate([
     __param(0, (0, type_graphql_1.Arg)('type')),
     __param(1, (0, type_graphql_1.Arg)('category')),
     __param(2, (0, type_graphql_1.Arg)('userId')),
+    __param(3, (0, type_graphql_1.Arg)('wikiId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String,
         String]),
     __metadata("design:returntype", Promise)

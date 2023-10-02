@@ -2020,7 +2020,7 @@ let RecipeResolver = class RecipeResolver {
     }
     async juio() {
         await recipeModel_1.default.updateMany({ adminId: null }, {
-            isPublished: false
+            isPublished: false,
         });
         return true;
     }
