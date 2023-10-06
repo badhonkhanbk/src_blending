@@ -37,6 +37,10 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const wiki_1 = __importDefault(require("../../../models/wiki"));
 const Plan_1 = __importDefault(require("../../../models/Plan"));
 const generalBlog_1 = __importDefault(require("../../../models/generalBlog"));
+const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
+const UserIngredientCompareList_1 = __importDefault(require("../../../models/UserIngredientCompareList"));
+const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient"));
+const wikiComment_1 = __importDefault(require("../../../models/wikiComment"));
 var key;
 (function (key) {
     key["Ingredient"] = "foodCategories";
@@ -830,7 +834,7 @@ let WigdetResolver = class WigdetResolver {
      * @param {string} currentDate - the current date (nullable)
      * @return {any} the entity widget
      */
-    async getEntityWidget(widgetSlug, currentDate) {
+    async getEntityWidget(widgetSlug, userId, currentDate) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: widgetSlug })
             .populate('widgetCollections.collectionData bannerId')
@@ -859,6 +863,7 @@ let WigdetResolver = class WigdetResolver {
         returnWidget.widgetCollections = [];
         // let recipes = [];
         // let ingredients: any[] = [];
+        // console.log(widget.widgetCollections);
         for (let i = 0; i < widget.widgetCollections.length; i++) {
             // let values: any[] = [];
             let collectionType = 
@@ -1015,7 +1020,7 @@ let WigdetResolver = class WigdetResolver {
                 wikis = await wiki_1.default.find({
                     _id: {
                         //@ts-ignore
-                        $in: widgetCollection.collectionData.children,
+                        $in: widget.widgetCollections[i].collectionData.children,
                     },
                 })
                     .populate({
@@ -1033,6 +1038,56 @@ let WigdetResolver = class WigdetResolver {
                     banner = {
                         link: null,
                     };
+                }
+                let returnData = [];
+                if (userId) {
+                    for (let i = 0; i < wikis.length; i++) {
+                        let data = wikis[i];
+                        if (wikis[i].type === 'Ingredient') {
+                            // console.log('Ingredient');
+                            let blendIngredient = await blendIngredient_1.default.findOne({
+                                _id: wikis[i]._id,
+                            }).select('portions featuredImage category');
+                            data.image = blendIngredient.featuredImage;
+                            data.category = blendIngredient.category;
+                            data.portions = blendIngredient.portions;
+                            let compare = await UserIngredientCompareList_1.default.findOne({
+                                userId: userId,
+                                ingredients: { $in: wikis[i]._id },
+                            }).select('_id');
+                            if (compare) {
+                                data.hasInCompare = true;
+                            }
+                            else {
+                                data.hasInCompare = false;
+                            }
+                        }
+                        else if (wikis[i].type === 'Nutrient') {
+                            // console.log('nutrient');
+                            let nutrient = await blendNutrient_1.default.findOne({
+                                _id: wikis[i]._id,
+                            }).populate({
+                                path: 'category',
+                                select: 'categoryName',
+                            });
+                            //@ts-ignore
+                            data.category = nutrient.category
+                                ? //@ts-ignore
+                                    nutrient.category.categoryName
+                                : '';
+                        }
+                        else {
+                            // console.log(wikis[i].type);
+                        }
+                        let comments = await wikiComment_1.default.find({
+                            entityId: wikis[i]._id,
+                        }).select('_id');
+                        data.commentsCount = comments.length;
+                        returnData.push(data);
+                    }
+                }
+                else {
+                    returnData = wikis;
                 }
                 returnWidget.widgetCollections.push({
                     //@ts-ignore
@@ -1053,7 +1108,7 @@ let WigdetResolver = class WigdetResolver {
                         collectionType: collectionType,
                         Recipe: [],
                         Plan: [],
-                        Wiki: wikis,
+                        Wiki: returnData,
                     },
                 });
             }
@@ -1619,7 +1674,7 @@ let WigdetResolver = class WigdetResolver {
      * @param {String} slug - The slug of the client.
      * @return {Object} returnWidget - The widget object for the client.
      */
-    async getWidgetsForClient(slug) {
+    async getWidgetsForClient(slug, userId) {
         let returnWidget = {};
         let widget = await Widget_1.default.findOne({ slug: slug })
             .populate('widgetCollections.collectionData bannerId')
@@ -1820,6 +1875,56 @@ let WigdetResolver = class WigdetResolver {
                         link: null,
                     };
                 }
+                let returnData = [];
+                if (userId) {
+                    for (let i = 0; i < wikis.length; i++) {
+                        let data = wikis[i];
+                        if (wikis[i].type === 'Ingredient') {
+                            // console.log('Ingredient');
+                            let blendIngredient = await blendIngredient_1.default.findOne({
+                                _id: wikis[i]._id,
+                            }).select('portions featuredImage category');
+                            data.image = blendIngredient.featuredImage;
+                            data.category = blendIngredient.category;
+                            data.portions = blendIngredient.portions;
+                            let compare = await UserIngredientCompareList_1.default.findOne({
+                                userId: userId,
+                                ingredients: { $in: wikis[i]._id },
+                            }).select('_id');
+                            if (compare) {
+                                data.hasInCompare = true;
+                            }
+                            else {
+                                data.hasInCompare = false;
+                            }
+                        }
+                        else if (wikis[i].type === 'Nutrient') {
+                            // console.log('nutrient');
+                            let nutrient = await blendNutrient_1.default.findOne({
+                                _id: wikis[i]._id,
+                            }).populate({
+                                path: 'category',
+                                select: 'categoryName',
+                            });
+                            //@ts-ignore
+                            data.category = nutrient.category
+                                ? //@ts-ignore
+                                    nutrient.category.categoryName
+                                : '';
+                        }
+                        else {
+                            // console.log(wikis[i].type);
+                        }
+                        let comments = await wikiComment_1.default.find({
+                            entityId: wikis[i]._id,
+                        }).select('_id');
+                        data.commentsCount = comments.length;
+                        returnData.push(data);
+                    }
+                }
+                else {
+                    returnData = wikis;
+                }
                 returnWidget.widgetCollections.push({
                     //@ts-ignore
                     _id: widget.widgetCollections[i]._id,
@@ -1839,7 +1944,7 @@ let WigdetResolver = class WigdetResolver {
                         collectionType: collectionType,
                         Recipe: [],
                         Plan: [],
-                        Wiki: wikis,
+                        Wiki: returnData,
                         GeneralBlog: [],
                     },
                 });
@@ -2348,9 +2453,11 @@ __decorate([
      */
     ,
     __param(0, (0, type_graphql_1.Arg)('widgetSlug')),
-    __param(1, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('currentDate', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String,
+        String, String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getEntityWidget", null);
 __decorate([
@@ -2411,8 +2518,10 @@ __decorate([
      */
     ,
     __param(0, (0, type_graphql_1.Arg)('slug')),
+    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String,
+        String]),
     __metadata("design:returntype", Promise)
 ], WigdetResolver.prototype, "getWidgetsForClient", null);
 __decorate([
