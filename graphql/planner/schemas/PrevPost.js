@@ -13,7 +13,7 @@ const type_graphql_1 = require("type-graphql");
 let PrevPost = class PrevPost {
 };
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
 ], PrevPost.prototype, "postId", void 0);
 __decorate([
