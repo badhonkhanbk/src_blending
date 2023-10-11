@@ -1597,7 +1597,7 @@ let WikiResolver = class WikiResolver {
                     else if (data.nutrientMatrix[i].greaterThan) {
                         calorieValueFilter = { $gt: data.nutrientMatrix[i].value };
                     }
-                    else if (data.nutrientMatrix[i].beetween) {
+                    else if (data.nutrientMatrix[i].between) {
                         calorieValueFilter = {
                             $gt: data.nutrientMatrix[i].value1,
                             $lt: data.nutrientMatrix[i].value2,
@@ -1638,7 +1638,7 @@ let WikiResolver = class WikiResolver {
                 else if (data.nutrientMatrix[i].greaterThan) {
                     ingredientFilter[val] = { $gt: data.nutrientMatrix[i].value };
                 }
-                else if (data.nutrientMatrix[i].beetween) {
+                else if (data.nutrientMatrix[i].between) {
                     ingredientFilter[val] = {
                         $gt: data.nutrientMatrix[i].value1,
                         $lt: data.nutrientMatrix[i].value2,
@@ -1655,7 +1655,7 @@ let WikiResolver = class WikiResolver {
                 else if (data.nutrientFilters[i].greaterThan) {
                     nutrientFilter = { $gt: data.nutrientFilters[i].value };
                 }
-                else if (data.nutrientFilters[i].beetween) {
+                else if (data.nutrientFilters[i].between) {
                     nutrientFilter = {
                         $gt: data.nutrientFilters[i].value1,
                         $lt: data.nutrientFilters[i].value2,

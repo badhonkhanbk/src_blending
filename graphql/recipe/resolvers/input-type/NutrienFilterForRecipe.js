@@ -34,7 +34,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", Boolean)
-], NutrientFilterForRecipe.prototype, "beetween", void 0);
+], NutrientFilterForRecipe.prototype, "between", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)

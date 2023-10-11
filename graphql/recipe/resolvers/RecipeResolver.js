@@ -1599,7 +1599,7 @@ let RecipeResolver = class RecipeResolver {
             else if (data.nutrientMatrix[i].greaterThan) {
                 findfacts[val] = { $gt: data.nutrientMatrix[i].value };
             }
-            else if (data.nutrientMatrix[i].beetween) {
+            else if (data.nutrientMatrix[i].between) {
                 findfacts[val] = {
                     $gt: data.nutrientMatrix[i].value1,
                     $lt: data.nutrientMatrix[i].value2,
@@ -1618,7 +1618,7 @@ let RecipeResolver = class RecipeResolver {
             else if (data.nutrientFilters[i].greaterThan) {
                 obj.value = { $gt: data.nutrientFilters[i].value };
             }
-            else if (data.nutrientFilters[i].beetween) {
+            else if (data.nutrientFilters[i].between) {
                 obj.value = {
                     $gt: data.nutrientFilters[i].value1,
                     $lt: data.nutrientFilters[i].value2,
@@ -1800,7 +1800,7 @@ let RecipeResolver = class RecipeResolver {
             else if (data.nutrientMatrix[i].greaterThan) {
                 findfacts[val] = { $gt: data.nutrientMatrix[i].value };
             }
-            else if (data.nutrientMatrix[i].beetween) {
+            else if (data.nutrientMatrix[i].between) {
                 findfacts[val] = {
                     $gt: data.nutrientMatrix[i].value1,
                     $lt: data.nutrientMatrix[i].value2,
@@ -1819,7 +1819,7 @@ let RecipeResolver = class RecipeResolver {
             else if (data.nutrientFilters[i].greaterThan) {
                 obj.value = { $gt: data.nutrientFilters[i].value };
             }
-            else if (data.nutrientFilters[i].beetween) {
+            else if (data.nutrientFilters[i].between) {
                 obj.value = {
                     $gt: data.nutrientFilters[i].value1,
                     $lt: data.nutrientFilters[i].value2,
