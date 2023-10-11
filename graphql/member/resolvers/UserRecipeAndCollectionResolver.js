@@ -200,7 +200,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     //   if (!recipe) {
     //     recipe = await RecipeModel.create(data.recipe);
     //   }
-    //   let found = false;
+    //  let found = false;
     //   for (let k = 0; k < collection.recipes.length; k++) {
     //     if (String(collection.recipes[k]) === String(data.recipe)) {
     //       found = true;

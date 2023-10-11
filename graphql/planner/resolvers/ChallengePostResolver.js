@@ -1139,6 +1139,14 @@ let ChallengePostResolver = class ChallengePostResolver {
                 diffDays = diffDays > challenge.days ? challenge.days : diffDays;
                 console.log('diffDays', diffDays);
                 blendScore = (100 / diffDays) * challengeDocsForRecent.length;
+                await challenge_1.default.findOneAndUpdate({
+                    _id: challengeId,
+                    'sharedWith.$.memberId': memberId,
+                }, {
+                    $set: {
+                        'sharedWith.$.blendScore': blendScore,
+                    },
+                });
             }
         }
         this.upgradeTopIngredient(challengeId);
