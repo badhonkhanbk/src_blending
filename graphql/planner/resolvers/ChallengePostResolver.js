@@ -1055,11 +1055,13 @@ let ChallengePostResolver = class ChallengePostResolver {
             assignDate: { $gte: challenge.startDate, $lte: challenge.endDate },
             posts: { $ne: [] },
         }).sort({ assignDate: 1 });
+        // console.log(challengeDocs);
         let challengeDocsForRecent = await ChallengePost_2.default.find({
             memberId: memberId,
             assignDate: { $gte: challenge.startDate, $lte: today },
             posts: { $ne: [] },
         }).select('_id');
+        // console.log(challengeDocsForRecent);
         let daysRemaining = 0;
         if (challenge.startDate > today) {
             daysRemaining = challenge.days;
@@ -1074,6 +1076,7 @@ let ChallengePostResolver = class ChallengePostResolver {
             daysRemaining = diffDays;
         }
         if (challengeDocs.length === 0) {
+            // console.log(0);
             return {
                 longestStreak: 0,
                 currentStreak: 0,
@@ -1137,11 +1140,14 @@ let ChallengePostResolver = class ChallengePostResolver {
                 let diffTime = Math.abs(today - challenge.startDate);
                 let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
                 diffDays = diffDays > challenge.days ? challenge.days : diffDays;
-                console.log('diffDays', diffDays);
+                // console.log('diffDays', diffDays);
                 blendScore = (100 / diffDays) * challengeDocsForRecent.length;
+                // console.log(blendScore);
+                // console.log(challengeId);
+                // console.log(memberId);
                 await challenge_1.default.findOneAndUpdate({
                     _id: challengeId,
-                    'sharedWith.$.memberId': memberId,
+                    'sharedWith.memberId': memberId,
                 }, {
                     $set: {
                         'sharedWith.$.blendScore': blendScore,
