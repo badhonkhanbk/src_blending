@@ -39,7 +39,7 @@ let RecipeCategoryResolver = class RecipeCategoryResolver {
      * @return {Promise<RecipeCategory | null>} The retrieved recipe category.
      */
     async getASingleCategory(recipeCategoryName) {
-        console.log('hello');
+        // console.log('hello');
         let recipeCategory = await recipeCategory_1.default.findOne({
             name: recipeCategoryName,
         });

@@ -188,6 +188,15 @@ let ChallengePostResolver = class ChallengePostResolver {
             memberId: data.memberId,
             isActive: true,
         });
+        if (!challenge) {
+            challenge = await challenge_1.default.findOne({
+                'sharedWith.memberId': data.memberId,
+                'sharedWith.isActive': true,
+            });
+        }
+        if (!challenge) {
+            return new AppError_1.default('No active challenge found', 401);
+        }
         // let tempDay = new Date(new Date().toISOString().slice(0, 10));
         // if (challenge.days > 30) {
         //   if (challenge.startDate <= tempDay && challenge.endDate >= tempDay) {
