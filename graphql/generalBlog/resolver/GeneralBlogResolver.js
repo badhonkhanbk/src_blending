@@ -31,6 +31,7 @@ const blendIngredient_1 = __importDefault(require("../../../models/blendIngredie
 const WikiLinks_1 = __importDefault(require("../../wiki/schemas/WikiLinks"));
 const FilterBlogInput_1 = __importDefault(require("./inputType/FilterBlogInput"));
 const BlogsWithPagination_1 = __importDefault(require("../schema/BlogsWithPagination"));
+const generalBlogCollection_2 = __importDefault(require("../../../models/generalBlogCollection"));
 let GeneralBlogResolver = class GeneralBlogResolver {
     /**
      * A function that updates the bookmark list of all general blog models.
@@ -355,21 +356,78 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             page = 1;
         }
         let filter = {};
-        if (data.publisher && data.publisher.length > 0) {
-            filter.publisher = { $in: data.publisher };
+        let collectionBlogIds = [];
+        let blogIds = [];
+        let hasCollection = false;
+        let hasPublisher = false;
+        if (data.collections && data.collections.length > 0) {
+            hasCollection = true;
+            let blogCollections = await generalBlogCollection_2.default.find({
+                memberId: memberId,
+                _id: { $in: data.collections },
+            }).select('blogs');
+            for (let i = 0; i < blogCollections.length; i++) {
+                collectionBlogIds = collectionBlogIds.concat(blogCollections[i].blogs);
+            }
+        }
+        if (data.publishers && data.publishers.length > 0) {
+            hasPublisher = true;
+            let publisherFilter = {};
+            if (collectionBlogIds.length > 0) {
+                publisherFilter._id = { $in: collectionBlogIds };
+            }
+            for (let i = 0; i < data.publishers.length; i++) {
+                publisherFilter.publisher = data.publishers[i].publisher;
+                if (data.publishers[i].categories.length > 0) {
+                    publisherFilter.category = { $in: data.publishers[i].categories };
+                }
+                let blogs = await generalBlog_1.default.find(publisherFilter).select('_id');
+                let ids = blogs.map((blog) => blog._id);
+                blogIds = blogIds.concat(ids);
+            }
         }
         else {
-            filter.publisher = { $in: ['poily', 'blending101', 'plantMilkmakers'] };
+            if (collectionBlogIds.length > 0) {
+                blogIds = collectionBlogIds;
+            }
+            {
+                filter.publisher = { $in: ['poily', 'blending101', 'plantMilkmakers'] };
+            }
         }
+        if (blogIds.length > 0) {
+            filter._id = { $in: blogIds };
+        }
+        if (hasCollection && hasPublisher && blogIds.length === 0) {
+            return {
+                blogs: [],
+                totalBlogs: 0,
+            };
+        }
+        if (hasCollection && blogIds.length === 0) {
+            return {
+                blogs: [],
+                totalBlogs: 0,
+            };
+        }
+        if (hasPublisher && blogIds.length === 0) {
+            return {
+                blogs: [],
+                totalBlogs: 0,
+            };
+        }
+        // if (blogIds.length > 0) {
+        //   filter._id = { $in: blogIds };
+        // } else if (blogIds.length === 0 && collectionBlogIds.length > 0) {
+        //   filter._id = { $in: collectionBlogIds };
+        // }
         if (data.author && data.author.length > 0) {
             filter.createdBy = { $in: data.author };
         }
-        if (data.category && data.category.length > 0) {
-            filter.category = { $in: data.category };
-        }
         filter.isPublished = true;
         filter.publishDate = { $lte: today };
-        // console.log(filter);
+        if (data.searchTerm) {
+            filter.title = { $regex: data.searchTerm, $options: 'i' };
+        }
         let blogs = await generalBlog_1.default.find(filter)
             .lean()
             .populate('brand')

@@ -8,31 +8,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const Publisher_1 = __importDefault(require("./Publisher"));
-let FilterBlogInput = class FilterBlogInput {
+let Publisher = class Publisher {
 };
 __decorate([
-    (0, type_graphql_1.Field)((type) => [Publisher_1.default], { nullable: true }),
-    __metadata("design:type", Array)
-], FilterBlogInput.prototype, "publishers", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
-    __metadata("design:type", Array)
-], FilterBlogInput.prototype, "author", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], FilterBlogInput.prototype, "searchTerm", void 0);
+], Publisher.prototype, "publisher", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => [type_graphql_1.ID], { nullable: true }),
+    (0, type_graphql_1.Field)((type) => [String]),
     __metadata("design:type", Array)
-], FilterBlogInput.prototype, "collections", void 0);
-FilterBlogInput = __decorate([
+], Publisher.prototype, "categories", void 0);
+Publisher = __decorate([
     (0, type_graphql_1.InputType)()
-], FilterBlogInput);
-exports.default = FilterBlogInput;
+], Publisher);
+exports.default = Publisher;

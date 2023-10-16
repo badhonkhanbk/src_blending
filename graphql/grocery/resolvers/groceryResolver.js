@@ -30,11 +30,11 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const checkGroceryList_1 = __importDefault(require("../util/checkGroceryList"));
 let GroceryResolver = class GroceryResolver {
     /**
-   * Retrieves the grocery list for a specific member.
-   *
-   * @param {string} memberId - The ID of the member.
-   * @return {Promise<Array<Object>>} The grocery list for the member.
-   */
+     * Retrieves the grocery list for a specific member.
+     *
+     * @param {string} memberId - The ID of the member.
+     * @return {Promise<Array<Object>>} The grocery list for the member.
+     */
     async addGroceryList(data) {
         let user = await memberModel_1.default.findOne({ _id: data.memberId });
         if (!user) {
@@ -53,11 +53,11 @@ let GroceryResolver = class GroceryResolver {
         return 'true';
     }
     /**
-   * Retrieves the grocery list for a specific member.
-   *
-   * @param {string} memberId - The ID of the member.
-   * @return {Promise<Array<Object>>} The grocery list for the member.
-   */
+     * Retrieves the grocery list for a specific member.
+     *
+     * @param {string} memberId - The ID of the member.
+     * @return {Promise<Array<Object>>} The grocery list for the member.
+     */
     async getMyGroceryList(memberId) {
         let foundGrocery = await GroceryList_2.default.findOne({
             memberId: memberId,
@@ -79,14 +79,14 @@ let GroceryResolver = class GroceryResolver {
         return groceryList.list;
     }
     /**
-   * Deletes some items from the grocery, pantry, and staple lists of a member.
-   *
-   * @param {Array<string>} groceryIngredients - Array of ingredient IDs to be removed from the grocery list
-   * @param {Array<string>} pantryIngredients - Array of ingredient IDs to be removed from the pantry list
-   * @param {Array<string>} stapleIngredients - Array of ingredient IDs to be removed from the staple list
-   * @param {string} memberId - ID of the member
-   * @return {string} A success message indicating that the items were successfully deleted
-   */
+     * Deletes some items from the grocery, pantry, and staple lists of a member.
+     *
+     * @param {Array<string>} groceryIngredients - Array of ingredient IDs to be removed from the grocery list
+     * @param {Array<string>} pantryIngredients - Array of ingredient IDs to be removed from the pantry list
+     * @param {Array<string>} stapleIngredients - Array of ingredient IDs to be removed from the staple list
+     * @param {string} memberId - ID of the member
+     * @return {string} A success message indicating that the items were successfully deleted
+     */
     async deleteSomeFromList(groceryIngredients, pantryIngredients, stapleIngredients, memberId) {
         await GroceryList_2.default.findOneAndUpdate({
             memberId: memberId,
@@ -118,13 +118,13 @@ let GroceryResolver = class GroceryResolver {
         return 'successfully deleted';
     }
     /**
-   * Edits a list item.
-   *
-   * @param {GroceryIngredientInput} ingredient - The ingredient to edit.
-   * @param {string} memberId - The ID of the member.
-   * @param {string} listType - The type of the list.
-   * @return {Promise<string>} A promise that resolves to a string indicating the success of the operation.
-   */
+     * Edits a list item.
+     *
+     * @param {GroceryIngredientInput} ingredient - The ingredient to edit.
+     * @param {string} memberId - The ID of the member.
+     * @param {string} listType - The type of the list.
+     * @return {Promise<string>} A promise that resolves to a string indicating the success of the operation.
+     */
     async editAListItem(ingredient, memberId, listType) {
         let model;
         if (listType === 'Grocery') {
@@ -158,13 +158,13 @@ let GroceryResolver = class GroceryResolver {
         return 'Successfully updated';
     }
     /**
-   * Searches for blend ingredients in the grocery list, pantry list, and staple list
-   * based on a search term and member ID.
-   *
-   * @param {String} searchTerm - The search term to match against the ingredient name.
-   * @param {string} memberId - The ID of the member.
-   * @return {Array} An array of blend ingredients matching the search term.
-   */
+     * Searches for blend ingredients in the grocery list, pantry list, and staple list
+     * based on a search term and member ID.
+     *
+     * @param {String} searchTerm - The search term to match against the ingredient name.
+     * @param {string} memberId - The ID of the member.
+     * @return {Array} An array of blend ingredients matching the search term.
+     */
     async searchBlendIngredientsForGrocery(searchTerm, memberId) {
         let goceryListForThis = await GroceryList_2.default.findOne({
             memberId: memberId,
@@ -203,11 +203,11 @@ let GroceryResolver = class GroceryResolver {
         return ingredients;
     }
     /**
-   * Retrieves the ingredient list for a specific member.
-   *
-   * @param {String} memberId - The ID of the member.
-   * @return {Array} An array of ingredient IDs.
-   */
+     * Retrieves the ingredient list for a specific member.
+     *
+     * @param {String} memberId - The ID of the member.
+     * @return {Array} An array of ingredient IDs.
+     */
     async getMyIngredientList(memberId) {
         let goceryListForThis = await GroceryList_2.default.findOne({
             memberId: memberId,
@@ -240,10 +240,10 @@ let GroceryResolver = class GroceryResolver {
         return finalList;
     }
     /**
-   * Removes all items from the grocery list.
-   *
-   * @return {Promise<string>} A promise that resolves to 'done' when the operation is complete.
-   */
+     * Removes all items from the grocery list.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the operation is complete.
+     */
     async removeAllGroceryList() {
         await GroceryList_2.default.deleteMany();
         return 'done';
