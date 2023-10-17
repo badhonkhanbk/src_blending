@@ -842,14 +842,16 @@ let WigdetResolver = class WigdetResolver {
             .populate('widgetCollections.collectionData bannerId')
             .select('widgetCollections widgetName widgetType collectionCount slug');
         if (currentDate) {
-            let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+            let today = new Date(new Date().toISOString().slice(0, 10));
             widget.widgetCollections = widget.widgetCollections.filter((wc) => {
-                if (wc.publishDate) {
-                    return new Date(wc.publishDate) >= today;
+                if (wc.publishDate && wc.expiryDate) {
+                    return (new Date(wc.publishDate) <= today &&
+                        new Date(wc.expiryDate) >= today);
                 }
-                else if (wc.publishDate && wc.expiryDate) {
-                    return (new Date(wc.publishDate) >= today &&
-                        new Date(wc.expiryDate) <= today);
+                else if (wc.publishDate) {
+                    console.log(wc.publishDate);
+                    console.log(today);
+                    return new Date(wc.publishDate) <= today;
                 }
                 else {
                     return true;
