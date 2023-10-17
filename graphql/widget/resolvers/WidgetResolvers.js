@@ -41,6 +41,8 @@ const blendIngredient_1 = __importDefault(require("../../../models/blendIngredie
 const UserIngredientCompareList_1 = __importDefault(require("../../../models/UserIngredientCompareList"));
 const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient"));
 const wikiComment_1 = __importDefault(require("../../../models/wikiComment"));
+const generalBlogCollection_1 = __importDefault(require("../../../models/generalBlogCollection"));
+const blogComment_1 = __importDefault(require("../../../models/blogComment"));
 var key;
 (function (key) {
     key["Ingredient"] = "foodCategories";
@@ -986,6 +988,7 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: recipes,
                         Plan: [],
                         Wiki: [],
+                        GeneralBlog: [],
                     },
                 });
             }
@@ -1109,6 +1112,7 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: [],
                         Plan: [],
                         Wiki: returnData,
+                        GeneralBlog: [],
                     },
                 });
             }
@@ -1206,6 +1210,87 @@ let WigdetResolver = class WigdetResolver {
                         Recipe: [],
                         Plan: plans,
                         Wiki: [],
+                        GeneralBlog: [],
+                    },
+                });
+            }
+            else if (collectionType === 'GeneralBlog') {
+                let orderBy = {};
+                let widgetCollection = widget.widgetCollections[i];
+                if (!widgetCollection.orderBy) {
+                    widgetCollection.orderBy = 'PUBLISHED_DATE';
+                }
+                if (widgetCollection.orderBy === 'PUBLISHED_DATE') {
+                    orderBy = { createdAt: 1 };
+                }
+                else if (widgetCollection.orderBy === 'POPULARITY') {
+                    orderBy = { createdAt: 1 };
+                }
+                else if (widgetCollection.orderBy === 'ALPHABETICALLY') {
+                    orderBy = { title: 1 };
+                }
+                else {
+                    orderBy = { createdAt: -1 };
+                }
+                let blogs = await generalBlog_1.default.find({
+                    _id: {
+                        //@ts-ignore
+                        $in: widgetCollection.collectionData.children,
+                    },
+                })
+                    .lean()
+                    .populate('brand')
+                    .populate('createdBy')
+                    .sort(orderBy)
+                    .lean();
+                let returnBlogs = [];
+                for (let i = 0; i < blogs.length; i++) {
+                    let blog = blogs[i];
+                    blog.commentsCount = await blogComment_1.default.countDocuments({
+                        blogId: new mongoose_1.default.mongo.ObjectId(blog._id),
+                    });
+                    let blogCollections = await generalBlogCollection_1.default.find({
+                        memberId: userId,
+                        blogs: {
+                            $in: blog._id,
+                        },
+                    }).select('_id');
+                    let collectionIds = blogCollections.map((bc) => bc._id);
+                    blog.blogCollections = collectionIds;
+                    returnBlogs.push(blog);
+                }
+                let theme = await theme_1.default.findOne({
+                    _id: widget.widgetCollections[i].theme,
+                }).select('link style _id');
+                let banner = await banner_1.default.findOne({
+                    _id: widget.widgetCollections[i].bannerId,
+                }).select('link');
+                if (!banner) {
+                    banner = {
+                        link: null,
+                    };
+                }
+                returnWidget.widgetCollections.push({
+                    //@ts-ignore
+                    _id: widget.widgetCollections[i]._id,
+                    displayName: widget.widgetCollections[i].displayName,
+                    icon: widget.widgetCollections[i].icon,
+                    slug: widget.widgetCollections[i].slug,
+                    banner: widget.widgetCollections[i].banner,
+                    showTabMenu: widget.widgetCollections[i].showTabMenu,
+                    theme: theme ? theme : null,
+                    bannerLink: banner.link ? banner.link : null,
+                    filter: {
+                        filterType: key[widget.widgetCollections[i].filter
+                            .filterType],
+                        values: widget.widgetCollections[i].filter.values,
+                    },
+                    data: {
+                        collectionType: collectionType,
+                        Recipe: [],
+                        Plan: [],
+                        Wiki: [],
+                        GeneralBlog: returnBlogs,
                     },
                 });
             }
