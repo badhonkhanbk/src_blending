@@ -4,9 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const share_1 = __importDefault(require("../../../models/share"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
+const mongoose_1 = __importDefault(require("mongoose"));
 async function default_1(token, userId) {
     const share = await share_1.default.findOne({ _id: token });
     if (!share) {
@@ -15,8 +16,7 @@ async function default_1(token, userId) {
     if (!share.isGlobal) {
         let found = false;
         for (let i = 0; i < share.shareTo.length; i++) {
-            if (String(share.shareTo[i].userId) === userId &&
-                share.shareTo[i].hasAccepted) {
+            if (String(share.shareTo[i].userId) === userId) {
                 found = true;
                 break;
             }
@@ -46,7 +46,7 @@ async function checkShareAndAdd(share, userId) {
         userId: userId,
         recipeId: share.shareData.recipeId,
     });
-    let recipe = await recipe_1.default.findOne({
+    let recipe = await recipeModel_1.default.findOne({
         _id: share.shareData.recipeId,
     }).select('_id originalVersion turnedOn');
     if (!recipe) {
@@ -76,6 +76,16 @@ async function checkShareAndAdd(share, userId) {
         });
         return true;
     }
+    await share_1.default.findOneAndUpdate({
+        _id: share._id,
+        'shareTo.userId': {
+            $in: [new mongoose_1.default.mongo.ObjectId(userId)],
+        },
+    }, {
+        $set: {
+            'shareTo.$.hasAccepted': true,
+        },
+    });
     let checkDefault = String(share.shareData.version) === String(userRecipe.defaultVersion);
     if (checkDefault) {
         // console.log('here');

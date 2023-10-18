@@ -122,7 +122,7 @@ let WigdetResolver = class WigdetResolver {
             obj[`widgetCollections.$.${keys[i]}`] = data[keys[i]];
         }
         delete obj._id;
-        console.log(obj);
+        // console.log(obj);
         await Widget_1.default.findOneAndUpdate({ _id: widgetId, 'widgetCollections._id': widgetCollection._id }, obj, { new: true });
         data.bannerId = await banner_2.default.findOne({
             _id: widgetCollection.bannerId,
@@ -849,8 +849,8 @@ let WigdetResolver = class WigdetResolver {
                         new Date(wc.expiryDate) >= today);
                 }
                 else if (wc.publishDate) {
-                    console.log(wc.publishDate);
-                    console.log(today);
+                    // console.log(wc.publishDate);
+                    // console.log(today);
                     return new Date(wc.publishDate) <= today;
                 }
                 else {
@@ -996,6 +996,7 @@ let WigdetResolver = class WigdetResolver {
             }
             else if (collectionType === 'Wiki') {
                 let orderBy = {};
+                // console.log(widget.widgetCollections[i])
                 if (!widget.widgetCollections[i].orderBy) {
                     widget.widgetCollections[i].orderBy = 'ALPHABETICALLY';
                 }
@@ -1053,7 +1054,9 @@ let WigdetResolver = class WigdetResolver {
                             let blendIngredient = await blendIngredient_1.default.findOne({
                                 _id: wikis[i]._id,
                             }).select('portions featuredImage category');
-                            data.image = blendIngredient.featuredImage;
+                            data.image = blendIngredient.featuredImage
+                                ? blendIngredient.featuredImage
+                                : null;
                             data.category = blendIngredient.category;
                             data.portions = blendIngredient.portions;
                             let compare = await UserIngredientCompareList_1.default.findOne({
@@ -1909,6 +1912,7 @@ let WigdetResolver = class WigdetResolver {
             }
             else if (collectionType === 'Wiki') {
                 let orderBy = {};
+                // console.log('hello', widget.widgetCollections[i]);
                 if (!widget.widgetCollections[i].orderBy) {
                     widget.widgetCollections[i].orderBy = 'ALPHABETICALLY';
                 }
@@ -1971,7 +1975,9 @@ let WigdetResolver = class WigdetResolver {
                             let blendIngredient = await blendIngredient_1.default.findOne({
                                 _id: wikis[i]._id,
                             }).select('portions featuredImage category');
-                            data.image = blendIngredient.featuredImage;
+                            data.image = blendIngredient.featuredImage
+                                ? blendIngredient.featuredImage
+                                : null;
                             data.category = blendIngredient.category;
                             data.portions = blendIngredient.portions;
                             let compare = await UserIngredientCompareList_1.default.findOne({
@@ -2153,7 +2159,7 @@ let WigdetResolver = class WigdetResolver {
                     orderBy = { createdAt: -1 };
                 }
                 let generalBlogs;
-                // if (widget.widgetCollections[i].filter.filterType === 'Ingredient') {
+                // if (widget.widget`Collections[i].filter.filterType === 'Ingredient') {
                 //   //@ts-ignore
                 //   values = widget.widgetCollections[i].filter.values.map(
                 //     //@ts-ignore
