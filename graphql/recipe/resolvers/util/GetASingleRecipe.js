@@ -14,6 +14,7 @@ async function default_1(recipeId, userId, token) {
     let data;
     if (token) {
         let share = await share_1.default.findOne({ _id: token });
+        console.log(share);
         if (!share.isGlobal) {
             let auth = share.shareTo.filter((sharePerson) => {
                 return String(sharePerson.userId) === String(userId);

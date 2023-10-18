@@ -16,8 +16,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-//import RecipeModel from '../../../models/recipe';
-// import NewRecipeModel from '../../../models/recipeModel'
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));

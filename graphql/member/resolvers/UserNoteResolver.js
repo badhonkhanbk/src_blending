@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const CreateNewNote_1 = __importDefault(require("./input-type/CreateNewNote"));
 const GetMyNote_1 = __importDefault(require("./input-type/GetMyNote"));
@@ -37,7 +37,7 @@ let UserNotesResolver = class UserNotesResolver {
         if (!user) {
             return new AppError_1.default('User not found', 404);
         }
-        let recipe = await recipe_1.default.findOne({ _id: data.recipeId });
+        let recipe = await recipeModel_1.default.findOne({ _id: data.recipeId });
         if (!recipe) {
             return new AppError_1.default('Recipe not found', 404);
         }
@@ -59,7 +59,7 @@ let UserNotesResolver = class UserNotesResolver {
         if (!user) {
             return new AppError_1.default('User not found', 404);
         }
-        let recipe = await recipe_1.default.findOne({ _id: data.recipeId });
+        let recipe = await recipeModel_1.default.findOne({ _id: data.recipeId });
         if (!recipe) {
             return new AppError_1.default('Recipe not found', 404);
         }

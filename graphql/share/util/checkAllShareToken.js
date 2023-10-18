@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const share_1 = __importDefault(require("../../../models/share"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const RecipeVersionModel_1 = __importDefault(require("../../../models/RecipeVersionModel"));
 const userNote_1 = __importDefault(require("../../../models/userNote"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
@@ -16,7 +16,7 @@ async function default_1(tokens, userId) {
         if (!share) {
             continue;
         }
-        let recipe = await recipe_1.default.findOne({
+        let recipe = await recipeModel_1.default.findOne({
             _id: share.shareData.recipeId,
         })
             .populate({

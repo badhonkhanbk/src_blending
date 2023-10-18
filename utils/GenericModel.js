@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Plan_1 = __importDefault(require("../models/Plan"));
 const blendIngredient_1 = __importDefault(require("../models/blendIngredient"));
 const generalBlog_1 = __importDefault(require("../models/generalBlog"));
-const recipe_1 = __importDefault(require("../models/recipe"));
+const recipeModel_1 = __importDefault(require("../models/recipeModel"));
 const wiki_1 = __importDefault(require("../models/wiki"));
 const blendNutrient_1 = __importDefault(require("../models/blendNutrient"));
 function getGenericModel(collectionType) {
@@ -14,7 +14,7 @@ function getGenericModel(collectionType) {
         return blendIngredient_1.default;
     }
     else if (collectionType === 'Recipe') {
-        return recipe_1.default;
+        return recipeModel_1.default;
     }
     else if (collectionType === 'Wiki') {
         return wiki_1.default;

@@ -27,7 +27,7 @@ const getRecipeCategoryPercentage_1 = __importDefault(require("./utils/getRecipe
 const getIngredientStats_1 = __importDefault(require("./utils/getIngredientStats"));
 const PlanWithTotal_1 = __importDefault(require("../schemas/PlanSchema/PlanWithTotal"));
 const planShare_1 = __importDefault(require("../../../models/planShare"));
-const recipe_1 = __importDefault(require("../../../models/recipe"));
+const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const PlansAndRecipes_1 = __importDefault(require("../schemas/PlanSchema/PlansAndRecipes"));
 const checkThePlanIsInCollectionOrNot_1 = __importDefault(require("./utils/checkThePlanIsInCollectionOrNot"));
@@ -1042,7 +1042,7 @@ let PlanResolver = class PlanResolver {
             }
         }
         let recipeIdsSet = [...new Set(recipeIds)].slice(0, 3);
-        let recipes = await recipe_1.default.find({
+        let recipes = await recipeModel_1.default.find({
             _id: { $in: recipeIdsSet },
         })
             .populate('recipeBlendCategory')
