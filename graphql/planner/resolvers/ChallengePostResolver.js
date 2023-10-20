@@ -112,6 +112,9 @@ let ChallengePostResolver = class ChallengePostResolver {
      * @return {Promise} a Promise that resolves to an object containing the created challenge post and related information
      */
     async createChallengePost(data) {
+        if (!data.post.ingredients || data.post.ingredients.length <= 0) {
+            return new AppError_1.default('No ingredients provided', 401);
+        }
         if (!data.memberId || !data.assignDate) {
             return new AppError_1.default('Please provide memberId and assignDate', 400);
         }
