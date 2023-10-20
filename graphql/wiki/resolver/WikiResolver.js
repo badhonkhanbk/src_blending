@@ -507,7 +507,7 @@ let WikiResolver = class WikiResolver {
         });
         let blendIngredient = await blendIngredient_1.default.findOne({
             _id: wiki._id,
-        }).select('portions category');
+        }).select('portions category featuredImage');
         let commentsCount = 0;
         let hasInCompare = false;
         if (userId) {
@@ -525,6 +525,11 @@ let WikiResolver = class WikiResolver {
         }
         wiki.commentsCount = commentsCount;
         wiki.hasInCompare = hasInCompare;
+        wiki.wikiFeatureImage = wiki.featureImage
+            ? wiki.featureImage
+            : blendIngredient.featuredImage
+                ? blendIngredient.featuredImage
+                : null;
         wiki.portions = blendIngredient.portions;
         wiki.category = blendIngredient.category;
         wiki.relatedWikis = await this.getRelatedWiki('Ingredient', blendIngredient.category, userId, ingredientsInfo[0].ingredientId);
