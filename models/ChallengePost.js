@@ -32,6 +32,10 @@ const ChallengePostSchema = new mongoose_1.Schema({
                 type: Number,
                 default: 0,
             },
+            consumedSize: {
+                type: Number,
+                default: 0,
+            },
             images: [
                 {
                     url: String,

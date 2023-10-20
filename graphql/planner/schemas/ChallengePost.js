@@ -41,6 +41,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
+], ChallengePost.prototype, "consumedSize", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
 ], ChallengePost.prototype, "servings", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),

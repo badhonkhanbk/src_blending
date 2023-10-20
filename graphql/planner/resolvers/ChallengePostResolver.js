@@ -1729,17 +1729,19 @@ let ChallengePostResolver = class ChallengePostResolver {
         let cps = await ChallengePost_2.default.find();
         for (let i = 0; i < cps.length; i++) {
             for (let j = 0; j < cps[i].posts.length; j++) {
-                let ingredients = [];
-                for (let k = 0; k < cps[i].posts[j].ingredients.length; k++) {
-                    ingredients[k] = cps[i].posts[j].ingredients[k];
-                    let bi = await blendIngredient_1.default.findOne({
-                        _id: ingredients[k].ingredientId,
-                    })
-                        .select('ingredientName')
-                        .lean();
-                    ingredients[k].originalIngredientName = bi.ingredientName;
-                    ingredients[k].quantityString = String(ingredients[k].selectedPortion.quantity);
-                }
+                //let ingredients: any[] = [];
+                // for (let k = 0; k < cps[i].posts[j].ingredients.length; k++) {
+                //   ingredients[k] = cps[i].posts[j].ingredients[k];
+                //   let bi = await BlendIngredientModel.findOne({
+                //     _id: ingredients[k].ingredientId,
+                //   })
+                //     .select('ingredientName')
+                //     .lean();
+                //   ingredients[k].originalIngredientName = bi.ingredientName;
+                //   ingredients[k].quantityString = String(
+                //     ingredients[k].selectedPortion.quantity
+                //   );
+                // }
                 // console.log(ingredients);
                 await ChallengePost_2.default.findOneAndUpdate({
                     _id: cps[i]._id,
@@ -1747,7 +1749,7 @@ let ChallengePostResolver = class ChallengePostResolver {
                     'posts._id': cps[i].posts[j]._id,
                 }, {
                     $set: {
-                        'posts.$.ingredients': ingredients,
+                        'posts.$.consumedSize': cps[i].posts[j].servingSize,
                     },
                 });
             }
@@ -2026,6 +2028,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "gobletOfFire", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChallengePostResolver.prototype, "gobletOfFire2", null);
 ChallengePostResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], ChallengePostResolver);

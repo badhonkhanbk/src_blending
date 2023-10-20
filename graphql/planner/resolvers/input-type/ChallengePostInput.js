@@ -34,6 +34,10 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateChallengePostInput.prototype, "servingSize", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => Number, { nullable: true }),
+    __metadata("design:type", Number)
+], CreateChallengePostInput.prototype, "consumedSize", void 0);
+__decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Number)
 ], CreateChallengePostInput.prototype, "servings", void 0);
