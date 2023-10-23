@@ -244,6 +244,132 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
      * @param {AddToLastModifiedCollection} data - The data to be added.
      * @return {Promise<any>} The updated collection.
      */
+    async addARecipeToACollection(data) {
+        let user = await memberModel_1.default.findOne({ _id: data.userId });
+        if (!user) {
+            return new AppError_1.default('User with that email not found', 404);
+        }
+        if (!data.collectionId) {
+            return new AppError_1.default('CollectionId is required', 404);
+        }
+        let recipe = await recipeModel_1.default.findOne({ _id: data.recipe });
+        if (!recipe) {
+            return new AppError_1.default('Recipe not found', 404);
+        }
+        let collection = await userCollection_1.default.findOne({
+            _id: data.collectionId,
+        });
+        if (!collection) {
+            return new AppError_1.default('Collection not found', 404);
+        }
+        let found = false;
+        let checkIfInTempCollection = await temporaryCompareCollection_1.default.findOne({
+            recipeId: data.recipe,
+            userId: data.userId,
+        });
+        if (checkIfInTempCollection) {
+            await temporaryCompareCollection_1.default.findOneAndDelete({
+                recipeId: data.recipe,
+                userId: data.userId,
+            });
+        }
+        for (let k = 0; k < collection.recipes.length; k++) {
+            if (String(collection.recipes[k]) === String(data.recipe)) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            console.log(1);
+            collection = await userCollection_1.default.findOneAndUpdate({ _id: data.collectionId }, {
+                $pull: { recipes: recipe._id },
+                $set: {
+                    updatedAt: Date.now(),
+                    lastModifiedCollection: collection._id,
+                },
+            }, {
+                new: true,
+            });
+        }
+        else {
+            console.log(2);
+            collection = await userCollection_1.default.findOneAndUpdate({ _id: data.collectionId }, {
+                $push: { recipes: recipe._id },
+                $set: {
+                    updatedAt: Date.now(),
+                    lastModifiedCollection: collection._id,
+                },
+            }, {
+                new: true,
+            });
+        }
+        console.log(collection);
+        let userRecipe = await UserRecipeProfile_1.default.findOne({
+            userId: data.userId,
+            recipeId: data.recipe,
+        });
+        if (!userRecipe) {
+            await UserRecipeProfile_1.default.create({
+                recipeId: data.recipe,
+                userId: data.userId,
+                isMatch: recipe.isMatch,
+                allRecipes: false,
+                myRecipes: false,
+                turnedOffVersions: recipe.turnedOffVersions,
+                turnedOnVersions: recipe.turnedOnVersions,
+                defaultVersion: recipe.defaultVersion,
+            });
+        }
+        if (collection.shareTo) {
+            for (let n = 0; n < collection.shareTo.length; n++) {
+                if (collection.shareTo[n].hasAccepted) {
+                    let userRecipe = await UserRecipeProfile_1.default.findOne({
+                        recipeId: data.recipe,
+                        userId: collection.shareTo[n].userId,
+                    });
+                    if (!userRecipe) {
+                        let recipe = await recipeModel_1.default.findOne({
+                            _id: data.recipe,
+                        }).select('isMatch turnedOffVersions turnedOnVersions defaultVersion');
+                        await UserRecipeProfile_1.default.create({
+                            recipeId: recipe._id,
+                            userId: collection.shareTo[n].userId,
+                            isMatch: recipe.isMatch,
+                            allRecipes: false,
+                            myRecipes: false,
+                            turnedOffVersions: recipe.turnedOffVersions,
+                            turnedOnVersions: recipe.turnedOnVersions,
+                            defaultVersion: recipe.defaultVersion,
+                        });
+                    }
+                }
+            }
+        }
+        // let member = await MemberModel.findOne({ _id: data.userId }).populate({
+        //   path: 'collections',
+        //   populate: {
+        //     path: 'recipes',
+        //     model: 'Recipe',
+        //   },
+        // });
+        let member = await memberModel_1.default.findOne({ _id: user._id })
+            .populate('collections')
+            .lean();
+        let collections = [];
+        for (let i = 0; i < member.collections.length; i++) {
+            console.log('1');
+            let collection = member.collections[i];
+            collection.totalRecipes = collection.recipes.length;
+            collections.push(collection);
+        }
+        return collections;
+    }
+    /**
+     * Adds the provided data to the last modified collection.
+     *
+     * @param {AddToLastModifiedCollection} data - The data to be added.
+     * @return {Promise<any>} The updated collection.
+     */
     async addTolastModifiedCollection(data) {
         let user = await memberModel_1.default.findOne({ _id: data.userId });
         if (!user) {
@@ -446,7 +572,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
      * @return {Promise<any>} - the updated user's collections
      */
     async addRecipeToAUserCollection(data) {
-        let user = await memberModel_1.default.findOne({ email: data.userEmail }).populate('collections');
+        let user = await memberModel_1.default.findOne({ _id: data.userId }).populate('collections');
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
@@ -475,17 +601,38 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             }
         }
         if (found2) {
-            return new AppError_1.default('Recipe already in collection', 404);
+            collection = await userCollection_1.default.findOneAndUpdate({ _id: data.collectionId }, {
+                $pull: { recipes: recipe._id },
+                $set: {
+                    updatedAt: Date.now(),
+                    lastModifiedCollection: collection._id,
+                },
+            }, {
+                new: true,
+            });
         }
-        await userCollection_1.default.findOneAndUpdate({ _id: collection._id }, { $push: { recipes: recipe._id }, $set: { updatedAt: Date.now() } });
-        let member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, { lastModifiedCollection: collection._id }, { new: true }).populate({
-            path: 'collections',
-            populate: {
-                path: 'recipes',
-                model: 'RecipeModel',
-            },
-        });
-        return member.collections;
+        else {
+            collection = await userCollection_1.default.findOneAndUpdate({ _id: data.collectionId }, {
+                $push: { recipes: recipe._id },
+                $set: {
+                    updatedAt: Date.now(),
+                    lastModifiedCollection: collection._id,
+                },
+            }, {
+                new: true,
+            });
+        }
+        let member = await memberModel_1.default.findOne({ _id: user._id })
+            .populate('collections')
+            .lean();
+        let collections = [];
+        for (let i = 0; i < member.collections.length; i++) {
+            console.log('1');
+            let collection = member.collections[i];
+            collection.totalRecipes = collection.recipes.length;
+            collections.push(collection);
+        }
+        return collections;
     }
     /**
      * Remove a recipe from a collection.
@@ -494,7 +641,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
      * @return {Promise<CollectionModel[]>} The updated collections of the user.
      */
     async removeRecipeFromAColection(data) {
-        let user = await memberModel_1.default.findOne({ email: data.userEmail }).populate('collections');
+        let user = await memberModel_1.default.findOne({ _id: data.userId }).populate('collections');
         if (!user) {
             return new AppError_1.default('User with that email not found', 404);
         }
@@ -514,14 +661,17 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             return new AppError_1.default('Collection not found', 404);
         }
         await userCollection_1.default.findOneAndUpdate({ _id: collection._id }, { $pull: { recipes: recipe._id } });
-        let member = await memberModel_1.default.findOne({ _id: user._id }).populate({
-            path: 'collections',
-            populate: {
-                path: 'recipes',
-                model: 'RecipeModel',
-            },
-        });
-        return member.collections;
+        let member = await memberModel_1.default.findOne({ _id: user._id })
+            .populate('collections')
+            .lean();
+        let collections = [];
+        for (let i = 0; i < member.collections.length; i++) {
+            console.log('1');
+            let collection = member.collections[i];
+            collection.totalRecipes = collection.recipes.length;
+            collections.push(collection);
+        }
+        return collections;
     }
     /**
      * Deletes a collection.
@@ -602,7 +752,17 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                         model: 'RecipeModel',
                     },
                 });
-                return member.collections;
+                member = await memberModel_1.default.findOne({ _id: user._id })
+                    .populate('collections')
+                    .lean();
+                let collections = [];
+                for (let i = 0; i < member.collections.length; i++) {
+                    console.log('1');
+                    let collection = member.collections[i];
+                    collection.totalRecipes = collection.recipes.length;
+                    collections.push(collection);
+                }
+                return collections;
             }
             await userCollection_1.default.findOneAndRemove({ _id: collection._id });
             member = await memberModel_1.default.findOneAndUpdate({ _id: user._id }, {
@@ -615,9 +775,29 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                     model: 'RecipeModel',
                 },
             });
-            return user.collections;
+            member = await memberModel_1.default.findOne({ _id: user._id })
+                .populate('collections')
+                .lean();
+            let collections = [];
+            for (let i = 0; i < member.collections.length; i++) {
+                console.log('1');
+                let collection = member.collections[i];
+                collection.totalRecipes = collection.recipes.length;
+                collections.push(collection);
+            }
+            return collections;
         }
-        return user.collections;
+        let member = await memberModel_1.default.findOne({ _id: user._id })
+            .populate('collections')
+            .lean();
+        let collections = [];
+        for (let i = 0; i < member.collections.length; i++) {
+            console.log('1');
+            let collection = member.collections[i];
+            collection.totalRecipes = collection.recipes.length;
+            collections.push(collection);
+        }
+        return collections;
     }
     /**
      * Edits a collection.
@@ -1230,6 +1410,20 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserRecipeAndCollectionResolver.prototype, "getLastModifieldCollection", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Collection_2.default)
+    /**
+     * Adds the provided data to the last modified collection.
+     *
+     * @param {AddToLastModifiedCollection} data - The data to be added.
+     * @return {Promise<any>} The updated collection.
+     */
+    ,
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [AddToLastModifiedCollection_1.default]),
+    __metadata("design:returntype", Promise)
+], UserRecipeAndCollectionResolver.prototype, "addARecipeToACollection", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Collection_2.default)
     /**

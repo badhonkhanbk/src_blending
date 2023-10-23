@@ -17,7 +17,7 @@ const userCollectionSchema = new mongoose_1.Schema({
         {
             type: mongoose_1.Schema.Types.ObjectId,
             unique: true,
-            ref: 'Recipe',
+            ref: 'RecipeModel',
         },
     ],
     visible: { type: Boolean, default: true },

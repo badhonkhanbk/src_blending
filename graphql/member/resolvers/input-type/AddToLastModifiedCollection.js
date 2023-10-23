@@ -13,13 +13,17 @@ const type_graphql_1 = require("type-graphql");
 let AddToLastModifiedCollectionInput = class AddToLastModifiedCollectionInput {
 };
 __decorate([
-    (0, type_graphql_1.Field)(type => type_graphql_1.ID),
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
 ], AddToLastModifiedCollectionInput.prototype, "userId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
 ], AddToLastModifiedCollectionInput.prototype, "recipe", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
+    __metadata("design:type", String)
+], AddToLastModifiedCollectionInput.prototype, "collectionId", void 0);
 AddToLastModifiedCollectionInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], AddToLastModifiedCollectionInput);

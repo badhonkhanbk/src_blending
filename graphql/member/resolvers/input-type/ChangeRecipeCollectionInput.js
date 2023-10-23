@@ -13,9 +13,9 @@ const type_graphql_1 = require("type-graphql");
 let AddCRecipeTOAUserCollectionInput = class AddCRecipeTOAUserCollectionInput {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
-], AddCRecipeTOAUserCollectionInput.prototype, "userEmail", void 0);
+], AddCRecipeTOAUserCollectionInput.prototype, "userId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
