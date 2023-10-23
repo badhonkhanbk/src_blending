@@ -67,12 +67,16 @@ let MemberResolver = class MemberResolver {
     async getAllSimpleCollections(userId) {
         let user = await memberModel_1.default.findById(userId)
             .populate('collections')
-            .select('collections');
+            .select('collections')
+            .lean();
+        // console.log(user.collections);
         let collections = [];
         for (let i = 0; i < user.collections.length; i++) {
             let collectionData = {
                 _id: user.collections[i]._id,
                 name: user.collections[i].name,
+                slug: user.collections[i].slug,
+                recipes: user.collections[i].recipes,
             };
             collections.push(collectionData);
         }
