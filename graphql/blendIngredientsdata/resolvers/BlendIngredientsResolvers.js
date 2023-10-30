@@ -324,7 +324,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                 ingredients = await blendIngredient_1.default.find({
                     _id: { $in: wikiIds },
                     classType: 'Class - ' + data.IngredientClass,
-                    blendStatus: 'Active',
+                    blendStatus: { $in: ['Active', 'Review'] },
                 })
                     .lean()
                     .populate({
@@ -348,7 +348,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                             'Class - 5',
                         ],
                     },
-                    blendStatus: 'Active',
+                    blendStatus: { $in: ['Active', 'Review'] },
                 })
                     .lean()
                     .populate({
@@ -367,7 +367,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                     _id: { $in: wikiIds },
                     category: data.ingredientCategory,
                     classType: 'Class - ' + data.IngredientClass,
-                    blendStatus: 'Active',
+                    blendStatus: { $in: ['Active', 'Review'] },
                 })
                     .populate({
                     path: 'blendNutrients.blendNutrientRefference',
@@ -388,7 +388,7 @@ let BlendIngredientResolver = class BlendIngredientResolver {
                             'Class - 5',
                         ],
                     },
-                    blendStatus: 'Active',
+                    blendStatus: { $in: ['Active', 'Review'] },
                 })
                     .populate({
                     path: 'blendNutrients.blendNutrientRefference',
