@@ -17,35 +17,39 @@ const RoleType_1 = __importDefault(require("./RoleType"));
 let CreateEditRole = class CreateEditRole {
 };
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], CreateEditRole.prototype, "roleName", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => RoleType_1.default),
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
     __metadata("design:type", RoleType_1.default)
 ], CreateEditRole.prototype, "Users", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => RoleType_1.default),
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
     __metadata("design:type", RoleType_1.default)
 ], CreateEditRole.prototype, "Admin", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => RoleType_1.default),
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
     __metadata("design:type", RoleType_1.default)
 ], CreateEditRole.prototype, "Dashboard", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => RoleType_1.default),
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
     __metadata("design:type", RoleType_1.default)
 ], CreateEditRole.prototype, "Shop", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => RoleType_1.default),
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
     __metadata("design:type", RoleType_1.default)
 ], CreateEditRole.prototype, "Blend", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => RoleType_1.default),
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
     __metadata("design:type", RoleType_1.default)
 ], CreateEditRole.prototype, "Wiki", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => RoleType_1.default),
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
+    __metadata("design:type", RoleType_1.default)
+], CreateEditRole.prototype, "Space", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
     __metadata("design:type", RoleType_1.default)
 ], CreateEditRole.prototype, "All", void 0);
 CreateEditRole = __decorate([

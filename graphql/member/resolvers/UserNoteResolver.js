@@ -116,11 +116,11 @@ let UserNotesResolver = class UserNotesResolver {
         return notes;
     }
     /**
-   * Retrieves all the notes belonging to a specific user.
-   *
-   * @param {String} userId - The ID of the user whose notes are to be retrieved.
-   * @return {Array} An array of user notes.
-   */
+     * Retrieves all the notes belonging to a specific user.
+     *
+     * @param {String} userId - The ID of the user whose notes are to be retrieved.
+     * @return {Array} An array of user notes.
+     */
     async getAllMyNotes(userId) {
         let user = await memberModel_1.default.findOne({ _id: userId });
         if (!user) {
@@ -182,11 +182,11 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => [UserNote_1.default])
     /**
-   * Retrieves all the notes belonging to a specific user.
-   *
-   * @param {String} userId - The ID of the user whose notes are to be retrieved.
-   * @return {Array} An array of user notes.
-   */
+     * Retrieves all the notes belonging to a specific user.
+     *
+     * @param {String} userId - The ID of the user whose notes are to be retrieved.
+     * @return {Array} An array of user notes.
+     */
     ,
     __param(0, (0, type_graphql_1.Arg)('userId')),
     __metadata("design:type", Function),

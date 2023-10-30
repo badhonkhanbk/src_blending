@@ -41,6 +41,7 @@ const ShowAllCollection_1 = __importDefault(require("../schemas/ShowAllCollectio
 const SimpleCollection_1 = __importDefault(require("../schemas/SimpleCollection"));
 const changeCompare_1 = __importDefault(require("./util/changeCompare"));
 const makeShareRecipe_1 = __importDefault(require("../../share/util/makeShareRecipe"));
+const Member_2 = __importDefault(require("../schemas/Member"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -912,6 +913,20 @@ let MemberResolver = class MemberResolver {
         });
         return 'done';
     }
+    async searchUser(searchText) {
+        // if (data.searchTerm) {
+        //   filter.title = { $regex: data.searchTerm, $options: 'i' };
+        // }
+        let members = await memberModel_1.default.find({
+            $or: [
+                { firstName: { $regex: searchText, $options: 'i' } },
+                { lastName: { $regex: searchText, $options: 'i' } },
+                { displayName: { $regex: searchText, $options: 'i' } },
+                { email: { $regex: searchText, $options: 'i' } },
+            ],
+        });
+        return members;
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => [SimpleCollection_1.default]),
@@ -1095,6 +1110,13 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "temporaryRecipeCategoryUpdate", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [Member_2.default]),
+    __param(0, (0, type_graphql_1.Arg)('searchText')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MemberResolver.prototype, "searchUser", null);
 MemberResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], MemberResolver);

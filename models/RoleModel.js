@@ -32,6 +32,7 @@ const roleSchema = new mongoose_1.Schema({
     Admin: roleType,
     All: roleType,
     Wiki: roleType,
+    Space: roleType,
     createdAt: { type: Date, default: Date.now },
 });
 const role = (0, mongoose_1.model)('Role', roleSchema);

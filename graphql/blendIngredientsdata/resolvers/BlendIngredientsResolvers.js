@@ -310,6 +310,98 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         }
         return ingredients;
     }
+    async filterIngredientByCategoryAndClassForWiki(data) {
+        let ingredients;
+        let wikis = await wiki_1.default.find({
+            isPublished: true,
+            type: 'Ingredient',
+        })
+            .lean()
+            .select('_id');
+        let wikiIds = wikis.map((wiki) => wiki._id);
+        if (data.ingredientCategory === 'All') {
+            if (+data.IngredientClass > 0) {
+                ingredients = await blendIngredient_1.default.find({
+                    _id: { $in: wikiIds },
+                    classType: 'Class - ' + data.IngredientClass,
+                    blendStatus: 'Active',
+                })
+                    .lean()
+                    .populate({
+                    path: 'blendNutrients.blendNutrientRefference',
+                    model: 'BlendNutrient',
+                })
+                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle')
+                    .sort({
+                    ingredientName: 1,
+                });
+            }
+            else {
+                ingredients = await blendIngredient_1.default.find({
+                    _id: { $in: wikiIds },
+                    classType: {
+                        $in: [
+                            'Class - 1',
+                            'Class - 2',
+                            'Class - 3',
+                            'Class - 4',
+                            'Class - 5',
+                        ],
+                    },
+                    blendStatus: 'Active',
+                })
+                    .lean()
+                    .populate({
+                    path: 'blendNutrients.blendNutrientRefference',
+                    model: 'BlendNutrient',
+                })
+                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle')
+                    .sort({
+                    ingredientName: 1,
+                });
+            }
+        }
+        else {
+            if (+data.IngredientClass > 0) {
+                ingredients = await blendIngredient_1.default.find({
+                    _id: { $in: wikiIds },
+                    category: data.ingredientCategory,
+                    classType: 'Class - ' + data.IngredientClass,
+                    blendStatus: 'Active',
+                })
+                    .populate({
+                    path: 'blendNutrients.blendNutrientRefference',
+                    model: 'BlendNutrient',
+                })
+                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle');
+            }
+            else {
+                ingredients = await blendIngredient_1.default.find({
+                    _id: { $in: wikiIds },
+                    category: data.ingredientCategory,
+                    classType: {
+                        $in: [
+                            'Class - 1',
+                            'Class - 2',
+                            'Class - 3',
+                            'Class - 4',
+                            'Class - 5',
+                        ],
+                    },
+                    blendStatus: 'Active',
+                })
+                    .populate({
+                    path: 'blendNutrients.blendNutrientRefference',
+                    model: 'BlendNutrient',
+                })
+                    .select('-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle')
+                    .sort({
+                    ingredientName: 1,
+                });
+            }
+        }
+        return ingredients;
+    }
     // blendNutrients: [
     //   {
     //     value: String,
@@ -1665,6 +1757,14 @@ __decorate([
     __metadata("design:paramtypes", [IngredientFilter_1.default]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "filterIngredientByCategoryAndClass", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [BlendIngredientData_1.default]) //BOTH:
+    ,
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [IngredientFilter_1.default]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "filterIngredientByCategoryAndClassForWiki", null);
 __decorate([
     (0, type_graphql_1.Query)(() => ReturnBlendIngredientBasedOnDefaultPortion_1.default)
     /**

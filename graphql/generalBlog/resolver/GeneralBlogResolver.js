@@ -190,7 +190,7 @@ let GeneralBlogResolver = class GeneralBlogResolver {
      * @param {String} memberId - The ID of the member.
      * @return {any[]} An array of general blog objects.
      */
-    async getAllGeneralBlogForClient(currentDate, memberId, page, limit) {
+    async getAllGeneralBlogForClient(currentDate, memberId, categories, page, limit) {
         if (!limit) {
             limit = 20;
         }
@@ -198,13 +198,20 @@ let GeneralBlogResolver = class GeneralBlogResolver {
             page = 1;
         }
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
+        let find = {
+            isPublished: true,
+            publisher: 'blending101',
+        };
+        if (categories) {
+            find.category = { $in: categories };
+        }
         await generalBlog_1.default.updateMany({
             publishDate: {
                 $lte: today,
             },
             isPublished: false,
         }, { isPublished: true });
-        let blogs = await generalBlog_1.default.find({ isPublished: true })
+        let blogs = await generalBlog_1.default.find(find)
             .lean()
             .populate('brand')
             .populate('createdBy')
@@ -228,7 +235,7 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         }
         return {
             blogs: returnBlogs,
-            totalBlogs: await generalBlog_1.default.countDocuments({ isPublished: true }),
+            totalBlogs: await generalBlog_1.default.countDocuments(find),
         };
     }
     /**
@@ -565,10 +572,11 @@ __decorate([
     ,
     __param(0, (0, type_graphql_1.Arg)('currentDate')),
     __param(1, (0, type_graphql_1.Arg)('memberId')),
-    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('categories', (type) => [String], { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Number, Number]),
+    __metadata("design:paramtypes", [String, String, Array, Number, Number]),
     __metadata("design:returntype", Promise)
 ], GeneralBlogResolver.prototype, "getAllGeneralBlogForClient", null);
 __decorate([

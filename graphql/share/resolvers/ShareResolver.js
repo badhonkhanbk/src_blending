@@ -499,7 +499,7 @@ let shareResolver = class shareResolver {
         let data = invite.invitedWith.filter(
         //@ts-ignore
         (iw) => String(iw.memberId) === memberId)[0];
-        console.log(data);
+        // console.log(data);
         if (!data) {
             return new AppError_1.default('Invalid invite', 400);
         }

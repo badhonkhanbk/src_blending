@@ -105,7 +105,23 @@ let BlendNutrientResolver = class BlendNutrientResolver {
         return 'BlendNutrient Created Successful';
     }
     async getAllBlendNutrients() {
-        let blendNutrients = await blendNutrient_1.default.find()
+        let blendNutrients = await blendNutrient_1.default.find({})
+            .populate('parent')
+            .populate('category')
+            .sort({ nutrientName: 1 });
+        return blendNutrients;
+    }
+    async getAllBlendNutrientsForWiki() {
+        let wikis = await wiki_1.default.find({
+            isPublished: true,
+            type: 'Nutrient',
+        })
+            .lean()
+            .select('_id');
+        let wikiIds = wikis.map((wiki) => wiki._id);
+        let blendNutrients = await blendNutrient_1.default.find({
+            _id: { $in: wikiIds },
+        })
             .populate('parent')
             .populate('category')
             .sort({ nutrientName: 1 });
@@ -559,6 +575,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BlendNutrientResolver.prototype, "getAllBlendNutrients", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [BlendNutrientData_1.default]) //Both ADMIN and USER
+    ,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BlendNutrientResolver.prototype, "getAllBlendNutrientsForWiki", null);
 __decorate([
     (0, type_graphql_1.Query)(() => BlendNutrientData_1.default) //ADMIN
     ,
