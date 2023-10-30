@@ -21,6 +21,10 @@ const Admin_1 = __importDefault(require("../../admin/resolvers/schemas/Admin"));
 let Space = class Space {
 };
 __decorate([
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
+    __metadata("design:type", String)
+], Space.prototype, "_id", void 0);
+__decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], Space.prototype, "name", void 0);
