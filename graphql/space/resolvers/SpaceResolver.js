@@ -19,20 +19,55 @@ const type_graphql_1 = require("type-graphql");
 const space_1 = __importDefault(require("../../../models/space"));
 const CreateSpace_1 = __importDefault(require("./input-type/CreateSpace"));
 const Space_1 = __importDefault(require("../schema/Space"));
+const AppError_1 = __importDefault(require("../../../utils/AppError"));
 let SpaceResolver = class SpaceResolver {
     async createNewSpace(spaceData) {
         let space = await space_1.default.create(spaceData);
         return space._id;
     }
-    async getAllSpaces() {
-        let spaces = await space_1.default.find()
-            .populate('users.userId')
+    async getAllSpaces(userId) {
+        let find = {};
+        if (userId) {
+            find['members.userId'] = userId;
+        }
+        console.log(find);
+        let spaces = await space_1.default.find(find)
             .populate('members.userId')
+            .populate('facilitators.userId')
             .populate('facilitators.invitedBy')
             .populate('members.invitedBy')
             .populate('createdBy')
             .lean();
         return spaces;
+    }
+    async joinASpace(spaceId, userId) {
+        let space = await space_1.default.findOne({ _id: spaceId });
+        if (!space) {
+            return new AppError_1.default('space not found', 404);
+        }
+        let found = false;
+        for (let i = 0; i < space.members.length; i++) {
+            if (String(space.members[i].userId) === userId) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            return new AppError_1.default('User is already in space', 404);
+        }
+        else {
+            await space_1.default.findOneAndUpdate({
+                _id: spaceId,
+            }, {
+                $push: {
+                    members: {
+                        userId: userId,
+                        hasAccepted: true,
+                    },
+                },
+            });
+        }
+        return 'done';
     }
     async getSpaceById(spaceId) {
         let space = await space_1.default.findById(spaceId);
@@ -48,10 +83,19 @@ __decorate([
 ], SpaceResolver.prototype, "createNewSpace", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [Space_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('userId', (type) => type_graphql_1.ID, { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getAllSpaces", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('spaceId', (type) => type_graphql_1.ID)),
+    __param(1, (0, type_graphql_1.Arg)('userId', (type) => type_graphql_1.ID)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], SpaceResolver.prototype, "joinASpace", null);
 __decorate([
     (0, type_graphql_1.Query)(() => Space_1.default),
     __param(0, (0, type_graphql_1.Arg)('spaceId', (type) => type_graphql_1.ID)),
