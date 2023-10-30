@@ -1691,6 +1691,19 @@ let WikiResolver = class WikiResolver {
             wikiIds = wikiIds.concat(ingredientIDs);
             console.log(wikiIds);
         }
+        let blendNutrients = [];
+        let includeNutrientIds = [];
+        if (data.includeWikiIds && data.includeWikiIds.length > 0) {
+            blendNutrients = await blendNutrient_1.default.find({
+                _id: { $in: data.includeWikiIds },
+            }).select('_id');
+            let blendNutrientIds = blendNutrients.map((blendNutrient) => blendNutrient._id);
+            includeNutrientIds = blendNutrientIds;
+            blendNutrients = await blendNutrient_1.default.find({
+                _id: { $in: includeNutrientIds },
+            }).select('_id');
+            wikiIds = wikiIds.concat(blendNutrientIds);
+        }
         if (data.nutrientCategory && data.nutrientCategory.length > 0) {
             let categories = [];
             for (let i = 0; i < data.nutrientCategory.length; i++) {
@@ -1715,7 +1728,7 @@ let WikiResolver = class WikiResolver {
             let blendNutrients = [];
             if (data.includeWikiIds && data.includeWikiIds.length > 0) {
                 blendNutrients = await blendNutrient_1.default.find({
-                    _id: { $in: data.includeWikiIds },
+                    _id: { $in: includeNutrientIds },
                     category: { $in: categories },
                 }).select('_id');
             }
@@ -1725,7 +1738,6 @@ let WikiResolver = class WikiResolver {
                 }).select('_id');
             }
             let blendNutrientIds = blendNutrients.map((blendNutrient) => blendNutrient._id);
-            // console.log(blendNutrientIds);
             wikiIds = wikiIds.concat(blendNutrientIds);
         }
         if (wikiIds.length > 0) {
