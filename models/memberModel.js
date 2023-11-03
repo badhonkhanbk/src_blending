@@ -55,6 +55,12 @@ const memberSchema = new mongoose_1.Schema({
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'PlanCollection',
     },
+    facilitatorsAccess: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'Space',
+        },
+    ],
 });
 const Member = (0, mongoose_1.model)('User', memberSchema);
 exports.default = Member;

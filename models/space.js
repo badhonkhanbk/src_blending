@@ -100,5 +100,5 @@ const spaceSchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
 });
-const space = (0, mongoose_1.model)('space', spaceSchema);
-exports.default = space;
+const Space = (0, mongoose_1.model)('Space', spaceSchema);
+exports.default = Space;

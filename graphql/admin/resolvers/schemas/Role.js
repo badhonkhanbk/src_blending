@@ -49,6 +49,10 @@ __decorate([
     __metadata("design:type", RoleType_1.default)
 ], Role.prototype, "Wiki", void 0);
 __decorate([
+    (0, type_graphql_1.Field)((type) => RoleType_1.default, { nullable: true }),
+    __metadata("design:type", RoleType_1.default)
+], Role.prototype, "Space", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => RoleType_1.default, { nullable: true }),
     __metadata("design:type", RoleType_1.default)
 ], Role.prototype, "All", void 0);

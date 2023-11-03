@@ -1306,6 +1306,15 @@ let ChallengePostResolver = class ChallengePostResolver {
             docId: docId,
         };
     }
+    /**
+     * Copies a challenge post.
+     *
+     * @param {String} docId - The ID of the document.
+     * @param {String} postId - The ID of the post.
+     * @param {string} assignDate - The assignment date.
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<string>} The result of the copy operation.
+     */
     async copyAChallengePost(docId, postId, assignDate, memberId) {
         let doc = await ChallengePost_2.default.findOne({ _id: docId });
         let isoDate = new Date(assignDate).toISOString();
@@ -1335,6 +1344,15 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         return 'post copied';
     }
+    /**
+     * Moves a challenge post.
+     *
+     * @param {String} docId - The ID of the document.
+     * @param {String} postId - The ID of the post.
+     * @param {string} assignDate - The assignment date.
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<string>} The result of the post movement.
+     */
     async moveAChallengePost(docId, postId, assignDate, memberId) {
         let doc = await ChallengePost_2.default.findOne({ _id: docId });
         let isoDate = new Date(assignDate).toISOString();
@@ -1367,6 +1385,12 @@ let ChallengePostResolver = class ChallengePostResolver {
         }
         return 'post moved';
     }
+    /**
+     * Retrieves the statistics of ingredients based on the current date.
+     *
+     * @param {string} currentDate - The current date in string format.
+     * @return {Promise<string>} A promise that resolves to the string 'done'.
+     */
     async getIngredientsStats(currentDate) {
         let today = new Date(new Date(currentDate).toISOString().slice(0, 10));
         let firstday = new Date(today.setDate(today.getDate() - today.getDay() + 1));
@@ -1974,7 +1998,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "deleteAChallengePost", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Copies a challenge post.
+     *
+     * @param {String} docId - The ID of the document.
+     * @param {String} postId - The ID of the post.
+     * @param {string} assignDate - The assignment date.
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<string>} The result of the copy operation.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('docId')),
     __param(1, (0, type_graphql_1.Arg)('postId')),
     __param(2, (0, type_graphql_1.Arg)('assignDate')),
@@ -1985,7 +2019,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "copyAChallengePost", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Moves a challenge post.
+     *
+     * @param {String} docId - The ID of the document.
+     * @param {String} postId - The ID of the post.
+     * @param {string} assignDate - The assignment date.
+     * @param {String} memberId - The ID of the member.
+     * @return {Promise<string>} The result of the post movement.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('docId')),
     __param(1, (0, type_graphql_1.Arg)('postId')),
     __param(2, (0, type_graphql_1.Arg)('assignDate')),
@@ -1996,7 +2040,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChallengePostResolver.prototype, "moveAChallengePost", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * Retrieves the statistics of ingredients based on the current date.
+     *
+     * @param {string} currentDate - The current date in string format.
+     * @return {Promise<string>} A promise that resolves to the string 'done'.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('currentDate')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
