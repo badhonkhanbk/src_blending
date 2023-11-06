@@ -22,24 +22,24 @@ const AddNewHealthData_1 = __importDefault(require("./inputType/AddNewHealthData
 const EditHealthData_1 = __importDefault(require("./inputType/EditHealthData"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const SimpleHealthData_1 = __importDefault(require("../schema/SimpleHealthData"));
+const fs_1 = __importDefault(require("fs"));
 let HeathResolver = class HeathResolver {
-    // @Mutation(() => String)
-    // async importDataFromCSV() {
-    //   await HealthModel.deleteMany();
-    //   let data = fs.readFileSync('./temp/dis.json', 'utf-8');
-    //   data = JSON.parse(data);
-    //   for (let i = 0; i < 102; i++) {
-    //     let healthData = {
-    //       healthTopic: data[i]['Acid Reflux (GERD)'],
-    //       category: data[i]['Digestive Disorders'],
-    //       foods: [],
-    //       nutrients: [],
-    //       images: [],
-    //     };
-    //     await HealthModel.create(healthData);
-    //   }
-    //   return 'Done';
-    // }
+    async importDataFromCSV() {
+        await health_1.default.deleteMany();
+        let data = fs_1.default.readFileSync('./temp/dis.json', 'utf-8');
+        data = JSON.parse(data);
+        for (let i = 0; i < 102; i++) {
+            let healthData = {
+                healthTopic: data[i]['Acid Reflux (GERD)'],
+                category: data[i]['Digestive Disorders'],
+                foods: [],
+                nutrients: [],
+                images: [],
+            };
+            await health_1.default.create(healthData);
+        }
+        return 'Done';
+    }
     async addNewHealthData(data) {
         let health = await health_1.default.create(data);
         return 'done';
@@ -97,7 +97,21 @@ let HeathResolver = class HeathResolver {
         });
         return healths;
     }
+    async updateAllHealthData() {
+        await health_1.default.updateMany({}, {
+            description: '',
+            status: '',
+            source: '',
+        });
+        return 'done';
+    }
 };
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HeathResolver.prototype, "importDataFromCSV", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => HealthData_1.default),
     __param(0, (0, type_graphql_1.Arg)('addNewHealthData')),
@@ -141,6 +155,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "searchHealthData", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HeathResolver.prototype, "updateAllHealthData", null);
 HeathResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], HeathResolver);
