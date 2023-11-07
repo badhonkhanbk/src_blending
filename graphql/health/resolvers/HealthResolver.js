@@ -23,6 +23,8 @@ const EditHealthData_1 = __importDefault(require("./inputType/EditHealthData"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const SimpleHealthData_1 = __importDefault(require("../schema/SimpleHealthData"));
 const fs_1 = __importDefault(require("fs"));
+const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
+const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient"));
 let HeathResolver = class HeathResolver {
     async importDataFromCSV() {
         await health_1.default.deleteMany();
@@ -105,6 +107,65 @@ let HeathResolver = class HeathResolver {
         });
         return 'done';
     }
+    async addRandomIngredientAndHealthValue() {
+        let healthData = await health_1.default.find();
+        let blendIngredients = await blendIngredient_1.default.find({});
+        let blendNutrients = await blendNutrient_1.default.find({});
+        for (let i = 0; i < healthData.length; i++) {
+            console.log('master', i);
+            let foods = [];
+            let nutrients = [];
+            for (let j = 0; j < 10; j++) {
+                console.log('child', j);
+                let randomIngredientIndex = Math.floor(Math.random() * blendIngredients.length);
+                let randomScoreForIngredient = Math.floor(Math.random() * (100 - 25 + 1)) + 25;
+                let randomNutrientIndex = Math.floor(Math.random() * blendNutrients.length);
+                console.log(randomIngredientIndex);
+                console.log(randomNutrientIndex);
+                let randomScoreForNutrient = Math.floor(Math.random() * (100 - 25 + 1)) + 25;
+                foods.push({
+                    foodId: blendIngredients[randomIngredientIndex]._id
+                        ? blendIngredients[randomIngredientIndex]._id
+                        : blendIngredients[i]._id,
+                    score: randomScoreForIngredient,
+                });
+                nutrients.push({
+                    nutrientId: blendNutrients[randomNutrientIndex]._id
+                        ? blendNutrients[randomNutrientIndex]._id
+                        : blendIngredients[0]._id,
+                    score: randomScoreForNutrient,
+                });
+                // await HealthModel.findOneAndUpdate(
+                //   {
+                //     _id: healthData[i]._id,
+                //   },
+                //   {
+                //     $push: {
+                //       foods: {
+                //         foodId: blendIngredients[randomIngredientIndex]._id,
+                //         score: randomIngredientIndex,
+                //       },
+                //       nutrients: {
+                //         nutrientId: blendNutrients[randomNutrientIndex]._id,
+                //         score: randomScoreForNutrient,
+                //       },
+                //     },
+                //   }
+                // );
+            }
+            await health_1.default.findOneAndUpdate({
+                _id: healthData[i]._id,
+            }, {
+                foods,
+                nutrients,
+            });
+        }
+        return 'done';
+    }
+    async resetNutrientAndFoodForHealth() {
+        await health_1.default.updateMany({}, { foods: [], nutrients: [] });
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
@@ -161,6 +222,18 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "updateAllHealthData", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HeathResolver.prototype, "addRandomIngredientAndHealthValue", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HeathResolver.prototype, "resetNutrientAndFoodForHealth", null);
 HeathResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], HeathResolver);

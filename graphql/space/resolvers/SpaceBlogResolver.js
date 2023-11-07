@@ -21,7 +21,6 @@ const CreateNewSpaceBlog_1 = __importDefault(require("./input-type/spaceBlog/Cre
 const SpaceBlog_1 = __importDefault(require("../../../models/SpaceBlog"));
 const EditSPaceBlog_1 = __importDefault(require("./input-type/spaceBlog/EditSPaceBlog"));
 const SpaceBlog_2 = __importDefault(require("../schema/spaceBlog/SpaceBlog"));
-const slugify_1 = __importDefault(require("slugify"));
 let SpaceBlogResolver = class SpaceBlogResolver {
     async createNewSpaceBlog(data) {
         let spaceBlog = await SpaceBlog_1.default.create(data);
@@ -62,9 +61,9 @@ let SpaceBlogResolver = class SpaceBlogResolver {
     }
     async editASpaceBlog(data) {
         let modifiedData = data.editableObject;
-        if (data.editableObject.title) {
-            modifiedData.slug = (0, slugify_1.default)(data.editableObject.title.toLowerCase());
-        }
+        // if (data.editableObject.title) {
+        //   modifiedData.slug = slugify(data.editableObject.title.toLowerCase());
+        // }
         await SpaceBlog_1.default.findOneAndUpdate({ _id: data.editId }, modifiedData);
         return 'Success';
     }
