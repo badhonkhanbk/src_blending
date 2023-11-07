@@ -47,13 +47,16 @@ SpaceBlogSchema.pre('findOneAndUpdate', function (next) {
     // doc.slug = slugify(doc.title.toString() + 'hello');
     let update = this.getUpdate();
     //@ts-ignore
-    update.slug = (0, slugify_1.default)(update.title.toString());
-    // if (update['$set'].title) {
-    //   update['$set'] = {
-    //     ...update['$set'],
-    //     slug: slugify(update['$set'].title.toString()),
-    //   };
-    // }
+    if (update.title) {
+        //@ts-ignore
+        update.slug = (0, slugify_1.default)(update.title.toString());
+        // if (update['$set'].title) {
+        //   update['$set'] = {
+        //     ...update['$set'],
+        //     slug: slugify(update['$set'].title.toString()),
+        //   };
+        // }
+    }
     next();
 });
 const SpaceBlog = (0, mongoose_1.model)('SpaceBlog', SpaceBlogSchema);
