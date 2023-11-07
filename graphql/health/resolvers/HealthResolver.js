@@ -25,6 +25,8 @@ const SimpleHealthData_1 = __importDefault(require("../schema/SimpleHealthData")
 const fs_1 = __importDefault(require("fs"));
 const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
 const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient"));
+const BlendNutrientData_1 = __importDefault(require("../../blendNutrient/schemas/BlendNutrientData"));
+const BlendIngredientData_1 = __importDefault(require("../../blendIngredientsdata/schemas/BlendIngredientData"));
 let HeathResolver = class HeathResolver {
     async importDataFromCSV() {
         await health_1.default.deleteMany();
@@ -162,6 +164,40 @@ let HeathResolver = class HeathResolver {
         }
         return 'done';
     }
+    async getRemainingNutrientsByHealthId(searchText, healthId) {
+        let find = {};
+        if (searchText) {
+            find['nutrientName'] = { $regex: searchText, $options: 'i' };
+        }
+        let healthData = await health_1.default.findOne({ _id: healthId });
+        if (!healthId) {
+            return new AppError_1.default('Health not found', 404);
+        }
+        let addedNutrients = healthData.nutrients;
+        let addedNutrientsIds = addedNutrients.map((addedNutrient) => addedNutrient.nutrientId);
+        if (addedNutrientsIds.length > 0) {
+            find._id = { $nin: addedNutrientsIds };
+        }
+        let nutrients = await blendNutrient_1.default.find(find).populate('category').lean();
+        return nutrients;
+    }
+    async getRemainingIngredientsByHealthId(searchText, healthId) {
+        let find = {};
+        if (searchText) {
+            find['ingredientName'] = { $regex: searchText, $options: 'i' };
+        }
+        let healthData = await health_1.default.findOne({ _id: healthId });
+        if (!healthId) {
+            return new AppError_1.default('Health not found', 404);
+        }
+        let addedIngredients = healthData.foods;
+        let addedIngredientIds = addedIngredients.map((addedIngredient) => addedIngredient.foodId);
+        if (addedIngredientIds.length > 0) {
+            find._id = { $nin: addedIngredientIds };
+        }
+        let ingredients = await blendIngredient_1.default.find(find).populate('category').lean();
+        return ingredients;
+    }
     async resetNutrientAndFoodForHealth() {
         await health_1.default.updateMany({}, { foods: [], nutrients: [] });
         return 'done';
@@ -228,6 +264,22 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "addRandomIngredientAndHealthValue", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [BlendNutrientData_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('searchText', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('HealthId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], HeathResolver.prototype, "getRemainingNutrientsByHealthId", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [BlendIngredientData_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('searchText', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('HealthId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], HeathResolver.prototype, "getRemainingIngredientsByHealthId", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String),
     __metadata("design:type", Function),
