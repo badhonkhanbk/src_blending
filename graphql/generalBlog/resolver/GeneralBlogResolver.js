@@ -180,7 +180,8 @@ let GeneralBlogResolver = class GeneralBlogResolver {
         }
         let blogs = await generalBlog_1.default.find(find)
             .populate('brand')
-            .populate('createdBy');
+            .populate('createdBy')
+            .sort({ updatedAt: -1 });
         return blogs;
     }
     /**
