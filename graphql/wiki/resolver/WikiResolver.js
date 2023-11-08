@@ -37,6 +37,8 @@ const GlobalBookmarkLink_1 = __importDefault(require("../../../models/GlobalBook
 const BookmarkAndExternalGlobalLInk_1 = __importDefault(require("../schemas/BookmarkAndExternalGlobalLInk"));
 const usedBookmark_1 = __importDefault(require("../../../models/usedBookmark"));
 const FilterWikiInput_1 = __importDefault(require("./input-type/FilterWikiInput"));
+const health_1 = __importDefault(require("../../../models/health"));
+const HealthImpact_1 = __importDefault(require("../schemas/HealthImpact"));
 var WikiType;
 (function (WikiType) {
     WikiType["INGREDIENT"] = "Ingredient";
@@ -533,6 +535,7 @@ let WikiResolver = class WikiResolver {
         wiki.portions = blendIngredient.portions;
         wiki.category = blendIngredient.category;
         wiki.relatedWikis = await this.getRelatedWiki('Ingredient', blendIngredient.category, userId, ingredientsInfo[0].ingredientId);
+        wiki.healthImpacts = await this.getHealthImpactByEntityId(String(wiki._id), 'Food');
         return wiki;
     }
     // @Query(() => IngredientFromNutrition)
@@ -764,6 +767,7 @@ let WikiResolver = class WikiResolver {
         console.log(wikiData.type);
         console.log(blendNutrient.category._id);
         wikiData.relatedWikis = await this.getRelatedWiki(wikiData.type, String(blendNutrient.category._id), userId, data.nutritionID);
+        wikiData.healthImpacts = await this.getHealthImpactByEntityId(data.nutritionID, 'Nutrient');
         return wikiData;
     }
     /**
@@ -1899,6 +1903,116 @@ let WikiResolver = class WikiResolver {
             }),
         };
     }
+    async getHealthImpactByEntityId(entityId, type) {
+        let match = {};
+        let firstProject = {};
+        let secondProject = {};
+        let firstUnwind = '';
+        let secondUnwind = '';
+        if (type === 'Food') {
+            match = {
+                'foods.foodId': new mongoose_1.default.mongo.ObjectId(entityId.toString()),
+            };
+            firstProject = {
+                _id: 1,
+                healthTopic: 1,
+                foods: 1,
+            };
+            secondProject = {
+                healthId: '$_id',
+                healthTopic: 1,
+                score: '$foods.score',
+            };
+            firstUnwind = '$foods';
+            secondUnwind = '$foods.foodId';
+        }
+        else if (type === 'Nutrient') {
+            match = {
+                'nutrients.nutrientId': new mongoose_1.default.mongo.ObjectId(entityId.toString()),
+            };
+            firstProject = {
+                _id: 1,
+                healthTopic: 1,
+                nutrients: 1,
+            };
+            secondProject = {
+                healthId: '$_id',
+                healthTopic: 1,
+                score: '$nutrients.score',
+            };
+            firstUnwind = '$nutrients';
+            secondUnwind = '$nutrients.nutrientId';
+        }
+        // let healthImpacts = await Health.aggregate([
+        //   {
+        //     $match: {
+        //       'nutrients.nutrientId': new mongoose.mongo.ObjectId(
+        //         nutrientId.toString()
+        //       ),
+        //     },
+        //   },
+        //   {
+        //     $project: {
+        //       _id: 1,
+        //       healthTopic: 1,
+        //       nutrients: 1,
+        //     },
+        //   },
+        //   {
+        //     $unwind: '$nutrients',
+        //   },
+        //   {
+        //     $unwind: '$nutrients.nutrientId',
+        //   },
+        //   {
+        //     $match: {
+        //       'nutrients.nutrientId': new mongoose.mongo.ObjectId(
+        //         nutrientId.toString()
+        //       ),
+        //     },
+        //   },
+        //   {
+        //     $limit: 10,
+        //   },
+        //   {
+        //     $project: {
+        //       healthId: '$_id',
+        //       healthTopic: 1,
+        //       score: '$nutrients.score',
+        //     },
+        //   },
+        //   {
+        //     $sort: {
+        //       score: -1,
+        //     },
+        //   },
+        // ]);
+        let healthImpacts = await health_1.default.aggregate([
+            {
+                $match: match,
+            },
+            {
+                $project: firstProject,
+            },
+            { $unwind: firstUnwind },
+            { $unwind: secondUnwind },
+            {
+                $match: match,
+            },
+            {
+                $limit: 10,
+            },
+            {
+                $project: secondProject,
+            },
+            {
+                $sort: {
+                    score: -1,
+                },
+            },
+        ]);
+        return healthImpacts;
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default),
@@ -2151,6 +2265,15 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getRelatedWiki", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [HealthImpact_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('entityId')),
+    __param(1, (0, type_graphql_1.Arg)('type')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], WikiResolver.prototype, "getHealthImpactByEntityId", null);
 WikiResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], WikiResolver);
