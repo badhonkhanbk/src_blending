@@ -39,6 +39,7 @@ const usedBookmark_1 = __importDefault(require("../../../models/usedBookmark"));
 const FilterWikiInput_1 = __importDefault(require("./input-type/FilterWikiInput"));
 const health_1 = __importDefault(require("../../../models/health"));
 const HealthImpact_1 = __importDefault(require("../schemas/HealthImpact"));
+const HealthWiki_1 = __importDefault(require("../schemas/HealthWiki"));
 var WikiType;
 (function (WikiType) {
     WikiType["INGREDIENT"] = "Ingredient";
@@ -535,6 +536,66 @@ let WikiResolver = class WikiResolver {
         wiki.portions = blendIngredient.portions;
         wiki.category = blendIngredient.category;
         wiki.relatedWikis = await this.getRelatedWiki('Ingredient', blendIngredient.category, userId, ingredientsInfo[0].ingredientId);
+        wiki.healthImpacts = await this.getHealthImpactByEntityId(String(wiki._id), 'Food');
+        return wiki;
+    }
+    async getAHealthWiki(wikiHealthId, userId) {
+        // let data: any = ingredientsInfo;
+        // // @ts-ignore
+        // let hello = data.map((x) => new mongoose.mongo.ObjectId(x.ingredientId));
+        let wiki = await wiki_1.default.findOne({
+            _id: wikiHealthId,
+        }).populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
+        });
+        let healthData = await health_1.default.findOne({
+            _id: wiki._id,
+        })
+            .populate({
+            path: 'nutrients.nutrientId',
+            model: 'BlendNutrient',
+            populate: {
+                path: 'category',
+                model: 'BlendNutrientCategory',
+            },
+        })
+            .populate({
+            path: 'foods.foodId',
+            model: 'BlendIngredient',
+        })
+            .select('category featuredImage foods nutrients');
+        // console.log(healthData.foods);
+        let commentsCount = 0;
+        let hasInCompare = false;
+        if (userId) {
+            let comments = await wikiComment_1.default.find({
+                entityId: wiki._id,
+            }).select('_id');
+            let compare = await UserIngredientCompareList_1.default.findOne({
+                userId: userId,
+                ingredients: { $in: wiki._id },
+            }).select('_id');
+            if (compare) {
+                hasInCompare = true;
+            }
+            commentsCount = comments.length;
+        }
+        wiki.nutrients = healthData.nutrients
+            .slice(0, 10)
+            .sort((a, b) => b.score - a.score);
+        wiki.foods = healthData.foods
+            .slice(0, 10)
+            .sort((a, b) => b.score - a.score);
+        wiki.commentsCount = commentsCount;
+        wiki.hasInCompare = hasInCompare;
+        wiki.wikiFeatureImage = wiki.featureImage
+            ? wiki.featureImage
+            : healthData.featuredImage
+                ? healthData.featuredImage
+                : null;
+        wiki.category = healthData.category;
+        wiki.relatedWikis = await this.getRelatedWiki('Ingredient', healthData.category, userId, String(healthData._id));
         wiki.healthImpacts = await this.getHealthImpactByEntityId(String(wiki._id), 'Food');
         return wiki;
     }
@@ -2080,6 +2141,16 @@ __decorate([
     __metadata("design:paramtypes", [Array, String]),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getBlendNutritionBasedIngredientsWiki2", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => HealthWiki_1.default) // TODO
+    ,
+    __param(0, (0, type_graphql_1.Arg)('wikiHealthId', (type) => type_graphql_1.ID)),
+    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], WikiResolver.prototype, "getAHealthWiki", null);
 __decorate([
     (0, type_graphql_1.Query)(() => IngredientsFromNutrition_1.default) //todo
     ,

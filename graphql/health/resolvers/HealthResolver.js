@@ -195,7 +195,9 @@ let HeathResolver = class HeathResolver {
         if (addedIngredientIds.length > 0) {
             find._id = { $nin: addedIngredientIds };
         }
-        let ingredients = await blendIngredient_1.default.find(find).populate('category').lean();
+        let ingredients = await blendIngredient_1.default.find(find)
+            .populate('category')
+            .lean();
         return ingredients;
     }
     async resetNutrientAndFoodForHealth() {
