@@ -14,10 +14,20 @@ const userViewTrackSchema = new mongoose_1.Schema({
     onModel: {
         type: String,
         required: true,
-        enum: ['BlendIngredient', 'BlendNutrient', 'RecipeModel', 'WikiModel'],
+        enum: [
+            'BlendIngredient',
+            'BlendNutrient',
+            'RecipeModel',
+            'Wiki',
+            'challenge',
+            'GeneraBlog',
+            'Space',
+            'Widget',
+            'Plan',
+            'Planner',
+        ],
     },
     userId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
-    accessedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 const UserViewTrack = (0, mongoose_1.model)('UserViewTrack', userViewTrackSchema);
 exports.default = UserViewTrack;

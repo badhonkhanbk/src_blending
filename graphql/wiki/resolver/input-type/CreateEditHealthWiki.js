@@ -10,61 +10,61 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let CreateNewSpaceBlog = class CreateNewSpaceBlog {
+let CreateEditHealthWiki = class CreateEditHealthWiki {
 };
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "title", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "body", void 0);
+], CreateEditHealthWiki.prototype, "wikiTitle", void 0);
 __decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
+    (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "spaceId", void 0);
+], CreateEditHealthWiki.prototype, "wikiDescription", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
     __metadata("design:type", Array)
-], CreateNewSpaceBlog.prototype, "keywords", void 0);
+], CreateEditHealthWiki.prototype, "wikiCoverImages", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "type", void 0);
+], CreateEditHealthWiki.prototype, "wikiFeatureImage", void 0);
 __decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, type_graphql_1.Field)((type) => String, { nullable: true }),
     __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "category", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "description", void 0);
-__decorate([
-    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
-    __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "author", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "coverImage", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "mediaUrl", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Number)
-], CreateNewSpaceBlog.prototype, "mediaLength", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], CreateNewSpaceBlog.prototype, "isPublished", void 0);
+], CreateEditHealthWiki.prototype, "bodies", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
-], CreateNewSpaceBlog.prototype, "archiveId", void 0);
-CreateNewSpaceBlog = __decorate([
+], CreateEditHealthWiki.prototype, "author", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], CreateEditHealthWiki.prototype, "isPublished", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], CreateEditHealthWiki.prototype, "seoTitle", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], CreateEditHealthWiki.prototype, "seoSlug", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], CreateEditHealthWiki.prototype, "seoCanonicalURL", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], CreateEditHealthWiki.prototype, "seoSiteMapPriority", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [String], { nullable: true }),
+    __metadata("design:type", Array)
+], CreateEditHealthWiki.prototype, "seoKeywords", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], CreateEditHealthWiki.prototype, "seoMetaDescription", void 0);
+CreateEditHealthWiki = __decorate([
     (0, type_graphql_1.InputType)()
-], CreateNewSpaceBlog);
-exports.default = CreateNewSpaceBlog;
+], CreateEditHealthWiki);
+exports.default = CreateEditHealthWiki;

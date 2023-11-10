@@ -21,6 +21,7 @@ const CreateNewSpaceBlog_1 = __importDefault(require("./input-type/spaceBlog/Cre
 const SpaceBlog_1 = __importDefault(require("../../../models/SpaceBlog"));
 const EditSPaceBlog_1 = __importDefault(require("./input-type/spaceBlog/EditSPaceBlog"));
 const SpaceBlog_2 = __importDefault(require("../schema/spaceBlog/SpaceBlog"));
+const spaceArchive_1 = __importDefault(require("../../../models/spaceArchive"));
 let SpaceBlogResolver = class SpaceBlogResolver {
     async createNewSpaceBlog(data) {
         let spaceBlog = await SpaceBlog_1.default.create(data);
@@ -30,6 +31,15 @@ let SpaceBlogResolver = class SpaceBlogResolver {
             })
                 .populate('spaceId')
                 .populate('author');
+            if (data.archiveId) {
+                await spaceArchive_1.default.findOneAndUpdate({
+                    _id: data.archiveId,
+                }, {
+                    $addToSet: {
+                        spaceBlogs: spaceBlogPopulated._id,
+                    },
+                });
+            }
             return spaceBlogPopulated;
         }
         else {

@@ -40,6 +40,7 @@ const FilterWikiInput_1 = __importDefault(require("./input-type/FilterWikiInput"
 const health_1 = __importDefault(require("../../../models/health"));
 const HealthImpact_1 = __importDefault(require("../schemas/HealthImpact"));
 const HealthWiki_1 = __importDefault(require("../schemas/HealthWiki"));
+const EditHealthWiki_1 = __importDefault(require("./input-type/EditHealthWiki"));
 var WikiType;
 (function (WikiType) {
     WikiType["INGREDIENT"] = "Ingredient";
@@ -864,6 +865,10 @@ let WikiResolver = class WikiResolver {
         return 'success';
     }
     async editNutrientWiki2(data) {
+        await wiki_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
+        return 'success';
+    }
+    async editHealthWiki(data) {
         await wiki_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'success';
     }
@@ -2191,6 +2196,14 @@ __decorate([
     __metadata("design:paramtypes", [EditIngredientAndNutrientWiki_1.default]),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "editNutrientWiki2", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String) //todo
+    ,
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [EditHealthWiki_1.default]),
+    __metadata("design:returntype", Promise)
+], WikiResolver.prototype, "editHealthWiki", null);
 __decorate([
     (0, type_graphql_1.Query)(() => Number),
     __param(0, (0, type_graphql_1.Arg)('data')),
