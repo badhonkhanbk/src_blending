@@ -545,7 +545,7 @@ __decorate([
      */
     ,
     __param(0, (0, type_graphql_1.Arg)('recipeId', { nullable: true })),
-    __param(1, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('token', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,

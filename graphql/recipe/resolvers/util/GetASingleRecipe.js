@@ -10,6 +10,7 @@ const makeGlobalRecipe_1 = __importDefault(require("../../../share/util/makeGlob
 const memberModel_1 = __importDefault(require("../../../../models/memberModel"));
 const Compare_1 = __importDefault(require("../../../../models/Compare"));
 const userNote_1 = __importDefault(require("../../../../models/userNote"));
+const recipeModel_1 = __importDefault(require("../../../../models/recipeModel"));
 async function default_1(recipeId, userId, token) {
     let data;
     if (token) {
@@ -28,6 +29,49 @@ async function default_1(recipeId, userId, token) {
             return new AppError_1.default('Invalid token', 404);
         }
         return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
+    }
+    if (!userId) {
+        const recipe = await recipeModel_1.default.findById(recipeId)
+            .populate('recipeBlendCategory')
+            .populate('brand')
+            .populate('userId')
+            .populate({
+            path: 'userId',
+            model: 'User',
+            select: 'firstName lastName image displayName email',
+        })
+            .populate({
+            path: 'originalVersion',
+            model: 'RecipeVersion',
+            populate: [
+                {
+                    path: 'ingredients.ingredientId',
+                    model: 'BlendIngredient',
+                    select: 'ingredientName featuredImage images',
+                },
+                {
+                    path: 'createdBy',
+                    select: '_id displayName firstName lastName image email',
+                },
+            ],
+        })
+            .select('mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating description userId userId totalTime')
+            .lean();
+        return {
+            recipeId: recipe,
+            defaultVersion: recipe.originalVersion ? recipe.originalVersion : null,
+            isMatch: true,
+            allRecipes: true,
+            myRecipes: true,
+            tags: [],
+            notes: 0,
+            addedToCompare: false,
+            userCollections: [],
+            versionsCount: 0,
+            personalRating: 0,
+            turnedOnVersions: [],
+            turnedOffVersions: [],
+        };
     }
     if (!recipeId && !token) {
         return new AppError_1.default('Recipe not found', 404);
