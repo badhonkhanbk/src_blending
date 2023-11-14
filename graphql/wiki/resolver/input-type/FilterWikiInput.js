@@ -37,6 +37,24 @@ var BlendIngredientType;
     BlendIngredientType["LIQUID"] = "Liquid";
     BlendIngredientType["TUBE_SQUASH"] = "Tube-Squash";
 })(BlendIngredientType || (BlendIngredientType = {}));
+var HealthCategoryFilter;
+(function (HealthCategoryFilter) {
+    HealthCategoryFilter["MUSCULOSKELETAL_DISORDERS"] = "Musculoskeletal Disorders";
+    HealthCategoryFilter["MENTAL_AND_BEHAVIORAL"] = "Mental & Behavioral";
+    HealthCategoryFilter["SKIN_CONDITIONS"] = "Skin Conditions";
+    HealthCategoryFilter["CARDIOVASCULAR_DISEASES"] = "Cardiovascular Diseases";
+    HealthCategoryFilter["RESPIRATORY_DISEASES"] = "Respiratory Diseases";
+    HealthCategoryFilter["HORMONAL_AND_METABOLIC"] = "Hormonal & Metabolic";
+    HealthCategoryFilter["INFLAMMATORY_AND_AUTOIMMUNE"] = "Inflammatory & Autoimmune";
+    HealthCategoryFilter["REPRODUCTIVE_AND_URINARY"] = "Reproductive & Urinary";
+    HealthCategoryFilter["EYE_AND_EAR_CONDITIONS"] = "Eye & Ear Conditions";
+    HealthCategoryFilter["DIGESTIVE_DISORDERS"] = "Digestive Disorders";
+    HealthCategoryFilter["TESTCATEGORY"] = "testCategory";
+    HealthCategoryFilter["NEUROLOGICAL_DISORDERS"] = "Neurological Disorders";
+    HealthCategoryFilter["OTHER_CONDITIONS"] = "Other Conditions";
+    HealthCategoryFilter["INFECTIOUS_DISEASES"] = "Infectious Diseases";
+    HealthCategoryFilter["CANCERS"] = "Cancers";
+})(HealthCategoryFilter || (HealthCategoryFilter = {}));
 var NutrientCategoryFilter;
 (function (NutrientCategoryFilter) {
     NutrientCategoryFilter["MACRO_NUTRIENTS"] = "MacroNutrients";
@@ -55,6 +73,10 @@ var NutrientCategoryFilter;
 });
 (0, type_graphql_2.registerEnumType)(NutrientCategoryFilter, {
     name: 'NutrientCategoryFilter',
+    description: 'The types', // this one is optional
+});
+(0, type_graphql_2.registerEnumType)(HealthCategoryFilter, {
+    name: 'HealthCategoryFilter',
     description: 'The types', // this one is optional
 });
 let FilterWikiInput = class FilterWikiInput {
@@ -87,6 +109,10 @@ __decorate([
     (0, type_graphql_1.Field)((type) => [NutrientCategoryFilter], { nullable: true }),
     __metadata("design:type", Array)
 ], FilterWikiInput.prototype, "nutrientCategory", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => [HealthCategoryFilter], { nullable: true }),
+    __metadata("design:type", Array)
+], FilterWikiInput.prototype, "healthCategory", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)

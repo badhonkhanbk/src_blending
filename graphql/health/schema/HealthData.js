@@ -18,6 +18,10 @@ const NutrientHealthType_1 = __importDefault(require("./NutrientHealthType"));
 let HealthData = class HealthData {
 };
 __decorate([
+    (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
+    __metadata("design:type", String)
+], HealthData.prototype, "_id", void 0);
+__decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], HealthData.prototype, "healthTopic", void 0);

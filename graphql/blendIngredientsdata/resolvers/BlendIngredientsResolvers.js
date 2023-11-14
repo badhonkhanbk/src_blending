@@ -59,6 +59,9 @@ const getGlAndNetCarbs2_1 = __importDefault(require("./util/getGlAndNetCarbs2"))
 const getBlendNutritionBasedOnRecipexxx_1 = __importDefault(require("./util/getBlendNutritionBasedOnRecipexxx"));
 const getTopLevelChilds_1 = __importDefault(require("./util/getTopLevelChilds"));
 const getSearchedBlendNutrition_1 = __importDefault(require("./util/getSearchedBlendNutrition"));
+const HealthFilter_1 = __importDefault(require("./input-type/HealthFilter"));
+const SimpleHealthData_1 = __importDefault(require("../../health/schema/SimpleHealthData"));
+const health_1 = __importDefault(require("../../../models/health"));
 let BlendIngredientResolver = class BlendIngredientResolver {
     async getAllBlendIngredients() {
         let blendIngredients = await blendIngredient_1.default.find()
@@ -309,6 +312,111 @@ let BlendIngredientResolver = class BlendIngredientResolver {
             }
         }
         return ingredients;
+    }
+    async filterHealthByCategoryAndClassForWiki(data) {
+        let healths;
+        let wikis = await wiki_1.default.find({
+            isPublished: true,
+            type: 'Health',
+        })
+            .lean()
+            .select('_id');
+        let wikiIds = wikis.map((wiki) => wiki._id);
+        if (data.healthCategory === 'All') {
+            healths = await health_1.default.find({
+                _id: { $in: wikiIds },
+            });
+            // if (+data.IngredientClass > 0) {
+            //   ingredients = await BlendIngredientModel.find({
+            //     _id: { $in: wikiIds },
+            //     classType: 'Class - ' + data.IngredientClass,
+            //     blendStatus: { $in: ['Active', 'Review'] },
+            //   })
+            //     .lean()
+            //     .populate({
+            //       path: 'blendNutrients.blendNutrientRefference',
+            //       model: 'BlendNutrient',
+            //     })
+            //     .select(
+            //       '-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle'
+            //     )
+            //     .sort({
+            //       ingredientName: 1,
+            //     });
+            // } else {
+            //   ingredients = await BlendIngredientModel.find({
+            //     _id: { $in: wikiIds },
+            //     classType: {
+            //       $in: [
+            //         'Class - 1',
+            //         'Class - 2',
+            //         'Class - 3',
+            //         'Class - 4',
+            //         'Class - 5',
+            //       ],
+            //     },
+            //     blendStatus: { $in: ['Active', 'Review'] },
+            //   })
+            //     .lean()
+            //     .populate({
+            //       path: 'blendNutrients.blendNutrientRefference',
+            //       model: 'BlendNutrient',
+            //     })
+            //     .select(
+            //       '-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle'
+            //     )
+            //     .sort({
+            //       ingredientName: 1,
+            //     });
+            // }
+        }
+        else {
+            // if (+data.IngredientClass > 0) {
+            //   ingredients = await BlendIngredientModel.find({
+            //     _id: { $in: wikiIds },
+            //     category: data.ingredientCategory,
+            //     classType: 'Class - ' + data.IngredientClass,
+            //     blendStatus: { $in: ['Active', 'Review'] },
+            //   })
+            //     .populate({
+            //       path: 'blendNutrients.blendNutrientRefference',
+            //       model: 'BlendNutrient',
+            //     })
+            //     .select(
+            //       '-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle'
+            //     );
+            // } else {
+            //   ingredients = await BlendIngredientModel.find({
+            //     _id: { $in: wikiIds },
+            //     category: data.ingredientCategory,
+            //     classType: {
+            //       $in: [
+            //         'Class - 1',
+            //         'Class - 2',
+            //         'Class - 3',
+            //         'Class - 4',
+            //         'Class - 5',
+            //       ],
+            //     },
+            //     blendStatus: { $in: ['Active', 'Review'] },
+            //   })
+            //     .populate({
+            //       path: 'blendNutrients.blendNutrientRefference',
+            //       model: 'BlendNutrient',
+            //     })
+            //     .select(
+            //       '-notBlendNutrients -bodies -imageCount -nutrientCount -seoKeywords -wikiCoverImages -varrient -isPublished -seoCanonicalURL -seoMetaDescription -seoSiteMapPriority -seoSlug -seoTitle -wikiDescription -wikiFeatureImage -wikiTitle'
+            //     )
+            //     .sort({
+            //       ingredientName: 1,
+            //     });
+            // }
+            healths = await health_1.default.find({
+                _id: { $in: wikiIds },
+                category: data.healthCategory,
+            });
+        }
+        return healths;
     }
     async filterIngredientByCategoryAndClassForWiki(data) {
         let ingredients;
@@ -1757,6 +1865,14 @@ __decorate([
     __metadata("design:paramtypes", [IngredientFilter_1.default]),
     __metadata("design:returntype", Promise)
 ], BlendIngredientResolver.prototype, "filterIngredientByCategoryAndClass", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [SimpleHealthData_1.default]) //BOTH:
+    ,
+    __param(0, (0, type_graphql_1.Arg)('data')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [HealthFilter_1.default]),
+    __metadata("design:returntype", Promise)
+], BlendIngredientResolver.prototype, "filterHealthByCategoryAndClassForWiki", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [BlendIngredientData_1.default]) //BOTH:
     ,

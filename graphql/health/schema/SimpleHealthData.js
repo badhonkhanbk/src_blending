@@ -13,6 +13,10 @@ const type_graphql_1 = require("type-graphql");
 let SimpleHealthData = class SimpleHealthData {
 };
 __decorate([
+    (0, type_graphql_1.Field)(type => type_graphql_1.ID),
+    __metadata("design:type", String)
+], SimpleHealthData.prototype, "_id", void 0);
+__decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], SimpleHealthData.prototype, "healthTopic", void 0);

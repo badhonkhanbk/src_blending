@@ -41,6 +41,7 @@ const health_1 = __importDefault(require("../../../models/health"));
 const HealthImpact_1 = __importDefault(require("../schemas/HealthImpact"));
 const HealthWiki_1 = __importDefault(require("../schemas/HealthWiki"));
 const EditHealthWiki_1 = __importDefault(require("./input-type/EditHealthWiki"));
+const AllWikiList_1 = __importDefault(require("../schemas/AllWikiList"));
 var WikiType;
 (function (WikiType) {
     WikiType["INGREDIENT"] = "Ingredient";
@@ -52,83 +53,90 @@ var WikiType;
     description: 'The types', // this one is optional
 });
 let WikiResolver = class WikiResolver {
-    /**
-     * Retrieves a list of nutrient information from the wiki.
-     *
-     * @param {String} userId - The ID of the user (optional)
-     * @param {number} limit - The maximum number of results to return (optional)
-     * @param {number} page - The page number to retrieve (optional)
-     * @param {String[]} ids - An array of nutrient IDs to retrieve (optional)
-     * @return {Object} An object containing the total number of nutrients and an array of nutrient data
-     */
-    async getNutrientWikiList(userId, limit, page, ids) {
-        if (!limit) {
-            limit = 20;
-        }
-        if (!page) {
-            page = 1;
-        }
-        let returnData = [];
-        let totalNutrients = 0;
-        let find = {};
-        if (ids.length > 0) {
-            totalNutrients = ids.length;
-            find = { _id: { $in: ids } };
-        }
-        else {
-            totalNutrients = await blendNutrient_1.default.countDocuments();
-        }
-        let blendNutrients = await blendNutrient_1.default.find(find)
-            .populate('category')
-            .lean()
-            .select('-uniqueNutrientId -related_sources -parent -bodies -wikiCoverImages')
-            .limit(limit)
-            .skip(limit * (page - 1));
-        for (let i = 0; i < blendNutrients.length; i++) {
-            let categoryName;
-            if (!blendNutrients[i].category) {
-                categoryName = null;
-            }
-            else {
-                //@ts-ignore
-                categoryName = blendNutrients[i].category.categoryName
-                    ? //@ts-ignore
-                        blendNutrients[i].category.categoryName
-                    : '';
-            }
-            let data = {
-                _id: blendNutrients[i]._id,
-                wikiTitle: blendNutrients[i].wikiTitle
-                    ? blendNutrients[i].wikiTitle
-                    : blendNutrients[i].nutrientName,
-                wikiDescription: blendNutrients[i].wikiDescription
-                    ? blendNutrients[i].wikiDescription
-                    : ' ',
-                type: 'Nutrient',
-                category: categoryName,
-                status: blendNutrients[i].status,
-                publishDate: new Date(),
-                description: '',
-                image: '',
-                publishedBy: 'g. braun',
-                isPublished: blendNutrients[i].isPublished,
-            };
-            if (userId) {
-                let comments = await wikiComment_1.default.find({
-                    entityId: blendNutrients[i]._id,
-                }).select('_id');
-                data.commentsCount = comments.length;
-            }
-            returnData.push(data);
-        }
-        return {
-            total: totalNutrients,
-            wikiList: returnData,
-        };
-    }
+    // /**
+    //  * Retrieves a list of nutrient information from the wiki.
+    //  *
+    //  * @param {String} userId - The ID of the user (optional)
+    //  * @param {number} limit - The maximum number of results to return (optional)
+    //  * @param {number} page - The page number to retrieve (optional)
+    //  * @param {String[]} ids - An array of nutrient IDs to retrieve (optional)
+    //  * @return {Object} An object containing the total number of nutrients and an array of nutrient data
+    //  */
+    // @Query(() => WikiListWithPagination)
+    // async getNutrientWikiList(
+    //   @Arg('userId', { nullable: true }) userId: String,
+    //   @Arg('limit', { nullable: true }) limit: number,
+    //   @Arg('page', { nullable: true }) page: number,
+    //   @Arg('ids', (type) => [String], { nullable: true })
+    //   ids: String[]
+    // ) {
+    //   if (!limit) {
+    //     limit = 20;
+    //   }
+    //   if (!page) {
+    //     page = 1;
+    //   }
+    //   let returnData: any = [];
+    //   let totalNutrients = 0;
+    //   let find = {};
+    //   if (ids.length > 0) {
+    //     totalNutrients = ids.length;
+    //     find = { _id: { $in: ids } };
+    //   } else {
+    //     totalNutrients = await BlendNutrientModel.countDocuments();
+    //   }
+    //   let blendNutrients = await BlendNutrientModel.find(find)
+    //     .populate('category')
+    //     .lean()
+    //     .select(
+    //       '-uniqueNutrientId -related_sources -parent -bodies -wikiCoverImages'
+    //     )
+    //     .limit(limit)
+    //     .skip(limit * (page - 1));
+    //   for (let i = 0; i < blendNutrients.length; i++) {
+    //     let categoryName;
+    //     if (!blendNutrients[i].category) {
+    //       categoryName = null;
+    //     } else {
+    //       //@ts-ignore
+    //       categoryName = blendNutrients[i].category.categoryName
+    //         ? //@ts-ignore
+    //           blendNutrients[i].category.categoryName
+    //         : '';
+    //     }
+    //     let data: any = {
+    //       _id: blendNutrients[i]._id,
+    //       wikiTitle: blendNutrients[i].wikiTitle
+    //         ? blendNutrients[i].wikiTitle
+    //         : blendNutrients[i].nutrientName,
+    //       wikiDescription: blendNutrients[i].wikiDescription
+    //         ? blendNutrients[i].wikiDescription
+    //         : ' ',
+    //       type: 'Nutrient',
+    //       category: categoryName,
+    //       status: blendNutrients[i].status,
+    //       publishDate: new Date(),
+    //       description: '',
+    //       image: '',
+    //       publishedBy: 'g. braun',
+    //       isPublished: blendNutrients[i].isPublished,
+    //     };
+    //     if (userId) {
+    //       let comments = await WikiCommentModel.find({
+    //         entityId: blendNutrients[i]._id,
+    //       }).select('_id');
+    //       data.commentsCount = comments.length;
+    //     }
+    //     returnData.push(data);
+    //   }
+    //   return {
+    //     total: totalNutrients,
+    //     wikiList: returnData,
+    //   };
+    // }
     async getNutrientWikiList2(userId, limit, page, ids) {
         if (!limit) {
-            limit = 20;
+            limit = 10;
         }
         if (!page) {
             page = 1;
@@ -184,84 +192,144 @@ let WikiResolver = class WikiResolver {
             wikiList: returnData,
         };
     }
-    /**
-     * Retrieves a list of ingredient information from the wiki.
-     *
-     * @param {String} userId - The ID of the user (optional).
-     * @param {number} limit - The maximum number of ingredients to retrieve (optional).
-     * @param {number} page - The page number of the results (optional).
-     * @param {String[]} ids - An array of ingredient IDs to retrieve (optional).
-     * @return {Object} An object containing the total number of ingredients and the list of ingredient data.
-     */
-    async getIngredientWikiList(userId, limit, page, ids) {
+    async getHealthWikiList(userId, limit, page, ids) {
         if (!limit) {
-            limit = 20;
+            limit = 10;
         }
         if (!page) {
             page = 1;
         }
         let returnData = [];
-        let totalIngredients = 0;
+        let totalHealth = 0;
         let find = {};
-        if (ids.length > 0) {
-            totalIngredients = ids.length;
-            find = { _id: { $in: ids } };
+        find = { type: 'Health', isPublished: true, isBookmarked: false };
+        if (ids && ids.length > 0) {
+            totalHealth = ids.length;
+            find = {
+                type: 'Health',
+                isPublished: true,
+                isBookmarked: false,
+                _id: { $in: ids },
+            };
         }
         else {
-            totalIngredients = await blendIngredient_1.default.countDocuments({});
+            totalHealth = await wiki_1.default.countDocuments({
+                type: 'Health',
+                isBookmarked: false,
+                isPublished: true,
+            });
         }
-        let blendIngredients = await blendIngredient_1.default.find(find)
-            .select('wikiTitle _id ingredientName wikiDescription category blendStatus createdAt portions featuredImage description isPublished')
+        let wikiHealths = await wiki_1.default.find(find)
+            .populate({
+            path: 'author',
+            select: 'firstName lastName displayName email profilePicture',
+        })
             .limit(limit)
             .skip(limit * (page - 1))
-            .lean();
-        for (let i = 0; i < blendIngredients.length; i++) {
-            let data = {
-                _id: blendIngredients[i]._id,
-                wikiTitle: blendIngredients[i].wikiTitle
-                    ? blendIngredients[i].wikiTitle
-                    : blendIngredients[i].ingredientName,
-                wikiDescription: blendIngredients[i].wikiDescription
-                    ? blendIngredients[i].wikiDescription
-                    : ' ',
-                type: 'Ingredient',
-                category: blendIngredients[i].category
-                    ? blendIngredients[i].category
-                    : '',
-                status: blendIngredients[i].blendStatus,
-                publishDate: blendIngredients[i].createdAt,
-                portions: blendIngredients[i].portions,
-                image: blendIngredients[i].featuredImage,
-                description: blendIngredients[i].description,
-                publishedBy: 'g. braun',
-                isPublished: blendIngredients[i].isPublished,
-            };
+            .sort({ wikiTitle: 1 });
+        for (let i = 0; i < wikiHealths.length; i++) {
+            let health = await health_1.default.findOne({
+                _id: wikiHealths[i]._id,
+            });
+            let data = wikiHealths[i];
             if (userId) {
                 let comments = await wikiComment_1.default.find({
-                    entityId: blendIngredients[i]._id,
+                    entityId: wikiHealths[i]._id,
                 }).select('_id');
-                let compare = await UserIngredientCompareList_1.default.findOne({
-                    userId: userId,
-                    ingredients: { $in: blendIngredients[i]._id },
-                }).select('_id');
-                if (compare) {
-                    data.hasInCompare = true;
-                }
-                else {
-                    data.hasInCompare = false;
-                }
                 data.commentsCount = comments.length;
             }
             returnData.push(data);
         }
         return {
-            total: totalIngredients,
+            total: totalHealth,
             wikiList: returnData,
         };
     }
+    // /**
+    //  * Retrieves a list of ingredient information from the wiki.
+    //  *
+    //  * @param {String} userId - The ID of the user (optional).
+    //  * @param {number} limit - The maximum number of ingredients to retrieve (optional).
+    //  * @param {number} page - The page number of the results (optional).
+    //  * @param {String[]} ids - An array of ingredient IDs to retrieve (optional).
+    //  * @return {Object} An object containing the total number of ingredients and the list of ingredient data.
+    //  */
+    // @Query(() => WikiListWithPagination)
+    // async getIngredientWikiList(
+    //   @Arg('userId', { nullable: true }) userId: String,
+    //   @Arg('limit', { nullable: true }) limit: number,
+    //   @Arg('page', { nullable: true }) page: number,
+    //   @Arg('ids', (type) => [String], { nullable: true })
+    //   ids: String[]
+    // ) {
+    //   if (!limit) {
+    //     limit = 20;
+    //   }
+    //   if (!page) {
+    //     page = 1;
+    //   }
+    //   let returnData: any = [];
+    //   let totalIngredients = 0;
+    //   let find = {};
+    //   if (ids.length > 0) {
+    //     totalIngredients = ids.length;
+    //     find = { _id: { $in: ids } };
+    //   } else {
+    //     totalIngredients = await BlendIngredientModel.countDocuments({});
+    //   }
+    //   let blendIngredients = await BlendIngredientModel.find(find)
+    //     .select(
+    //       'wikiTitle _id ingredientName wikiDescription category blendStatus createdAt portions featuredImage description isPublished'
+    //     )
+    //     .limit(limit)
+    //     .skip(limit * (page - 1))
+    //     .lean();
+    //   for (let i = 0; i < blendIngredients.length; i++) {
+    //     let data: any = {
+    //       _id: blendIngredients[i]._id,
+    //       wikiTitle: blendIngredients[i].wikiTitle
+    //         ? blendIngredients[i].wikiTitle
+    //         : blendIngredients[i].ingredientName,
+    //       wikiDescription: blendIngredients[i].wikiDescription
+    //         ? blendIngredients[i].wikiDescription
+    //         : ' ',
+    //       type: 'Ingredient',
+    //       category: blendIngredients[i].category
+    //         ? blendIngredients[i].category
+    //         : '',
+    //       status: blendIngredients[i].blendStatus,
+    //       publishDate: blendIngredients[i].createdAt,
+    //       portions: blendIngredients[i].portions,
+    //       image: blendIngredients[i].featuredImage,
+    //       description: blendIngredients[i].description,
+    //       publishedBy: 'g. braun',
+    //       isPublished: blendIngredients[i].isPublished,
+    //     };
+    //     if (userId) {
+    //       let comments = await WikiCommentModel.find({
+    //         entityId: blendIngredients[i]._id,
+    //       }).select('_id');
+    //       let compare = await UserIngredientsCompareModel.findOne({
+    //         userId: userId,
+    //         ingredients: { $in: blendIngredients[i]._id },
+    //       }).select('_id');
+    //       if (compare) {
+    //         data.hasInCompare = true;
+    //       } else {
+    //         data.hasInCompare = false;
+    //       }
+    //       data.commentsCount = comments.length;
+    //     }
+    //     returnData.push(data);
+    //   }
+    //   return {
+    //     total: totalIngredients,
+    //     wikiList: returnData,
+    //   };
+    // }
     async getIngredientWikiList2(userId, limit, page, ids) {
         if (!limit) {
-            limit = 20;
+            limit = 10;
         }
         if (!page) {
             page = 1;
@@ -332,83 +400,21 @@ let WikiResolver = class WikiResolver {
      * @param {String} userId - The ID of the user. Nullable.
      * @return {Array} - An array of wiki items.
      */
-    async getWikiList(userId) {
-        let returnData = [];
-        let blendNutrients = await blendNutrient_1.default.find({
-            isPublished: true,
-        })
-            .lean()
-            .select('-uniqueNutrientId -related_sources -parent -bodies -wikiCoverImages');
-        for (let i = 0; i < blendNutrients.length; i++) {
-            let data = {
-                _id: blendNutrients[i]._id,
-                wikiTitle: blendNutrients[i].wikiTitle
-                    ? blendNutrients[i].wikiTitle
-                    : blendNutrients[i].nutrientName,
-                wikiDescription: blendNutrients[i].wikiDescription
-                    ? blendNutrients[i].wikiDescription
-                    : ' ',
-                type: 'Nutrient',
-                status: blendNutrients[i].status,
-                publishDate: new Date(),
-                description: '',
-                image: '',
-                publishedBy: 'g. braun',
-                isPublished: blendNutrients[i].isPublished,
-            };
-            if (userId) {
-                let comments = await wikiComment_1.default.find({
-                    entityId: blendNutrients[i]._id,
-                }).select('_id');
-                data.commentsCount = comments.length;
-            }
-            returnData.push(data);
+    async getWikiList(userId, limit, page, ids) {
+        if (!limit) {
+            limit = 10;
         }
-        let blendIngredients = await blendIngredient_1.default.find({
-            isPublished: true,
-        })
-            .select('wikiTitle _id ingredientName wikiDescription category blendStatus createdAt portions featuredImage description isPublished')
-            .lean();
-        for (let i = 0; i < blendIngredients.length; i++) {
-            let data = {
-                _id: blendIngredients[i]._id,
-                wikiTitle: blendIngredients[i].wikiTitle
-                    ? blendIngredients[i].wikiTitle
-                    : blendIngredients[i].ingredientName,
-                wikiDescription: blendIngredients[i].wikiDescription
-                    ? blendIngredients[i].wikiDescription
-                    : ' ',
-                type: 'Ingredient',
-                category: blendIngredients[i].category
-                    ? blendIngredients[i].category
-                    : '',
-                status: blendIngredients[i].blendStatus,
-                publishDate: blendIngredients[i].createdAt,
-                portions: blendIngredients[i].portions,
-                image: blendIngredients[i].featuredImage,
-                description: blendIngredients[i].description,
-                publishedBy: 'g. braun',
-                isPublished: blendIngredients[i].isPublished,
-            };
-            if (userId) {
-                let comments = await wikiComment_1.default.find({
-                    entityId: blendIngredients[i]._id,
-                }).select('_id');
-                let compare = await UserIngredientCompareList_1.default.findOne({
-                    userId: userId,
-                    ingredients: { $in: blendIngredients[i]._id },
-                });
-                if (compare) {
-                    data.hasInCompare = true;
-                }
-                else {
-                    data.hasInCompare = false;
-                }
-                data.commentsCount = comments.length;
-            }
-            returnData.push(data);
+        if (!page) {
+            page = 1;
         }
-        return returnData;
+        let ingredientWikiList = this.getIngredientWikiList2(userId, limit, page, []);
+        let healthWikiList = this.getHealthWikiList(userId, limit, page, []);
+        let nutrientWikiList = this.getNutrientWikiList2(userId, limit, page, []);
+        return {
+            ingredientWikiList: ingredientWikiList,
+            healthWikiList: healthWikiList,
+            nutrientWikiList: nutrientWikiList,
+        };
     }
     async getWikiList2(userId) {
         let returnData = [];
@@ -717,6 +723,8 @@ let WikiResolver = class WikiResolver {
     //   return returnData;
     // }
     async getAllIngredientsBasedOnNutrition2(data, userId) {
+        let wikis = await wiki_1.default.find({ isPublished: true }).select('_id');
+        let wikiIds = wikis.map((wiki) => wiki._id);
         let wiki = await wiki_1.default.findOne({
             _id: data.nutritionID,
         })
@@ -742,6 +750,7 @@ let WikiResolver = class WikiResolver {
             let ingredients;
             if (data.category === 'All') {
                 ingredients = await blendIngredient_1.default.find({
+                    _id: { $in: wikiIds },
                     classType: 'Class - 1',
                     blendStatus: 'Active',
                 })
@@ -750,6 +759,7 @@ let WikiResolver = class WikiResolver {
             }
             else {
                 ingredients = await blendIngredient_1.default.find({
+                    _id: { $in: wikiIds },
                     classType: 'Class - 1',
                     blendStatus: 'Active',
                     category: data.category,
@@ -1651,7 +1661,7 @@ let WikiResolver = class WikiResolver {
             filter.type = { $in: data.wikiType };
         }
         let ingredientFilter = {};
-        let nutrientFilter = {};
+        let healthFilter = {};
         let allElements = [];
         if (data.includeWikiIds && data.includeWikiIds.length > 0) {
             ingredientFilter._id = { $in: data.includeWikiIds };
@@ -1763,6 +1773,8 @@ let WikiResolver = class WikiResolver {
         }
         let blendNutrients = [];
         let includeNutrientIds = [];
+        let healthDatas = [];
+        let includeHealthIds = [];
         if (data.includeWikiIds && data.includeWikiIds.length > 0) {
             blendNutrients = await blendNutrient_1.default.find({
                 _id: { $in: data.includeWikiIds },
@@ -1773,7 +1785,17 @@ let WikiResolver = class WikiResolver {
                 _id: { $in: includeNutrientIds },
             }).select('_id');
             wikiIds = wikiIds.concat(blendNutrientIds);
+            healthDatas = await health_1.default.find({
+                _id: { $in: data.includeWikiIds },
+            }).select('_id');
+            let healthIds = healthDatas.map((healthData) => healthData._id);
+            includeHealthIds = healthIds;
+            healthDatas = await health_1.default.find({
+                _id: { $in: includeHealthIds },
+            }).select('_id');
+            wikiIds = wikiIds.concat(healthIds);
         }
+        console.log(wikiIds);
         if (data.nutrientCategory && data.nutrientCategory.length > 0) {
             let categories = [];
             for (let i = 0; i < data.nutrientCategory.length; i++) {
@@ -1810,6 +1832,24 @@ let WikiResolver = class WikiResolver {
             let blendNutrientIds = blendNutrients.map((blendNutrient) => blendNutrient._id);
             wikiIds = wikiIds.concat(blendNutrientIds);
         }
+        //
+        let healths = [];
+        if (data.healthCategory && data.healthCategory.length > 0) {
+            if (data.includeWikiIds && data.includeWikiIds.length > 0) {
+                healths = await health_1.default.find({
+                    _id: { $in: includeHealthIds },
+                    category: { $in: data.healthCategory },
+                }).select('_id');
+            }
+            else {
+                healths = await health_1.default.find({
+                    category: { $in: data.healthCategory },
+                }).select('_id');
+            }
+            let healthIds = healths.map((health) => health._id);
+            wikiIds = wikiIds.concat(healthIds);
+        }
+        //
         if (wikiIds.length > 0) {
             // console.log(wikiIds);
             filter2._id = { $in: wikiIds };
@@ -2081,16 +2121,6 @@ let WikiResolver = class WikiResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default),
-    __param(0, (0, type_graphql_1.Arg)('userId', { nullable: true })),
-    __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('ids', (type) => [String], { nullable: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number, Number, Array]),
-    __metadata("design:returntype", Promise)
-], WikiResolver.prototype, "getNutrientWikiList", null);
-__decorate([
     (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default) //TODO
     ,
     __param(0, (0, type_graphql_1.Arg)('userId', { nullable: true })),
@@ -2110,7 +2140,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Number, Number, Array]),
     __metadata("design:returntype", Promise)
-], WikiResolver.prototype, "getIngredientWikiList", null);
+], WikiResolver.prototype, "getHealthWikiList", null);
 __decorate([
     (0, type_graphql_1.Query)(() => WikiListWithPagination_1.default) //TODO
     ,
@@ -2123,10 +2153,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getIngredientWikiList2", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Wikilist_1.default]),
+    (0, type_graphql_1.Query)(() => AllWikiList_1.default),
     __param(0, (0, type_graphql_1.Arg)('userId', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('ids', (type) => [String], { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Number, Number, Array]),
     __metadata("design:returntype", Promise)
 ], WikiResolver.prototype, "getWikiList", null);
 __decorate([
