@@ -122,7 +122,13 @@ let SpaceResolver = class SpaceResolver {
         return editedSpace;
     }
     async getSpaceById(spaceId) {
-        let space = await space_1.default.findById(spaceId);
+        let space = await space_1.default.findById(spaceId)
+            .populate('members.userId')
+            .populate('facilitators.userId')
+            .populate('facilitators.invitedBy')
+            .populate('members.invitedBy')
+            .populate('createdBy')
+            .lean();
         return space;
     }
     async util() {
