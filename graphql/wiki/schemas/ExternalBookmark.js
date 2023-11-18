@@ -32,15 +32,3 @@ ExternalBookmark = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], ExternalBookmark);
 exports.default = ExternalBookmark;
-// entityId: {
-//   type: Schema.Types.ObjectId,
-//   refPath: 'onModel',
-//   required: true,
-// },
-// onModel: {
-//   type: String,
-//   required: true,
-//   enum: ['BlendIngredient', 'BlendNutrient'],
-// },
-// link: String,
-// type: String,

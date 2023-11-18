@@ -28,6 +28,12 @@ const mongoose_1 = __importDefault(require("mongoose"));
 // import SpaceBlog from '../schema/spaceBlog/SpaceBlog';
 // import slugify from 'slugify';
 let SpaceBlogResolver = class SpaceBlogResolver {
+    /**
+     * Creates a new space archive.
+     *
+     * @param {CreateNewSpaceArchive} spaceArchiveData - The data for creating a new space archive.
+     * @return {Promise<SpaceArchiveModel>} The newly created space archive, or an AppError if something went wrong.
+     */
     async createNewSpaceArchive(data) {
         let spaceArchive = await spaceArchive_1.default.create(data);
         if (spaceArchive) {
@@ -70,6 +76,13 @@ let SpaceBlogResolver = class SpaceBlogResolver {
         }
         return spaceArchive;
     }
+    /**
+     * Adds or removes blogs to/from a space archive.
+     *
+     * @param {String} archiveId - The ID of the space archive.
+     * @param {[String]} spaceBlogIds - An array of blog IDs to add or remove.
+     * @return {Promise<String>} A string indicating the completion status.
+     */
     async addOrRemoveBlogsToASpaceArchive(archiveId, spaceBlogIds) {
         // check if the blog is already in the list of archived blogs for this space archive
         const spaceArchive = await spaceArchive_1.default.findById(archiveId);
@@ -95,6 +108,12 @@ let SpaceBlogResolver = class SpaceBlogResolver {
         });
         return 'done';
     }
+    /**
+     * Deletes a space archive.
+     *
+     * @param {String} archiveId - The ID of the archive to be deleted.
+     * @return {Promise<string>} A string indicating the operation was completed.
+     */
     async deleteSpaceArchive(archiveId) {
         let spaceArchive = await spaceArchive_1.default.findById(archiveId);
         if (!spaceArchive) {
@@ -103,6 +122,14 @@ let SpaceBlogResolver = class SpaceBlogResolver {
         await spaceArchive.remove();
         return 'done';
     }
+    /**
+     * Edits the name or icon of a space archive.
+     *
+     * @param {String} archiveName - The new name of the archive. Can be null.
+     * @param {String} icon - The new icon of the archive. Can be null.
+     * @param {String} archiveId - The ID of the archive to edit.
+     * @return {Promise<SpaceArchiveModel>} The updated space archive.
+     */
     async editSpaceArchiveNameOrIcon(archiveName, icon, archiveId) {
         let spaceArchive = await spaceArchive_1.default.findById(archiveId);
         if (!spaceArchive) {
@@ -127,7 +154,14 @@ let SpaceBlogResolver = class SpaceBlogResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => SimpleSpaceArchive_1.default),
+    (0, type_graphql_1.Mutation)(() => SimpleSpaceArchive_1.default)
+    /**
+     * Creates a new space archive.
+     *
+     * @param {CreateNewSpaceArchive} spaceArchiveData - The data for creating a new space archive.
+     * @return {Promise<SpaceArchiveModel>} The newly created space archive, or an AppError if something went wrong.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceArchiveData', (type) => CreateNewSpaceArchive_1.default)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewSpaceArchive_1.default]),
@@ -157,7 +191,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SpaceBlogResolver.prototype, "getASpaceArchiveById", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Adds or removes blogs to/from a space archive.
+     *
+     * @param {String} archiveId - The ID of the space archive.
+     * @param {[String]} spaceBlogIds - An array of blog IDs to add or remove.
+     * @return {Promise<String>} A string indicating the completion status.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('archiveId')),
     __param(1, (0, type_graphql_1.Arg)('spaceBlogIds', (type) => [String])),
     __metadata("design:type", Function),
@@ -165,14 +207,30 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SpaceBlogResolver.prototype, "addOrRemoveBlogsToASpaceArchive", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Deletes a space archive.
+     *
+     * @param {String} archiveId - The ID of the archive to be deleted.
+     * @return {Promise<string>} A string indicating the operation was completed.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('archiveId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceBlogResolver.prototype, "deleteSpaceArchive", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => SimpleSpaceArchive_1.default),
+    (0, type_graphql_1.Mutation)(() => SimpleSpaceArchive_1.default)
+    /**
+     * Edits the name or icon of a space archive.
+     *
+     * @param {String} archiveName - The new name of the archive. Can be null.
+     * @param {String} icon - The new icon of the archive. Can be null.
+     * @param {String} archiveId - The ID of the archive to edit.
+     * @return {Promise<SpaceArchiveModel>} The updated space archive.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('archiveName', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('icon', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('archiveId')),

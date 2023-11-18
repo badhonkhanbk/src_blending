@@ -276,7 +276,6 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         })
             .limit(limit)
             .skip(skip)
-            .sort({ createdAt: 1 })
             .lean();
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         // console.log(returnRecipe[0].recipeId);
