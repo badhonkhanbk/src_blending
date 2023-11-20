@@ -28,7 +28,6 @@
     "graphql": "^15.5.1",
     "graphql-type-json": "^0.3.2",
     "mongoose": "^6.0.2",
-    "mongoose-autopopulate": "^0.15.0",
     "morgan": "^1.10.0",
     "nodemailer": "^6.6.5",
     "randomstring": "^1.2.1",
