@@ -5,7 +5,6 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "start:prod": "set NODE_ENV=production&nodemon server.js",
     "debug": "ndb server.js"
   },
   "author": "abir azim badhon",
