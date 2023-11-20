@@ -24,10 +24,22 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const EditSpace_1 = __importDefault(require("./input-type/EditSpace"));
 const addOrRemoveFacilitators_1 = __importDefault(require("../util/addOrRemoveFacilitators"));
 let SpaceResolver = class SpaceResolver {
+    /**
+     * Create a new space.
+     *
+     * @param {CreateNewSpace} spaceData - the data for the new space
+     * @return {string} the ID of the newly created space
+     */
     async createNewSpace(spaceData) {
         let space = await space_1.default.create(spaceData);
         return space._id;
     }
+    /**
+     * Retrieves all spaces based on the provided userId.
+     *
+     * @param {string} userId - The ID of the user to retrieve spaces for. Can be nullable.
+     * @return {Promise<any[]>} An array of spaces that match the provided userId.
+     */
     async getAllSpaces(userId) {
         let find = {};
         if (userId) {
@@ -43,6 +55,13 @@ let SpaceResolver = class SpaceResolver {
             .lean();
         return spaces;
     }
+    /**
+     * Joins a space by adding a user to the members list.
+     *
+     * @param {string} spaceId - The ID of the space.
+     * @param {string} userId - The ID of the user.
+     * @return {Promise<string | AppError>} Returns a promise that resolves to either a success message or an AppError.
+     */
     async joinASpace(spaceId, userId) {
         let space = await space_1.default.findOne({ _id: spaceId });
         if (!space) {
@@ -72,6 +91,12 @@ let SpaceResolver = class SpaceResolver {
         }
         return 'done';
     }
+    /**
+     * Edits a space.
+     *
+     * @param {EditSpace} data - the data to edit the space
+     * @return {Promise<Space>} the edited space
+     */
     async editASpace(data) {
         var _a, _b;
         let space = await space_1.default.findOne({ _id: data.editId });
@@ -121,6 +146,12 @@ let SpaceResolver = class SpaceResolver {
         });
         return editedSpace;
     }
+    /**
+     * Retrieves a space by its ID.
+     *
+     * @param {string} spaceId - The ID of the space.
+     * @return {Promise<Space>} The space object.
+     */
     async getSpaceById(spaceId) {
         let space = await space_1.default.findById(spaceId)
             .populate('members.userId')
@@ -131,27 +162,55 @@ let SpaceResolver = class SpaceResolver {
             .lean();
         return space;
     }
+    /**
+     * A description of the entire function.
+     *
+     * @param {type} paramName - description of parameter
+     * @return {type} description of return value
+     */
     async util() {
         await memberModel_1.default.updateMany({}, { facilitatorsAccess: [] });
         return 'done';
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Create a new space.
+     *
+     * @param {CreateNewSpace} spaceData - the data for the new space
+     * @return {string} the ID of the newly created space
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceData', (type) => CreateSpace_1.default)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateSpace_1.default]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "createNewSpace", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Space_1.default]),
+    (0, type_graphql_1.Query)(() => [Space_1.default])
+    /**
+     * Retrieves all spaces based on the provided userId.
+     *
+     * @param {string} userId - The ID of the user to retrieve spaces for. Can be nullable.
+     * @return {Promise<any[]>} An array of spaces that match the provided userId.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('userId', (type) => type_graphql_1.ID, { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getAllSpaces", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Joins a space by adding a user to the members list.
+     *
+     * @param {string} spaceId - The ID of the space.
+     * @param {string} userId - The ID of the user.
+     * @return {Promise<string | AppError>} Returns a promise that resolves to either a success message or an AppError.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceId', (type) => type_graphql_1.ID)),
     __param(1, (0, type_graphql_1.Arg)('userId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
@@ -159,21 +218,42 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "joinASpace", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Space_1.default),
+    (0, type_graphql_1.Mutation)(() => Space_1.default)
+    /**
+     * Edits a space.
+     *
+     * @param {EditSpace} data - the data to edit the space
+     * @return {Promise<Space>} the edited space
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditSpace_1.default]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "editASpace", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => Space_1.default),
+    (0, type_graphql_1.Query)(() => Space_1.default)
+    /**
+     * Retrieves a space by its ID.
+     *
+     * @param {string} spaceId - The ID of the space.
+     * @return {Promise<Space>} The space object.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getSpaceById", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => String)
+    /**
+     * A description of the entire function.
+     *
+     * @param {type} paramName - description of parameter
+     * @return {type} description of return value
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

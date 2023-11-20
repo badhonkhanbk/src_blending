@@ -46,6 +46,13 @@ let SpaceBlogResolver = class SpaceBlogResolver {
             return new AppError_1.default('Something went wrong', 500);
         }
     }
+    /**
+     * Add a new blog to the space archive.
+     *
+     * @param {String} archiveId - the ID of the archive
+     * @param {String} spaceBlogId - the ID of the space blog
+     * @return {String} success message if the blog is added successfully
+     */
     async addNewBlogToSpaceArchive(archiveId, spaceBlogId) {
         let spaceArchive = await spaceArchive_1.default.findOne({ _id: archiveId });
         if (!spaceArchive) {
@@ -168,7 +175,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SpaceBlogResolver.prototype, "createNewSpaceArchive", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Add a new blog to the space archive.
+     *
+     * @param {String} archiveId - the ID of the archive
+     * @param {String} spaceBlogId - the ID of the space blog
+     * @return {String} success message if the blog is added successfully
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('archiveId')),
     __param(1, (0, type_graphql_1.Arg)('spaceBlogId')),
     __metadata("design:type", Function),

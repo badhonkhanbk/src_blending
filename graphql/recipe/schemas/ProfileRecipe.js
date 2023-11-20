@@ -20,6 +20,10 @@ const RecipeVersion_1 = __importDefault(require("./RecipeVersion"));
 let ProfileRecipe = class ProfileRecipe {
 };
 __decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], ProfileRecipe.prototype, "_id", void 0);
+__decorate([
     (0, type_graphql_1.Field)((type) => SimpleRecipe_1.default, { nullable: true }),
     __metadata("design:type", SimpleRecipe_1.default)
 ], ProfileRecipe.prototype, "recipeId", void 0);

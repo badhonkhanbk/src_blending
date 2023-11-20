@@ -24,6 +24,12 @@ const SimpeSpaceRoom_1 = __importDefault(require("../schema/spaceRoom/SimpeSpace
 const SpaceRoom_1 = __importDefault(require("../schema/spaceRoom/SpaceRoom"));
 const EditSpaceRoom_1 = __importDefault(require("./input-type/spaceRoom/EditSpaceRoom"));
 let SpaceResolver = class SpaceResolver {
+    /**
+     * Creates a new space room.
+     *
+     * @param {CreateNewSpaceRoom} spaceRoomData - The data for creating a new space room.
+     * @return {Promise<SpaceRoom>} The newly created space room.
+     */
     async createNewSpaceRoom(data) {
         let space = await space_1.default.findOne({ _id: data.spaceId });
         if (!space) {
@@ -33,10 +39,22 @@ let SpaceResolver = class SpaceResolver {
         console.log(spaceRoom);
         return spaceRoom;
     }
+    /**
+     * Retrieves all space rooms for the given space ID.
+     *
+     * @param {ID} spaceId - The ID of the space
+     * @return {Promise<SpaceRoom[]>} An array of space rooms
+     */
     async getAllSpaceRooms(spaceId) {
         let spaceRooms = await spaceRoom_1.default.find({ spaceId: spaceId }).populate('createdBy');
         return spaceRooms;
     }
+    /**
+     * Retrieves a space room by its ID.
+     *
+     * @param {string} spaceRoomId - The ID of the space room.
+     * @return {Promise<SpaceRoom | AppError>} The space room object if found, or an AppError if not found.
+     */
     async getSpaceRoomById(spaceRoomId) {
         let spaceRoom = await spaceRoom_1.default.findById(spaceRoomId).populate('createdBy');
         if (!spaceRoom) {
@@ -44,6 +62,12 @@ let SpaceResolver = class SpaceResolver {
         }
         return spaceRoom;
     }
+    /**
+     * Deletes a space room.
+     *
+     * @param {string} spaceRoomId - The ID of the space room to delete.
+     * @return {Promise<string>} A promise that resolves to 'done' if the space room was successfully deleted.
+     */
     async deleteSpaceRoom(spaceRoomId) {
         let spaceRoom = await spaceRoom_1.default.findById(spaceRoomId);
         if (!spaceRoom) {
@@ -52,41 +76,82 @@ let SpaceResolver = class SpaceResolver {
         await spaceRoom.remove();
         return 'done';
     }
+    /**
+     * Edits a space room.
+     *
+     * @param {EditSpaceRoom} data - The data used to edit the space room.
+     * @return {Promise<string>} A string indicating success.
+     */
     async editASpaceRoom(data) {
         await spaceRoom_1.default.findOneAndUpdate({ _id: data.editId }, data.editableObject);
         return 'Success';
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => SimpeSpaceRoom_1.default),
+    (0, type_graphql_1.Mutation)(() => SimpeSpaceRoom_1.default)
+    /**
+     * Creates a new space room.
+     *
+     * @param {CreateNewSpaceRoom} spaceRoomData - The data for creating a new space room.
+     * @return {Promise<SpaceRoom>} The newly created space room.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceRoomData', (type) => createNewSpaceRoom_1.default)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [createNewSpaceRoom_1.default]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "createNewSpaceRoom", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [SpaceRoom_1.default]),
+    (0, type_graphql_1.Query)(() => [SpaceRoom_1.default])
+    /**
+     * Retrieves all space rooms for the given space ID.
+     *
+     * @param {ID} spaceId - The ID of the space
+     * @return {Promise<SpaceRoom[]>} An array of space rooms
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getAllSpaceRooms", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => SpaceRoom_1.default),
+    (0, type_graphql_1.Query)(() => SpaceRoom_1.default)
+    /**
+     * Retrieves a space room by its ID.
+     *
+     * @param {string} spaceRoomId - The ID of the space room.
+     * @return {Promise<SpaceRoom | AppError>} The space room object if found, or an AppError if not found.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceRoomId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getSpaceRoomById", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Deletes a space room.
+     *
+     * @param {string} spaceRoomId - The ID of the space room to delete.
+     * @return {Promise<string>} A promise that resolves to 'done' if the space room was successfully deleted.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceRoomId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "deleteSpaceRoom", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Edits a space room.
+     *
+     * @param {EditSpaceRoom} data - The data used to edit the space room.
+     * @return {Promise<string>} A string indicating success.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('EditSpaceRoom')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditSpaceRoom_1.default]),
