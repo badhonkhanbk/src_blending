@@ -2,12 +2,12 @@
   "name": "user",
   "version": "1.0.0",
   "description": "blending recipe",
-  "main": "server.ts",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon server.ts",
-    "start:prod": "set NODE_ENV=production&nodemon server.ts",
-    "build": "tsc --skipLibCheck && node ./dist/server.js",
-    "debug": "ndb server.ts"
+    "start:prod": "set NODE_ENV=production&nodemon server.js",
+    "build": "tsc --skipLibCheck && node server.js",
+    "debug": "ndb server.js"
   },
   "author": "abir azim badhon",
   "license": "ISC",
