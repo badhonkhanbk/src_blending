@@ -23,6 +23,7 @@ const Space_1 = __importDefault(require("../schema/Space"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const EditSpace_1 = __importDefault(require("./input-type/EditSpace"));
 const addOrRemoveFacilitators_1 = __importDefault(require("../util/addOrRemoveFacilitators"));
+const UsersWithPagination_1 = __importDefault(require("../schema/UsersWithPagination"));
 let SpaceResolver = class SpaceResolver {
     /**
      * Create a new space.
@@ -162,6 +163,51 @@ let SpaceResolver = class SpaceResolver {
             .lean();
         return space;
     }
+    async getAllMembersOfASpace(spaceId, forFacilitators, page, limit) {
+        if (!page) {
+            page = 1;
+        }
+        if (!limit) {
+            limit = 10;
+        }
+        let skip = limit * (page - 1);
+        let space = await space_1.default.findOne({ _id: spaceId });
+        if (!space) {
+            return new AppError_1.default('space not found', 404);
+        }
+        if (!forFacilitators) {
+            let membersId = space.members.map((member) => member.userId);
+            let members = await memberModel_1.default.find({
+                _id: { $in: membersId },
+            })
+                .select('image displayName firstName lastName email')
+                .skip(skip)
+                .limit(limit)
+                .lean();
+            return {
+                users: members,
+                total: await memberModel_1.default.countDocuments({
+                    _id: { $in: membersId },
+                }),
+            };
+        }
+        else {
+            let membersId = space.facilitators.map((facilitator) => facilitator.userId);
+            let members = await memberModel_1.default.find({
+                _id: { $in: membersId },
+            })
+                .select('image displayName firstName lastName email')
+                .skip(skip)
+                .limit(limit)
+                .lean();
+            return {
+                users: members,
+                total: await memberModel_1.default.countDocuments({
+                    _id: { $in: membersId },
+                }),
+            };
+        }
+    }
     /**
      * A description of the entire function.
      *
@@ -245,6 +291,17 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getSpaceById", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => UsersWithPagination_1.default),
+    __param(0, (0, type_graphql_1.Arg)('spaceId')),
+    __param(1, (0, type_graphql_1.Arg)('forFacilitators', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        Boolean, Number, Number]),
+    __metadata("design:returntype", Promise)
+], SpaceResolver.prototype, "getAllMembersOfASpace", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String)
     /**

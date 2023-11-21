@@ -27,7 +27,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 // import EditSpaceBlog from './input-type/spaceBlog/EditSPaceBlog';
 // import SpaceBlog from '../schema/spaceBlog/SpaceBlog';
 // import slugify from 'slugify';
-let SpaceBlogResolver = class SpaceBlogResolver {
+let SpaceArchiveResolver = class SpaceArchiveResolver {
     /**
      * Creates a new space archive.
      *
@@ -173,7 +173,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CreateNewSpaceArchive_1.default]),
     __metadata("design:returntype", Promise)
-], SpaceBlogResolver.prototype, "createNewSpaceArchive", null);
+], SpaceArchiveResolver.prototype, "createNewSpaceArchive", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String)
     /**
@@ -190,21 +190,21 @@ __decorate([
     __metadata("design:paramtypes", [String,
         String]),
     __metadata("design:returntype", Promise)
-], SpaceBlogResolver.prototype, "addNewBlogToSpaceArchive", null);
+], SpaceArchiveResolver.prototype, "addNewBlogToSpaceArchive", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [SimpleSpaceArchive_1.default]),
     __param(0, (0, type_graphql_1.Arg)('spaceId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], SpaceBlogResolver.prototype, "getAllSpaceArchives", null);
+], SpaceArchiveResolver.prototype, "getAllSpaceArchives", null);
 __decorate([
     (0, type_graphql_1.Query)(() => populatedSpaceArchive_1.default),
     __param(0, (0, type_graphql_1.Arg)('spaceArchiveId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], SpaceBlogResolver.prototype, "getASpaceArchiveById", null);
+], SpaceArchiveResolver.prototype, "getASpaceArchiveById", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String)
     /**
@@ -220,7 +220,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Array]),
     __metadata("design:returntype", Promise)
-], SpaceBlogResolver.prototype, "addOrRemoveBlogsToASpaceArchive", null);
+], SpaceArchiveResolver.prototype, "addOrRemoveBlogsToASpaceArchive", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => String)
     /**
@@ -234,7 +234,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], SpaceBlogResolver.prototype, "deleteSpaceArchive", null);
+], SpaceArchiveResolver.prototype, "deleteSpaceArchive", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => SimpleSpaceArchive_1.default)
     /**
@@ -254,8 +254,8 @@ __decorate([
         String,
         String]),
     __metadata("design:returntype", Promise)
-], SpaceBlogResolver.prototype, "editSpaceArchiveNameOrIcon", null);
-SpaceBlogResolver = __decorate([
+], SpaceArchiveResolver.prototype, "editSpaceArchiveNameOrIcon", null);
+SpaceArchiveResolver = __decorate([
     (0, type_graphql_1.Resolver)()
-], SpaceBlogResolver);
-exports.default = SpaceBlogResolver;
+], SpaceArchiveResolver);
+exports.default = SpaceArchiveResolver;
