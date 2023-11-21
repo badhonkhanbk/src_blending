@@ -23,7 +23,7 @@ const Space_1 = __importDefault(require("../schema/Space"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const EditSpace_1 = __importDefault(require("./input-type/EditSpace"));
 const addOrRemoveFacilitators_1 = __importDefault(require("../util/addOrRemoveFacilitators"));
-const UsersWithPagination_1 = __importDefault(require("../schema/UsersWithPagination"));
+const MembersWithPagination_1 = __importDefault(require("../schema/MembersWithPagination"));
 let SpaceResolver = class SpaceResolver {
     /**
      * Create a new space.
@@ -292,7 +292,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getSpaceById", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => UsersWithPagination_1.default),
+    (0, type_graphql_1.Query)(() => MembersWithPagination_1.default),
     __param(0, (0, type_graphql_1.Arg)('spaceId')),
     __param(1, (0, type_graphql_1.Arg)('forFacilitators', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
