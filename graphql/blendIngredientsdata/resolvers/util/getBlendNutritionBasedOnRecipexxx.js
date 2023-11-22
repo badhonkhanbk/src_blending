@@ -104,7 +104,7 @@ ingredientsInfo) {
     })
         .sort({ rank: 1 })
         .lean();
-    console.log(ingredients.length);
+    let nutrients = [];
     for (let i = 0; i < ingredients.length; i++) {
         // console.log(ingredients[i]);
         let value = data.filter(
@@ -117,10 +117,6 @@ ingredientsInfo) {
             ingredients[i].blendNutrients[j].value =
                 (+ingredients[i].blendNutrients[j].value / 100) * value;
         }
-    }
-    console.log(222);
-    let nutrients = [];
-    for (let i = 0; i < ingredients.length; i++) {
         let temp = ingredients[i];
         temp.blendNutrients = temp.blendNutrients.filter(
         // @ts-ignore
@@ -129,6 +125,17 @@ ingredientsInfo) {
             +bn.blendNutrientRefference.min_measure < +bn.value);
         nutrients.push(...temp.blendNutrients);
     }
+    // for (let i = 0; i < ingredients.length; i++) {
+    //   let temp = ingredients[i];
+    //   temp.blendNutrients = temp.blendNutrients.filter(
+    //     // @ts-ignore
+    //     (bn) =>
+    //       bn.value !== 0 &&
+    //       bn.value > 0.5 &&
+    //       +bn.blendNutrientRefference.min_measure < +bn.value
+    //   );
+    //   nutrients.push(...temp.blendNutrients);
+    // }
     //@ts-ignore
     let returnNutrients = nutrients.reduce((acc, nutrient) => {
         //@ts-ignore
