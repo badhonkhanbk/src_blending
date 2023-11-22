@@ -161,7 +161,6 @@ ingredientsInfo) {
     for (let i = 0; i < blendNutrientCategories.length; i++) {
         obj[blendNutrientCategories[i].categoryName] = await (0, getTopLevelChilds_1.default)(blendNutrientCategories[i]._id, returnNutrients);
     }
-    console.log('innerObj', obj);
     return JSON.stringify(obj);
 }
 exports.default = getBlendNutritionBasedOnRecipexxx;

@@ -42,6 +42,8 @@ const HealthImpact_1 = __importDefault(require("../schemas/HealthImpact"));
 const HealthWiki_1 = __importDefault(require("../schemas/HealthWiki"));
 const EditHealthWiki_1 = __importDefault(require("./input-type/EditHealthWiki"));
 const AllWikiList_1 = __importDefault(require("../schemas/AllWikiList"));
+const getBlendNutritionBasedOnRecipexxx_1 = __importDefault(require("../../blendIngredientsdata/resolvers/util/getBlendNutritionBasedOnRecipexxx"));
+const getGlAndNetCarbs2_1 = __importDefault(require("../../blendIngredientsdata/resolvers/util/getGlAndNetCarbs2"));
 var WikiType;
 (function (WikiType) {
     WikiType["INGREDIENT"] = "Ingredient";
@@ -544,6 +546,13 @@ let WikiResolver = class WikiResolver {
         wiki.category = blendIngredient.category;
         wiki.relatedWikis = await this.getRelatedWiki('Ingredient', blendIngredient.category, userId, ingredientsInfo[0].ingredientId);
         wiki.healthImpacts = await this.getHealthImpactByEntityId(String(wiki._id), 'Food');
+        let nutrientList = await (0, getBlendNutritionBasedOnRecipexxx_1.default)(ingredientsInfo);
+        // console.log('n', nutrientList);
+        let giGl = await (0, getGlAndNetCarbs2_1.default)(ingredientsInfo);
+        wiki.nutrientsAndGiGl = {
+            nutrients: nutrientList,
+            giGl: giGl,
+        };
         return wiki;
     }
     async getAHealthWiki(wikiHealthId, userId) {

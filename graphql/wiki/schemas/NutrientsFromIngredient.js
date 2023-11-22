@@ -18,6 +18,7 @@ const Bookmark_1 = __importDefault(require("./Bookmark"));
 const Admin_1 = __importDefault(require("../../admin/resolvers/schemas/Admin"));
 const WikiListWithPagination_1 = __importDefault(require("./WikiListWithPagination"));
 const HealthImpact_1 = __importDefault(require("./HealthImpact"));
+const NutrientsWithGiGl_1 = __importDefault(require("../../blendIngredientsdata/schemas/NutrientsWithGiGl"));
 let NutritionFromIngredient = class NutritionFromIngredient {
 };
 __decorate([
@@ -108,6 +109,10 @@ __decorate([
     (0, type_graphql_1.Field)(() => [HealthImpact_1.default], { nullable: true }),
     __metadata("design:type", Array)
 ], NutritionFromIngredient.prototype, "healthImpacts", void 0);
+__decorate([
+    (0, type_graphql_1.Field)((type) => NutrientsWithGiGl_1.default, { nullable: true }),
+    __metadata("design:type", NutrientsWithGiGl_1.default)
+], NutritionFromIngredient.prototype, "nutrientsAndGiGl", void 0);
 NutritionFromIngredient = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], NutritionFromIngredient);

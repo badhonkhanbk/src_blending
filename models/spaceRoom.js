@@ -21,7 +21,7 @@ const spaceRoomSchema = new mongoose_1.Schema({
     isActive: {
         type: Boolean,
         default: false,
-    }
+    },
 }, {
     timestamps: true,
 });
