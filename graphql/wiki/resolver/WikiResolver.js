@@ -2202,7 +2202,7 @@ __decorate([
     (0, type_graphql_1.Query)(() => IngredientsFromNutrition_1.default) //todo
     ,
     __param(0, (0, type_graphql_1.Arg)('data')),
-    __param(1, (0, type_graphql_1.Arg)('userId')),
+    __param(1, (0, type_graphql_1.Arg)('userId', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [GetIngredientsFromNutrition_1.default,
         String]),
