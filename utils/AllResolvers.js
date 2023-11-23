@@ -90,7 +90,6 @@ function getAllResolvers() {
         PlanCommentResolver_1.default,
         PlanCollectionResolver_1.default,
         ShareCollectionResolver_1.default,
-        // RecipeCorrectionResolver,
         NewRecipeResolver_1.default,
         QAResolvers_1.default,
         PlanRatingResolver_1.default,
