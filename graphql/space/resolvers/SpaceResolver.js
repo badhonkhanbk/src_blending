@@ -24,6 +24,7 @@ const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const EditSpace_1 = __importDefault(require("./input-type/EditSpace"));
 const addOrRemoveFacilitators_1 = __importDefault(require("../util/addOrRemoveFacilitators"));
 const MembersWithPagination_1 = __importDefault(require("../schema/MembersWithPagination"));
+const SimpleSpace_1 = __importDefault(require("../schema/SimpleSpace"));
 let SpaceResolver = class SpaceResolver {
     /**
      * Create a new space.
@@ -161,6 +162,10 @@ let SpaceResolver = class SpaceResolver {
             .populate('members.invitedBy')
             .populate('createdBy')
             .lean();
+        return space;
+    }
+    async getBasicSpaceInfoById(spaceId) {
+        let space = await space_1.default.findById(spaceId);
         return space;
     }
     async getAllMembersOfASpace(spaceId, forFacilitators, page, limit) {
@@ -307,6 +312,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getSpaceById", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => SimpleSpace_1.default),
+    __param(0, (0, type_graphql_1.Arg)('spaceId', (type) => type_graphql_1.ID)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SpaceResolver.prototype, "getBasicSpaceInfoById", null);
 __decorate([
     (0, type_graphql_1.Query)(() => MembersWithPagination_1.default),
     __param(0, (0, type_graphql_1.Arg)('spaceId')),
