@@ -25,23 +25,20 @@ const NewUserInput_1 = __importDefault(require("./input-type/NewUserInput"));
 const EditUser_1 = __importDefault(require("./input-type/EditUser"));
 const CreateNewCollection_1 = __importDefault(require("./input-type/CreateNewCollection"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
-const collectionShareGlobal_1 = __importDefault(require("../../../models/collectionShareGlobal"));
 const memberConfiguiration_1 = __importDefault(require("../../../models/memberConfiguiration"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const DailyGoal_1 = __importDefault(require("../../../models/DailyGoal"));
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
 const Compare_1 = __importDefault(require("../../../models/Compare"));
 const collectionAndTheme_1 = __importDefault(require("../schemas/collectionAndTheme"));
-const checkAllShareToken_1 = __importDefault(require("../../share/util/checkAllShareToken"));
-const share_1 = __importDefault(require("../../../models/share"));
 const getAllGlobalRecipes_1 = __importDefault(require("../../recipe/resolvers/util/getAllGlobalRecipes"));
 const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeProfile"));
 const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
 const ShowAllCollection_1 = __importDefault(require("../schemas/ShowAllCollection"));
 const SimpleCollection_1 = __importDefault(require("../schemas/SimpleCollection"));
 const changeCompare_1 = __importDefault(require("./util/changeCompare"));
-const makeShareRecipe_1 = __importDefault(require("../../share/util/makeShareRecipe"));
 const Member_2 = __importDefault(require("../schemas/Member"));
+const getASingleCollection_1 = __importDefault(require("./util/getASingleCollection"));
 // type SimpleCollection = {
 //   _id: String;
 //   name: String;
@@ -414,54 +411,6 @@ let MemberResolver = class MemberResolver {
         };
     }
     /**
-     * Retrieves and returns a shared collection based on the provided token.
-     *
-     * @param {String} userId - The ID of the user making the request.
-     * @param {String} token - The token associated with the shared collection.
-     * @param {number} [page] - The page number of the shared collection (default: 1).
-     * @param {number} [limit] - The maximum number of recipes to return per page (default: 10).
-     * @return {Object} - An object containing the details of the shared collection and its recipes.
-     */
-    async viewSharedCollection(userId, token, page, limit) {
-        if (!page || page <= 0) {
-            page = 1;
-        }
-        if (!limit) {
-            limit = 10;
-        }
-        const shareCollection = await userCollection_1.default.findOne({
-            _id: token,
-        }).populate({
-            path: 'userId',
-        });
-        // console.log('ssss', shareCollection.userId);
-        if (!shareCollection) {
-            return new AppError_1.default('Invalid token', 404);
-        }
-        let start = limit * (page - 1) > shareCollection.recipes.length - 1
-            ? shareCollection.recipes.length - 1
-            : limit * (page - 1);
-        let end = start + limit > shareCollection.recipes.length - 1
-            ? shareCollection.recipes.length
-            : start + limit;
-        let returnRecipe = [];
-        for (let i = start; i < end; i++) {
-            // console.log(i);
-            returnRecipe.push(await (0, makeShareRecipe_1.default)(shareCollection.recipes[i], String(shareCollection.userId._id)));
-            // console.log(returnRecipe[i].recipeId._id);
-        }
-        return {
-            _id: shareCollection._id,
-            name: shareCollection.name,
-            slug: shareCollection.slug,
-            image: shareCollection.image,
-            totalRecipes: shareCollection.recipes.length,
-            recipes: returnRecipe,
-            creatorInfo: shareCollection.userId,
-            accepted: false,
-        };
-    }
-    /**
      * Retrieves a single collection based on the provided parameters.
      *
      * @param {String} slug - The slug of the collection.
@@ -474,108 +423,7 @@ let MemberResolver = class MemberResolver {
      * @return {Object} The retrieved collection.
      */
     async getASingleCollection(slug, userId, collectionId, token, singleRecipeCollectionId, page, limit) {
-        let searchId;
-        let query = {};
-        if (singleRecipeCollectionId) {
-            return await this.getSingleRecipeCollection(userId.toString());
-        }
-        if (token) {
-            let globalShare = await collectionShareGlobal_1.default.findOne({
-                _id: token,
-            });
-            if (!globalShare) {
-                return new AppError_1.default('Invalid token', 400);
-            }
-            let acceptedGlobalShare = globalShare.globalAccepted.filter((user) => String(user) === userId)[0];
-            if (!acceptedGlobalShare) {
-                return await this.viewSharedCollection(userId, token, page, limit);
-            }
-            query = {
-                _id: globalShare.collectionId,
-            };
-        }
-        else if (collectionId) {
-            let collection = await userCollection_1.default.findOne({
-                _id: collectionId,
-            }).select('shareTo');
-            if (collection.shareTo.length === 0) {
-                return new AppError_1.default('Invalid collection', 400);
-            }
-            else {
-                let shareTo = collection.shareTo.filter((share) => String(share.userId) === userId)[0];
-                if (!shareTo) {
-                    return new AppError_1.default('Invalid collection', 400);
-                }
-                if (shareTo.hasAccepted === false) {
-                    return await this.viewSharedCollection(userId, collectionId, page, limit);
-                }
-            }
-            query = {
-                _id: collectionId,
-            };
-        }
-        else {
-            searchId = userId;
-            query = {
-                slug: slug,
-                userId: searchId,
-            };
-        }
-        let collection = await userCollection_1.default.findOne(query);
-        if (!page || page <= 0) {
-            page = 1;
-        }
-        if (!limit) {
-            limit = 10;
-        }
-        let userProfileRecipes = await UserRecipeProfile_1.default.find({
-            userId: userId,
-            recipeId: {
-                $in: collection.recipes,
-            },
-        })
-            .populate({
-            path: 'recipeId',
-            model: 'RecipeModel',
-            populate: [
-                {
-                    path: 'recipeBlendCategory',
-                    model: 'RecipeCategory',
-                },
-                {
-                    path: 'brand',
-                    model: 'RecipeBrand',
-                },
-                {
-                    path: 'userId',
-                    model: 'User',
-                    select: 'firstName lastName image displayName email',
-                },
-            ],
-            select: 'mainEntityOfPage name image datePublished recipeBlendCategory brand foodCategories url favicon numberOfRating totalViews averageRating userId',
-        })
-            .populate({
-            path: 'defaultVersion',
-            model: 'RecipeVersion',
-            populate: {
-                path: 'ingredients.ingredientId',
-                model: 'BlendIngredient',
-            },
-        })
-            .lean()
-            .limit(limit)
-            .skip(limit * (page - 1));
-        let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
-        return {
-            _id: collection._id,
-            name: collection.name,
-            slug: collection.slug,
-            image: collection.image,
-            totalRecipes: collection.recipes.length,
-            recipes: returnRecipe,
-            creatorInfo: collection.userId,
-            accepted: true,
-        };
+        return await (0, getASingleCollection_1.default)(slug, userId, collectionId, token, singleRecipeCollectionId, page, limit);
     }
     /**
      * Creates a new user.
@@ -879,32 +727,36 @@ let MemberResolver = class MemberResolver {
      * @param {string} userId - The ID of the user.
      * @return {Object} - The single recipe collection.
      */
-    async getSingleRecipeCollection(userId) {
-        let shares = await share_1.default.find({
-            shareTo: {
-                $elemMatch: {
-                    userId: new mongoose_1.default.mongo.ObjectId(userId),
-                    hasAccepted: false,
-                },
-            },
-        }).select('_id');
-        let singleSharedRecipes = [];
-        if (shares.length > 0) {
-            let mappedForSingleRecipeCollection = shares.map((share) => share._id.toString());
-            singleSharedRecipes = await (0, checkAllShareToken_1.default)(
-            //@ts-ignore
-            mappedForSingleRecipeCollection, userId);
-        }
-        return {
-            _id: new mongoose_1.default.Types.ObjectId(),
-            name: 'Single Recipes',
-            slug: 'single-recipes',
-            //@ts-ignore
-            image: null,
-            recipes: singleSharedRecipes,
-            accepted: true,
-        };
-    }
+    // async getSingleRecipeCollection(userId: string) {
+    //   let shares = await ShareModel.find({
+    //     shareTo: {
+    //       $elemMatch: {
+    //         userId: new mongoose.mongo.ObjectId(userId),
+    //         hasAccepted: false,
+    //       },
+    //     },
+    //   }).select('_id');
+    //   let singleSharedRecipes: any = [];
+    //   if (shares.length > 0) {
+    //     let mappedForSingleRecipeCollection = shares.map((share: any) =>
+    //       share._id.toString()
+    //     );
+    //     singleSharedRecipes = await CheckShareLink(
+    //       //@ts-ignore
+    //       mappedForSingleRecipeCollection,
+    //       userId
+    //     );
+    //   }
+    //   return {
+    //     _id: new mongoose.Types.ObjectId(),
+    //     name: 'Single Recipes',
+    //     slug: 'single-recipes',
+    //     //@ts-ignore
+    //     image: null,
+    //     recipes: singleSharedRecipes,
+    //     accepted: true,
+    //   };
+    // }
     async temporaryRecipeCategoryUpdate(recipeId, blendCategory) {
         await recipeModel_1.default.findOneAndUpdate({
             _id: recipeId,
@@ -949,17 +801,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "getUserCollectionsAndThemes", null);
-__decorate([
-    (0, type_graphql_1.Query)((type) => Collection_1.default),
-    __param(0, (0, type_graphql_1.Arg)('userId')),
-    __param(1, (0, type_graphql_1.Arg)('token')),
-    __param(2, (0, type_graphql_1.Arg)('page', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('limit', { nullable: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String,
-        String, Number, Number]),
-    __metadata("design:returntype", Promise)
-], MemberResolver.prototype, "viewSharedCollection", null);
 __decorate([
     (0, type_graphql_1.Query)(() => Collection_1.default),
     __param(0, (0, type_graphql_1.Arg)('slug')),

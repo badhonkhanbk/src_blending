@@ -96,7 +96,7 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             model: 'RecipeVersion',
             populate: {
                 path: 'ingredients.ingredientId',
-                model: 'BlendIngredient selectedImage',
+                model: 'BlendIngredient',
             },
         })
             .lean();

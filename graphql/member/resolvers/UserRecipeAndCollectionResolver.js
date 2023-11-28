@@ -44,6 +44,7 @@ const UserRecipeProfile_1 = __importDefault(require("../../../models/UserRecipeP
 const getNotesCompareAndUserCollection_1 = __importDefault(require("../../recipe/resolvers/util/getNotesCompareAndUserCollection"));
 const slugify_1 = __importDefault(require("slugify"));
 const temporaryCompareCollection_1 = __importDefault(require("../../../models/temporaryCompareCollection"));
+const getASingleCollection_1 = __importDefault(require("./util/getASingleCollection"));
 let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
     /**
      * Retrieves the most recent recipes for a specific user.
@@ -969,107 +970,116 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                 $in: [new mongoose_1.default.mongo.ObjectId(userId)],
             },
             'shareTo.hasAccepted': true,
-        })
-            .populate({
-            path: 'recipes',
-            model: 'RecipeModel',
-            limit: 5,
-            populate: [
-                {
-                    path: 'defaultVersion',
-                    model: 'RecipeVersion',
-                    populate: {
-                        path: 'ingredients.ingredientId',
-                        model: 'BlendIngredient',
-                        select: 'ingredientName selectedImage',
-                    },
-                    select: 'postfixTitle',
-                },
-                {
-                    path: 'ingredients.ingredientId',
-                    model: 'BlendIngredient',
-                    select: 'ingredientName',
-                },
-                {
-                    path: 'brand',
-                    model: 'RecipeBrand',
-                },
-                {
-                    path: 'recipeBlendCategory',
-                    model: 'RecipeCategory',
-                },
-                {
-                    path: 'userId',
-                    model: 'User',
-                    select: '_id displayName image',
-                },
-            ],
-        })
-            .populate({
-            path: 'userId',
-            model: 'User',
-            select: '_id displayName firstName lastName email image',
-        })
-            .lean();
-        let memberCollections = await memberModel_1.default.findOne({ _id: userId })
-            .populate({
-            path: 'collections',
-            model: 'UserCollection',
-            select: 'recipes',
-        })
-            .select('-_id collections');
+        });
+        console.log('oc', otherCollections);
+        // .populate({
+        //   path: 'recipes',
+        //   model: 'RecipeModel',
+        //   limit: 5,
+        //   populate: [
+        //     {
+        //       path: 'defaultVersion',
+        //       model: 'RecipeVersion',
+        //       populate: {
+        //         path: 'ingredients.ingredientId',
+        //         model: 'BlendIngredient',
+        //         select: 'ingredientName selectedImage',
+        //       },
+        //       select: 'postfixTitle',
+        //     },
+        //     {
+        //       path: 'ingredients.ingredientId',
+        //       model: 'BlendIngredient',
+        //       select: 'ingredientName',
+        //     },
+        //     {
+        //       path: 'brand',
+        //       model: 'RecipeBrand',
+        //     },
+        //     {
+        //       path: 'recipeBlendCategory',
+        //       model: 'RecipeCategory',
+        //     },
+        //     {
+        //       path: 'userId',
+        //       model: 'User',
+        //       select: '_id displayName image',
+        //     },
+        //   ],
+        // })
+        // .populate({
+        //   path: 'userId',
+        //   model: 'User',
+        //   select: '_id displayName firstName lastName email image',
+        // })
+        // .lean();
+        // let memberCollections = await MemberModel.findOne({ _id: userId })
+        //   .populate({
+        //     path: 'collections',
+        //     model: 'UserCollection',
+        //     select: 'recipes',
+        //   })
+        //   .select('-_id collections');
         for (let i = 0; i < otherCollections.length; i++) {
-            let collection = otherCollections[i];
-            console.log(collection.name);
-            let recipes = collection.recipes;
-            let returnRecipe = [];
-            let collectionRecipes = [];
-            for (let i = 0; i < memberCollections.collections.length; i++) {
-                //@ts-ignore
-                let items = memberCollections.collections[i].recipes.map(
-                //@ts-ignore
-                (recipe) => {
-                    return {
-                        recipeId: String(recipe._id),
-                        recipeCollection: String(memberCollections.collections[i]._id),
-                    };
-                });
-                collectionRecipes.push(...items);
-            }
-            for (let i = 0; i < recipes.length; i++) {
-                let userNotes = await userNote_1.default.find({
-                    recipeId: recipes[i]._id,
-                    userId: userId,
-                });
-                let addedToCompare = false;
-                let compare = await Compare_1.default.findOne({
-                    userId: userId,
-                    recipeId: recipes[i]._id,
-                });
-                if (compare) {
-                    addedToCompare = true;
-                }
-                let collectionData = collectionRecipes.filter((recipeData) => recipeData.recipeId === String(recipes[i]._id));
-                if (collectionData.length === 0) {
-                    collectionData = null;
-                }
-                else {
-                    //@ts-ignore
-                    collectionData = collectionData.map((data) => data.recipeCollection);
-                }
-                returnRecipe.push({
-                    ...recipes[i],
-                    notes: userNotes.length,
-                    addedToCompare: addedToCompare,
-                    userCollections: collectionData,
-                });
-            }
+            // let collection = otherCollections[i];
+            // console.log(collection.name);
+            // let recipes: any[] = collection.recipes;
+            // let returnRecipe: any = [];
+            // let collectionRecipes: any[] = [];
+            // for (let i = 0; i < memberCollections.collections.length; i++) {
+            //   //@ts-ignore
+            //   let items: any = memberCollections.collections[i].recipes.map(
+            //     //@ts-ignore
+            //     (recipe) => {
+            //       return {
+            //         recipeId: String(recipe._id),
+            //         recipeCollection: String(memberCollections.collections[i]._id),
+            //       };
+            //     }
+            //   );
+            //   collectionRecipes.push(...items);
+            // }
+            // for (let i = 0; i < recipes.length; i++) {
+            //   let userNotes = await UserNoteModel.find({
+            //     recipeId: recipes[i]._id,
+            //     userId: userId,
+            //   });
+            //   let addedToCompare = false;
+            //   let compare = await CompareModel.findOne({
+            //     userId: userId,
+            //     recipeId: recipes[i]._id,
+            //   });
+            //   if (compare) {
+            //     addedToCompare = true;
+            //   }
+            //   let collectionData: any = collectionRecipes.filter(
+            //     (recipeData) => recipeData.recipeId === String(recipes[i]._id)
+            //   );
+            //   if (collectionData.length === 0) {
+            //     collectionData = null;
+            //   } else {
+            //     //@ts-ignore
+            //     collectionData = collectionData.map((data) => data.recipeCollection);
+            //   }
+            //   returnRecipe.push({
+            //     ...recipes[i],
+            //     notes: userNotes.length,
+            //     addedToCompare: addedToCompare,
+            //     userCollections: collectionData,
+            //   });
+            // }
+            let collection = await (0, getASingleCollection_1.default)(otherCollections[i].slug, userId, String(otherCollections[i]._id), null, null, 1, 12);
             collectionData.push({
+                //@ts-ignore
                 _id: collection._id,
                 name: collection.name,
+                //@ts-ignore
                 slug: collection.slug,
+                //@ts-ignore
                 image: collection.image,
-                recipes: returnRecipe,
+                //@ts-ignore
+                recipes: collection.recipes,
+                //@ts-ignore
                 creatorInfo: collection.userId,
             });
             // console.log(collectionData);

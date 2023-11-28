@@ -164,6 +164,12 @@ let SpaceResolver = class SpaceResolver {
             .lean();
         return space;
     }
+    /**
+     * Retrieves basic information about a space by its ID.
+     *
+     * @param {string} spaceId - The ID of the space.
+     * @return {Promise<SpaceModel>} A promise that resolves to the space object.
+     */
     async getBasicSpaceInfoById(spaceId) {
         let space = await space_1.default.findById(spaceId);
         return space;
@@ -313,7 +319,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SpaceResolver.prototype, "getSpaceById", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => SimpleSpace_1.default),
+    (0, type_graphql_1.Query)(() => SimpleSpace_1.default)
+    /**
+     * Retrieves basic information about a space by its ID.
+     *
+     * @param {string} spaceId - The ID of the space.
+     * @return {Promise<SpaceModel>} A promise that resolves to the space object.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('spaceId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
