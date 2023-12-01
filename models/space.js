@@ -97,6 +97,14 @@ const spaceSchema = new mongoose_1.Schema({
             default: false,
         },
     },
+    isEnabledJoin: {
+        type: Boolean,
+        default: true,
+    },
+    isPublishedToDiscovery: {
+        type: Boolean,
+        default: true,
+    },
 }, {
     timestamps: true,
 });

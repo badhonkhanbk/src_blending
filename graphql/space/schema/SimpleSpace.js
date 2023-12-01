@@ -32,6 +32,14 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", Date)
 ], SimpleSpace.prototype, "updatedAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], SimpleSpace.prototype, "isEnabledJoin", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], SimpleSpace.prototype, "isPublishedToDiscovery", void 0);
 SimpleSpace = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], SimpleSpace);

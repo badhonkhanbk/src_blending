@@ -56,6 +56,14 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", Date)
 ], Space.prototype, "createdAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], Space.prototype, "isEnabledJoin", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], Space.prototype, "isPublishedToDiscovery", void 0);
 Space = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], Space);

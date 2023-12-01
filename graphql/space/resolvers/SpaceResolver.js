@@ -46,6 +46,7 @@ let SpaceResolver = class SpaceResolver {
         let find = {};
         if (userId) {
             find['members.userId'] = userId;
+            find.isPublishedToDiscovery = true;
         }
         console.log(find);
         let spaces = await space_1.default.find(find)
@@ -68,6 +69,9 @@ let SpaceResolver = class SpaceResolver {
         let space = await space_1.default.findOne({ _id: spaceId });
         if (!space) {
             return new AppError_1.default('space not found', 404);
+        }
+        if (!space.isEnabledJoin) {
+            return new AppError_1.default('space is not open to join', 404);
         }
         let found = false;
         for (let i = 0; i < space.members.length; i++) {
@@ -226,23 +230,7 @@ let SpaceResolver = class SpaceResolver {
      * @return {type} description of return value
      */
     async util() {
-        let users = await memberModel_1.default.find().select('_id');
-        for (let i = 0; i < users.length; i++) {
-            let space = await space_1.default.findOne({ _id: '6541fb2b6bb5c182179337d6' });
-            let userId = String(users[i]._id);
-            let index = space.members.findIndex((member) => String(member.userId) === userId);
-            if (index === -1) {
-                await space_1.default.findOneAndUpdate({
-                    _id: '6541fb2b6bb5c182179337d6',
-                }, {
-                    $push: {
-                        members: {
-                            userId,
-                        },
-                    },
-                });
-            }
-        }
+        await space_1.default.updateMany({}, { isEnabledJoin: true, isPublishedToDiscovery: true });
         return 'done';
     }
 };

@@ -45,6 +45,14 @@ __decorate([
     (0, type_graphql_1.Field)((type) => MeetupSolutionsInput_1.default, { nullable: true }),
     __metadata("design:type", MeetupSolutionsInput_1.default)
 ], CreateEditSpace.prototype, "meetupSolutions", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], CreateEditSpace.prototype, "isEnabledJoin", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], CreateEditSpace.prototype, "isPublishedToDiscovery", void 0);
 CreateEditSpace = __decorate([
     (0, type_graphql_1.InputType)()
 ], CreateEditSpace);
