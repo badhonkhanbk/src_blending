@@ -567,7 +567,6 @@ let MemberResolver = class MemberResolver {
         await memberModel_1.default.findOneAndUpdate({ _id: data.userId }, { $push: { collections: collection._id } });
         return collection;
     }
-    async createCollectionAndShare(data) { }
     /**
      * Adds a new collection with data.
      *
@@ -765,7 +764,10 @@ let MemberResolver = class MemberResolver {
         });
         return 'done';
     }
-    async searchUser(searchText) {
+    async searchUser(searchText, limit) {
+        if (!limit) {
+            limit: 10;
+        }
         // if (data.searchTerm) {
         //   filter.title = { $regex: data.searchTerm, $options: 'i' };
         // }
@@ -776,7 +778,7 @@ let MemberResolver = class MemberResolver {
                 { displayName: { $regex: searchText, $options: 'i' } },
                 { email: { $regex: searchText, $options: 'i' } },
             ],
-        });
+        }).limit(+Number);
         return members;
     }
 };
@@ -846,13 +848,6 @@ __decorate([
     __metadata("design:paramtypes", [CreateNewCollection_1.default]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "createNewCollection", null);
-__decorate([
-    (0, type_graphql_1.Mutation)(() => String),
-    __param(0, (0, type_graphql_1.Arg)('data')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], MemberResolver.prototype, "createCollectionAndShare", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Collection_1.default),
     __param(0, (0, type_graphql_1.Arg)('data')),
@@ -954,8 +949,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => [Member_2.default]),
     __param(0, (0, type_graphql_1.Arg)('searchText')),
+    __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String,
+        Number]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "searchUser", null);
 MemberResolver = __decorate([
