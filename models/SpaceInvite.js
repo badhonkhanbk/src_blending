@@ -18,9 +18,9 @@ const spaceInviteSchema = new mongoose_1.Schema({
         type: String,
         default: '',
     },
-    spaceId: {
+    spaceRoomId: {
         type: mongoose_1.SchemaTypes.ObjectId,
-        ref: 'Space',
+        ref: 'SpaceRoom',
     },
     createdBy: {
         type: mongoose_1.SchemaTypes.ObjectId,

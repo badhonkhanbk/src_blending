@@ -16,27 +16,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const SpaceInviteInput_1 = __importDefault(require("./input-type/SpaceInvite.ts/SpaceInviteInput"));
 const SpaceInvite_1 = __importDefault(require("../../../models/SpaceInvite"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const SpaceInvite_2 = __importDefault(require("../schema/SpaceInvite/SpaceInvite"));
+const spaceRoom_1 = __importDefault(require("../../../models/spaceRoom"));
 let SpaceInviteResolver = class SpaceInviteResolver {
     async createSpaceInvite(data) {
-        let spaceInvite = await SpaceInvite_1.default.findOne({ spaceId: data.spaceId });
-        let spaceId;
+        let spaceRoom = await spaceRoom_1.default.findOne({
+            _id: data.spaceRoomId,
+        }).select('_id');
+        if (!spaceRoom) {
+            return new AppError_1.default('space room not found', 404);
+        }
+        let spaceInvite = await SpaceInvite_1.default.findOne({
+            spaceRoomId: data.spaceRoomId,
+        });
+        let spaceInviteId;
         if (!spaceInvite) {
             let usersData = await this.getUserList(data.inviteTo);
             let newSpace = await SpaceInvite_1.default.create({
                 inviteTo: usersData.users,
                 message: data.message ? data.message : '',
-                spaceId: data.spaceId,
+                spaceRoomId: data.spaceRoomId,
                 createdBy: data.createdBy ? data.createdBy : null,
                 notFoundEmails: usersData.notFoundEmails,
             });
-            spaceId = newSpace._id;
+            spaceInviteId = newSpace._id;
         }
         else {
-            spaceId = spaceInvite._id;
+            spaceInviteId = spaceInvite._id;
             let usersData = await this.getUserList(data.inviteTo);
             let newUserList = [];
             for (let i = 0; i < usersData.users.length; i++) {
@@ -45,27 +55,33 @@ let SpaceInviteResolver = class SpaceInviteResolver {
                     newUserList.push(usersData.users[i]);
                 }
             }
-            await SpaceInvite_1.default.findOneAndUpdate({ _id: spaceInvite._id }, {
+            await SpaceInvite_1.default.findOneAndUpdate({ _id: spaceInviteId }, {
                 $set: {
                     inviteTo: spaceInvite.inviteTo.concat(newUserList),
-                    $addToSet: {
-                        notFoundEmails: spaceInvite.notFoundEmails.concat(usersData.notFoundEmails),
-                    },
                     message: data.message ? data.message : '',
+                },
+                $addToSet: {
+                    notFoundEmails: spaceInvite.notFoundEmails.concat(usersData.notFoundEmails),
                 },
             });
         }
         let newSpaceInvite = await SpaceInvite_1.default.findOne({
-            _id: spaceId,
+            _id: spaceInviteId,
         }).populate({
             path: 'inviteTo.user',
             select: 'firstName lastName email displayName _id',
         });
         return newSpaceInvite;
     }
-    async getSpaceInviteInfo(spaceId) {
+    async getSpaceInviteInfo(spaceRoomId) {
+        let spaceRoom = await spaceRoom_1.default.findOne({
+            _id: spaceRoomId,
+        }).select('_id');
+        if (!spaceRoom) {
+            return new AppError_1.default('space room not found', 404);
+        }
         let spaceInvite = await SpaceInvite_1.default.findOne({
-            spaceId: spaceId,
+            spaceRoomId: spaceRoomId,
         }).populate({
             path: 'inviteTo.user',
             select: 'firstName lastName email displayName _id',
@@ -103,7 +119,7 @@ __decorate([
 ], SpaceInviteResolver.prototype, "createSpaceInvite", null);
 __decorate([
     (0, type_graphql_1.Query)(() => SpaceInvite_2.default),
-    __param(0, (0, type_graphql_1.Arg)('spaceId', (type) => type_graphql_1.ID)),
+    __param(0, (0, type_graphql_1.Arg)('spaceRoomId', (type) => type_graphql_1.ID)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

@@ -23,7 +23,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID),
     __metadata("design:type", String)
-], SpaceInviteInput.prototype, "spaceId", void 0);
+], SpaceInviteInput.prototype, "spaceRoomId", void 0);
 __decorate([
     (0, type_graphql_1.Field)((type) => type_graphql_1.ID, { nullable: true }),
     __metadata("design:type", String)
