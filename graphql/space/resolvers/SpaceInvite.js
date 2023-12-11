@@ -22,6 +22,7 @@ const SpaceInvite_1 = __importDefault(require("../../../models/SpaceInvite"));
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const SpaceInvite_2 = __importDefault(require("../schema/SpaceInvite/SpaceInvite"));
 const spaceRoom_1 = __importDefault(require("../../../models/spaceRoom"));
+const InviteToSpaceUser_1 = __importDefault(require("../schema/SpaceInvite/InviteToSpaceUser"));
 let SpaceInviteResolver = class SpaceInviteResolver {
     async createSpaceInvite(data) {
         let spaceRoom = await spaceRoom_1.default.findOne({
@@ -50,8 +51,8 @@ let SpaceInviteResolver = class SpaceInviteResolver {
             let usersData = await this.getUserList(data.inviteTo);
             let newUserList = [];
             for (let i = 0; i < usersData.users.length; i++) {
-                let find = spaceInvite.inviteTo.findIndex((inviteToUser) => String(inviteToUser.user) === String(usersData.users[i]));
-                if (!find) {
+                let find = spaceInvite.inviteTo.findIndex((inviteToUser) => String(inviteToUser.user) === String(usersData.users[i].user));
+                if (find === -1) {
                     newUserList.push(usersData.users[i]);
                 }
             }
@@ -71,7 +72,15 @@ let SpaceInviteResolver = class SpaceInviteResolver {
             path: 'inviteTo.user',
             select: 'firstName lastName email displayName _id',
         });
-        return newSpaceInvite;
+        let userList = newSpaceInvite.inviteTo.filter((inviteToUser) => {
+            let index = data.inviteTo.findIndex(
+            //@ts-ignore
+            (dataInviteTo) => { var _a; return dataInviteTo === ((_a = inviteToUser.user) === null || _a === void 0 ? void 0 : _a.email); });
+            if (index !== -1) {
+                return true;
+            }
+        });
+        return userList;
     }
     async getSpaceInviteInfo(spaceRoomId) {
         let spaceRoom = await spaceRoom_1.default.findOne({
@@ -114,7 +123,7 @@ let SpaceInviteResolver = class SpaceInviteResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => SpaceInvite_2.default),
+    (0, type_graphql_1.Mutation)(() => [InviteToSpaceUser_1.default]),
     __param(0, (0, type_graphql_1.Arg)('spaceRoomData', (type) => SpaceInviteInput_1.default)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [SpaceInviteInput_1.default]),
