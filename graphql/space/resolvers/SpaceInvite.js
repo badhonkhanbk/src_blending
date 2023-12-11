@@ -25,6 +25,7 @@ const spaceRoom_1 = __importDefault(require("../../../models/spaceRoom"));
 const InviteToSpaceUser_1 = __importDefault(require("../schema/SpaceInvite/InviteToSpaceUser"));
 let SpaceInviteResolver = class SpaceInviteResolver {
     async createSpaceInvite(data) {
+        let inviteTo = Array.from(new Set(data.inviteTo));
         let spaceRoom = await spaceRoom_1.default.findOne({
             _id: data.spaceRoomId,
         }).select('_id');
@@ -36,7 +37,7 @@ let SpaceInviteResolver = class SpaceInviteResolver {
         });
         let spaceInviteId;
         if (!spaceInvite) {
-            let usersData = await this.getUserList(data.inviteTo);
+            let usersData = await this.getUserList(inviteTo);
             let newSpace = await SpaceInvite_1.default.create({
                 inviteTo: usersData.users,
                 message: data.message ? data.message : '',
@@ -48,7 +49,7 @@ let SpaceInviteResolver = class SpaceInviteResolver {
         }
         else {
             spaceInviteId = spaceInvite._id;
-            let usersData = await this.getUserList(data.inviteTo);
+            let usersData = await this.getUserList(inviteTo);
             let newUserList = [];
             for (let i = 0; i < usersData.users.length; i++) {
                 let find = spaceInvite.inviteTo.findIndex((inviteToUser) => String(inviteToUser.user) === String(usersData.users[i].user));
