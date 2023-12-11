@@ -86,6 +86,9 @@ let SpaceInviteResolver = class SpaceInviteResolver {
             path: 'inviteTo.user',
             select: 'firstName lastName email displayName _id',
         });
+        if (!spaceInvite) {
+            return new AppError_1.default('space invite not found', 404);
+        }
         return spaceInvite;
     }
     async getUserList(inviteTo) {
