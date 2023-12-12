@@ -51,6 +51,7 @@ const HealthResolver_1 = __importDefault(require("../graphql/health/resolvers/He
 const SpaceBlogResolver_1 = __importDefault(require("../graphql/space/resolvers/SpaceBlogResolver"));
 const SpaceArchiveResolver_1 = __importDefault(require("../graphql/space/resolvers/SpaceArchiveResolver"));
 const SpaceInvite_1 = __importDefault(require("../graphql/space/resolvers/SpaceInvite"));
+const SpaceEventResolver_1 = __importDefault(require("../graphql/space/resolvers/SpaceEventResolver"));
 function getAllResolvers() {
     return [
         FoodResolver_1.default,
@@ -100,6 +101,7 @@ function getAllResolvers() {
         SpaceBlogResolver_1.default,
         SpaceArchiveResolver_1.default,
         SpaceInvite_1.default,
+        SpaceEventResolver_1.default,
     ];
 }
 exports.default = getAllResolvers;
