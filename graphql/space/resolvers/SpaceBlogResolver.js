@@ -105,7 +105,12 @@ let SpaceBlogResolver = class SpaceBlogResolver {
         //   modifiedData.slug = slugify(data.editableObject.title.toLowerCase());
         // }
         await SpaceBlog_1.default.findOneAndUpdate({ _id: data.editId }, modifiedData);
-        return 'Success';
+        let spaceBlogPopulated = await SpaceBlog_1.default.findOne({
+            _id: data.editId,
+        })
+            .populate('spaceId')
+            .populate('author');
+        return spaceBlogPopulated;
     }
 };
 __decorate([
@@ -165,7 +170,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SpaceBlogResolver.prototype, "deleteSpaceBlog", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String)
+    (0, type_graphql_1.Mutation)(() => SpaceBlog_2.default)
     /**
      * Edits a space blog.
      *

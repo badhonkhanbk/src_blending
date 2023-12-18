@@ -781,6 +781,12 @@ let MemberResolver = class MemberResolver {
         }).limit(+Number);
         return members;
     }
+    async getAllUsersEmail() {
+        let users = await memberModel_1.default.find().select('email');
+        let emails = users.map((user) => user.email);
+        console.log(emails);
+        return 'done';
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => [SimpleCollection_1.default]),
@@ -955,6 +961,12 @@ __decorate([
         Number]),
     __metadata("design:returntype", Promise)
 ], MemberResolver.prototype, "searchUser", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], MemberResolver.prototype, "getAllUsersEmail", null);
 MemberResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], MemberResolver);
