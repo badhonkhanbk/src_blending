@@ -110,6 +110,15 @@ let SpaceBlogResolver = class SpaceBlogResolver {
         })
             .populate('spaceId')
             .populate('author');
+        if (data.archiveId) {
+            await spaceArchive_1.default.findOneAndUpdate({
+                _id: data.archiveId,
+            }, {
+                $addToSet: {
+                    spaceBlogs: spaceBlogPopulated._id,
+                },
+            });
+        }
         return spaceBlogPopulated;
     }
 };

@@ -21,6 +21,10 @@ __decorate([
     __metadata("design:type", String)
 ], EditSpaceBlog.prototype, "editId", void 0);
 __decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], EditSpaceBlog.prototype, "archiveId", void 0);
+__decorate([
     (0, type_graphql_1.Field)((type) => CreateEditSpaceBlog_1.default),
     __metadata("design:type", CreateEditSpaceBlog_1.default)
 ], EditSpaceBlog.prototype, "editableObject", void 0);
