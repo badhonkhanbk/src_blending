@@ -28,6 +28,11 @@ const blendNutrient_1 = __importDefault(require("../../../models/blendNutrient")
 const BlendNutrientData_1 = __importDefault(require("../../blendNutrient/schemas/BlendNutrientData"));
 const BlendIngredientData_1 = __importDefault(require("../../blendIngredientsdata/schemas/BlendIngredientData"));
 let HeathResolver = class HeathResolver {
+    /**
+     * Imports data from a CSV file.
+     *
+     * @return {Promise<string>} A string indicating the completion status of the import.
+     */
     async importDataFromCSV() {
         await health_1.default.deleteMany();
         let data = fs_1.default.readFileSync('./temp/dis.json', 'utf-8');
@@ -44,10 +49,22 @@ let HeathResolver = class HeathResolver {
         }
         return 'Done';
     }
+    /**
+     * Adds new health data.
+     *
+     * @param {AddNewHealthData} data - The health data to add.
+     * @return {Promise<string>} - A string indicating the completion of the operation.
+     */
     async addNewHealthData(data) {
         let health = await health_1.default.create(data);
         return 'done';
     }
+    /**
+     * Edits health data.
+     *
+     * @param {type} data - EditHealthData object containing the necessary data for editing health data.
+     * @return {type} - The result of the edit operation, indicating if it was successful or not.
+     */
     async editHealthData(data) {
         let health = await health_1.default.findOne({ _id: data.editId });
         if (!health) {
@@ -58,6 +75,12 @@ let HeathResolver = class HeathResolver {
         });
         return 'done';
     }
+    /**
+     * Retrieves a single health data by its ID.
+     *
+     * @param {String} healthId - The ID of the health data to retrieve.
+     * @return {Promise<Object>} - The retrieved health data.
+     */
     async getASingleHealthData(healthId) {
         let health = await health_1.default.findOne({ _id: healthId })
             .populate({
@@ -78,6 +101,13 @@ let HeathResolver = class HeathResolver {
         }
         return health;
     }
+    /**
+     * Retrieves all health data with pagination.
+     *
+     * @param {number} page - The page number to retrieve (nullable)
+     * @param {number} limit - The maximum number of items per page (nullable)
+     * @return {Promise<Health[]>} An array of health data
+     */
     async getAllHealthData(page, limit) {
         if (!page || page < 1) {
             page = 1;
@@ -91,16 +121,33 @@ let HeathResolver = class HeathResolver {
             .lean();
         return healths;
     }
+    /**
+     * Deletes the health data with the given healthId.
+     *
+     * @param {String} healthId - The ID of the health data to be deleted.
+     * @return {String} Returns 'Done' if the deletion is successful.
+     */
     async deleteHealthData(healthId) {
         await health_1.default.findOneAndDelete({ _id: healthId });
         return 'Done';
     }
+    /**
+     * Search health data based on the provided search text.
+     *
+     * @param {String} searchText - The search text to match against health topics.
+     * @return {Promise<Array>} - A promise that resolves to an array of health data objects.
+     */
     async searchHealthData(searchText) {
         let healths = await health_1.default.find({
             healthTopic: { $regex: searchText, $options: 'i' },
         });
         return healths;
     }
+    /**
+     * Updates all health data.
+     *
+     * @return {Promise<string>} Returns a promise that resolves to 'done'.
+     */
     async updateAllHealthData() {
         await health_1.default.updateMany({}, {
             description: '',
@@ -109,6 +156,11 @@ let HeathResolver = class HeathResolver {
         });
         return 'done';
     }
+    /**
+     * Adds a random ingredient and health value to the database.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the operation is complete.
+     */
     async addRandomIngredientAndHealthValue() {
         let healthData = await health_1.default.find();
         let blendIngredients = await blendIngredient_1.default.find({});
@@ -164,6 +216,13 @@ let HeathResolver = class HeathResolver {
         }
         return 'done';
     }
+    /**
+     * Retrieves the remaining nutrients based on a health ID.
+     *
+     * @param {string} searchText - The text to search for in the nutrient name. Optional.
+     * @param {string} healthId - The ID of the health data.
+     * @return {Promise<any[]>} An array of remaining nutrients.
+     */
     async getRemainingNutrientsByHealthId(searchText, healthId) {
         let find = {};
         if (searchText) {
@@ -206,34 +265,69 @@ let HeathResolver = class HeathResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Imports data from a CSV file.
+     *
+     * @return {Promise<string>} A string indicating the completion status of the import.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "importDataFromCSV", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => HealthData_1.default),
+    (0, type_graphql_1.Mutation)(() => HealthData_1.default)
+    /**
+     * Adds new health data.
+     *
+     * @param {AddNewHealthData} data - The health data to add.
+     * @return {Promise<string>} - A string indicating the completion of the operation.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('addNewHealthData')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AddNewHealthData_1.default]),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "addNewHealthData", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Edits health data.
+     *
+     * @param {type} data - EditHealthData object containing the necessary data for editing health data.
+     * @return {type} - The result of the edit operation, indicating if it was successful or not.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('EditHealthData')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [EditHealthData_1.default]),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "editHealthData", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => HealthData_1.default),
+    (0, type_graphql_1.Query)(() => HealthData_1.default)
+    /**
+     * Retrieves a single health data by its ID.
+     *
+     * @param {String} healthId - The ID of the health data to retrieve.
+     * @return {Promise<Object>} - The retrieved health data.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('healthId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "getASingleHealthData", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [SimpleHealthData_1.default]),
+    (0, type_graphql_1.Query)(() => [SimpleHealthData_1.default])
+    /**
+     * Retrieves all health data with pagination.
+     *
+     * @param {number} page - The page number to retrieve (nullable)
+     * @param {number} limit - The maximum number of items per page (nullable)
+     * @return {Promise<Health[]>} An array of health data
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('page', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('limit', { nullable: true })),
     __metadata("design:type", Function),
@@ -241,33 +335,67 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "getAllHealthData", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((type) => String),
+    (0, type_graphql_1.Mutation)((type) => String)
+    /**
+     * Deletes the health data with the given healthId.
+     *
+     * @param {String} healthId - The ID of the health data to be deleted.
+     * @return {String} Returns 'Done' if the deletion is successful.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('healthId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "deleteHealthData", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [HealthData_1.default]),
+    (0, type_graphql_1.Query)(() => [HealthData_1.default])
+    /**
+     * Search health data based on the provided search text.
+     *
+     * @param {String} searchText - The search text to match against health topics.
+     * @return {Promise<Array>} - A promise that resolves to an array of health data objects.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('searchText')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "searchHealthData", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Updates all health data.
+     *
+     * @return {Promise<string>} Returns a promise that resolves to 'done'.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "updateAllHealthData", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Adds a random ingredient and health value to the database.
+     *
+     * @return {Promise<string>} A promise that resolves to 'done' when the operation is complete.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "addRandomIngredientAndHealthValue", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [BlendNutrientData_1.default]),
+    (0, type_graphql_1.Query)(() => [BlendNutrientData_1.default])
+    /**
+     * Retrieves the remaining nutrients based on a health ID.
+     *
+     * @param {string} searchText - The text to search for in the nutrient name. Optional.
+     * @param {string} healthId - The ID of the health data.
+     * @return {Promise<any[]>} An array of remaining nutrients.
+     */
+    ,
     __param(0, (0, type_graphql_1.Arg)('searchText', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('HealthId')),
     __metadata("design:type", Function),

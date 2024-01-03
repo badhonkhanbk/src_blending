@@ -32,6 +32,11 @@ const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithP
 const MainRecipesWithPagination_1 = __importDefault(require("../schemas/MainRecipesWithPagination"));
 const getAllAdminRecipes_1 = __importDefault(require("./util/getAllAdminRecipes"));
 let RecipeCorrectionResolver = class RecipeCorrectionResolver {
+    /**
+     * Retrieves all admin recipes and updates them with new values.
+     *
+     * @return {Promise<string>} A string indicating the completion of the function.
+     */
     async bringAllAdminRecipe() {
         // await RecipeModel.updateMany(
         //   {
@@ -507,7 +512,13 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Retrieves all admin recipes and updates them with new values.
+     *
+     * @return {Promise<string>} A string indicating the completion of the function.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

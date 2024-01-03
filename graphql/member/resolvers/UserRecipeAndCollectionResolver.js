@@ -823,7 +823,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
                     'shareTo.$.personalizedName': data.newName,
                 },
             });
-            return 'successfull';
+            return 'Success';
         }
         let collection = await userCollection_1.default.findOne({
             _id: data.collectionId,
