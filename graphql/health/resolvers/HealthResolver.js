@@ -259,6 +259,11 @@ let HeathResolver = class HeathResolver {
             .lean();
         return ingredients;
     }
+    /**
+     * Resets the nutrients and foods for health.
+     *
+     * @return {Promise<string>} A string indicating the completion of the operation.
+     */
     async resetNutrientAndFoodForHealth() {
         await health_1.default.updateMany({}, { foods: [], nutrients: [] });
         return 'done';
@@ -411,7 +416,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], HeathResolver.prototype, "getRemainingIngredientsByHealthId", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => String),
+    (0, type_graphql_1.Mutation)(() => String)
+    /**
+     * Resets the nutrients and foods for health.
+     *
+     * @return {Promise<string>} A string indicating the completion of the operation.
+     */
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

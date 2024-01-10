@@ -42,10 +42,6 @@ let shareResolver = class shareResolver {
         if (+data.shareTo.length === 0) {
             globalShare = true;
         }
-        // let turnedOnVersionsId = data.shareData.turnedOnVersions.map(
-        //   (turnedOnVersion) =>
-        //     new mongoose.mongo.ObjectId(turnedOnVersion.toString())
-        // );
         let recipe = await recipeModel_1.default.findOne({
             _id: data.shareData.recipeId,
         }).select('_id');
@@ -210,7 +206,6 @@ let shareResolver = class shareResolver {
         if (invites.length <= 0) {
             return [];
         }
-        // console.log(invites.length);
         for (let i = 0; i < invites.length; i++) {
             let entity = {};
             entity._id = invites[i]._id;
@@ -268,7 +263,6 @@ let shareResolver = class shareResolver {
             else {
                 singleEntity.image = null;
             }
-            // console.log(singleEntity.image);
             singleEntity.shareData.entityId =
                 myShareNotifications[i].shareData.recipeId;
             singleEntity.type = 'Recipe';
@@ -288,7 +282,6 @@ let shareResolver = class shareResolver {
             path: 'userId',
             select: '_id firstName lastName email displayName image',
         });
-        // console.log(mySharedNotification);
         if (mySharedNotification.length === 0) {
             return [];
         }
@@ -384,48 +377,6 @@ let shareResolver = class shareResolver {
         }
         return await (0, makeGlobalRecipe_1.default)(share, userId.toString());
     }
-    // @Query((type) => Collection)
-    // async viewSharedCollection(
-    //   @Arg('userId') userId: String,
-    //   @Arg('token') token: String,
-    //   @Arg('page', { nullable: true }) page: number,
-    //   @Arg('limit', { nullable: true }) limit: number
-    // ) {
-    //   if (!page || page <= 0) {
-    //     page = 1;
-    //   }
-    //   if (!limit) {
-    //     limit = 10;
-    //   }
-    //   let start = (page - 1) * limit;
-    //   let end = start + limit;
-    //   const shareCollection = await UserCollectionModel.findOne({
-    //     _id: token,
-    //   }).populate({
-    //     path: 'userId',
-    //   });
-    //   if (!shareCollection) {
-    //     return new AppError('Invalid token', 404);
-    //   }
-    //   let returnRecipe = [];
-    //   for (let i = start; i < end; i++) {
-    //     returnRecipe.push(
-    //       await makeShareRecipe(
-    //         shareCollection.recipes[i],
-    //         String(shareCollection.userId)
-    //       )
-    //     );
-    //   }
-    //   return {
-    //     _id: shareCollection._id,
-    //     name: shareCollection.name,
-    //     slug: shareCollection.slug,
-    //     image: shareCollection.image,
-    //     totalRecipes: shareCollection.recipes.length,
-    //     recipes: returnRecipe,
-    //     creatorInfo: shareCollection.userId,
-    //   };
-    // }
     async acceptShareCollection(userId, token) {
         let shareCollection = await userCollection_1.default.findOne({ _id: token });
         if (!shareCollection) {
@@ -434,7 +385,6 @@ let shareResolver = class shareResolver {
         let checkIfGlobal = await collectionShareGlobal_1.default.findOne({
             collectionId: token,
         });
-        console.log(checkIfGlobal);
         if (!checkIfGlobal) {
             let shareTo = shareCollection.shareTo.find((el) => String(el.userId) === String(userId));
             if (!shareTo) {
@@ -496,10 +446,7 @@ let shareResolver = class shareResolver {
         if (!invite) {
             return new AppError_1.default('Invalid invite', 400);
         }
-        let data = invite.invitedWith.filter(
-        //@ts-ignore
-        (iw) => String(iw.memberId) === memberId)[0];
-        // console.log(data);
+        let data = invite.invitedWith.find((iw) => String(iw.memberId) === memberId);
         if (!data) {
             return new AppError_1.default('Invalid invite', 400);
         }
@@ -609,15 +556,3 @@ shareResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], shareResolver);
 exports.default = shareResolver;
-// @Field()
-// sharedBy: String;
-// @Field((type) => [String])
-// shareTo: [String];
-// @Field((type) => [String], { nullable: true })
-// shareData: [String];
-// @Field((type) => shareType)
-// type: shareType;
-// @Field({ nullable: true })
-// collectionId: String;
-// @Field({ nullable: true })
-// all: Boolean;

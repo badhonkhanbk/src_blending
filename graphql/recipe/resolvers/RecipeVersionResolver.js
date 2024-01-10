@@ -360,24 +360,6 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 new: true,
             });
         }
-        // let turnedOnVersions = await RecipeVersionModel.find({
-        //   _id: {
-        //     $in: userRecipe.turnedOnVersions,
-        //   },
-        // }).select(
-        //   '_id postfixTitle description createdAt updatedAt isDefault isOriginal'
-        // );
-        // let turnedOffVersions = await RecipeVersionModel.find({
-        //   _id: {
-        //     $in: userRecipe.turnedOffVersions,
-        //   },
-        // });
-        // let defaultVersion = await RecipeVersionModel.findOne({
-        //   _id: userRecipe.defaultVersion,
-        // }).populate({
-        //   path: 'ingredients.ingredientId',
-        //   model: 'BlendIngredient',
-        // });
         return 'Success';
     }
     async changeDefaultVersion(versionId, recipeId, userId, isTurnOff) {
@@ -416,10 +398,7 @@ let RecipeVersionResolver = class RecipeVersionResolver {
             defaultVersion: new mongoose_1.default.Types.ObjectId(versionId),
             isMatch: isMatch,
         });
-        // let newUpdatedRecipe: any = {};
         if (isMatch) {
-            // console.log(userRecipe.originalVersion);
-            // console.log(userRecipe.defaultVersion);
             await UserRecipeProfile_1.default.findOneAndUpdate({
                 recipeId: new mongoose_1.default.Types.ObjectId(recipeId),
                 userId: new mongoose_1.default.Types.ObjectId(userId),
@@ -453,25 +432,6 @@ let RecipeVersionResolver = class RecipeVersionResolver {
                 });
             }
         }
-        //  else {
-        //   newUpdatedRecipe = await UserRecipeProfileModel.findOneAndUpdate(
-        //     {
-        //       recipeId: new mongoose.Types.ObjectId(recipeId),
-        //       userId: new mongoose.Types.ObjectId(userId),
-        //     },
-        //     {
-        //       $push: {
-        //         turnedOnVersions: new mongoose.Types.ObjectId(
-        //           userRecipe.defaultVersion
-        //         ),
-        //       },
-        //       isMatch: isMatch,
-        //     },
-        //     {
-        //       new: true,
-        //     }
-        //   );
-        // }
         let userProfileRecipe = await UserRecipeProfile_1.default.findOne({
             userId: userId,
             recipeId: recipeId,

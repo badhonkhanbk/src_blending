@@ -1736,33 +1736,6 @@ let BlendIngredientResolver = class BlendIngredientResolver {
         };
     }
     async addGiToTheIngredients() {
-        // await MemberModel.updateMany({}, { blenderManufacturer: '' });
-        // return 'done';
-        // let versions = await RecipeVersionModel.find();
-        // for (let i = 0; i < versions.length; i++) {
-        //   let ingredients: any = versions[i].ingredients;
-        //   for (let j = 0; j < ingredients.length; j++) {
-        //     if (
-        //       ingredients[j].originalIngredientName &&
-        //       ingredients[j].quantityString
-        //     ) {
-        //       continue;
-        //     }
-        //     let ingredient = await BlendIngredientModel.findOne({
-        //       _id: ingredients[j].ingredientId,
-        //     }).select('ingredientName');
-        //     ingredients[j].originalIngredientName = ingredient.ingredientName;
-        //     ingredients[j].quantityString = ingredients[j].selectedPortion.quantity;
-        //   }
-        //   console.log(i);
-        //   await RecipeVersionModel.findOneAndUpdate(
-        //     { _id: versions[i]._id },
-        //     {
-        //       ingredients: ingredients,
-        //     }
-        //   );
-        // }
-        // return 'done';
         let ingredients = await blendIngredient_1.default.find().select('_id blendNutrients');
         for (let i = 0; i < ingredients.length; i++) {
             let nutrients = [];

@@ -38,18 +38,6 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
      * @return {Promise<string>} A string indicating the completion of the function.
      */
     async bringAllAdminRecipe() {
-        // await RecipeModel.updateMany(
-        //   {
-        //     adminId: { $ne: null },
-        //   },
-        //   {
-        //     global: true,
-        //     userId: null,
-        //     addedByAdmin: true,
-        //     discovery: true,
-        //     isPublished: true,
-        //   }
-        // );
         let users = await memberModel_1.default.find().select('_id');
         for (let i = 0; i < users.length; i++) {
             await (0, getAllGlobalRecipes_1.default)(String(users[i]._id));
@@ -108,26 +96,6 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
         return returnRecipe;
     }
-    // @Query((type) => ProfileRecipeDesc)
-    // async viewSharedRecipe(
-    //   @Arg('userId') userId: String,
-    //   @Arg('token') token: String
-    // ) {
-    //   const share = await ShareModel.findOne({ _id: token });
-    //   if (!share.isGlobal) {
-    //     let auth = share.shareTo.filter((sharePerson) => {
-    //       return String(sharePerson.userId) === String(userId);
-    //     })[0];
-    //     console.log(auth);
-    //     if (!auth) {
-    //       return new AppError('Invalid token', 404);
-    //     }
-    //   }
-    //   if (!share) {
-    //     return new AppError('Invalid token', 404);
-    //   }
-    //   return await makeGlobalRecipe(share, userId.toString());
-    // }
     /**
      * Retrieves a single recipe based on the provided recipe ID, user ID, and token.
      *
@@ -153,19 +121,6 @@ let RecipeCorrectionResolver = class RecipeCorrectionResolver {
             await (0, getAllGlobalRecipes_1.default)(userId);
         }
         let compareList = await Compare_1.default.find({ userId: userId });
-        // console.log(compareList);
-        // let temporaryCompareList: any[] =
-        //   await TemporaryCompareCollectionModel.find({
-        //     userId: userId,
-        //   });
-        // if (temporaryCompareList.length !== 0) {
-        // temporaryCompareList = await checkTemporaryCompareList(userId);
-        //   compareList = await CompareModel.find({ userId: userId });
-        // }
-        // for (let i = 0; i < temporaryCompareList.length; i++) {
-        //   compareList.push({ ...temporaryCompareList[i]._doc, isTemp: true });
-        // }
-        // console.log('c', compareList);
         if (compareList.length === 0) {
             return [];
         }

@@ -19,8 +19,6 @@ const type_graphql_1 = require("type-graphql");
 const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../../utils/AppError"));
 const recipeModel_1 = __importDefault(require("../../../models/recipeModel"));
-// import RecipeFactModel from '../../../models/RecipeFacts';
-// import RecipeOriginalFactModel from '../../../models/recipeOriginalFactModel';
 const memberModel_1 = __importDefault(require("../../../models/memberModel"));
 const userCollection_1 = __importDefault(require("../../../models/userCollection"));
 const blendIngredient_1 = __importDefault(require("../../../models/blendIngredient"));
@@ -36,7 +34,6 @@ const Compare_1 = __importDefault(require("../../../models/Compare"));
 const Hello_1 = __importDefault(require("../schemas/Hello"));
 const updateVersionFacts_1 = __importDefault(require("./util/updateVersionFacts"));
 const filterRecipe_1 = __importDefault(require("./input-type/filterRecipe"));
-// import updateOriginalVersionFacts from './util/updateOriginalVersionFact';
 const util_1 = __importDefault(require("../../share/util"));
 const CreateScrappedRecipe_1 = __importDefault(require("./input-type/CreateScrappedRecipe"));
 const RecipesWithPagination_1 = __importDefault(require("../schemas/RecipesWithPagination"));
@@ -909,55 +906,6 @@ let RecipeResolver = class RecipeResolver {
         }
         return 'recipe has been removed From your collection';
     }
-    // @Mutation((type) => String) //:NOT USABLE
-    // async addRecipeFromAdmin(@Arg('data') data: CreateRecipe) {
-    //   let newData: any = data;
-    //   newData.foodCategories = [];
-    //   for (let i = 0; i < newData.ingredients.length; i++) {
-    //     newData.ingredients[i].portions = [];
-    //     let ingredient = await BlendIngredientModel.findOne({
-    //       _id: newData.ingredients[i].ingredientId,
-    //     });
-    //     let index = 0;
-    //     let selectedPortionIndex = 0;
-    //     for (let j = 0; j < ingredient.portions.length; j++) {
-    //       if (ingredient.portions[j].default === true) {
-    //         index = j;
-    //         console.log(index);
-    //         break;
-    //       }
-    //     }
-    //     for (let k = 0; k < ingredient.portions.length; k++) {
-    //       if (
-    //         ingredient.portions[k].measurement ===
-    //         newData.ingredients[i].selectedPortionName
-    //       ) {
-    //         selectedPortionIndex = k;
-    //       }
-    //       let portion = {
-    //         name: ingredient.portions[k].measurement,
-    //         quantity:
-    //           newData.ingredients[i].weightInGram /
-    //           +ingredient.portions[k].meausermentWeight,
-    //         default: ingredient.portions[k].default,
-    //         gram: ingredient.portions[k].meausermentWeight,
-    //       };
-    //       newData.ingredients[i].portions.push(portion);
-    //     }
-    //     newData.ingredients[i].selectedPortion = {
-    //       name: ingredient.portions[selectedPortionIndex].measurement,
-    //       quantity:
-    //         newData.ingredients[i].weightInGram /
-    //         +ingredient.portions[selectedPortionIndex].meausermentWeight,
-    //       gram: ingredient.portions[selectedPortionIndex].meausermentWeight,
-    //     };
-    //     newData.foodCategories.push(ingredient.category);
-    //   }
-    //   newData.foodCategories = [...new Set(newData.foodCategories)];
-    //   newData.global = false;
-    //   let recipe = await RecipeModel.create(newData);
-    //   return 'recipe added successfully';
-    // }
     /**
      * Adds a recipe from a user.
      *
@@ -1026,7 +974,6 @@ let RecipeResolver = class RecipeResolver {
                 return await (0, GetASingleRecipe_1.default)(String(recipe._id), String(data.userId), null);
             }
         }
-        //ingredientId
         let userDefaultCollection;
         if (data.collection) {
             userDefaultCollection = data.collection;
@@ -1210,129 +1157,11 @@ let RecipeResolver = class RecipeResolver {
         await comment_2.default.deleteMany();
         return 'done';
     }
-    // @Mutation((type) => String)
-    // async addScrappedRecipeFromUser(@Arg('data') data: CreateScrappedRecipe) {
-    //   let ingredientsShape: any = [
-    //     {
-    //       recipeIngredients: data.recipeIngredients,
-    //     },
-    //   ];
-    //   var dataX = JSON.stringify(ingredientsShape);
-    //   var config = {
-    //     method: 'get',
-    //     url: 'http://54.91.110.31/parse-ingredients',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     data: dataX,
-    //   };
-    //   let res = await axios(config);
-    //   let blends: any[] = [];
-    //   let notBlends: any[] = [];
-    //   let portionsProblem: any[] = [];
-    //   console.log(res.data[0].parsed_data[0].best_match);
-    //   for (let i = 0; i < res.data[0].parsed_data.length; i++) {
-    //     let blendIngredient: any = null;
-    //     for (let j = 0; j < res.data[0].parsed_data[i].best_match.length; j++) {
-    //       blendIngredient = await BlendIngredientModel.findOne({
-    //         srcFoodReference:
-    //           res.data[0].parsed_data[i].best_match[j].db_ingredient_id,
-    //         $or: [
-    //           {
-    //             blendStatus: 'Active',
-    //           },
-    //           {
-    //             blendStatus: 'Review',
-    //           },
-    //         ],
-    //       }).select('-blendNutrients -notBlendNutrients');
-    //       if (blendIngredient) {
-    //         // console.log(blendIngredient);
-    //         break;
-    //       }
-    //     }
-    //     if (!blendIngredient) {
-    //       notBlends.push(res.data[0].parsed_data[i]);
-    //     } else {
-    //       // console.log('blend', blendIngredient, res.data[0].parsed_data[i]);
-    //       blends.push({
-    //         ingredientId: blendIngredient._id,
-    //         quantity: res.data[0].parsed_data[i].QUANTITY,
-    //         unit: res.data[0].parsed_data[i].QUANTITY_UNIT,
-    //         name: res.data[0].parsed_data[i].INGREDIENT,
-    //         db_name: blendIngredient.ingredientName,
-    //         comment: res.data[0].parsed_data[i].COMMENT,
-    //         portions: blendIngredient.portions,
-    //       });
-    //     }
-    //   }
-    //   const parseFraction = (fraction) => {
-    //     const [numerator, denominator] = fraction.split('/').map(Number);
-    //     return numerator / denominator;
-    //   };
-    //   for (let i = 0; i < blends.length; i++) {
-    //     for (let j = 0; j < blends[i].portions.length; j++) {
-    //       if (blends[i].unit === blends[i].portions[j].measurement) {
-    //         blends[i].value =
-    //           blends[i].quantity * blends[i].portions[j].meausermentWeight;
-    //         blends[i].unit = 'g';
-    //         if (!blends[i].value) {
-    //           blends[i].value =
-    //             parseFraction(blends[i].quantity) *
-    //             blends[i].portions[j].meausermentWeight;
-    //         }
-    //       }
-    //     }
-    //     if (!blends[i].value) {
-    //       if (!+blends[i].quantity) {
-    //         let converted: any = converter(
-    //           parseFraction(blends[i].quantity),
-    //           blends[i].unit,
-    //           blends[i].portions[0].measurement
-    //         );
-    //         if (converted.error) {
-    //           blends[i].error = converted.error;
-    //           portionsProblem.push(blends[i]);
-    //           continue;
-    //         }
-    //         blends[i].value =
-    //           converted.quantity * blends[i].portions[0].meausermentWeight;
-    //       } else {
-    //         let converted: any = converter(
-    //           blends[i].quantity,
-    //           blends[i].unit,
-    //           blends[i].portions[0].measurement
-    //         );
-    //         if (converted.error) {
-    //           blends[i].error = converted.error;
-    //           portionsProblem.push(blends[i]);
-    //           continue;
-    //         }
-    //         blends[i].value =
-    //           converted.quantity * blends[i].portions[0].meausermentWeight;
-    //       }
-    //     }
-    //   }
-    //   blends = blends
-    //     .filter((blend: any) => blend.value)
-    //     .map((blend: any) => {
-    //       return {
-    //         ingredientId: blend.ingredientId,
-    //         value: blend.value,
-    //       };
-    //     });
-    //   // let mydata = await this.
-    //   return 'recipe added successfully';
-    // }
     async removeAllBulkRecipe() {
         await scrappedRecipe_1.default.deleteMany();
         return 'removed';
     }
     async addBulkScrappedRecipeFromUser(data) {
-        // let user = await MemberModel.findOne({ email: data[0].userId });
-        // if (!user) {
-        //   return new AppError('User not found', 404);
-        // }
         for (let i = 0; i < data.length; i++) {
             let modified = data[i];
             modified.isBulk = true;
@@ -1738,7 +1567,6 @@ let RecipeResolver = class RecipeResolver {
                 };
             }
         }
-        console.log(find);
         let findKeys = Object.keys(find);
         // console.log('f', find);
         if (findKeys.length > 0) {
@@ -1754,14 +1582,7 @@ let RecipeResolver = class RecipeResolver {
                 'ingredients.ingredientId': { $nin: data.excludeIngredientIds },
             }).select('_id');
         }
-        let findfacts = {
-        // isDefault: true,
-        // global: true,
-        // userId: null,
-        // addedByAdmin: true,
-        // discovery: true,
-        // isPublished: true,
-        };
+        let findfacts = {};
         if (recipeData.length > 0) {
             let recipeIds = recipeData.map((recipe) => recipe._id);
             findfacts = {
@@ -1770,7 +1591,7 @@ let RecipeResolver = class RecipeResolver {
         }
         else {
             findfacts = {
-                recipeId: { $in: [] },
+            // recipeId: { $in: [] },
             };
         }
         let userRecipes = await UserRecipeProfile_1.default.find(findfacts).select('defaultVersion');
@@ -1908,90 +1729,6 @@ let RecipeResolver = class RecipeResolver {
             .limit(limit)
             .skip(limit * (page - 1));
         let returnRecipe = await (0, getNotesCompareAndUserCollection_1.default)(userId, userProfileRecipes);
-        // let recipes = await RecipeModel.find({
-        //   _id: { $in: recipeIds },
-        // })
-        //   .populate({
-        //     path: 'ingredients.ingredientId',
-        //     model: 'BlendIngredient',
-        //   })
-        //   .populate({
-        //     path: 'defaultVersion',
-        //     model: 'RecipeVersion',
-        //     populate: {
-        //       path: 'ingredients.ingredientId',
-        //       model: 'BlendIngredient',
-        //       select: 'ingredientName selectedImage',
-        //     },
-        //     select: 'postfixTitle selectedImage',
-        //   })
-        //   .populate({
-        //     path: 'userId',
-        //     model: 'User',
-        //     select: '_id displayName image firstName lastName email',
-        //   })
-        //   .populate('brand')
-        //   .populate('recipeBlendCategory')
-        //   .limit(limit)
-        //   .skip(limit * (page - 1));
-        // let returnRecipe: any = [];
-        // let collectionRecipes: any[] = [];
-        // let memberCollection = await MemberModel.findOne({ _id: data.userId })
-        //   .populate({
-        //     path: 'collections',
-        //     model: 'UserCollection',
-        //     select: 'recipes',
-        //   })
-        //   .select('-_id collections');
-        // for (let i = 0; i < memberCollection.collections.length; i++) {
-        //   //@ts-ignore
-        //   let items: any = memberCollection.collections[i].recipes.map(
-        //     //@ts-ignore
-        //     (recipe) => {
-        //       return {
-        //         recipeId: String(recipe._id),
-        //         recipeCollection: String(memberCollection.collections[i]._id),
-        //       };
-        //     }
-        //   );
-        //   collectionRecipes.push(...items);
-        // }
-        // for (let i = 0; i < recipes.length; i++) {
-        //   let userNotes = await UserNoteModel.find({
-        //     recipeId: recipes[i]._id,
-        //     userId: data.userId,
-        //   });
-        //   let addedToCompare = false;
-        //   let compare = await CompareModel.findOne({
-        //     userId: data.userId,
-        //     recipeId: recipes[i]._id,
-        //   });
-        //   if (compare) {
-        //     addedToCompare = true;
-        //   }
-        //   let collectionData: any = collectionRecipes.filter(
-        //     (recipeData) => recipeData.recipeId === String(recipes[i]._id)
-        //   );
-        //   if (collectionData.length === 0) {
-        //     collectionData = null;
-        //   } else {
-        //     //@ts-ignore
-        //     collectionData = collectionData.map((data) => data.recipeCollection);
-        //   }
-        //   returnRecipe.push({
-        //     //@ts-ignore
-        //     ...recipes[i]._doc,
-        //     notes: userNotes.length,
-        //     addedToCompare: addedToCompare,
-        //     userCollections: collectionData,
-        //   });
-        // }
-        //making ids to String
-        // let recipeIdsString = recipeIds.map((ri: any) => String(ri));
-        //removing duplicates
-        // let finalData = recipeIdsString.filter(
-        //   (data: any, index: number) => recipeIdsString.indexOf(data) === index
-        // );
         let userProfileRecipesTotalCount = await UserRecipeProfile_1.default.countDocuments({
             userId: userId,
             recipeId: { $in: recipeIds },
@@ -2412,7 +2149,3 @@ RecipeResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], RecipeResolver);
 exports.default = RecipeResolver;
-//blendCategory
-//ingredredients
-// give ingredients based on ingredientType
-// git nutrients by category

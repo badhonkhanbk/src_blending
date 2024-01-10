@@ -971,103 +971,7 @@ let UserRecipeAndCollectionResolver = class UserRecipeAndCollectionResolver {
             },
             'shareTo.hasAccepted': true,
         });
-        console.log('oc', otherCollections);
-        // .populate({
-        //   path: 'recipes',
-        //   model: 'RecipeModel',
-        //   limit: 5,
-        //   populate: [
-        //     {
-        //       path: 'defaultVersion',
-        //       model: 'RecipeVersion',
-        //       populate: {
-        //         path: 'ingredients.ingredientId',
-        //         model: 'BlendIngredient',
-        //         select: 'ingredientName selectedImage',
-        //       },
-        //       select: 'postfixTitle',
-        //     },
-        //     {
-        //       path: 'ingredients.ingredientId',
-        //       model: 'BlendIngredient',
-        //       select: 'ingredientName',
-        //     },
-        //     {
-        //       path: 'brand',
-        //       model: 'RecipeBrand',
-        //     },
-        //     {
-        //       path: 'recipeBlendCategory',
-        //       model: 'RecipeCategory',
-        //     },
-        //     {
-        //       path: 'userId',
-        //       model: 'User',
-        //       select: '_id displayName image',
-        //     },
-        //   ],
-        // })
-        // .populate({
-        //   path: 'userId',
-        //   model: 'User',
-        //   select: '_id displayName firstName lastName email image',
-        // })
-        // .lean();
-        // let memberCollections = await MemberModel.findOne({ _id: userId })
-        //   .populate({
-        //     path: 'collections',
-        //     model: 'UserCollection',
-        //     select: 'recipes',
-        //   })
-        //   .select('-_id collections');
         for (let i = 0; i < otherCollections.length; i++) {
-            // let collection = otherCollections[i];
-            // console.log(collection.name);
-            // let recipes: any[] = collection.recipes;
-            // let returnRecipe: any = [];
-            // let collectionRecipes: any[] = [];
-            // for (let i = 0; i < memberCollections.collections.length; i++) {
-            //   //@ts-ignore
-            //   let items: any = memberCollections.collections[i].recipes.map(
-            //     //@ts-ignore
-            //     (recipe) => {
-            //       return {
-            //         recipeId: String(recipe._id),
-            //         recipeCollection: String(memberCollections.collections[i]._id),
-            //       };
-            //     }
-            //   );
-            //   collectionRecipes.push(...items);
-            // }
-            // for (let i = 0; i < recipes.length; i++) {
-            //   let userNotes = await UserNoteModel.find({
-            //     recipeId: recipes[i]._id,
-            //     userId: userId,
-            //   });
-            //   let addedToCompare = false;
-            //   let compare = await CompareModel.findOne({
-            //     userId: userId,
-            //     recipeId: recipes[i]._id,
-            //   });
-            //   if (compare) {
-            //     addedToCompare = true;
-            //   }
-            //   let collectionData: any = collectionRecipes.filter(
-            //     (recipeData) => recipeData.recipeId === String(recipes[i]._id)
-            //   );
-            //   if (collectionData.length === 0) {
-            //     collectionData = null;
-            //   } else {
-            //     //@ts-ignore
-            //     collectionData = collectionData.map((data) => data.recipeCollection);
-            //   }
-            //   returnRecipe.push({
-            //     ...recipes[i],
-            //     notes: userNotes.length,
-            //     addedToCompare: addedToCompare,
-            //     userCollections: collectionData,
-            //   });
-            // }
             let collection = await (0, getASingleCollection_1.default)(otherCollections[i].slug, userId, String(otherCollections[i]._id), null, null, 1, 12);
             collectionData.push({
                 //@ts-ignore
@@ -1572,5 +1476,3 @@ UserRecipeAndCollectionResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], UserRecipeAndCollectionResolver);
 exports.default = UserRecipeAndCollectionResolver;
-// Making api for filtering ingredients by category and class
-// Nutrition

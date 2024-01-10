@@ -4,6 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const RecipeVersionModel_1 = __importDefault(require("../../../../models/RecipeVersionModel"));
+/**
+ * Updates the serving size for all versions of recipes.
+ *
+ * @return {Promise<string>} A string indicating the completion status of the update.
+ */
 async function updateServingSizeForAllVersions() {
     var _a, _b;
     let recipeVersions = await RecipeVersionModel_1.default.find().select('ingredients');

@@ -156,16 +156,6 @@ let UserCommentsResolver = class UserCommentsResolver {
         if (!comment) {
             return new AppError_1.default('Comment not found', 404);
         }
-        // let totalRating = recipe.totalRating - comment.rating;
-        // let numberOfRating = recipe.numberOfRating - 1;
-        // console.log(totalRating, numberOfRating);
-        // console.log(recipe.totalRating, recipe.numberOfRating);
-        // let averageRating;
-        // if (numberOfRating === 0) {
-        //   averageRating = 0;
-        // } else {
-        //   averageRating = totalRating / numberOfRating;
-        // }
         await comment_1.default.deleteOne({ _id: data.commentId });
         let returnRecipe = await recipeModel_1.default.findOneAndUpdate({ _id: data.recipeId }, {
             $inc: { commentsCount: -1 },
@@ -202,19 +192,6 @@ let UserCommentsResolver = class UserCommentsResolver {
         if (!comment) {
             return new AppError_1.default('Comment not found', 404);
         }
-        // let totalRating =
-        //   recipe.totalRating - comment.rating + data.editableObject.rating;
-        // let averageRating;
-        // if (totalRating === 0) {
-        //   averageRating = 0;
-        // } else {
-        //   averageRating = totalRating / recipe.numberOfRating;
-        // }
-        // let returnRecipe = await RecipeModel.findOneAndUpdate(
-        //   { _id: data.recipeId },
-        //   { totalRating, averageRating },
-        //   { new: true }
-        // );
         let newData = data.editableObject;
         newData.updatedAt = Date.now();
         let newComment = await comment_1.default.findOneAndUpdate({ _id: data.editId }, newData, { new: true }).populate('userId');
